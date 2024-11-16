@@ -1,107 +1,135 @@
 "use client";
+
 import Image from "next/image";
-import React, { useState, useCallback, useMemo } from "react";
-import { useInterval } from "react-use";
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Github, Linkedin, Code, Terminal, BookOpen } from "lucide-react";
 
-const Index = () => {
-  const elements = useMemo(
-    () => [
-      "Full Stack Developer",
-      "Software Engineer",
-      "MERN Stack Developer",
-      "Node.js Developer",
-      "Next.js Developer",
-      "React.js Developer",
-    ],
-    []
-  );
-  const [wordIndex, setWordIndex] = useState(0);
-  const [charIndex, setCharIndex] = useState(0);
+const jobTitles = [
+  "Full Stack Developer",
+  "Software Engineer",
+  "MERN Stack Developer",
+  "Node.js Developer",
+  "Next.js Developer",
+  "React.js Developer",
+];
 
-  const typingTimer = useCallback(() => {
-    setCharIndex((prevCharIndex) => prevCharIndex + 1);
+export default function Home() {
+  const [jobTitleIndex, setJobTitleIndex] = useState(0);
 
-    if (charIndex === elements[wordIndex].length) {
-      setCharIndex(0);
-      if (wordIndex === elements.length - 1) {
-        setWordIndex(0);
-      } else {
-        setWordIndex(wordIndex + 1);
-      }
-    }
-  }, [elements, charIndex, wordIndex]);
-
-  useInterval(typingTimer, 150);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setJobTitleIndex((prevIndex) => (prevIndex + 1) % jobTitles.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <section
-      className="min-h-screen flex flex-col-reverse lg:flex-row items-center justify-center bg-white text-black dark:text-white py-16 px-6 lg:px-20 dark:bg-black"
-      id="home"
-    >
-      {/* Content Section */}
-      <div className="lg:w-1/2 text-center lg:text-left space-y-6">
-        <h3 className="text-xl text-gray-400">Hello, I&apos;m</h3>
-        <h1 className="text-5xl font-bold text-white leading-tight">
-          Shailesh Chaudhari
+    <div className="container mx-auto px-4 py-2 flex flex-col lg:flex-row items-center justify-between">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="lg:w-1/2 mb-8 lg:mb-0"
+      >
+        <h1 className="text-4xl lg:text-5xl font-bold text-text-primary mb-4">
+          Hi, I&apos;m Shailesh Chaudhari
         </h1>
-        <h3 className="text-2xl font-semibold text-blue-400">
-          {elements[wordIndex].slice(0, charIndex)}|
-        </h3>
-        <p className="text-lg text-gray-300">
-          Passionate Full Stack Developer with expertise in building dynamic web
-          applications. Skilled in Node.js, React, and modern web technologies,
-          dedicated to delivering high-quality code and seamless user
-          experiences. Let&apos;s turn your ideas into reality!
+        <h2 className="text-2xl lg:text-3xl text-accent-blue font-semibold mb-4 h-12">
+          {jobTitles[jobTitleIndex]}
+        </h2>
+        <p className="text-text-secondary mb-6">
+          I&apos;m a passionate Full Stack Developer specializing in building
+          dynamic and scalable web applications. Proficient in modern
+          technologies like Node.js, React, and more. Let&apos;s collaborate to
+          bring your ideas to life with high-quality code and seamless user
+          experiences!
         </p>
-        {/* Social Links */}
-        <div className="flex justify-center lg:justify-start space-x-6 mt-6">
-          <a
+        <div className="flex space-x-4 mb-6">
+          <SocialLink
             href="https://www.linkedin.com/in/shaileshbhai-chaudhari/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:text-blue-300 transition-colors"
-          >
-            <i className="bx bxl-linkedin text-3xl"></i>
-          </a>
-          <a
+            icon={<Linkedin />}
+            label="LinkedIn"
+          />
+          <SocialLink
             href="https://github.com/shailesh93602"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white hover:text-gray-400 transition-colors"
-          >
-            <i className="bx bxl-github text-3xl"></i>
-          </a>
-          <a
+            icon={<Github />}
+            label="GitHub"
+          />
+          <SocialLink
             href="https://www.codechef.com/users/shaileshbhai03"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-yellow-500 hover:text-yellow-300 transition-colors"
-          >
-            <i className="bx bxl-c-plus-plus text-3xl"></i>
-          </a>
-          <a
+            icon={<Code />}
+            label="CodeChef"
+          />
+          <SocialLink
             href="https://www.hackerrank.com/profile/shailesh93602"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-green-500 hover:text-green-300 transition-colors"
-          >
-            <i className="bx bx-code-alt text-3xl"></i>
-          </a>
+            icon={<Terminal />}
+            label="HackerRank"
+          />
+          <SocialLink
+            href="https://leetcode.com/u/Shaileshbhai/"
+            icon={<Code />}
+            label="LeetCode"
+          />
+          <SocialLink
+            href="https://www.geeksforgeeks.org/user/thenameisshaileshbhai"
+            icon={<BookOpen />}
+            label="GeeksforGeeks"
+          />
         </div>
-      </div>
-
-      {/* Image Section */}
-      <div className="lg:w-1/2 flex justify-center mb-10 lg:mb-0">
-        <Image
-          src="/images/home.webp"
-          alt="home"
-          width={400}
-          height={400}
-          className="rounded-full shadow-2xl border-4 border-blue-500"
-        />
-      </div>
-    </section>
+        <Link
+          href="/contact"
+          className="inline-block bg-accent-blue hover:bg-accent-blue-dark text-white font-bold py-2 px-4 rounded transition-colors duration-300"
+        >
+          Hire Me
+        </Link>
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="lg:w-1/2 flex justify-center lg:justify-end"
+      >
+        <div className="relative w-64 h-64 lg:w-80 lg:h-80">
+          <Image
+            src="/images/home.webp"
+            alt="Shailesh Chaudhari"
+            layout="fill"
+            objectFit="cover"
+            className="rounded-full shadow-lg border-4 border-accent-blue"
+          />
+        </div>
+      </motion.div>
+    </div>
   );
-};
+}
 
-export default Index;
+function SocialLink({ href, icon, label }) {
+  return (
+    <motion.a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="relative inline-flex items-center justify-center w-10 h-10 rounded-2xl border-2 border-accent-blue text-text-secondary hover:bg-accent-blue hover:text-white transition-all duration-300"
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.95 }}
+      aria-label={label}
+      title={label}
+    >
+      <motion.div
+        className="absolute inset-0 rounded-full bg-white"
+        initial={{ scale: 0 }}
+        whileHover={{ scale: 1 }}
+      />
+      <motion.div
+        className="relative z-10"
+        initial={{ rotate: 0 }}
+        whileHover={{ rotate: 360 }}
+        transition={{ duration: 0.3 }}
+      >
+        {icon}
+      </motion.div>
+    </motion.a>
+  );
+}
