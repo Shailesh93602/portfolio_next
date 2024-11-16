@@ -1,182 +1,129 @@
 "use client";
+
 import Image from "next/image";
-import React from "react";
+import { motion } from "framer-motion";
+import { ExternalLink, Github } from "lucide-react";
 
-const Portfolio = () => {
+const projects = [
+  {
+    title: "Cricket Auction System",
+    description:
+      "A web application developed for the college cricket league, simplifying the player registration and auction process. Built with Node.js, Express.js, EJS, and MongoDB.",
+    liveLink: "https://sportifygec.onrender.com/",
+    codeLink: "https://github.com/yourusername/cricket-auction-system",
+    image: "/images/portfolio1.png",
+  },
+  {
+    title: "Jarvis AI",
+    description:
+      "An advanced Android app built with Java and XML, enabling voice commands for effortless task management on smartphones.",
+    liveLink: null,
+    codeLink: "https://github.com/Shailesh93602/jarvis-ai",
+    image: "/images/portfolio1.png",
+  },
+  {
+    title: "MasteryPrep",
+    description:
+      "An online platform to learn programming fundamentals for technical interviews, built with the MERN stack.",
+    liveLink: "https://masteryprep.example.com",
+    codeLink: "https://www.github.com/shailesh93602/MasteryPrep/",
+    image: "/images/portfolio1.png",
+  },
+  {
+    title: "TODO List",
+    description:
+      "A user-friendly task management application, built with HTML, CSS, and JavaScript.",
+    liveLink: "https://shailesh93602.github.io/todolist/",
+    codeLink: "https://github.com/Shailesh93602/todolist",
+    image: "/images/portfolio1.png",
+  },
+  {
+    title: "Tic Tac Toe",
+    description:
+      "A simple web-based game with sound effects, built with HTML, CSS, and JavaScript.",
+    liveLink: "https://shailesh93602.github.io/tictactoe/",
+    codeLink: "https://github.com/Shailesh93602/tictactoe",
+    image: "/images/portfolio1.png",
+  },
+  {
+    title: "Book E Sell",
+    description:
+      "A full-stack web application for buying and selling books online, built with React, Node.js, Express, and MongoDB.",
+    liveLink: "https://book-e-sell.example.com",
+    codeLink: "https://github.com/Shailesh93602/book-e-sell",
+    image: "/images/portfolio1.png",
+  },
+];
+
+export default function Portfolio() {
   return (
-    <section className="py-12" id="portfolio">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
-          Latest <span className="text-blue-500">Projects</span>
-        </h2>
+    <div className="container mx-auto px-4 pb-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="text-4xl font-bold mb-12 text-center text-text-primary">
+          Latest Projects
+        </h1>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
-            <Image
-              src="/images/portfolio1.png"
-              alt="Cricket Auction System"
-              width={400}
-              height={400}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-6">
-              <h4 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-                Cricket Auction System
-              </h4>
-              <p className="text-gray-700 dark:text-gray-300 mb-6">
-                A web application developed for the college cricket league,
-                simplifying the player registration and auction process. Built
-                with Node.js, Express.js, EJS, and MongoDB.
-              </p>
-              <a
-                href="https://sportifygec.onrender.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-500 transition duration-200"
-              >
-                <i className="bx bx-link-external"></i>
-              </a>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {projects.map((project, index) => (
+            <ProjectCard key={index} project={project} />
+          ))}
+        </div>
+      </motion.div>
+    </div>
+  );
+}
 
-          <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
-            <Image
-              src="/images/portfolio1.png"
-              alt="Jarvis AI"
-              width={400}
-              height={400}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-6">
-              <h4 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-                Jarvis AI
-              </h4>
-              <p className="text-gray-700 dark:text-gray-300 mb-6">
-                An advanced Android app built with Java and XML, enabling voice
-                commands for effortless task management on smartphones.
-              </p>
-              <a
-                href="https://github.com/Shailesh93602/jarvis-ai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-500 transition duration-200"
-              >
-                <i className="bx bx-link-external"></i>
-              </a>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
-            <Image
-              src="/images/portfolio1.png"
-              alt="MasteryPrep"
-              width={400}
-              height={400}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-6">
-              <h4 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-                MasteryPrep
-              </h4>
-              <p className="text-gray-700 dark:text-gray-300 mb-6">
-                An online platform to learn programming fundamentals for
-                technical interviews, built with the MERN stack.
-              </p>
-              <a
-                href="https://www.github.com/shailesh93602/MasteryPrep/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-500 transition duration-200"
-              >
-                <i className="bx bx-link-external"></i>
-              </a>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
-            <Image
-              src="/images/portfolio1.png"
-              alt="TODO List"
-              width={400}
-              height={400}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-6">
-              <h4 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-                TODO List
-              </h4>
-              <p className="text-gray-700 dark:text-gray-300 mb-6">
-                A user-friendly task management application, built with HTML,
-                CSS, and JavaScript.
-              </p>
-              <a
-                href="https://github.com/Shailesh93602/todolist"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-500 transition duration-200"
-              >
-                <i className="bx bx-link-external"></i>
-              </a>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
-            <Image
-              src="/images/portfolio1.png"
-              alt="Tic Tac Toe"
-              width={400}
-              height={400}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-6">
-              <h4 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-                Tic Tac Toe
-              </h4>
-              <p className="text-gray-700 dark:text-gray-300 mb-6">
-                A simple web-based game with sound effects, built with HTML,
-                CSS, and JavaScript.
-              </p>
-              <a
-                href="https://github.com/Shailesh93602/tictactoe"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-500 transition duration-200"
-              >
-                <i className="bx bx-link-external"></i>
-              </a>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
-            <Image
-              src="/images/portfolio1.png"
-              alt="Book E Sell"
-              width={400}
-              height={400}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-6">
-              <h4 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-                Book E Sell
-              </h4>
-              <p className="text-gray-700 dark:text-gray-300 mb-6">
-                A full-stack web application for buying and selling books
-                online, built with React, Node.js, Express, and MongoDB.
-              </p>
-              <a
-                href="https://github.com/Shailesh93602/todolist"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-500 transition duration-200"
-              >
-                <i className="bx bx-link-external"></i>
-              </a>
-            </div>
-          </div>
+function ProjectCard({ project }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="bg-background-light rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl"
+    >
+      <div className="relative h-48">
+        <Image
+          src={project.image}
+          alt={project.title}
+          layout="fill"
+          objectFit="cover"
+          className="transition-transform duration-300 transform hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-0 hover:opacity-70 transition-opacity duration-300 flex items-end justify-start p-4">
+          <h2 className="text-text-primary text-xl font-semibold">
+            {project.title}
+          </h2>
         </div>
       </div>
-    </section>
+      <div className="p-6">
+        <p className="text-text-secondary mb-4 line-clamp-3">
+          {project.description}
+        </p>
+        <div className="flex space-x-4">
+          {project.liveLink && (
+            <a
+              href={project.liveLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-4 py-2 bg-accent-blue text-text-primary font-semibold rounded-md hover:bg-accent-blue-dark transition-colors duration-300"
+            >
+              Visit <ExternalLink className="ml-2 h-4 w-4" />
+            </a>
+          )}
+          <a
+            href={project.codeLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center px-4 py-2 bg-background text-text-primary font-semibold rounded-md hover:bg-background-light transition-colors duration-300"
+          >
+            Code <Github className="ml-2 h-4 w-4" />
+          </a>
+        </div>
+      </div>
+    </motion.div>
   );
-};
-
-export default Portfolio;
+}
