@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd http://www.google.com/schemas/sitemap-image/1.1 http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd">
 <url>
-<loc>https://shaileshchaudhari.netlify.app/</loc>
-<lastmod>2024-01-17T11:18:51+00:00</lastmod>
+<loc>https://shaileshchaudhari.vercel.app/</loc>
+<lastmod>2024-11-16T11:18:51+00:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>1.0</priority>
 <image:image>
-<image:loc>https://shaileshchaudhari.netlify.app/images/mylogo.png</image:loc>
+<image:loc>https://shaileshchaudhari.vercel.app/images/mylogo.png</image:loc>
 <image:caption>Shailesh Chaudhari - Portfolio</image:caption>
 <image:title>Profile Picture</image:title>
 </image:image>
 </url>
 <url>
-<loc>https://shaileshchaudhari.netlify.app/about</loc>
-<lastmod>2024-01-17T11:18:51+00:00</lastmod>
+<loc>https://shaileshchaudhari.vercel.app/about</loc>
+<lastmod>2024-11-16T11:18:51+00:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.8</priority>
 </url>
 <url>
-<loc>https://shaileshchaudhari.netlify.app/portfolio</loc>
-<lastmod>2024-01-17T11:18:51+00:00</lastmod>
+<loc>https://shaileshchaudhari.vercel.app/portfolio</loc>
+<lastmod>2024-11-16T11:18:51+00:00</lastmod>
 <changefreq>weekly</changefreq>
 <priority>0.7</priority>
 </url>
 <url>
-<loc>https://shaileshchaudhari.netlify.app/contact</loc>
-<lastmod>2024-01-17T11:18:51+00:00</lastmod>
+<loc>https://shaileshchaudhari.vercel.app/contact</loc>
+<lastmod>2024-11-16T11:18:51+00:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.6</priority>
 </url>
 <url>
-<loc>https://shaileshchaudhari.netlify.app/blogs</loc>
-<lastmod>2024-01-17T11:18:51+00:00</lastmod>
+<loc>https://shaileshchaudhari.vercel.app/blogs</loc>
+<lastmod>2024-11-16T11:18:51+00:00</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.6</priority>
 </url>
