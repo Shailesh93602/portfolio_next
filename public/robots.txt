@@ -1,4 +1,9 @@
-# https://www.robotstxt.org/robotstxt.html
+# *
 User-agent: *
 Allow: /
-Sitemap: https://shaileshchaudhari.netlify.app/sitemap.xml
+
+# Host
+Host: https://shaileshchaudhari.vercel.app
+
+# Sitemaps
+Sitemap: https://shaileshchaudhari.vercel.app/sitemap.xml
