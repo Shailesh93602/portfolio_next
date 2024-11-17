@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-// import { Github, Linkedin, Code, Terminal, BookOpen } from "lucide-react";
 import {
   SiLeetcode,
   SiGeeksforgeeks,

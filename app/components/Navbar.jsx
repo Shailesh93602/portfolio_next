@@ -30,7 +30,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center">
           <Link
             href="/"
-            className="text-2xl font-bold text-primary hover:text-primary/80 transition-colors"
+            className="text-2xl font-bold text-offWhite hover:text-primary/80 transition-colors"
           >
             <span className="font-mono">SC</span>
           </Link>
@@ -78,10 +78,10 @@ export default function Navbar() {
               <div className="flex justify-between items-center px-4 py-4 border-b">
                 <Link
                   href="/"
-                  className="text-2xl font-bold text-primary hover:text-primary/80 transition-colors"
+                  className="text-2xl font-bold text-offWhite hover:text-primary/80 transition-colors"
                   onClick={closeMenu}
                 >
-                  <span className="font-mono">SC</span>
+                  <span className="font-mono text-offWhite">SC</span>
                 </Link>
                 <Button
                   variant="ghost"

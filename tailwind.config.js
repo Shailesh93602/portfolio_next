@@ -12,7 +12,7 @@ module.exports = {
         primary: "#8300b8",
         primaryLight: "#8300b8a3",
         darkGray: "#6b7280",
-        offWhite: "#f3f4f",
+        offWhite: "#f3f4f3",
         grayText: "#E5E7EB",
         dark: "#111827",
         background: {
