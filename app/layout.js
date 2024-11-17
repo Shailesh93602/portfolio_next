@@ -34,6 +34,7 @@ export const metadata = {
       },
     ],
     site_name: "Shailesh Chaudhari Portfolio",
+    url: "https://shaileshchaudhari.vercel.app",
   },
   twitter: {
     card: "summary_large_image",
