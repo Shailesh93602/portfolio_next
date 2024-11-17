@@ -57,6 +57,7 @@ export default function RootLayout({ children }) {
           rel="icon"
           href="https://shaileshchaudhari.vercel.app/Images/home.webp"
         />
+        <meta property="og:site_name" content="Shailesh Chaudhari Portfolio" />
       </head>
       <body className="bg-background text-text-primary font-sans min-h-screen flex flex-col">
         <Analytics />
