@@ -4,7 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Github, Linkedin, Code, Terminal, BookOpen } from "lucide-react";
+// import { Github, Linkedin, Code, Terminal, BookOpen } from "lucide-react";
+import {
+  SiLeetcode,
+  SiGeeksforgeeks,
+  SiCodechef,
+  SiHackerrank,
+  SiLinkedin,
+  SiGithub,
+} from "react-icons/si";
 
 const jobTitles = [
   "Full Stack Developer",
@@ -49,32 +57,32 @@ export default function Home() {
         <div className="flex space-x-4 mb-6">
           <SocialLink
             href="https://www.linkedin.com/in/shaileshbhai-chaudhari/"
-            icon={<Linkedin />}
+            icon={<SiLinkedin />}
             label="LinkedIn"
           />
           <SocialLink
             href="https://github.com/shailesh93602"
-            icon={<Github />}
+            icon={<SiGithub />}
             label="GitHub"
           />
           <SocialLink
             href="https://www.codechef.com/users/shaileshbhai03"
-            icon={<Code />}
+            icon={<SiCodechef />}
             label="CodeChef"
           />
           <SocialLink
             href="https://www.hackerrank.com/profile/shailesh93602"
-            icon={<Terminal />}
+            icon={<SiHackerrank />}
             label="HackerRank"
           />
           <SocialLink
             href="https://leetcode.com/u/Shaileshbhai/"
-            icon={<Code />}
+            icon={<SiLeetcode />}
             label="LeetCode"
           />
           <SocialLink
             href="https://www.geeksforgeeks.org/user/thenameisshaileshbhai"
-            icon={<BookOpen />}
+            icon={<SiGeeksforgeeks />}
             label="GeeksforGeeks"
           />
         </div>

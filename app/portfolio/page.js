@@ -11,7 +11,7 @@ const projects = [
       "A web application developed for the college cricket league, simplifying the player registration and auction process. Built with Node.js, Express.js, EJS, and MongoDB.",
     liveLink: "https://sportifygec.onrender.com/",
     codeLink: "https://github.com/yourusername/cricket-auction-system",
-    image: "/images/portfolio1.png",
+    image: "/Images/portfolio1.png",
   },
   {
     title: "Jarvis AI",
@@ -19,7 +19,7 @@ const projects = [
       "An advanced Android app built with Java and XML, enabling voice commands for effortless task management on smartphones.",
     liveLink: null,
     codeLink: "https://github.com/Shailesh93602/jarvis-ai",
-    image: "/images/portfolio1.png",
+    image: "/Images/portfolio1.png",
   },
   {
     title: "MasteryPrep",
@@ -27,7 +27,7 @@ const projects = [
       "An online platform to learn programming fundamentals for technical interviews, built with the MERN stack.",
     liveLink: "https://masteryprep.example.com",
     codeLink: "https://www.github.com/shailesh93602/MasteryPrep/",
-    image: "/images/portfolio1.png",
+    image: "/Images/portfolio1.png",
   },
   {
     title: "TODO List",
@@ -35,7 +35,7 @@ const projects = [
       "A user-friendly task management application, built with HTML, CSS, and JavaScript.",
     liveLink: "https://shailesh93602.github.io/todolist/",
     codeLink: "https://github.com/Shailesh93602/todolist",
-    image: "/images/portfolio1.png",
+    image: "/Images/portfolio1.png",
   },
   {
     title: "Tic Tac Toe",
@@ -43,7 +43,7 @@ const projects = [
       "A simple web-based game with sound effects, built with HTML, CSS, and JavaScript.",
     liveLink: "https://shailesh93602.github.io/tictactoe/",
     codeLink: "https://github.com/Shailesh93602/tictactoe",
-    image: "/images/portfolio1.png",
+    image: "/Images/portfolio1.png",
   },
   {
     title: "Book E Sell",
@@ -51,7 +51,7 @@ const projects = [
       "A full-stack web application for buying and selling books online, built with React, Node.js, Express, and MongoDB.",
     liveLink: "https://book-e-sell.example.com",
     codeLink: "https://github.com/Shailesh93602/book-e-sell",
-    image: "/images/portfolio1.png",
+    image: "/Images/portfolio1.png",
   },
 ];
 
@@ -93,7 +93,7 @@ function ProjectCard({ project }) {
           objectFit="cover"
           className="transition-transform duration-300 transform hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-dark to-transparent opacity-0 hover:opacity-70 transition-opacity duration-300 flex items-end justify-start p-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-dark to-transparent opacity-50 hover:opacity-70 transition-opacity duration-300 flex items-end justify-start p-4">
           <h2 className="text-text-primary text-xl font-semibold">
             {project.title}
           </h2>
