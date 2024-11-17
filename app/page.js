@@ -93,7 +93,7 @@ export default function Home() {
       >
         <div className="relative w-64 h-64 lg:w-80 lg:h-80">
           <Image
-            src="/images/home.webp"
+            src="/Images/home.webp"
             alt="Shailesh Chaudhari"
             layout="fill"
             objectFit="cover"

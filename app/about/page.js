@@ -36,7 +36,7 @@ export default function About() {
           <div className="relative">
             <div className="absolute -inset-0.5 bg-accent-blue rounded-full blur opacity-75 animate-pulse"></div>
             <Image
-              src="/images/home.webp"
+              src="/Images/home.webp"
               alt="Shailesh Chaudhari"
               width={300}
               height={300}
