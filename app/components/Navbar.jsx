@@ -24,12 +24,12 @@ export default function Navbar() {
   const isActive = (path) => pathname === path;
 
   return (
-    <nav className="bg-background shadow-custom">
+    <nav className="bg-dark shadow-custom">
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <Link
             href="/"
-            className="text-2xl font-bold text-text-primary hover:text-accent-blue transition-colors"
+            className="text-2xl font-bold text-text-primary hover:text-primary transition-colors"
           >
             <span className="font-mono">SC</span>
           </Link>
@@ -40,8 +40,8 @@ export default function Navbar() {
                   href={item.path}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                     isActive(item.path)
-                      ? "bg-accent-blue text-text-primary"
-                      : "text-text-secondary hover:text-accent-blue hover:bg-background"
+                      ? "bg-primary text-text-primary"
+                      : "text-text-secondary hover:text-primary hover:bg-background"
                   }`}
                 >
                   {item.label}
@@ -50,7 +50,7 @@ export default function Navbar() {
             ))}
           </ul>
           <button
-            className="md:hidden text-text-secondary hover:text-accent-blue focus:outline-none transition-colors"
+            className="md:hidden text-text-secondary hover:text-primary focus:outline-none transition-colors"
             onClick={toggleMenu}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
           >
@@ -80,8 +80,8 @@ export default function Navbar() {
                     href={item.path}
                     className={`block py-2 px-4 rounded-md text-base font-medium transition-colors ${
                       isActive(item.path)
-                        ? "bg-accent-blue text-text-primary"
-                        : "text-text-secondary hover:text-accent-blue hover:bg-background-light"
+                        ? "bg-primary text-text-primary"
+                        : "text-text-secondary hover:text-primary hover:bg-background-light"
                     }`}
                     onClick={closeMenu}
                   >

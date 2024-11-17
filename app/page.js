@@ -36,7 +36,7 @@ export default function Home() {
         <h1 className="text-4xl lg:text-5xl font-bold text-text-primary mb-4">
           Hi, I&apos;m Shailesh Chaudhari
         </h1>
-        <h2 className="text-2xl lg:text-3xl text-accent-blue font-semibold mb-4 h-12">
+        <h2 className="text-2xl lg:text-3xl text-primary font-semibold mb-4 h-12">
           {jobTitles[jobTitleIndex]}
         </h2>
         <p className="text-text-secondary mb-6">
@@ -80,7 +80,7 @@ export default function Home() {
         </div>
         <Link
           href="/contact"
-          className="inline-block bg-accent-blue hover:bg-accent-blue-dark text-white font-bold py-2 px-4 rounded transition-colors duration-300"
+          className="inline-block bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded transition-colors duration-300"
         >
           Hire Me
         </Link>
@@ -97,7 +97,7 @@ export default function Home() {
             alt="Shailesh Chaudhari"
             layout="fill"
             objectFit="cover"
-            className="rounded-full shadow-lg border-4 border-accent-blue"
+            className="rounded-full shadow-lg border-4 border-primary"
           />
         </div>
       </motion.div>
@@ -111,7 +111,7 @@ function SocialLink({ href, icon, label }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="relative inline-flex items-center justify-center w-10 h-10 rounded-2xl border-2 border-accent-blue text-text-secondary hover:bg-accent-blue hover:text-white transition-all duration-300"
+      className="relative inline-flex items-center justify-center w-10 h-10 rounded-2xl border-2 border-primary text-text-secondary hover:bg-primary hover:text-white transition-all duration-300"
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
       aria-label={label}

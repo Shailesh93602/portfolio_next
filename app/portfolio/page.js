@@ -83,7 +83,7 @@ function ProjectCard({ project }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-background-light rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl"
+      className="bg-dark relative rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl"
     >
       <div className="relative h-48">
         <Image
@@ -93,23 +93,23 @@ function ProjectCard({ project }) {
           objectFit="cover"
           className="transition-transform duration-300 transform hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-0 hover:opacity-70 transition-opacity duration-300 flex items-end justify-start p-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-dark to-transparent opacity-0 hover:opacity-70 transition-opacity duration-300 flex items-end justify-start p-4">
           <h2 className="text-text-primary text-xl font-semibold">
             {project.title}
           </h2>
         </div>
       </div>
-      <div className="p-6">
+      <div className="p-6 pb-10">
         <p className="text-text-secondary mb-4 line-clamp-3">
           {project.description}
         </p>
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 absolute bottom-2 left-2">
           {project.liveLink && (
             <a
               href={project.liveLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center px-4 py-2 bg-accent-blue text-text-primary font-semibold rounded-md hover:bg-accent-blue-dark transition-colors duration-300"
+              className="inline-flex items-center px-4 py-2 bg-primary text-text-primary font-semibold rounded-md hover:bg-primary-dark transition-colors duration-300"
             >
               Visit <ExternalLink className="ml-2 h-4 w-4" />
             </a>

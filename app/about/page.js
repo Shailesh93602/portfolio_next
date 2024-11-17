@@ -4,6 +4,9 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Briefcase, Trophy, Code, Heart, ChevronRight } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
   visible: { y: 0, opacity: 1 },
@@ -34,7 +37,7 @@ export default function About() {
           className="w-full lg:w-1/3 flex justify-center"
         >
           <div className="relative">
-            <div className="absolute -inset-0.5 bg-accent-blue rounded-full blur opacity-75 animate-pulse"></div>
+            <div className="absolute -inset-0.5 bg-primary rounded-full blur opacity-75 animate-pulse"></div>
             <Image
               src="/Images/home.webp"
               alt="Shailesh Chaudhari"
@@ -52,7 +55,7 @@ export default function About() {
             <h1 className="text-4xl font-bold mb-4 text-text-primary">
               About Me
             </h1>
-            <h2 className="text-2xl font-semibold mb-6 text-accent-blue">
+            <h2 className="text-2xl font-semibold mb-6 text-primary">
               Fullstack Developer
             </h2>
             <motion.p
@@ -79,7 +82,7 @@ export default function About() {
                   <HobbiesSection />
                   <motion.blockquote
                     variants={itemVariants}
-                    className="italic text-text-secondary border-l-4 border-accent-blue pl-4 py-2 my-4"
+                    className="italic text-text-secondary border-l-4 border-primary pl-4 py-2 my-4"
                   >
                     &quot;Code is like humor. When you have to explain it,
                     it&apos;s bad.&quot;
@@ -90,7 +93,7 @@ export default function About() {
             <motion.div variants={itemVariants} className="mt-8">
               <button
                 onClick={toggleContent}
-                className="px-6 py-3 text-sm font-semibold text-text-primary bg-accent-blue hover:bg-accent-blue-dark rounded-md transition-colors duration-300"
+                className="px-6 py-3 text-sm font-semibold text-text-primary bg-primary hover:bg-primary-dark rounded-md transition-colors duration-300"
               >
                 {showFullContent ? "Show Less" : "Read More"}
               </button>
@@ -187,15 +190,15 @@ function ExperienceSection() {
       animate="visible"
       transition={{ staggerChildren: 0.1 }}
     >
-      <h3 className="text-2xl font-semibold mb-6 flex items-center text-text-primary">
-        <Briefcase className="mr-2 text-accent-blue" /> Experience
+      <h3 className="text-2xl font-semibold mb-6 flex items-center text-offWhite">
+        <Briefcase className="mr-2 text-primary" /> Experience
       </h3>
       <div className="space-y-4">
         {experienceData.map((experience, index) => (
           <motion.div
             key={index}
             variants={itemVariants}
-            className={`bg-white dark:bg-gray-800 rounded-lg shadow-md transition-all duration-300 ${
+            className={`bg-dark rounded-lg shadow-md transition-all duration-300 ${
               expandedIndex === index ? "p-6" : "p-4"
             }`}
           >
@@ -203,11 +206,11 @@ function ExperienceSection() {
               className="cursor-pointer flex justify-between items-center"
               onClick={() => handleToggle(index)}
             >
-              <h4 className="text-xl font-semibold text-accent-blue">
+              <h4 className="text-xl font-semibold text-primary">
                 {experience.title}
               </h4>
               <ChevronRight
-                className={`text-accent-blue transition-transform duration-300 ${
+                className={`text-primary transition-transform duration-300 ${
                   expandedIndex === index ? "rotate-90" : "rotate-0"
                 }`}
               />
@@ -229,7 +232,7 @@ function ExperienceSection() {
                     {experience.skills.map((skill, skillIndex) => (
                       <span
                         key={skillIndex}
-                        className="bg-accent-blue bg-opacity-10 text-accent-blue px-3 py-1 rounded-full text-sm"
+                        className="bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-full text-sm"
                       >
                         {skill}
                       </span>
@@ -244,7 +247,7 @@ function ExperienceSection() {
                     {experience.achievements.map(
                       (achievement, achievementIndex) => (
                         <li key={achievementIndex} className="flex items-start">
-                          <ChevronRight className="text-accent-blue mr-2 mt-1 flex-shrink-0" />
+                          <ChevronRight className="text-primary mr-2 mt-1 flex-shrink-0" />
                           <span className="text-text-secondary">
                             {achievement}
                           </span>
@@ -287,20 +290,19 @@ function AchievementsSection() {
   return (
     <motion.div variants={itemVariants}>
       <h3 className="text-xl font-semibold mb-3 flex items-center text-text-primary">
-        <Trophy className="mr-2 text-accent-blue" /> Achievements &
-        Certifications
+        <Trophy className="mr-2 text-primary" /> Achievements & Certifications
       </h3>
       <ul className="space-y-2 text-text-secondary">
         {achievements.map((achievement, index) => (
           <li key={index} className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-accent-blue rounded-full mr-2" />
+            <span className="w-2 h-2 bg-primary rounded-full mr-2" />
             <span>{achievement.description}</span>
             <span>{achievement.link && " | "}</span>
             {achievement.link && (
               <a
                 href={achievement.link}
                 target="_blank"
-                className="text-accent-blue"
+                className="text-primary"
               >
                 {achievement.title}
               </a>
@@ -313,43 +315,99 @@ function AchievementsSection() {
 }
 
 function SkillsSection() {
+  const [filter, setFilter] = useState("All");
+
   const skillCategories = {
     "Frontend Development": [
-      "React.js",
-      "Next.js",
-      "HTML",
-      "CSS",
-      "Tailwind CSS",
-      "EJS",
+      { name: "React.js", level: 90 },
+      { name: "Next.js", level: 85 },
+      { name: "HTML", level: 95 },
+      { name: "CSS", level: 90 },
+      { name: "Tailwind CSS", level: 85 },
+      { name: "EJS", level: 80 },
     ],
-    "Backend Development": ["Node.js", "Nest.js", "Express.js"],
-    Databases: ["MongoDB", "MySQL", "PostgreSQL"],
-    "Programming Languages": ["JavaScript", "TypeScript", "C++", "Java"],
-    "Mobile Development": ["Android Studio", "Java", "XML"],
+    "Backend Development": [
+      { name: "Node.js", level: 85 },
+      { name: "Nest.js", level: 80 },
+      { name: "Express.js", level: 85 },
+    ],
+    Databases: [
+      { name: "MongoDB", level: 80 },
+      { name: "MySQL", level: 75 },
+      { name: "PostgreSQL", level: 75 },
+    ],
+    "Programming Languages": [
+      { name: "JavaScript", level: 95 },
+      { name: "TypeScript", level: 90 },
+      { name: "C++", level: 70 },
+      { name: "Java", level: 75 },
+    ],
+    "Mobile Development": [
+      { name: "Android Studio", level: 70 },
+      { name: "Java", level: 75 },
+      { name: "XML", level: 80 },
+    ],
   };
 
+  const allCategories = ["All", ...Object.keys(skillCategories)];
+
+  const filteredSkills =
+    filter === "All"
+      ? Object.entries(skillCategories).flatMap(([category, skills]) =>
+          skills.map((skill) => ({ ...skill, category }))
+        )
+      : skillCategories[filter].map((skill) => ({
+          ...skill,
+          category: filter,
+        }));
+
   return (
-    <motion.div variants={itemVariants}>
-      <h3 className="text-xl font-semibold mb-6 flex items-center text-text-primary">
-        <Code className="mr-2 text-accent-blue" /> Skills
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-6"
+    >
+      <h3 className="text-2xl font-semibold mb-6 flex items-center text-primary">
+        <Code className="mr-2" /> Skills
       </h3>
-      <div className="space-y-6">
-        {Object.entries(skillCategories).map(([category, skills]) => (
-          <div key={category}>
-            <h4 className="text-lg font-medium text-accent-blue mb-2">
-              {category}
-            </h4>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {skills.map((skill) => (
-                <span
-                  key={skill}
-                  className="bg-accent-blue bg-opacity-10 text-accent-blue px-3 py-1 rounded-full text-sm font-medium hover:bg-accent-blue hover:text-white transition-colors duration-300"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
+      <div className="flex flex-wrap gap-2 mb-6">
+        {allCategories.map((category) => (
+          <Button
+            key={category}
+            variant={filter === category ? "default" : "outline"}
+            onClick={() => setFilter(category)}
+            className={`text-sm border hover:bg-primary hover:text-offWhite ${
+              filter === category
+                ? "bg-primary border-primary"
+                : "bg-dark border-dark"
+            }`}
+          >
+            {category}
+          </Button>
+        ))}
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filteredSkills.map((skill) => (
+          <motion.div
+            key={`${skill.category}-${skill.name}`}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 bg-dark text-offWhite border-dark">
+              <CardContent className="p-4">
+                <h4 className="text-lg font-medium mb-2">{skill.name}</h4>
+                <p className="text-sm text-muted-foreground mb-2">
+                  {skill.category}
+                </p>
+                <Progress value={skill.level} className="h-2 bg-primaryLight" />
+                <p className="text-right text-sm text-muted-foreground mt-1">
+                  {skill.level}%
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
       </div>
     </motion.div>
@@ -360,7 +418,7 @@ function HobbiesSection() {
   return (
     <motion.div variants={itemVariants}>
       <h3 className="text-xl font-semibold mb-3 flex items-center text-text-primary">
-        <Heart className="mr-2 text-accent-blue" /> Hobbies & Interests
+        <Heart className="mr-2 text-primary" /> Hobbies & Interests
       </h3>
       <p className="text-text-secondary">Football, Chess, Puzzle Solving</p>
     </motion.div>

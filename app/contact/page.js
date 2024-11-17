@@ -57,17 +57,17 @@ export default function Contact() {
   };
 
   return (
-    <div className="container mx-auto px-4 text-grayText">
+    <div className="container mx-auto px-4 text-offWhite">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-4xl mx-auto"
+        className="max-w-4xl mx-auto bg-dark"
       >
-        <h1 className="text-4xl font-bold mb-8 text-center text-text-primary">
+        <h1 className="text-4xl font-bold mb-8 text-center text-text-primary pt-4">
           Get in Touch
         </h1>
-        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
+        <div className="bg-dark shadow-lg rounded-lg overflow-hidden">
           <div className="p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -120,13 +120,13 @@ export default function Contact() {
                   required
                   value={formData.message}
                   onChange={handleChange}
-                  className="w-full p-3 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary dark:text-gray-200 focus:ring-2 focus:ring-accent-blue transition duration-300"
+                  className="w-full p-3 rounded-md border border-gray-700 bg-gray-800 text-gray-200 focus:ring-2 focus:ring-primary transition duration-300"
                 ></textarea>
               </div>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full p-3 rounded-md bg-accent-blue text-white font-semibold hover:bg-accent-blue-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue transition duration-300 flex items-center justify-center"
+                className="w-full p-3 rounded-md bg-primary text-white font-semibold hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition duration-300 flex items-center justify-center"
               >
                 {isSubmitting ? (
                   <>
@@ -198,7 +198,7 @@ function InputField({ label, name, type, required, value, onChange }) {
         required={required}
         value={value}
         onChange={onChange}
-        className="w-full p-3 rounded-md border border-gray-600 bg-gray-700 text-grayText focus:ring-2 focus:ring-accent-blue transition duration-300"
+        className="w-full p-3 rounded-md border border-gray-700 bg-gray-800 text-grayText focus:ring-2 focus:ring-primary transition duration-300"
       />
     </div>
   );
@@ -210,7 +210,7 @@ function ContactLink({ href, icon, label }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center text-text-secondary hover:text-accent-blue transition duration-300"
+      className="flex items-center text-text-secondary hover:text-primary transition duration-300"
       aria-label={label}
     >
       {icon}

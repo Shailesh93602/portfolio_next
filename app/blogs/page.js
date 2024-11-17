@@ -50,10 +50,10 @@ function BlogCard({ blog }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-background-light rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl"
+      className="bg-dark rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl"
     >
       <div className="p-6 space-y-4">
-        <div className="w-12 h-12 bg-accent-blue rounded-full flex items-center justify-center text-text-primary">
+        <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-text-primary">
           {blog.icon}
         </div>
         <h2 className="text-2xl font-semibold text-text-primary">
@@ -64,7 +64,7 @@ function BlogCard({ blog }) {
           href={blog.link}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block mt-4 px-6 py-2 bg-accent-blue text-text-primary font-semibold rounded-md hover:bg-accent-blue-dark transition-colors duration-300"
+          className="inline-block mt-4 px-6 py-2 bg-primary text-text-primary font-semibold rounded-md hover:bg-primary-dark transition-colors duration-300"
         >
           Read More
         </a>
