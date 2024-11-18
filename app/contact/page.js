@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Phone, MessageCircle, Loader2 } from "lucide-react";
 import emailjs from "emailjs-com";
+import SocialLink from "../components/SocialLink";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -159,17 +160,17 @@ export default function Contact() {
           </div>
           <div className=" px-8 py-6">
             <div className="flex justify-start gap-8">
-              <ContactLink
+              <SocialLink
                 href="mailto:shailesh93602@gmail.com"
                 icon={<Mail className="w-6 h-6" />}
                 label="Email"
               />
-              <ContactLink
+              <SocialLink
                 href="tel:+919313026530"
                 icon={<Phone className="w-6 h-6" />}
                 label="Phone"
               />
-              <ContactLink
+              <SocialLink
                 href="http://wa.me/9313026530"
                 icon={<MessageCircle className="w-6 h-6" />}
                 label="WhatsApp"

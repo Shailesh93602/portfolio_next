@@ -9,9 +9,9 @@ const projects = [
     title: "Cricket Auction System",
     description:
       "A web application developed for the college cricket league, simplifying the player registration and auction process. Built with Node.js, Express.js, EJS, and MongoDB.",
-    liveLink: "https://sportifygec.onrender.com/",
-    codeLink: "https://github.com/yourusername/cricket-auction-system",
-    image: "/Images/portfolio1.png",
+    liveLink: "https://gecsportify.vercel.app/",
+    codeLink: "https://github.com/Shailesh93602/gecsportify/",
+    image: "/Images/gecSportify.png",
   },
   {
     title: "Jarvis AI",
@@ -25,9 +25,9 @@ const projects = [
     title: "MasteryPrep",
     description:
       "An online platform to learn programming fundamentals for technical interviews, built with the MERN stack.",
-    liveLink: "https://masteryprep.example.com",
-    codeLink: "https://www.github.com/shailesh93602/MasteryPrep/",
-    image: "/Images/portfolio1.png",
+    liveLink: "https://masteryprep.netlify.app/",
+    codeLink: "https://github.com/shailesh93602/MasteryPrep",
+    image: "/Images/masteryPrep.png",
   },
   {
     title: "TODO List",
@@ -35,22 +35,22 @@ const projects = [
       "A user-friendly task management application, built with HTML, CSS, and JavaScript.",
     liveLink: "https://shailesh93602.github.io/todolist/",
     codeLink: "https://github.com/Shailesh93602/todolist",
-    image: "/Images/portfolio1.png",
+    image: "/Images/toDoList.png",
   },
   {
     title: "Tic Tac Toe",
     description:
       "A simple web-based game with sound effects, built with HTML, CSS, and JavaScript.",
-    liveLink: "https://shailesh93602.github.io/tictactoe/",
+    liveLink: "https://shailesh93602.github.io/TicTacToe/",
     codeLink: "https://github.com/Shailesh93602/tictactoe",
-    image: "/Images/portfolio1.png",
+    image: "/Images/ticTacToe.png",
   },
   {
     title: "Book E Sell",
     description:
       "A full-stack web application for buying and selling books online, built with React, Node.js, Express, and MongoDB.",
-    liveLink: "https://book-e-sell.example.com",
-    codeLink: "https://github.com/Shailesh93602/book-e-sell",
+    // liveLink: "https://book-e-sell.example.com",
+    codeLink: "https://github.com/Shailesh93602/book-store",
     image: "/Images/portfolio1.png",
   },
 ];
