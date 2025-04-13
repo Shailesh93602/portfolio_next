@@ -11,15 +11,8 @@ import {
   PersonIcon,
   TimerIcon,
   LightningBoltIcon as StreakIcon,
-  CalendarIcon,
 } from "@radix-ui/react-icons";
-import {
-  GitFork,
-  Languages,
-  Trophy,
-  GitPullRequest,
-  AlertCircle,
-} from "lucide-react";
+import { GitFork, Trophy, GitPullRequest, AlertCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -30,40 +23,70 @@ const fadeInUp = {
   transition: { duration: 0.5 },
 };
 
-const StatCard = ({ title, value, icon: Icon, color }: any) => (
+const StatCard = ({
+  title,
+  value,
+  icon: Icon,
+  color,
+}: {
+  title: string;
+  value: string;
+  icon: React.ElementType;
+  color: string;
+}) => (
   <motion.div
     className="relative"
     whileHover={{ scale: 1.02 }}
     whileTap={{ scale: 0.98 }}
     {...fadeInUp}
   >
-    <Card className="p-4 backdrop-blur-sm bg-card/50 border-2 hover:border-primary/50 transition-all">
+    <Card className="p-5 backdrop-blur-sm bg-card/50 border hover:border-primary/50 transition-all duration-300">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs font-medium text-muted-foreground">{title}</p>
-          <h3 className="text-lg font-bold mt-0.5">{value}</h3>
+          <p className="text-sm font-medium text-muted-foreground">{title}</p>
+          <h3 className="text-xl font-bold mt-1">{value}</h3>
         </div>
-        <div className={`p-2 rounded-full ${color}`}>
-          <Icon className="w-4 h-4" />
+        <div className={`p-2.5 rounded-full ${color}`}>
+          <Icon className="w-5 h-5" />
         </div>
       </div>
     </Card>
   </motion.div>
 );
 
-const PlatformSection = ({ title, children, delay = 0 }: any) => (
+const PlatformSection = ({
+  title,
+  children,
+  delay = 0,
+}: {
+  title: string;
+  children: React.ReactNode;
+  delay?: number;
+}) => (
   <motion.div
     initial={{ y: 20, opacity: 0 }}
     animate={{ y: 0, opacity: 1 }}
     transition={{ duration: 0.5, delay }}
-    className="space-y-6"
+    className="mb-10"
   >
-    <h2 className="text-xl font-bold tracking-tight">{title}</h2>
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">{children}</div>
+    <h2 className="text-2xl font-bold tracking-tight mb-6">{title}</h2>
+    <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full max-w-6xl mx-auto">
+      {children}
+    </div>
   </motion.div>
 );
 
-const DifficultyBar = ({ solved, total, difficulty, color }: any) => (
+const DifficultyBar = ({
+  solved,
+  total,
+  difficulty,
+  color,
+}: {
+  solved: number;
+  total: number;
+  difficulty: string;
+  color: string;
+}) => (
   <div className="space-y-1.5">
     <div className="flex justify-between text-xs">
       <span className="text-muted-foreground">{difficulty}</span>
@@ -159,11 +182,124 @@ const RecentSubmissions = ({
   </Card>
 );
 
+// Create a common CalendarBase component to ensure consistency between both calendars
+const CalendarBase = ({
+  title,
+  months,
+  weeks,
+  getColorClass,
+  tooltipText,
+  emptyText = "No data available",
+  isEmpty = false,
+}: {
+  title: string;
+  months: Array<{
+    name: string;
+    year: number;
+    firstDay: Date;
+    weekIndex: number;
+  }>;
+  weeks: Array<Array<{ date: Date; count: number }>>;
+  getColorClass: (count: number) => string;
+  tooltipText: (count: number, date: Date) => string;
+  emptyText?: string;
+  isEmpty?: boolean;
+}) => {
+  if (isEmpty) {
+    return (
+      <Card className="p-6 col-span-full bg-card/90 border shadow-sm">
+        <h3 className="text-lg font-semibold mb-6">{title}</h3>
+        <div className="text-center text-muted-foreground py-8">
+          {emptyText}
+        </div>
+      </Card>
+    );
+  }
+
+  const weekdays = ["Mon", "Wed", "Fri"];
+
+  return (
+    <Card className="p-6 col-span-full bg-card/90 border shadow-sm h-full min-h-max">
+      <h3 className="text-lg font-semibold mb-6">{title}</h3>
+      <div className="overflow-x-auto overflow-y-hidden h-full min-h-[160px]">
+        <div className="min-w-[800px] w-fit h-full">
+          {/* Month labels */}
+          <div className="relative pl-8 mb-4 h-8">
+            <div className="relative w-full h-8 mb-8">
+              {months.map((month) => {
+                const weekWidth = 17;
+                const position = month.weekIndex * weekWidth;
+                return (
+                  <div
+                    key={`${month.name}-${month.year}-${month.weekIndex}-${position}`}
+                    className="text-xs font-medium text-muted-foreground absolute whitespace-nowrap"
+                    style={{
+                      left: `${position}px`,
+                      top: "0.25rem",
+                    }}
+                  >
+                    {month.name}{" "}
+                    {month.year !== months[0].year ? ` ${month.year}` : ""}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex mt-4">
+              {/* Weekday labels */}
+              <div className="w-8 flex flex-col justify-between pr-2 gap-[10px]">
+                {weekdays.map((day) => (
+                  <div
+                    key={day}
+                    className="text-xs font-medium text-muted-foreground h-[14px] flex items-center"
+                  >
+                    {day}
+                  </div>
+                ))}
+              </div>
+              {/* Contribution grid */}
+              <div className="grid grid-rows-7 grid-flow-col gap-[3px] w-fit">
+                {weeks.map((week, weekIndex) =>
+                  week.map(({ date, count }, dayIndex) => (
+                    <div
+                      key={`${weekIndex}-${dayIndex}`}
+                      className={`w-[14px] h-[14px] rounded-sm transition-all duration-200 ${getColorClass(
+                        count
+                      )} relative group hover:scale-110`}
+                    >
+                      <div className="absolute -top-12 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-black/90 text-white text-xs font-medium rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-[9999] transition-all duration-200 shadow-md">
+                        {tooltipText(count, date)}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+};
+
 const SubmissionCalendar = ({
   calendar,
 }: {
   calendar: Record<string, number>;
 }) => {
+  if (!calendar || Object.keys(calendar).length === 0) {
+    return (
+      <CalendarBase
+        title="Submission Calendar"
+        months={[]}
+        weeks={[]}
+        getColorClass={() => ""}
+        tooltipText={() => ""}
+        isEmpty={true}
+        emptyText="No submission data available"
+      />
+    );
+  }
+
   const dates = Object.entries(calendar)
     .map(([timestamp, count]) => ({
       date: new Date(parseInt(timestamp) * 1000),
@@ -172,8 +308,22 @@ const SubmissionCalendar = ({
     .sort((a, b) => a.date.getTime() - b.date.getTime());
 
   // Get the date range
-  const startDate = dates[0]?.date || new Date();
-  const endDate = dates[dates.length - 1]?.date || new Date();
+  const startDate =
+    dates.length > 0 ? dates[0].date : new Date(new Date().getFullYear(), 0, 1);
+
+  // Limit end date to today to prevent empty future months
+  const today = new Date();
+  const endDate =
+    dates.length > 0
+      ? new Date(
+          Math.min(dates[dates.length - 1].date.getTime(), today.getTime())
+        )
+      : today;
+
+  // Ensure we're looking at data from January 1, 2024 (or the first available date)
+  const adjustedStartDate = new Date(
+    Math.max(startDate.getTime(), new Date(2024, 0, 1).getTime())
+  );
 
   // Create a map of all dates for quick lookup
   const dateMap = dates.reduce((acc, { date, count }) => {
@@ -185,7 +335,7 @@ const SubmissionCalendar = ({
   // Generate all weeks between start and end
   const weeks: Array<Array<{ date: Date; count: number }>> = [];
   let currentWeek: Array<{ date: Date; count: number }> = [];
-  const currentDate = new Date(startDate);
+  const currentDate = new Date(adjustedStartDate);
 
   // Go to the start of the week (Sunday)
   while (currentDate.getDay() !== 0) {
@@ -219,131 +369,314 @@ const SubmissionCalendar = ({
     weeks.push(currentWeek);
   }
 
-  // Get months that need to be displayed
+  // Get months that need to be displayed - only include months that have actual data
   const months = Array.from(
     new Set(
       weeks
-        .flatMap(
-          (week) => week[0].date // Only use the first day of each week to determine month
-        )
+        .flatMap((week) => {
+          // Only include weeks that have at least one day with data
+          if (week.some((day) => day.date <= endDate)) {
+            return week[0].date;
+          }
+          return [];
+        })
         .map((date) => ({
           name: date.toLocaleString("default", { month: "short" }),
           year: date.getFullYear(),
           firstDay: new Date(date.getFullYear(), date.getMonth(), 1),
-          weekIndex: weeks.findIndex(
-            (w) => w[0].date.getMonth() === date.getMonth()
+          weekIndex: weeks.findIndex((w) =>
+            w.some(
+              (d) =>
+                d.date.getMonth() === date.getMonth() &&
+                d.date.getFullYear() === date.getFullYear() &&
+                d.date.getDate() === 1
+            )
           ),
         }))
     )
   ).sort((a, b) => a.firstDay.getTime() - b.firstDay.getTime());
 
-  const weekdays = ["Mon", "Wed", "Fri"];
+  // Get max submission count for better color scaling
+  const maxCount = Math.max(...dates.map((d) => d.count), 5);
+
+  // Dynamic color intensity based on submission count
+  const getColorClass = (count: number) => {
+    if (count === 0) return "bg-secondary/20 dark:bg-secondary/10";
+
+    const intensity = Math.min(Math.ceil((count / maxCount) * 4), 4);
+
+    switch (intensity) {
+      case 1:
+        return "bg-green-200 dark:bg-green-900/70";
+      case 2:
+        return "bg-green-300 dark:bg-green-700/80";
+      case 3:
+        return "bg-green-400 dark:bg-green-600/90";
+      case 4:
+        return "bg-green-500 dark:bg-green-500";
+      default:
+        return "bg-secondary/20 dark:bg-secondary/10";
+    }
+  };
+
+  const tooltipText = (count: number, date: Date) => {
+    if (count === 0) return `No submissions on ${date.toLocaleDateString()}`;
+    if (count === 1) return `1 submission on ${date.toLocaleDateString()}`;
+    return `${count} submissions on ${date.toLocaleDateString()}`;
+  };
 
   return (
-    <Card className="p-6 col-span-full">
-      <h3 className="text-lg font-semibold mb-6">Submission Calendar</h3>
-      <div className="overflow-x-auto">
-        <div className="min-w-[800px] w-fit">
-          {/* Month labels */}
-          <div className="flex pl-8 mb-2">
-            {months.map((month, idx) => {
-              // Calculate how many weeks this month spans
-              const nextMonth = months[idx + 1];
-              const currentMonthWeeks = weeks.filter(
-                (week) =>
-                  week[0].date.getMonth() === month.firstDay.getMonth() &&
-                  week[0].date.getFullYear() === month.firstDay.getFullYear()
-              ).length;
-
-              return (
-                <div
-                  key={`${month.name}-${month.year}`}
-                  className="text-xs text-muted-foreground mr-4"
-                  style={{
-                    minWidth: `${currentMonthWeeks * 14}px`,
-                    marginLeft: idx === 0 ? `${month.weekIndex * 14}px` : 0,
-                  }}
-                >
-                  {month.name}
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="flex">
-            {/* Weekday labels */}
-            <div className="w-8 flex flex-col justify-between pr-2">
-              {weekdays.map((day) => (
-                <div
-                  key={day}
-                  className="text-xs text-muted-foreground h-[15px]"
-                >
-                  {day}
-                </div>
-              ))}
-            </div>
-
-            {/* Contribution grid */}
-            <div className="grid grid-rows-7 grid-flow-col gap-[2px] w-fit">
-              {weeks.map((week, weekIndex) =>
-                week.map(({ date, count }, dayIndex) => (
-                  <div
-                    key={`${weekIndex}-${dayIndex}`}
-                    className={`w-[12px] h-[12px] rounded-sm ${
-                      count > 0
-                        ? count > 5
-                          ? "bg-green-500"
-                          : count > 3
-                          ? "bg-green-400"
-                          : count > 1
-                          ? "bg-green-300"
-                          : "bg-green-200"
-                        : "bg-secondary/20"
-                    } relative group`}
-                  >
-                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/80 text-white text-xs rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50 transition-opacity">
-                      {count} submissions on {date.toLocaleDateString()}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </Card>
+    <CalendarBase
+      title="Submission Calendar"
+      months={months}
+      weeks={weeks}
+      getColorClass={getColorClass}
+      tooltipText={tooltipText}
+    />
   );
 };
 
-const StreakCard = ({ currentStreak, longestStreak, platform }: any) => (
-  <Card className="p-4 col-span-full">
-    <h3 className="text-lg font-semibold mb-3">Contribution Streak</h3>
-    <div className="grid gap-3 md:grid-cols-2">
-      <div className="flex items-center space-x-3">
-        <div className="p-2 rounded-full bg-orange-500/10">
-          <StreakIcon className="w-4 h-4 text-orange-500" />
+const GitHubContributionCalendar = ({
+  contributionDays,
+}: {
+  contributionDays: Array<{ date: string; contributionCount: number }>;
+}) => {
+  if (!contributionDays || contributionDays.length === 0) {
+    console.log("No GitHub contribution days data available");
+    return (
+      <CalendarBase
+        title="Contribution Calendar"
+        months={[]}
+        weeks={[]}
+        getColorClass={() => ""}
+        tooltipText={() => ""}
+        isEmpty={true}
+        emptyText="No contribution data available"
+      />
+    );
+  }
+
+  console.log(`Rendering GitHub calendar with ${contributionDays.length} days`);
+
+  // Sort dates by time
+  const dates = [...contributionDays].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+
+  console.log(
+    `Date range: ${dates[0]?.date} to ${dates[dates.length - 1]?.date}`
+  );
+
+  // Get the date range
+  const startDate =
+    dates.length > 0
+      ? new Date(dates[0].date)
+      : new Date(new Date().getFullYear(), 0, 1);
+
+  // Limit the end date to today (don't show future months)
+  const today = new Date();
+  const endDate =
+    dates.length > 0
+      ? new Date(
+          Math.min(
+            new Date(dates[dates.length - 1].date).getTime(),
+            today.getTime()
+          )
+        )
+      : today;
+
+  // Ensure we're looking at data from January 1, 2024 (or the first available date)
+  const adjustedStartDate = new Date(
+    Math.max(startDate.getTime(), new Date(2024, 0, 1).getTime())
+  );
+
+  // Create a map of all dates for quick lookup
+  const dateMap = dates.reduce((acc, { date, contributionCount }) => {
+    const key = date.split("T")[0];
+    acc[key] = contributionCount;
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Generate all weeks between start and end
+  const weeks: Array<Array<{ date: Date; count: number }>> = [];
+  let currentWeek: Array<{ date: Date; count: number }> = [];
+  const currentDate = new Date(adjustedStartDate);
+
+  // Go to the start of the week (Sunday)
+  const tempDate = new Date(currentDate);
+  while (tempDate.getDay() !== 0) {
+    tempDate.setDate(tempDate.getDate() - 1);
+  }
+  currentDate.setTime(tempDate.getTime());
+
+  while (currentDate <= endDate) {
+    const key = currentDate.toISOString().split("T")[0];
+    currentWeek.push({
+      date: new Date(currentDate),
+      count: dateMap[key] || 0,
+    });
+
+    if (currentWeek.length === 7) {
+      weeks.push([...currentWeek]);
+      currentWeek = [];
+    }
+
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  // Fill the last week if incomplete
+  while (currentWeek.length > 0 && currentWeek.length < 7) {
+    currentWeek.push({
+      date: new Date(currentDate),
+      count: 0,
+    });
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+  if (currentWeek.length === 7) {
+    weeks.push([...currentWeek]);
+  }
+
+  console.log(`Generated ${weeks.length} weeks for the calendar`);
+
+  // Get unique months between start and end date
+  const months: Array<{
+    name: string;
+    year: number;
+    firstDay: Date;
+    weekIndex: number;
+  }> = [];
+
+  // Track months we've already added to avoid duplicates
+  const addedMonths = new Set<string>();
+
+  const currentMonth = new Date(adjustedStartDate);
+  currentMonth.setDate(1); // Set to first day of month
+
+  while (currentMonth <= endDate) {
+    const monthKey = `${currentMonth.getMonth()}-${currentMonth.getFullYear()}`;
+
+    // Only process this month if we haven't added it yet
+    if (!addedMonths.has(monthKey)) {
+      const weekIndex = weeks.findIndex((week) =>
+        week.some(
+          (day) =>
+            day.date.getMonth() === currentMonth.getMonth() &&
+            day.date.getFullYear() === currentMonth.getFullYear()
+        )
+      );
+
+      if (weekIndex !== -1) {
+        months.push({
+          name: currentMonth.toLocaleString("default", { month: "short" }),
+          year: currentMonth.getFullYear(),
+          firstDay: new Date(currentMonth),
+          weekIndex,
+        });
+
+        // Mark this month as added
+        addedMonths.add(monthKey);
+      }
+    }
+
+    // Move to next month
+    currentMonth.setMonth(currentMonth.getMonth() + 1);
+  }
+
+  console.log(`Generated ${months.length} months for the calendar`);
+
+  // Get max contribution count for better color scaling
+  const maxCount = Math.max(...dates.map((d) => d.contributionCount), 5);
+
+  // Dynamic color intensity based on contribution count
+  const getColorClass = (count: number) => {
+    if (count === 0) return "bg-[#ebedf0] dark:bg-[#161b22]";
+
+    const intensity = Math.min(Math.ceil((count / maxCount) * 4), 4);
+
+    switch (intensity) {
+      case 1:
+        return "bg-[#9be9a8] dark:bg-[#0e4429]";
+      case 2:
+        return "bg-[#40c463] dark:bg-[#006d32]";
+      case 3:
+        return "bg-[#30a14e] dark:bg-[#26a641]";
+      case 4:
+        return "bg-[#216e39] dark:bg-[#39d353]";
+      default:
+        return "bg-[#ebedf0] dark:bg-[#161b22]";
+    }
+  };
+
+  const tooltipText = (count: number, date: Date) => {
+    if (count === 0) return `No contributions on ${date.toLocaleDateString()}`;
+    if (count === 1) return `1 contribution on ${date.toLocaleDateString()}`;
+    return `${count} contributions on ${date.toLocaleDateString()}`;
+  };
+
+  if (weeks.length === 0 || months.length === 0) {
+    console.log("No weeks or months generated for GitHub calendar");
+    return (
+      <CalendarBase
+        title="Contribution Calendar"
+        months={[]}
+        weeks={[]}
+        getColorClass={() => ""}
+        tooltipText={() => ""}
+        isEmpty={true}
+        emptyText="Failed to generate calendar data"
+      />
+    );
+  }
+
+  return (
+    <CalendarBase
+      title="Contribution Calendar"
+      months={months}
+      weeks={weeks}
+      getColorClass={getColorClass}
+      tooltipText={tooltipText}
+    />
+  );
+};
+
+// Enhance the StreakCard component for better appearance
+const StreakCard = ({
+  currentStreak,
+  longestStreak,
+  platform,
+}: {
+  currentStreak: { count: number; startDate: string; endDate: string };
+  longestStreak: { count: number; startDate: string; endDate: string };
+  platform: string;
+}) => (
+  <Card className="p-5 col-span-full bg-card/90 border shadow-sm">
+    <h3 className="text-lg font-semibold mb-4">{platform} Streak</h3>
+    <div className="grid gap-4 md:grid-cols-2">
+      <div className="flex items-center space-x-4 p-4 bg-background/50 rounded-lg border border-border/40">
+        <div className="p-3 rounded-full bg-orange-500/10">
+          <StreakIcon className="w-5 h-5 text-orange-500" />
         </div>
         <div>
           <p className="text-xs font-medium text-muted-foreground">
             Current Streak
           </p>
-          <h4 className="text-lg font-bold">{currentStreak.count} days</h4>
-          <p className="text-[10px] text-muted-foreground">
+          <h4 className="text-xl font-bold">{currentStreak.count} days</h4>
+          <p className="text-xs text-muted-foreground">
             {new Date(currentStreak.startDate).toLocaleDateString()} -{" "}
             {new Date(currentStreak.endDate).toLocaleDateString()}
           </p>
         </div>
       </div>
-      <div className="flex items-center space-x-3">
-        <div className="p-2 rounded-full bg-purple-500/10">
-          <TimerIcon className="w-4 h-4 text-purple-500" />
+      <div className="flex items-center space-x-4 p-4 bg-background/50 rounded-lg border border-border/40">
+        <div className="p-3 rounded-full bg-purple-500/10">
+          <TimerIcon className="w-5 h-5 text-purple-500" />
         </div>
         <div>
           <p className="text-xs font-medium text-muted-foreground">
             Longest Streak
           </p>
-          <h4 className="text-lg font-bold">{longestStreak.count} days</h4>
-          <p className="text-[10px] text-muted-foreground">
+          <h4 className="text-xl font-bold">{longestStreak.count} days</h4>
+          <p className="text-xs text-muted-foreground">
             {new Date(longestStreak.startDate).toLocaleDateString()} -{" "}
             {new Date(longestStreak.endDate).toLocaleDateString()}
           </p>
@@ -354,10 +687,15 @@ const StreakCard = ({ currentStreak, longestStreak, platform }: any) => (
 );
 
 export default function StatisticsPage() {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["statistics"],
     queryFn: async () => {
       const { data } = await axios.get("/api/statistics");
+      console.log("Statistics data loaded:", {
+        githubContributionDays: data?.github?.contributionDays?.length || 0,
+        leetcodeSubmissions:
+          Object.keys(data?.leetcode?.submissionCalendar || {}).length || 0,
+      });
       return data;
     },
   });
@@ -375,8 +713,30 @@ export default function StatisticsPage() {
     );
   }
 
+  if (error) {
+    console.error("Error loading statistics:", error);
+    return (
+      <div className="container py-8">
+        <h1 className="text-3xl font-bold tracking-tight mb-4">
+          Coding Statistics
+        </h1>
+        <Card className="p-6">
+          <p className="text-red-500">
+            Error loading statistics. Please try again later.
+          </p>
+        </Card>
+      </div>
+    );
+  }
+
+  const hasGithubContributions =
+    data?.github?.contributionDays && data.github.contributionDays.length > 0;
+  const hasLeetcodeSubmissions =
+    data?.leetcode?.submissionCalendar &&
+    Object.keys(data.leetcode.submissionCalendar).length > 0;
+
   return (
-    <div className="container py-8 space-y-8">
+    <div className="container py-8 space-y-12">
       <motion.h1
         className="text-3xl font-bold tracking-tight"
         initial={{ x: -20, opacity: 0 }}
@@ -435,10 +795,39 @@ export default function StatisticsPage() {
           icon={AlertCircle}
           color="bg-red-500/10 text-red-500"
         />
-        <LanguageDistribution languages={data?.github.languages} />
+        <LanguageDistribution languages={data?.github?.languages || []} />
+
+        {hasGithubContributions ? (
+          <GitHubContributionCalendar
+            contributionDays={data.github.contributionDays}
+          />
+        ) : (
+          <CalendarBase
+            title="Contribution Calendar"
+            months={[]}
+            weeks={[]}
+            getColorClass={() => ""}
+            tooltipText={() => ""}
+            isEmpty={true}
+            emptyText="No contribution data available. Please check your GitHub username in the settings."
+          />
+        )}
+
         <StreakCard
-          currentStreak={data?.github.currentStreak}
-          longestStreak={data?.github.longestStreak}
+          currentStreak={
+            data?.github?.currentStreak || {
+              count: 0,
+              startDate: "",
+              endDate: "",
+            }
+          }
+          longestStreak={
+            data?.github?.longestStreak || {
+              count: 0,
+              startDate: "",
+              endDate: "",
+            }
+          }
           platform="GitHub"
         />
       </PlatformSection>
@@ -493,11 +882,37 @@ export default function StatisticsPage() {
           icon={StarIcon}
           color="bg-purple-500/10 text-purple-500"
         />
-        <SubmissionCalendar calendar={data?.leetcode.submissionCalendar} />
-        <RecentSubmissions submissions={data?.leetcode.recentSubmissions} />
+        {hasLeetcodeSubmissions ? (
+          <SubmissionCalendar calendar={data.leetcode.submissionCalendar} />
+        ) : (
+          <CalendarBase
+            title="Submission Calendar"
+            months={[]}
+            weeks={[]}
+            getColorClass={() => ""}
+            tooltipText={() => ""}
+            isEmpty={true}
+            emptyText="No submission data available. Please check your LeetCode username in the settings."
+          />
+        )}
+        <RecentSubmissions
+          submissions={data?.leetcode?.recentSubmissions || []}
+        />
         <StreakCard
-          currentStreak={data?.leetcode.currentStreak}
-          longestStreak={data?.leetcode.longestStreak}
+          currentStreak={
+            data?.leetcode?.currentStreak || {
+              count: 0,
+              startDate: "",
+              endDate: "",
+            }
+          }
+          longestStreak={
+            data?.leetcode?.longestStreak || {
+              count: 0,
+              startDate: "",
+              endDate: "",
+            }
+          }
           platform="LeetCode"
         />
       </PlatformSection>

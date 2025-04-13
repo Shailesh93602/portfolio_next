@@ -58,6 +58,11 @@ async function fetchGithubStats(username: string) {
 
     // Fetch contribution data using GraphQL
     const contributionData = await getGitHubContributions(username);
+    console.log(
+      `Fetched GitHub contribution data with ${
+        contributionData.contributionDays?.length || 0
+      } days`
+    );
 
     return {
       repositories: userResponse.data.public_repos,
@@ -78,6 +83,7 @@ async function fetchGithubStats(username: string) {
       totalPRs: contributionData.totalPRs,
       totalIssues: contributionData.totalIssues,
       totalRepos: contributionData.totalRepos,
+      contributionDays: contributionData.contributionDays,
     };
   } catch (error) {
     console.error("Error fetching GitHub stats:", error);
@@ -136,6 +142,19 @@ function getLocalDate(date = new Date()): string {
   const utcTime = date.getTime() + date.getTimezoneOffset() * 60 * 1000;
   const istTime = new Date(utcTime + istOffset);
   return istTime.toISOString().split("T")[0];
+}
+
+// This function calculates the actual days between two dates
+function daysBetween(startDate: string, endDate: string): number {
+  if (!startDate || !endDate) return 0;
+
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const diffTime = Math.abs(end.getTime() - start.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  // Add 1 because we want to include both start and end dates
+  return diffDays + 1;
 }
 
 function calculateLeetCodeStreak(submissionCalendar: {
@@ -236,8 +255,11 @@ function calculateLeetCodeStreak(submissionCalendar: {
     i++;
   }
 
+  // Calculate actual streak duration
+  const actualDays = daysBetween(currentStreakStart, currentStreakEnd);
+
   return {
-    count: currentStreak,
+    count: actualDays > 0 ? actualDays : currentStreak,
     startDate: currentStreakStart,
     endDate: currentStreakEnd,
   };
@@ -248,8 +270,14 @@ function formatLeetCodeData(data: any) {
     return null;
   }
 
-  const submissionCalendar = JSON.parse(data.matchedUser.submissionCalendar);
+  // Parse submission calendar from the response
+  const submissionCalendar = data.matchedUser.submissionCalendar
+    ? JSON.parse(data.matchedUser.submissionCalendar)
+    : {};
+
+  // Calculate streaks using the parsed calendar
   const currentStreak = calculateLeetCodeStreak(submissionCalendar);
+  const longestStreak = calculateLongestLeetCodeStreak(submissionCalendar);
 
   return {
     totalSolved: data.matchedUser.submitStats.acSubmissionNum[0].count,
@@ -267,17 +295,20 @@ function formatLeetCodeData(data: any) {
     submissionCalendar,
     recentSubmissions: data.recentSubmissionList,
     currentStreak,
-    longestStreak: currentStreak, // For now, we'll use the same streak for both
+    longestStreak,
+    activeYears: data.matchedUser.userCalendar?.activeYears || [],
+    totalActiveDays: data.matchedUser.userCalendar?.totalActiveDays || 0,
+    dccBadges: data.matchedUser.userCalendar?.dccBadges || [],
   };
 }
 
 async function fetchLeetCodeStats(username: string) {
   try {
-    // Get data for all months from January 2024 until now
+    // Get data for all months from January 2022 until now
     const currentYear = new Date().getFullYear();
 
-    // Start with 2024
-    const startYear = 2024;
+    // Start with 2022 to get more historical data
+    const startYear = 2022;
 
     // Create an array of years to fetch data for
     const yearsToFetch = [];
@@ -285,9 +316,12 @@ async function fetchLeetCodeStats(username: string) {
       yearsToFetch.push(year);
     }
 
+    console.log(`Fetching LeetCode data for years: ${yearsToFetch.join(", ")}`);
+
     // Fetch data for each year in parallel
     const yearDataPromises = yearsToFetch.map(async (year) => {
       try {
+        console.log(`Fetching LeetCode data for year ${year}...`);
         const response = await axios.post(
           "https://leetcode.com/graphql",
           {
@@ -298,7 +332,10 @@ async function fetchLeetCodeStats(username: string) {
             headers: {
               "Content-Type": "application/json",
               Referer: "https://leetcode.com",
+              "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
             },
+            timeout: 10000, // 10 second timeout
           }
         );
 
@@ -310,6 +347,7 @@ async function fetchLeetCodeStats(username: string) {
           return null;
         }
 
+        console.log(`Successfully fetched LeetCode data for year ${year}`);
         return response.data.data;
       } catch (error) {
         console.error(`Error fetching LeetCode data for year ${year}:`, error);
@@ -319,21 +357,178 @@ async function fetchLeetCodeStats(username: string) {
 
     // Wait for all year data to be fetched
     const yearsData = await Promise.all(yearDataPromises);
+    const validYearsData = yearsData.filter(Boolean);
 
-    // Use the most recent year for basic stats
-    const currentYearData = yearsData.filter(Boolean).pop();
-    if (!currentYearData) {
+    console.log(
+      `Successfully fetched LeetCode data for ${validYearsData.length}/${yearsToFetch.length} years`
+    );
+
+    // Check if we have any valid data
+    if (validYearsData.length === 0) {
+      console.error("No valid LeetCode data found for any year");
       return null;
     }
 
+    // Use the most recent year for basic stats
+    const currentYearData = validYearsData[validYearsData.length - 1];
+
     // Merge submission calendars from all years
-    let mergedSubmissionCalendar = {};
-    yearsData.forEach((yearData) => {
+    let mergedSubmissionCalendar: Record<string, number> = {};
+    let hasCalendarData = false;
+
+    validYearsData.forEach((yearData) => {
       if (yearData?.matchedUser?.submissionCalendar) {
-        const calendar = JSON.parse(yearData.matchedUser.submissionCalendar);
-        mergedSubmissionCalendar = { ...mergedSubmissionCalendar, ...calendar };
+        hasCalendarData = true;
+        try {
+          const calendar = JSON.parse(yearData.matchedUser.submissionCalendar);
+          console.log(
+            `Year calendar has ${Object.keys(calendar).length} entries`
+          );
+
+          // Properly merge calendars by combining entries
+          Object.entries(calendar).forEach(([timestamp, count]) => {
+            mergedSubmissionCalendar[timestamp] =
+              (mergedSubmissionCalendar[timestamp] || 0) + (count as number);
+          });
+        } catch (error) {
+          console.error("Error parsing submission calendar:", error);
+        }
       }
     });
+
+    console.log(
+      `Merged calendar has ${
+        Object.keys(mergedSubmissionCalendar).length
+      } entries`
+    );
+
+    // Try all possible approaches to fetch historical data
+    // 1. If we don't have calendar data, try alternative approach
+    if (
+      !hasCalendarData ||
+      Object.keys(mergedSubmissionCalendar).length < 366
+    ) {
+      console.log(
+        "No calendar data found or incomplete data, attempting to fetch directly"
+      );
+      try {
+        // Try to fetch calendar data directly using an alternative endpoint
+        const calendarResponse = await axios.get(
+          `https://leetcode.com/api/user_submission_calendar/${username}/`,
+          {
+            headers: {
+              "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+            },
+          }
+        );
+
+        if (calendarResponse.data) {
+          try {
+            const directCalendar = JSON.parse(calendarResponse.data);
+            console.log(
+              `Directly fetched calendar has ${
+                Object.keys(directCalendar).length
+              } entries`
+            );
+
+            // Merge with any existing data
+            Object.entries(directCalendar).forEach(([timestamp, count]) => {
+              mergedSubmissionCalendar[timestamp] =
+                (mergedSubmissionCalendar[timestamp] || 0) + (count as number);
+            });
+          } catch (error) {
+            console.error("Error parsing direct calendar data:", error);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching direct calendar data:", error);
+      }
+    }
+
+    // 2. Try to fetch profile page and extract submission data
+    try {
+      console.log("Attempting to fetch LeetCode profile page to extract data");
+      const profileResponse = await axios.get(
+        `https://leetcode.com/${username}/`,
+        {
+          headers: {
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+          },
+        }
+      );
+
+      // Try to find the calendar data in the HTML response
+      const calendarDataMatch = profileResponse.data.match(
+        /submissionCalendar:(.*?),\n/
+      );
+      if (calendarDataMatch && calendarDataMatch[1]) {
+        try {
+          // Clean up the matched data to make it valid JSON
+          const cleanedJsonStr = calendarDataMatch[1]
+            .replace(/'/g, '"')
+            .replace(/(\w+):/g, '"$1":');
+
+          const profileCalendar = JSON.parse(cleanedJsonStr);
+          console.log(
+            `Profile page calendar has ${
+              Object.keys(profileCalendar).length
+            } entries`
+          );
+
+          // Merge with existing data
+          Object.entries(profileCalendar).forEach(([timestamp, count]) => {
+            mergedSubmissionCalendar[timestamp] =
+              (mergedSubmissionCalendar[timestamp] || 0) + (count as number);
+          });
+        } catch (error) {
+          console.error("Error parsing profile page calendar data:", error);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching LeetCode profile page:", error);
+    }
+
+    // 3. Try the universal API endpoint as a last resort
+    try {
+      const universalResponse = await axios.get(
+        `https://leetcode.com/api/user_submission_calendar/${username}/`,
+        {
+          headers: {
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+          },
+        }
+      );
+
+      if (universalResponse.data) {
+        try {
+          const universalCalendar = JSON.parse(universalResponse.data);
+          console.log(
+            `Universal API calendar has ${
+              Object.keys(universalCalendar).length
+            } entries`
+          );
+
+          // Merge with existing data
+          Object.entries(universalCalendar).forEach(([timestamp, count]) => {
+            mergedSubmissionCalendar[timestamp] =
+              (mergedSubmissionCalendar[timestamp] || 0) + (count as number);
+          });
+        } catch (error) {
+          console.error("Error parsing universal calendar data:", error);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching universal calendar data:", error);
+    }
+
+    console.log(
+      `Final merged calendar has ${
+        Object.keys(mergedSubmissionCalendar).length
+      } entries`
+    );
 
     // Format the data using the most recent year's data
     const formattedData = formatLeetCodeData(currentYearData);
@@ -349,6 +544,10 @@ async function fetchLeetCodeStats(username: string) {
     // Calculate longest streak (now separate from current streak)
     const longestStreak = calculateLongestLeetCodeStreak(
       mergedSubmissionCalendar || {}
+    );
+
+    console.log(
+      `LeetCode streaks: current=${currentStreak.count}, longest=${longestStreak.count}`
     );
 
     return {
@@ -436,8 +635,11 @@ function calculateLongestLeetCodeStreak(submissionCalendar: {
     }
   }
 
+  // Calculate actual streak duration
+  const actualDays = daysBetween(longestStreakStart, longestStreakEnd);
+
   return {
-    count: longestStreak,
+    count: actualDays > 0 ? actualDays : longestStreak,
     startDate: longestStreakStart,
     endDate: longestStreakEnd,
   };
@@ -586,6 +788,7 @@ interface GitHubStats {
   totalPRs: number;
   totalIssues: number;
   totalRepos: number;
+  contributionDays: Array<{ date: string; contributionCount: number }>;
 }
 
 interface LeetCodeStats {
@@ -693,10 +896,21 @@ async function getGitHubContributions(username: string): Promise<GitHubStats> {
       (week) => week.contributionDays
     );
 
+    console.log(`Total days fetched from GitHub: ${allDays.length}`);
+
     // Sort days in chronological order
     const sortedDays = allDays.sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
     );
+
+    // Extract all contribution days for calendar visualization
+    // Include all days, even those with zero contributions for a complete calendar
+    const contributionDays = sortedDays.map((day) => ({
+      date: day.date,
+      contributionCount: day.contributionCount,
+    }));
+
+    console.log(`Processed contribution days: ${contributionDays.length}`);
 
     // Process days in reverse chronological order for current streak
     const reversedDays = [...sortedDays].reverse();
@@ -807,6 +1021,25 @@ async function getGitHubContributions(username: string): Promise<GitHubStats> {
       }
     }
 
+    // Calculate actual streak durations
+    const currentStreakDays = daysBetween(
+      currentStreak.startDate,
+      currentStreak.endDate
+    );
+    const longestStreakDays = daysBetween(
+      longestStreak.startDate,
+      longestStreak.endDate
+    );
+
+    // Update streak counts with actual days
+    if (currentStreak.count > 0) {
+      currentStreak.count = currentStreakDays;
+    }
+
+    if (longestStreak.count > 0) {
+      longestStreak.count = longestStreakDays;
+    }
+
     return {
       totalContributions: contributionData.totalContributions,
       currentStreak,
@@ -815,6 +1048,7 @@ async function getGitHubContributions(username: string): Promise<GitHubStats> {
       totalPRs: contributionData.totalPullRequestContributions,
       totalIssues: contributionData.totalIssueContributions,
       totalRepos: contributionData.totalRepositoryContributions,
+      contributionDays,
     };
   } catch (error) {
     console.error("Error fetching GitHub contributions:", error);
@@ -826,6 +1060,7 @@ async function getGitHubContributions(username: string): Promise<GitHubStats> {
       totalPRs: 0,
       totalIssues: 0,
       totalRepos: 0,
+      contributionDays: [],
     };
   }
 }
@@ -923,11 +1158,23 @@ export async function GET() {
     const leetcodeUsername = SOCIAL_LINKS.LEETCODE.split("/").pop() || "";
     const gfgUsername = SOCIAL_LINKS.GFG.split("/").pop() || "";
 
+    console.log(
+      `Fetching stats for GitHub: ${githubUsername}, LeetCode: ${leetcodeUsername}, GFG: ${gfgUsername}`
+    );
+
     const [githubStats, leetcodeStats, gfgStats] = await Promise.all([
       fetchGithubStats(githubUsername),
       fetchLeetCodeStats(leetcodeUsername),
       fetchGeeksforGeeksStats(gfgUsername),
     ]);
+
+    console.log(
+      `Stats fetched - GitHub contributions: ${
+        githubStats?.contributionDays?.length || 0
+      }, LeetCode submissions: ${
+        Object.keys(leetcodeStats?.submissionCalendar || {}).length || 0
+      }`
+    );
 
     return NextResponse.json({
       github: githubStats,
