@@ -1,12 +1,16 @@
 {
   "cSpell.words": [
+    "changefreq",
     "Chaudhari",
     "codechef",
     "Espark",
     "gecsportify",
     "Hackathon",
+    "KHTML",
+    "lastmod",
     "Shailesh",
-    "Tatvasoft"
+    "Tatvasoft",
+    "urlset"
   ],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"

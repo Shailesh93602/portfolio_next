@@ -3,40 +3,48 @@
   <!-- Homepage -->
   <url>
     <loc>https://shaileshchaudhari.vercel.app/</loc>
-    <lastmod>2024-11-17</lastmod> 
-    <changefreq>daily</changefreq>
+    <lastmod>2025-04-14</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <!-- About Page -->
   <url>
     <loc>https://shaileshchaudhari.vercel.app/about</loc>
-    <lastmod>2024-11-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <lastmod>2025-04-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   
   <!-- Portfolio Page -->
   <url>
     <loc>https://shaileshchaudhari.vercel.app/portfolio</loc>
-    <lastmod>2024-11-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2025-04-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
   
   <!-- Blogs Page -->
   <url>
     <loc>https://shaileshchaudhari.vercel.app/blogs</loc>
-    <lastmod>2024-11-17</lastmod>
+    <lastmod>2025-04-14</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   
   <!-- Contact Page -->
   <url>
     <loc>https://shaileshchaudhari.vercel.app/contact</loc>
-    <lastmod>2024-11-10</lastmod>
+    <lastmod>2025-04-14</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Statistics Page -->
+  <url>
+    <loc>https://shaileshchaudhari.vercel.app/statistics</loc>
+    <lastmod>2025-04-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

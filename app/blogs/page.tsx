@@ -1,85 +1,99 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
-import { BookOpen, Code } from "lucide-react";
+import React, { useState } from "react";
+import Image from "next/image";
 
 interface BlogPost {
-  icon: React.ReactNode;
+  slug: string;
   title: string;
   description: string;
+  image: string;
+  date: string;
+  readTime: string;
   link: string;
 }
 
 const blogPosts: BlogPost[] = [
   {
-    icon: <Code className="w-6 h-6" />,
+    slug: "full-stack-basics",
     title:
       "Demystifying the Basics of Full-Stack Development: A Beginner's Guide",
     description:
       "Hey everyone! 👋 I'm Shaileshbhai Chaudhari, a final year student passionate about full-stack development. This guide is for anyone curious about how web development works!",
+    image: "/images/portfolio1.png",
+    date: "December 2023",
+    readTime: "10 min read",
     link: "https://guidetofullstack.blogspot.com/2023/12/demystifying-basics-of-full-stack.html",
   },
   {
-    icon: <BookOpen className="w-6 h-6" />,
+    slug: "frontend-mastery",
     title:
       "Mastering Frontend Development: Essential Skills and Best Practices",
     description:
       "Explore the critical aspects of front-end development, from layout and styling to functionality and responsiveness.",
+    image: "/images/portfolio1.png",
+    date: "February 2024",
+    readTime: "8 min read",
     link: "https://guidetofullstack.blogspot.com/2024/02/mastering-frontend-development.html",
   },
 ];
 
-interface BlogCardProps {
-  blog: BlogPost;
-}
+export default function BlogPage() {
+  const [searchQuery] = useState("");
 
-function BlogCard({ blog }: BlogCardProps) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="bg-dark rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl"
-    >
-      <div className="p-6 space-y-4">
-        <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-text-primary">
-          {blog.icon}
-        </div>
-        <h2 className="text-2xl font-semibold text-text-primary">
-          {blog.title}
-        </h2>
-        <p className="text-text-secondary">{blog.description}</p>
-        <a
-          href={blog.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block mt-4 px-6 py-2 bg-primary text-text-primary font-semibold rounded-md hover:bg-primary-dark transition-colors duration-300"
-        >
-          Read More
-        </a>
-      </div>
-    </motion.div>
+  const filteredPosts = blogPosts.filter(
+    (post) =>
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
-}
 
-export default function Blogs() {
   return (
-    <div className="container mx-auto px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <h1 className="text-4xl font-bold mb-12 text-center text-text-primary">
-          My Blogs
+    <div className="container mx-auto px-4 py-24">
+      <div className="max-w-5xl mx-auto space-y-12">
+        <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-[hsl(var(--hero-gradient-from))] to-[hsl(var(--hero-gradient-to))] bg-clip-text text-transparent">
+          Blog Posts
         </h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {blogPosts.map((blog, index) => (
-            <BlogCard key={index} blog={blog} />
+        <div className="grid gap-8">
+          {filteredPosts.map((post) => (
+            <a
+              key={post.slug}
+              href={post.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block group"
+            >
+              <article className="bg-card rounded-lg overflow-hidden border border-border transition-all duration-300 hover:border-primary/50 hover:shadow-lg">
+                <div className="grid md:grid-cols-[2fr,3fr]">
+                  <div className="relative h-64 md:h-full">
+                    <Image
+                      src={post.image}
+                      alt={post.title}
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-6 md:p-8 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                        <time>{post.date}</time>
+                        <span>•</span>
+                        <span>{post.readTime}</span>
+                      </div>
+                      <h2 className="text-2xl font-semibold mb-4 text-text-primary group-hover:text-primary transition-colors">
+                        {post.title}
+                      </h2>
+                      <p className="text-text-secondary">{post.description}</p>
+                    </div>
+                    <div className="mt-6 text-primary font-medium group-hover:underline">
+                      Read More →
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </a>
           ))}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

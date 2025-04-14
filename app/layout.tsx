@@ -10,9 +10,53 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Shailesh Chaudhari - Full Stack Developer",
+  title:
+    "Shailesh Chaudhari | Software Engineer Portfolio | Full Stack Developer | MERN Stack Expert",
   description:
-    "Portfolio website of Shailesh Chaudhari, a Full Stack Developer specializing in MERN stack development.",
+    "Professional portfolio of Shailesh Chaudhari (Shaileshbhai Chaudhari), showcasing software engineering projects and expertise. Full Stack Developer specializing in MERN stack (MongoDB, Express, React, Node.js) with experience in web development, problem solving, and building scalable applications.",
+  keywords: [
+    "Full Stack Developer",
+    "MERN Stack Developer",
+    "Software Engineer",
+    "Web Developer",
+    "React Developer",
+    "Node.js Developer",
+    "MongoDB Developer",
+    "Express Developer",
+    "JavaScript Developer",
+    "TypeScript Developer",
+    "Portfolio Website",
+    "Shailesh Chaudhari",
+    "Shaileshbhai Chaudhari",
+  ],
+  authors: [
+    { name: "Shailesh Chaudhari", url: "https://github.com/shailesh93602" },
+  ],
+  openGraph: {
+    type: "website",
+    url: "https://shaileshchaudhari.vercel.app",
+    title: "Shailesh Chaudhari | Full Stack Developer Portfolio",
+    description:
+      "Professional portfolio of Shailesh Chaudhari, a Full Stack Developer specializing in MERN stack development.",
+    siteName: "Shailesh Chaudhari Portfolio",
+    images: [
+      {
+        url: "https://shaileshchaudhari.vercel.app/Images/home.webp",
+        width: 1200,
+        height: 630,
+        alt: "Shailesh Chaudhari Portfolio",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@Shaileshbhai03",
+    creator: "@Shaileshbhai03",
+    title: "Shailesh Chaudhari | Full Stack Developer Portfolio",
+    description:
+      "Professional portfolio of Shailesh Chaudhari, a Full Stack Developer specializing in MERN stack development.",
+    images: ["https://shaileshchaudhari.vercel.app/Images/home.webp"],
+  },
 };
 
 export default function RootLayout({
@@ -22,6 +66,45 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            name: "Shailesh Chaudhari",
+            alternateName: ["Shaileshbhai Chaudhari", "Shailesh"],
+            jobTitle: "Software Engineer",
+            url: "https://shaileshchaudhari.vercel.app",
+            sameAs: [
+              "https://github.com/shailesh93602",
+              "https://www.linkedin.com/in/shailesh-chaudhari-93602",
+              "https://twitter.com/Shaileshbhai03",
+            ],
+            description:
+              "Professional portfolio of Shailesh Chaudhari, a Full Stack Developer specializing in MERN stack development.",
+            knowsAbout: [
+              "JavaScript",
+              "TypeScript",
+              "React",
+              "Node.js",
+              "Express",
+              "MongoDB",
+              "Web Development",
+              "Software Engineering",
+            ],
+            hasOccupation: {
+              "@type": "Occupation",
+              name: "Full Stack Developer",
+              description:
+                "Building web applications using MERN stack technologies",
+            },
+            alumniOf: {
+              "@type": "EducationalOrganization",
+              name: "Gujarat Technological University",
+            },
+          })}
+        </script>
+      </head>
       <body className={inter.className}>
         <Providers>
           <ThemeProvider

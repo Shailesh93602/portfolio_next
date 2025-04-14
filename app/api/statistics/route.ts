@@ -5,11 +5,6 @@ import { JSDOM } from "jsdom";
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
-interface GithubEvent {
-  created_at: string;
-  type: string;
-}
-
 async function fetchGithubStats(username: string) {
   const headers = GITHUB_TOKEN
     ? { Authorization: `Bearer ${GITHUB_TOKEN}` }
@@ -29,15 +24,28 @@ async function fetchGithubStats(username: string) {
     let totalSize = 0;
 
     // Fetch languages for each repo in parallel
-    const languagePromises = reposResponse.data.map(async (repo: any) => {
-      try {
-        const langResponse = await axios.get(repo.languages_url, { headers });
-        return langResponse.data;
-      } catch (error) {
-        console.error(`Error fetching languages for repo ${repo.name}:`, error);
-        return {};
+    interface GithubRepo {
+      name: string;
+      languages_url: string;
+      stargazers_count: number;
+      forks_count: number;
+    }
+
+    const languagePromises = reposResponse.data.map(
+      async (repo: GithubRepo) => {
+        try {
+          const langResponse = await axios.get(repo.languages_url, { headers });
+          return langResponse.data;
+        } catch (error) {
+          console.error(
+            `Error fetching languages for repo ${repo.name}:`,
+            error
+          );
+
+          return {};
+        }
       }
-    });
+    );
 
     const languageResults = await Promise.all(languagePromises);
 
@@ -58,21 +66,16 @@ async function fetchGithubStats(username: string) {
 
     // Fetch contribution data using GraphQL
     const contributionData = await getGitHubContributions(username);
-    console.log(
-      `Fetched GitHub contribution data with ${
-        contributionData.contributionDays?.length || 0
-      } days`
-    );
 
     return {
       repositories: userResponse.data.public_repos,
       contributions: contributionData.totalContributions,
       stars: reposResponse.data.reduce(
-        (acc: number, repo: any) => acc + repo.stargazers_count,
+        (acc: number, repo: GithubRepo) => acc + repo.stargazers_count,
         0
       ),
       forks: reposResponse.data.reduce(
-        (acc: number, repo: any) => acc + repo.forks_count,
+        (acc: number, repo: GithubRepo) => acc + repo.forks_count,
         0
       ),
       followers: userResponse.data.followers,
@@ -86,7 +89,6 @@ async function fetchGithubStats(username: string) {
       contributionDays: contributionData.contributionDays,
     };
   } catch (error) {
-    console.error("Error fetching GitHub stats:", error);
     throw error;
   }
 }
@@ -265,7 +267,62 @@ function calculateLeetCodeStreak(submissionCalendar: {
   };
 }
 
-function formatLeetCodeData(data: any) {
+function formatLeetCodeData(data: {
+  matchedUser: {
+    submissionCalendar: string;
+    userCalendar: {
+      streak: number;
+      totalActiveDays: number;
+      activeYears: number[];
+      dccBadges: {
+        name: string;
+        level: number;
+        timestamp: number;
+      }[];
+    };
+    submitStats: {
+      acSubmissionNum: {
+        difficulty: string;
+        count: number;
+        submissions: number;
+      }[];
+      totalSubmissionNum: {
+        difficulty: string;
+        count: number;
+        submissions: number;
+      }[];
+    };
+    contributions: {
+      points: number;
+    };
+    profile: {
+      reputation: number;
+      ranking: number;
+    };
+  };
+  allQuestionsCount: {
+    difficulty: string;
+    count: number;
+  }[];
+  recentSubmissionList: {
+    title: string;
+    titleSlug: string;
+    timestamp: number;
+    statusDisplay: string;
+    lang: string;
+    __typename: string;
+  }[];
+  userCalendar: {
+    streak: number;
+    totalActiveDays: number;
+    activeYears: number[];
+    dccBadges: {
+      name: string;
+      level: number;
+      timestamp: number;
+    }[];
+  } | null;
+}) {
   if (!data?.matchedUser) {
     return null;
   }
@@ -373,7 +430,7 @@ async function fetchLeetCodeStats(username: string) {
     const currentYearData = validYearsData[validYearsData.length - 1];
 
     // Merge submission calendars from all years
-    let mergedSubmissionCalendar: Record<string, number> = {};
+    const mergedSubmissionCalendar: Record<string, number> = {};
     let hasCalendarData = false;
 
     validYearsData.forEach((yearData) => {
@@ -755,25 +812,6 @@ interface ContributionWeek {
   contributionDays: ContributionDay[];
 }
 
-interface ContributionCalendar {
-  totalContributions: number;
-  weeks: ContributionWeek[];
-}
-
-interface GitHubGraphQLResponse {
-  data: {
-    user: {
-      contributionsCollection: {
-        contributionCalendar: ContributionCalendar;
-        totalCommitContributions: number;
-        totalPullRequestContributions: number;
-        totalIssueContributions: number;
-        totalRepositoryContributions: number;
-      };
-    };
-  };
-}
-
 interface Streak {
   count: number;
   startDate: string;
@@ -789,18 +827,6 @@ interface GitHubStats {
   totalIssues: number;
   totalRepos: number;
   contributionDays: Array<{ date: string; contributionCount: number }>;
-}
-
-interface LeetCodeStats {
-  totalSolved: number;
-  easySolved: number;
-  mediumSolved: number;
-  hardSolved: number;
-  ranking: number;
-  contributionPoint: number;
-  reputation: number;
-  currentStreak: Streak;
-  longestStreak: Streak;
 }
 
 async function getGitHubContributions(username: string): Promise<GitHubStats> {
@@ -896,8 +922,6 @@ async function getGitHubContributions(username: string): Promise<GitHubStats> {
       (week) => week.contributionDays
     );
 
-    console.log(`Total days fetched from GitHub: ${allDays.length}`);
-
     // Sort days in chronological order
     const sortedDays = allDays.sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -910,10 +934,6 @@ async function getGitHubContributions(username: string): Promise<GitHubStats> {
       contributionCount: day.contributionCount,
     }));
 
-    console.log(`Processed contribution days: ${contributionDays.length}`);
-
-    // Process days in reverse chronological order for current streak
-    const reversedDays = [...sortedDays].reverse();
     const today = getLocalDate();
     const yesterday = getLocalDate(new Date(Date.now() - 86400000));
 
@@ -928,12 +948,12 @@ async function getGitHubContributions(username: string): Promise<GitHubStats> {
 
     // Get unique dates with non-zero contributions
     const datesWithContributions = Object.entries(contributionsByDate)
-      .filter(([_, count]) => count > 0)
+      .filter(([, count]) => count > 0)
       .map(([date]) => date)
       .sort(); // Sort chronologically
 
     // Calculate current streak
-    let currentStreak: Streak = { count: 0, startDate: "", endDate: "" };
+    const currentStreak: Streak = { count: 0, startDate: "", endDate: "" };
 
     // Check if today or yesterday has contributions
     if (contributionsByDate[today] && contributionsByDate[today] > 0) {
@@ -1066,13 +1086,6 @@ async function getGitHubContributions(username: string): Promise<GitHubStats> {
 }
 
 // Helper function to check if two dates are consecutive
-function isConsecutiveDay(date1: string, date2: string): boolean {
-  const day1 = new Date(date1);
-  const day2 = new Date(date2);
-  const diffTime = Math.abs(day1.getTime() - day2.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays === 1;
-}
 
 // New helper function to fetch GitHub contributions for a specific period
 async function fetchGitHubContributionPeriod(
