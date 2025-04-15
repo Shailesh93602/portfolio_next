@@ -392,17 +392,15 @@ function SkillsSection() {
               <h4 className="text-lg font-semibold mb-4 text-text-primary">
                 {skillCategory.category}
               </h4>
-              <div className="space-y-4">
+              <div className="flex flex-wrap gap-2">
                 {skillCategory.items.map((skill, skillIndex) => (
-                  <div key={skillIndex}>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-text-secondary">{skill.name}</span>
-                      <span className="text-text-secondary">
-                        {skill.level}%
-                      </span>
-                    </div>
-                    <Progress value={skill.level} className="h-2" />
-                  </div>
+                  <motion.span
+                    key={skillIndex}
+                    whileHover={{ scale: 1.05 }}
+                    className="px-3 py-1 rounded-full bg-muted text-text-secondary border border-border hover:bg-primary/10 hover:text-primary transition-colors duration-200"
+                  >
+                    {skill.name}
+                  </motion.span>
                 ))}
               </div>
             </CardContent>

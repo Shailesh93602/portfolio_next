@@ -12,6 +12,7 @@ import {
   SiLinkedin,
   SiGithub,
 } from "react-icons/si";
+import { Download, Briefcase } from "lucide-react";
 import SocialLink from "./components/SocialLink";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -84,17 +85,31 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
-            <Button asChild size="lg" className="rounded-full">
-              <Link href="/contact">Hire Me</Link>
+          <div className="flex flex-wrap items-center gap-6">
+            <Button
+              asChild
+              size="lg"
+              className="rounded-full bg-gradient-to-r from-primary to-purple-600 hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-primary/25"
+            >
+              <Link href="/contact">
+                <Briefcase className="w-4 h-4 mr-2 inline-block" />
+                Hire Me
+              </Link>
             </Button>
             <Button
               asChild
               variant="outline"
               size="lg"
-              className="rounded-full"
+              className="rounded-full border-2 hover:bg-primary/10 transition-all duration-300"
             >
-              <Link href="/projects">View Projects</Link>
+              <Link
+                href="/Shailesh_Chaudhari_Resume.pdf"
+                target="_blank"
+                download
+              >
+                <Download className="w-4 h-4 mr-2 inline-block" />
+                Download Resume
+              </Link>
             </Button>
           </div>
 

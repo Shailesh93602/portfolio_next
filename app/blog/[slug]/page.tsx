@@ -52,7 +52,7 @@ const blogPosts: BlogPost[] = [
       <h2>Conclusion</h2>
       <p>Full-stack development is a challenging but rewarding field. It requires continuous learning and adaptation to new technologies and best practices.</p>
     `,
-    image: "/Images/blogs/fullstack.webp",
+    image: "/Images/portfolio1.png",
     author: {
       name: "Shailesh Chaudhari",
       avatar: "/Images/home.webp",
@@ -86,7 +86,7 @@ const blogPosts: BlogPost[] = [
       <h2>Conclusion</h2>
       <p>Frontend development is an ever-evolving field that requires continuous learning and adaptation.</p>
     `,
-    image: "/Images/blogs/frontend.webp",
+    image: "/Images/portfolio1.png",
     author: {
       name: "Shailesh Chaudhari",
       avatar: "/Images/home.webp",

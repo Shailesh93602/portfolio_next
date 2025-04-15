@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { fadeIn, staggerContainer } from "@/lib/animations";
 import { Mail, Phone, MapPin, Github, Linkedin, Twitter } from "lucide-react";
@@ -8,76 +8,135 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import emailjs from "emailjs-com";
 import { SOCIAL_LINKS, CONTACT_INFO } from "@/lib/constants";
+import { useForm, UseFormRegister, SubmitHandler } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
-interface FormData {
+// Define the form data type.
+type FormData = {
   fullName: string;
   email: string;
-  phoneNumber: string;
+  phoneNumber?: string;
   subject: string;
   message: string;
-}
+};
 
+// Build the schema and cast it as a yup.ObjectSchema<FormData>
+const schema = yup.object({
+  fullName: yup.string().required("Full name is required"),
+  email: yup
+    .string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  phoneNumber: yup
+    .string()
+    .transform((value, originalValue) => {
+      // Convert empty strings or null values to undefined.
+      return originalValue === "" || originalValue == null ? undefined : value;
+    })
+    .optional()
+    .test(
+      "is-valid-phone",
+      "Please enter a valid 10-digit phone number",
+      (value) => {
+        if (!value) return true; // If not provided, skip validation.
+        // Check if value is composed only of digits and has exactly 10 characters.
+        return /^\d{10}$/.test(value);
+      }
+    ),
+  subject: yup.string().required("Subject is required"),
+  message: yup
+    .string()
+    .required("Message is required")
+    .min(10, "Message must be at least 10 characters"),
+}) as yup.ObjectSchema<FormData>;
+
+// Define props for the reusable InputField component.
 interface InputFieldProps {
   label: string;
   name: keyof FormData;
   type: string;
-  required: boolean;
-  value: string;
-  onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  required?: boolean;
+  error?: string;
+  register: UseFormRegister<FormData>;
 }
 
-export function ContactContent() {
-  const [formData, setFormData] = useState<FormData>({
-    fullName: "",
-    email: "",
-    phoneNumber: "",
-    subject: "",
-    message: "",
+// Reusable InputField component.
+const InputField: React.FC<InputFieldProps> = ({
+  label,
+  name,
+  type,
+  required = false,
+  error,
+  register,
+}) => {
+  return (
+    <div className="mb-4">
+      <label
+        htmlFor={name}
+        className="block text-sm font-medium text-text-primary mb-2"
+      >
+        {label}
+      </label>
+      <input
+        id={name}
+        type={type}
+        {...register(name)}
+        required={required}
+        className="w-full px-4 py-2 bg-dark border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-text-primary"
+      />
+      {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+    </div>
+  );
+};
+
+export const ContactContent: React.FC = () => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({
+    resolver: yupResolver(schema),
+    mode: "onChange",
+    defaultValues: {
+      fullName: "",
+      email: "",
+      phoneNumber: "",
+      subject: "",
+      message: "",
+    },
   });
-  const [, setIsSubmitting] = useState<boolean>(false);
+
   const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(
     null
   );
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
+      // Build template parameters using data from the form.
+      const templateParams = {
+        from_name: data.fullName,
+        from_email: data.email,
+        from_phoneNumber: data.phoneNumber || "",
+        from_subject: data.subject,
+        from_message: data.message,
+      };
+
+      // Send email using EmailJS with keys from environment variables.
       const response = await emailjs.send(
-        "service_uh3jspq",
-        "template_9jk3yw8",
-        {
-          from_name: formData.fullName,
-          from_email: formData.email,
-          from_phoneNumber: formData.phoneNumber,
-          from_subject: formData.subject,
-          from_message: formData.message,
-        },
-        "LzBxIAKfE0LSvqFYw"
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "",
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "",
+        templateParams,
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || ""
       );
 
       console.log("Email sent successfully:", response);
       setSubmitStatus("success");
-      setFormData({
-        fullName: "",
-        email: "",
-        phoneNumber: "",
-        subject: "",
-        message: "",
-      });
+      reset();
     } catch (error) {
       console.error("Error sending email:", error);
       setSubmitStatus("error");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -94,7 +153,7 @@ export function ContactContent() {
           Contact Me
         </h1>
         <p className="text-text-secondary">
-          I&apos;m always open to discussing new projects, creative ideas or
+          I&apos;m always open to discussing new projects, creative ideas, or
           opportunities to be part of your visions.
         </p>
       </motion.section>
@@ -132,7 +191,6 @@ export function ContactContent() {
               </div>
             </div>
           </div>
-
           <div className="mt-8">
             <h3 className="mb-4 font-semibold">Follow Me</h3>
             <div className="flex gap-4">
@@ -169,23 +227,27 @@ export function ContactContent() {
 
         {/* Contact Form */}
         <motion.div variants={fadeIn(0.3)}>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-6"
+            noValidate
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <InputField
-                label="Full Name"
+                label="Full Name *"
                 name="fullName"
                 type="text"
                 required={true}
-                value={formData.fullName}
-                onChange={handleChange}
+                error={errors.fullName?.message}
+                register={register}
               />
               <InputField
-                label="Email Address"
+                label="Email Address *"
                 name="email"
                 type="email"
                 required={true}
-                value={formData.email}
-                onChange={handleChange}
+                error={errors.email?.message}
+                register={register}
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -193,17 +255,16 @@ export function ContactContent() {
                 label="Phone Number"
                 name="phoneNumber"
                 type="tel"
-                required={false}
-                value={formData.phoneNumber}
-                onChange={handleChange}
+                error={errors.phoneNumber?.message}
+                register={register}
               />
               <InputField
-                label="Subject"
+                label="Subject *"
                 name="subject"
                 type="text"
                 required={true}
-                value={formData.subject}
-                onChange={handleChange}
+                error={errors.subject?.message}
+                register={register}
               />
             </div>
             <div>
@@ -211,24 +272,28 @@ export function ContactContent() {
                 htmlFor="message"
                 className="mb-2 block text-sm font-medium"
               >
-                Message
+                Message *
               </label>
               <Textarea
                 id="message"
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
+                {...register("message")}
                 required
                 className="min-h-[150px]"
               />
+              {errors.message && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.message.message}
+                </p>
+              )}
             </div>
             <div className="flex justify-center">
               <Button
                 type="submit"
                 size="lg"
+                disabled={isSubmitting}
                 className="w-full bg-primary text-white hover:bg-primary/90"
               >
-                Send Message
+                {isSubmitting ? "Sending..." : "Send Message"}
               </Button>
             </div>
             {submitStatus === "success" && (
@@ -246,29 +311,6 @@ export function ContactContent() {
       </motion.div>
     </div>
   );
-}
+};
 
-function InputField({
-  label,
-  name,
-  type,
-  required,
-  value,
-  onChange,
-}: InputFieldProps) {
-  return (
-    <div>
-      <label className="block text-sm font-medium text-text-primary mb-2">
-        {label}
-      </label>
-      <input
-        type={type}
-        name={name}
-        required={required}
-        value={value}
-        onChange={onChange}
-        className="w-full px-4 py-2 bg-dark border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-text-primary"
-      />
-    </div>
-  );
-}
+export default ContactContent;
