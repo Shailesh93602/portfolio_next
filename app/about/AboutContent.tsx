@@ -17,7 +17,6 @@ import {
   Award,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { SOCIAL_LINKS } from "@/lib/constants";
 
 interface Experience {

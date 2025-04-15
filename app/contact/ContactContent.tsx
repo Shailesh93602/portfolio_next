@@ -124,14 +124,13 @@ export const ContactContent: React.FC = () => {
       };
 
       // Send email using EmailJS with keys from environment variables.
-      const response = await emailjs.send(
+      await emailjs.send(
         process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "",
         process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "",
         templateParams,
         process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || ""
       );
 
-      console.log("Email sent successfully:", response);
       setSubmitStatus("success");
       reset();
     } catch (error) {
