@@ -5,6 +5,7 @@ export const SOCIAL_LINKS = {
   INSTAGRAM: "https://www.instagram.com/thenameisshaileshbhai",
   LEETCODE: "https://leetcode.com/shaileshbhai",
   GFG: "https://auth.geeksforgeeks.org/user/thenameisshaileshbhai",
+  CODECHEF: "https://www.codechef.com/users/shaileshbhai03",
 } as const;
 
 export const CONTACT_LINKS = {

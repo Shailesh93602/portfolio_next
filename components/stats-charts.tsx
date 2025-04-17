@@ -10,8 +10,10 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  BarChart,
-  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
 } from "recharts";
 import { format } from "date-fns";
 
@@ -29,18 +31,11 @@ interface ProblemStats {
 interface StatsChartsProps {
   githubContributions: number[];
   leetcodeProblemStats: ProblemStats;
-  codechefSubmissions: {
-    accepted: number;
-    wrongAnswer: number;
-    timeLimitExceeded: number;
-    compilationError: number;
-  };
 }
 
 export function StatsCharts({
   githubContributions,
   leetcodeProblemStats,
-  codechefSubmissions,
 }: StatsChartsProps) {
   // Transform GitHub contributions data
   const contributionsData: ContributionData[] = githubContributions.map(
@@ -55,36 +50,65 @@ export function StatsCharts({
 
   // Transform LeetCode problem stats
   const problemStatsData = [
-    { name: "Easy", value: leetcodeProblemStats.easy },
-    { name: "Medium", value: leetcodeProblemStats.medium },
-    { name: "Hard", value: leetcodeProblemStats.hard },
+    { name: "Easy", value: leetcodeProblemStats.easy, color: "#10b981" },
+    { name: "Medium", value: leetcodeProblemStats.medium, color: "#f59e0b" },
+    { name: "Hard", value: leetcodeProblemStats.hard, color: "#ef4444" },
   ];
 
-  // Transform CodeChef submission stats
-  const submissionStatsData = [
-    { name: "Accepted", value: codechefSubmissions.accepted },
-    { name: "Wrong Answer", value: codechefSubmissions.wrongAnswer },
-    { name: "Time Limit", value: codechefSubmissions.timeLimitExceeded },
-    { name: "Compilation Error", value: codechefSubmissions.compilationError },
-  ];
+  // Calculate total problems
+  const totalProblems = problemStatsData.reduce(
+    (acc, curr) => acc + curr.value,
+    0
+  );
+
+  // Custom tooltip for GitHub contributions
+  const CustomTooltip = ({ 
+    active, 
+    payload, 
+    label 
+  }: {
+    active?: boolean;
+    payload?: Array<{value: number}>;
+    label?: string;
+  }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-card border border-border p-2 rounded-md shadow-md">
+          <p className="text-xs font-medium">{label}</p>
+          <p className="text-sm font-bold text-primary">
+            {`${payload[0].value} contributions`}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {/* GitHub Contributions Chart */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Card className="p-6">
+        <Card className="p-6 border-primary/20 bg-gradient-to-br from-background to-background/80 backdrop-blur-sm">
           <h3 className="text-lg font-semibold mb-4">GitHub Contributions</h3>
-          <div className="h-[200px]">
+          <div className="h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={contributionsData}>
                 <defs>
                   <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#0070f3" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#0070f3" stopOpacity={0} />
+                    <stop
+                      offset="5%"
+                      stopColor="var(--color-primary)"
+                      stopOpacity={0.8}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor="var(--color-primary)"
+                      stopOpacity={0}
+                    />
                   </linearGradient>
                 </defs>
                 <XAxis
@@ -92,24 +116,30 @@ export function StatsCharts({
                   tick={{ fontSize: 12 }}
                   interval={30}
                   tickFormatter={(value) => format(new Date(value), "MMM")}
+                  stroke="var(--color-muted-foreground)"
                 />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip
-                  contentStyle={{
-                    background: "#1a1b1e",
-                    border: "1px solid #2d2e2f",
-                  }}
-                  labelStyle={{ color: "#fff" }}
+                <YAxis
+                  tick={{ fontSize: 12 }}
+                  stroke="var(--color-muted-foreground)"
                 />
+                <Tooltip content={<CustomTooltip />} />
                 <Area
                   type="monotone"
                   dataKey="count"
-                  stroke="#0070f3"
+                  stroke="var(--color-primary)"
+                  strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#colorCount)"
                 />
               </AreaChart>
             </ResponsiveContainer>
+          </div>
+          <div className="mt-4 flex justify-between text-sm text-muted-foreground">
+            <span>Last 365 days</span>
+            <span>
+              Total: {githubContributions.reduce((a, b) => a + b, 0)}{" "}
+              contributions
+            </span>
           </div>
         </Card>
       </motion.div>
@@ -120,51 +150,53 @@ export function StatsCharts({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        <Card className="p-6">
+        <Card className="p-6 border-primary/20 bg-gradient-to-br from-background to-background/80 backdrop-blur-sm">
           <h3 className="text-lg font-semibold mb-4">LeetCode Problems</h3>
-          <div className="h-[200px]">
+          <div className="h-[250px] flex items-center">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={problemStatsData}>
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
+              <PieChart>
+                <Pie
+                  data={problemStatsData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                  label={({ name, percent }) =>
+                    `${name} ${(percent * 100).toFixed(0)}%`
+                  }
+                  labelLine={false}
+                >
+                  {problemStatsData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
                 <Tooltip
+                  formatter={(value) => [`${value} problems`, "Count"]}
                   contentStyle={{
-                    background: "#1a1b1e",
-                    border: "1px solid #2d2e2f",
+                    background: "var(--color-card)",
+                    border: "1px solid var(--color-border)",
                   }}
-                  labelStyle={{ color: "#fff" }}
                 />
-                <Bar dataKey="value" fill="#22c55e" radius={[4, 4, 0, 0]} />
-              </BarChart>
+                <Legend
+                  verticalAlign="bottom"
+                  height={36}
+                  formatter={(value, entry, index) => {
+                    const item = problemStatsData[index];
+                    return (
+                      <span className="text-sm">
+                        {value}:{" "}
+                        <span className="font-medium">{item.value}</span>
+                      </span>
+                    );
+                  }}
+                />
+              </PieChart>
             </ResponsiveContainer>
           </div>
-        </Card>
-      </motion.div>
-
-      {/* CodeChef Submission Stats */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-        className="md:col-span-2"
-      >
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">CodeChef Submissions</h3>
-          <div className="h-[200px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={submissionStatsData}>
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip
-                  contentStyle={{
-                    background: "#1a1b1e",
-                    border: "1px solid #2d2e2f",
-                  }}
-                  labelStyle={{ color: "#fff" }}
-                />
-                <Bar dataKey="value" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="mt-2 text-center text-sm text-muted-foreground">
+            <span>Total: {totalProblems} problems solved</span>
           </div>
         </Card>
       </motion.div>

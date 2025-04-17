@@ -14,12 +14,15 @@ interface GitHubLanguagesProps {
 }
 
 export function GitHubLanguages({ languages }: GitHubLanguagesProps) {
+  // Filter out languages with 0% usage
+  const filteredLanguages = languages.filter((lang) => lang.percentage > 0);
+
   return (
     <Card className="bg-card border-border">
       <CardContent className="pt-6">
         <div className="space-y-4">
           <div className="h-2 w-full flex rounded-full overflow-hidden">
-            {languages.map((lang) => (
+            {filteredLanguages.map((lang) => (
               <div
                 key={lang.name}
                 style={{
@@ -31,7 +34,7 @@ export function GitHubLanguages({ languages }: GitHubLanguagesProps) {
             ))}
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-            {languages.map((lang) => (
+            {filteredLanguages.map((lang) => (
               <div key={lang.name} className="flex items-center gap-2">
                 <div
                   className="w-3 h-3 rounded-full"

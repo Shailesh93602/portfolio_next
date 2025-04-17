@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
 import { SOCIAL_LINKS } from "@/config/constants";
-import { JSDOM } from "jsdom";
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
 async function fetchGithubStats(username: string) {
+  // Properly format headers for GitHub API authentication
   const headers = GITHUB_TOKEN
-    ? { Authorization: `Bearer ${GITHUB_TOKEN}` }
-    : {};
+    ? {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: "application/vnd.github.v3+json",
+      }
+    : { Accept: "application/vnd.github.v3+json" };
 
   try {
     // Fetch user data
@@ -476,6 +479,7 @@ async function fetchLeetCodeStats(username: string) {
             headers: {
               "User-Agent":
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+              Referer: "https://leetcode.com",
             },
           }
         );
@@ -512,6 +516,7 @@ async function fetchLeetCodeStats(username: string) {
           headers: {
             "User-Agent":
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+            Referer: "https://leetcode.com",
           },
         }
       );
@@ -555,6 +560,7 @@ async function fetchLeetCodeStats(username: string) {
           headers: {
             "User-Agent":
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+            Referer: "https://leetcode.com",
           },
         }
       );
@@ -700,94 +706,6 @@ function calculateLongestLeetCodeStreak(submissionCalendar: {
     startDate: longestStreakStart,
     endDate: longestStreakEnd,
   };
-}
-
-async function fetchGeeksforGeeksStats(username: string) {
-  try {
-    const response = await axios.get(
-      `https://auth.geeksforgeeks.org/user/${username}/practice/`
-    );
-    const dom = new JSDOM(response.data);
-    const document = dom.window.document;
-
-    // Extract data from the HTML
-    const problemsSolved = parseInt(
-      document.querySelector(".score_card_value")?.textContent || "0"
-    );
-    const codingScore = parseInt(
-      document.querySelector(".score_card_value")?.nextElementSibling
-        ?.textContent || "0"
-    );
-
-    const difficultyStats = {
-      basic: parseInt(
-        document.querySelector(".basic")?.textContent?.match(/\d+/)?.[0] || "0"
-      ),
-      easy: parseInt(
-        document.querySelector(".easy")?.textContent?.match(/\d+/)?.[0] || "0"
-      ),
-      medium: parseInt(
-        document.querySelector(".medium")?.textContent?.match(/\d+/)?.[0] || "0"
-      ),
-      hard: parseInt(
-        document.querySelector(".hard")?.textContent?.match(/\d+/)?.[0] || "0"
-      ),
-    };
-
-    // Calculate streaks (this might need adjustment based on actual HTML structure)
-    const currentStreak = {
-      count: parseInt(
-        document
-          .querySelector(".current_streak")
-          ?.textContent?.match(/\d+/)?.[0] || "0"
-      ),
-      startDate: new Date(
-        Date.now() -
-          (parseInt(
-            document
-              .querySelector(".current_streak")
-              ?.textContent?.match(/\d+/)?.[0] || "0"
-          ) -
-            1) *
-            86400000
-      )
-        .toISOString()
-        .split("T")[0],
-      endDate: new Date().toISOString().split("T")[0],
-    };
-
-    const longestStreak = {
-      count: parseInt(
-        document
-          .querySelector(".longest_streak")
-          ?.textContent?.match(/\d+/)?.[0] || "0"
-      ),
-      startDate: new Date(
-        Date.now() -
-          (parseInt(
-            document
-              .querySelector(".longest_streak")
-              ?.textContent?.match(/\d+/)?.[0] || "0"
-          ) -
-            1) *
-            86400000
-      )
-        .toISOString()
-        .split("T")[0],
-      endDate: new Date().toISOString().split("T")[0],
-    };
-
-    return {
-      problemsSolved,
-      codingScore,
-      problemsByDifficulty: difficultyStats,
-      currentStreak,
-      longestStreak,
-    };
-  } catch (error) {
-    console.error("Error fetching GeeksforGeeks stats:", error);
-    throw error;
-  }
 }
 
 function getLanguageColor(language: string): string {
@@ -1169,20 +1087,63 @@ export async function GET() {
   try {
     const githubUsername = SOCIAL_LINKS.GITHUB.split("/").pop() || "";
     const leetcodeUsername = SOCIAL_LINKS.LEETCODE.split("/").pop() || "";
-    const gfgUsername = SOCIAL_LINKS.GFG.split("/").pop() || "";
 
     console.log(
-      `Fetching stats for GitHub: ${githubUsername}, LeetCode: ${leetcodeUsername}, GFG: ${gfgUsername}`
+      `Fetching stats for GitHub: ${githubUsername}, LeetCode: ${leetcodeUsername}`
     );
 
-    const [githubStats, leetcodeStats, gfgStats] = await Promise.all([
-      fetchGithubStats(githubUsername),
-      fetchLeetCodeStats(leetcodeUsername),
-      fetchGeeksforGeeksStats(gfgUsername),
-    ]);
+    // Use individual try/catch blocks for each API call to prevent one failure from affecting the other
+    let githubStats = null;
+    let leetcodeStats = null;
+
+    try {
+      githubStats = await fetchGithubStats(githubUsername);
+      console.log(`GitHub stats fetched successfully`);
+    } catch (githubError) {
+      console.error("Error fetching GitHub statistics:", githubError);
+      // Provide fallback data for GitHub
+      githubStats = {
+        repositories: 0,
+        contributions: 0,
+        stars: 0,
+        forks: 0,
+        followers: 0,
+        languages: [],
+        currentStreak: { count: 0, startDate: "", endDate: "" },
+        longestStreak: { count: 0, startDate: "", endDate: "" },
+        totalCommits: 0,
+        totalPRs: 0,
+        totalIssues: 0,
+        totalRepos: 0,
+        contributionDays: [],
+      };
+    }
+
+    try {
+      leetcodeStats = await fetchLeetCodeStats(leetcodeUsername);
+      console.log(`LeetCode stats fetched successfully`);
+    } catch (leetcodeError) {
+      console.error("Error fetching LeetCode statistics:", leetcodeError);
+      // Provide fallback data for LeetCode
+      leetcodeStats = {
+        totalSolved: 0,
+        easySolved: 0,
+        mediumSolved: 0,
+        hardSolved: 0,
+        ranking: 0,
+        contributionPoint: 0,
+        reputation: 0,
+        acceptanceRate: 0,
+        currentStreak: { count: 0, startDate: "", endDate: "" },
+        longestStreak: { count: 0, startDate: "", endDate: "" },
+        activeYears: [],
+        totalActiveDays: 0,
+        submissionCalendar: {},
+      };
+    }
 
     console.log(
-      `Stats fetched - GitHub contributions: ${
+      `Stats processed - GitHub contributions: ${
         githubStats?.contributionDays?.length || 0
       }, LeetCode submissions: ${
         Object.keys(leetcodeStats?.submissionCalendar || {}).length || 0
@@ -1191,24 +1152,46 @@ export async function GET() {
 
     return NextResponse.json({
       github: githubStats,
-      leetcode: leetcodeStats || {
-        totalSolved: 0,
-        easySolved: 0,
-        mediumSolved: 0,
-        hardSolved: 0,
-        ranking: 0,
-        contributionPoint: 0,
-        reputation: 0,
-        currentStreak: { count: 0, startDate: "", endDate: "" },
-        longestStreak: { count: 0, startDate: "", endDate: "" },
-      },
-      gfg: gfgStats,
+      leetcode: leetcodeStats,
     });
   } catch (error) {
-    console.error("Error fetching statistics:", error);
+    console.error("Error in statistics API:", error);
+    // Return a more graceful error response with empty data instead of failing completely
     return NextResponse.json(
-      { error: "Failed to fetch statistics" },
-      { status: 500 }
-    );
+      {
+        github: {
+          repositories: 0,
+          contributions: 0,
+          stars: 0,
+          forks: 0,
+          followers: 0,
+          languages: [],
+          currentStreak: { count: 0, startDate: "", endDate: "" },
+          longestStreak: { count: 0, startDate: "", endDate: "" },
+          totalCommits: 0,
+          totalPRs: 0,
+          totalIssues: 0,
+          totalRepos: 0,
+          contributionDays: [],
+        },
+        leetcode: {
+          totalSolved: 0,
+          easySolved: 0,
+          mediumSolved: 0,
+          hardSolved: 0,
+          ranking: 0,
+          contributionPoint: 0,
+          reputation: 0,
+          acceptanceRate: 0,
+          currentStreak: { count: 0, startDate: "", endDate: "" },
+          longestStreak: { count: 0, startDate: "", endDate: "" },
+          activeYears: [],
+          totalActiveDays: 0,
+          submissionCalendar: {},
+        },
+        error: "Failed to fetch statistics, showing fallback data",
+      },
+      { status: 200 }
+    ); // Return 200 with fallback data instead of 500
   }
 }

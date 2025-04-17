@@ -16,6 +16,7 @@
     "@radix-ui/react-progress": "^1.1.0",
     "@radix-ui/react-select": "^2.1.7",
     "@radix-ui/react-slot": "^1.2.0",
+    "@radix-ui/react-tooltip": "^1.2.0",
     "@tanstack/react-query": "^5.72.2",
     "@types/jsdom": "^21.1.7",
     "@types/react-dom": "^19.1.2",

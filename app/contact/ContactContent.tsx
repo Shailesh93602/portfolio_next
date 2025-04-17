@@ -149,7 +149,7 @@ export const ContactContent: React.FC = () => {
         className="mb-16 text-center"
       >
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-          Contact Me
+          Contact <span className="text-primary">Me</span>
         </h1>
         <p className="text-text-secondary">
           I&apos;m always open to discussing new projects, creative ideas, or

@@ -95,12 +95,12 @@ export default function AboutContent() {
             className="text-center lg:text-left"
           >
             <div className="space-y-4 mb-8">
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-[hsl(var(--hero-gradient-from))] to-[hsl(var(--hero-gradient-to))] bg-clip-text text-transparent">
-                About Me
+              <h1 className="text-5xl font-bold">
+                About <span className="text-primary">Me</span>
               </h1>
-              <h2 className="text-3xl font-semibold text-primary">
+              {/* <h2 className="text-3xl font-semibold text-primary">
                 Fullstack Developer
-              </h2>
+              </h2> */}
               <motion.p
                 variants={itemVariants}
                 className="text-lg text-text-secondary leading-relaxed"
