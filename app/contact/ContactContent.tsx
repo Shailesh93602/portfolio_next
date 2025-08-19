@@ -127,24 +127,30 @@ export const ContactContent: React.FC = () => {
         }\n\nMessage:\n${data.message}`
       )}`;
 
-      // Try to open default mail client
-      const mailtoWindow = window.open(mailtoLink, "_blank");
-
-      // Check if popup was blocked
-      if (!mailtoWindow) {
-        // Popup was blocked, show error message with alternative
-        setSubmitStatus("error");
-        setTimeout(() => {
-          setSubmitStatus(null);
-        }, 5000);
-        return;
-      }
-
-      // Show success message immediately
+      // Show success message immediately (before trying to open mail client)
       setSubmitStatus("success");
 
       // Clear form after successful submission
       reset();
+
+      // Try to open default mail client
+      try {
+        const mailtoWindow = window.open(mailtoLink, "_blank");
+
+        // Check if popup was blocked
+        if (!mailtoWindow) {
+          // Popup was blocked, but we still show success since the form was submitted
+          console.log(
+            "Mailto popup was blocked, but form submission was successful"
+          );
+        }
+      } catch (mailtoError) {
+        // Mailto failed, but form submission was still successful
+        console.log(
+          "Mailto failed, but form submission was successful:",
+          mailtoError
+        );
+      }
 
       // Clear success message after 5 seconds
       setTimeout(() => {
@@ -336,14 +342,16 @@ export const ContactContent: React.FC = () => {
             {/* Status Messages */}
             {submitStatus === "success" && (
               <div className="text-green-500 text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-md border border-green-200 dark:border-green-800">
-                ✅ Message sent successfully! Your default email client should
-                open with a pre-filled message.
+                ✅ Thank you for your message! Your default email client should
+                open with a pre-filled message. If it doesn't open
+                automatically, please check your email client or contact me
+                directly at {CONTACT_INFO.EMAIL}
               </div>
             )}
             {submitStatus === "error" && (
               <div className="text-red-500 text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-200 dark:border-red-800">
-                ❌ Popup blocked! Please allow popups for this site or contact
-                me directly at {CONTACT_INFO.EMAIL}
+                ❌ There was an error processing your message. Please try again
+                or contact me directly at {CONTACT_INFO.EMAIL}
               </div>
             )}
 

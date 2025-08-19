@@ -109,7 +109,7 @@ export function PortfolioContent() {
 
   const filteredProjects = selectedTags.length
     ? projects.filter((project) =>
-        selectedTags.every((tag) => project.tags.includes(tag))
+        selectedTags.some((tag) => project.tags.includes(tag))
       )
     : projects;
 
@@ -179,6 +179,16 @@ export function PortfolioContent() {
               </button>
             ))}
           </div>
+          {selectedTags.length > 0 && (
+            <div className="text-center mt-4 text-sm text-muted-foreground">
+              Showing {filteredProjects.length} project
+              {filteredProjects.length !== 1 ? "s" : ""}
+              {selectedTags.length > 0 &&
+                ` matching ${
+                  selectedTags.length > 1 ? "any of" : ""
+                } the selected technology`}
+            </div>
+          )}
         </motion.div>
 
         {filteredProjects.length === 0 ? (
