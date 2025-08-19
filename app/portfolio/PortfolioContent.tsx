@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Github, ExternalLink } from "lucide-react";
+import { Github, ExternalLink, X } from "lucide-react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { fadeIn, staggerContainer } from "@/lib/animations";
 
 interface Project {
   title: string;
@@ -69,7 +70,7 @@ const projects: Project[] = [
   },
   {
     id: "bookesell",
-    title: "Book E Sell",
+    title: "Book E-Sell",
     description:
       "A full-stack web application for buying and selling books online, built with React, Node.js, Express, and MongoDB.",
     image: "/Images/portfolio1.png",
@@ -102,6 +103,10 @@ export function PortfolioContent() {
     );
   };
 
+  const resetFilters = () => {
+    setSelectedTags([]);
+  };
+
   const filteredProjects = selectedTags.length
     ? projects.filter((project) =>
         selectedTags.every((tag) => project.tags.includes(tag))
@@ -117,46 +122,61 @@ export function PortfolioContent() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-16">
+    <div className="container py-24">
       <motion.div
         initial="hidden"
-        animate="visible"
-        variants={{
-          hidden: { opacity: 0 },
-          visible: {
-            opacity: 1,
-            transition: { staggerChildren: 0.1 },
-          },
-        }}
-        role="main"
-        aria-label="Projects showcase"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={fadeIn(0.2)}
+        className="mb-16 text-center"
       >
-        <motion.div variants={itemVariants} className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4 text-text-primary">
-            My Projects
-          </h1>
-          <p className="text-text-secondary max-w-2xl mx-auto">
-            Here are some of the projects I&apos;ve worked on. Each project is
-            unique and showcases different aspects of my skills and expertise.
-          </p>
-        </motion.div>
+        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          My <span className="text-primary">Projects</span>
+        </h1>
+        <p className="text-text-secondary">
+          Here are some of the projects I&apos;ve worked on. Each one represents
+          a unique challenge and learning experience.
+        </p>
+      </motion.div>
 
-        <motion.div variants={itemVariants} className="mb-8">
-          <div
-            className="flex flex-wrap gap-2 justify-center"
-            role="group"
-            aria-label="Filter projects by technology"
-          >
-            {allTags.map((tag) => (
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={staggerContainer(0.1)}
+      >
+        {/* Filter Section */}
+        <motion.div variants={itemVariants} className="mb-12">
+          <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
+            <h3 className="text-lg font-semibold text-text-primary">
+              Filter by Technology:
+            </h3>
+            {selectedTags.length > 0 && (
               <Button
+                onClick={resetFilters}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <X className="w-4 h-4" />
+                Show All
+              </Button>
+            )}
+          </div>
+          <div className="flex flex-wrap justify-center gap-3">
+            {allTags.map((tag) => (
+              <button
                 key={tag}
-                variant={selectedTags.includes(tag) ? "default" : "outline"}
                 onClick={() => toggleTag(tag)}
-                className="rounded-full"
-                aria-pressed={selectedTags.includes(tag)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                  selectedTags.includes(tag)
+                    ? "bg-primary text-white shadow-lg"
+                    : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+                }`}
+                aria-label={`Filter projects by ${tag} technology`}
               >
                 {tag}
-              </Button>
+              </button>
             ))}
           </div>
         </motion.div>
@@ -187,7 +207,7 @@ export function PortfolioContent() {
                   <div className="relative h-48 w-full">
                     <Image
                       src={project.image}
-                      alt={`Screenshot of ${project.title}`}
+                      alt={`Screenshot of ${project.title} project`}
                       fill
                       className="object-cover rounded-t-lg"
                       priority={true}
@@ -222,6 +242,7 @@ export function PortfolioContent() {
                             href={project.github}
                             target="_blank"
                             rel="noopener noreferrer"
+                            aria-label={`View ${project.title} source code on GitHub`}
                           >
                             <Github className="w-4 h-4 mr-2" />
                             GitHub
@@ -238,6 +259,7 @@ export function PortfolioContent() {
                               href={project.live}
                               target="_blank"
                               rel="noopener noreferrer"
+                              aria-label={`View live demo of ${project.title}`}
                             >
                               <ExternalLink className="w-4 h-4 mr-2" />
                               Live Demo

@@ -1,5 +1,27 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Professional Portfolio Website
 
+My personal portfolio website built with modern web technologies to showcase my professional work, skills, and projects.
+
+## 🚀 Features
+- Responsive, mobile-first design
+- Theme switching with dark/light modes
+- Interactive project showcase
+- Integrated analytics dashboard
+- Personal blog system
+- GitHub API integration
+
+## 💡 Technologies Used
+- Next.js 13+ with App Directory
+- TypeScript
+- Tailwind CSS
+- Framer Motion for animations
+- GitHub Actions for CI/CD
+
+## 🛠 Requirements
+- Node.js 18+
+- Git
+- GitHub personal access token (for API integration)
+=======
 ## Getting Started
 
 First, run the development server:
@@ -8,17 +30,37 @@ First, run the development server:
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the portfolio.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 📁 Project Structure
+- `/app` - Core application routes and layouts
+- `/components` - Reusable UI components
+- `/lib` - Business logic and utility functions
+- `/config` - Configuration files
+- `/public` - Static assets
+- `/content` - Blog posts and portfolio content
+=======
+## 🧪 Testing
+First, install testing dependencies:
+```bash
+npm install --save-dev jest @testing-library/react @testing-library/jest-dom
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Then run:
+```bash
+npm run test
+```
+
+## 📦 Deployment
+This project is optimized for deployment on Vercel. To deploy, follow the [Next.js deployment guide](https://nextjs.org/docs/deployment), or set up automatic deployments with GitHub integration.
+
+## 🤝 Contributions
+Please read [CONTRIBUTING.md](docs/CONTRIBUTING.md) for details on the code of conduct and contribution process.
+
+## 📜 License
+This project is licensed under the MIT License - see the LICENSE.md file for details.
 
 ## Learn More
 

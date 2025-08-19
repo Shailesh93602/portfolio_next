@@ -6,7 +6,6 @@ import { fadeIn, staggerContainer } from "@/lib/animations";
 import { Mail, Phone, MapPin, Github, Linkedin, Twitter } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import emailjs from "emailjs-com";
 import { SOCIAL_LINKS, CONTACT_INFO } from "@/lib/constants";
 import { useForm, UseFormRegister, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -83,7 +82,9 @@ const InputField: React.FC<InputFieldProps> = ({
         type={type}
         {...register(name)}
         required={required}
-        className="w-full px-4 py-2 bg-dark border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-text-primary"
+        className={`w-full px-4 py-2 bg-dark border rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-text-primary ${
+          error ? "border-red-500" : "border-gray-700"
+        }`}
       />
       {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
     </div>
@@ -114,28 +115,38 @@ export const ContactContent: React.FC = () => {
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
-      // Build template parameters using data from the form.
-      const templateParams = {
-        from_name: data.fullName,
-        from_email: data.email,
-        from_phoneNumber: data.phoneNumber || "",
-        from_subject: data.subject,
-        from_message: data.message,
-      };
+      setSubmitStatus(null);
 
-      // Send email using EmailJS with keys from environment variables.
-      await emailjs.send(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "",
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "",
-        templateParams,
-        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || ""
-      );
+      // Create mailto link for now (temporary solution)
+      const mailtoLink = `mailto:${
+        CONTACT_INFO.EMAIL
+      }?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(
+        `Name: ${data.fullName}\nEmail: ${data.email}\nPhone: ${
+          data.phoneNumber || "Not provided"
+        }\n\nMessage:\n${data.message}`
+      )}`;
 
+      // Open default mail client
+      window.open(mailtoLink, "_blank");
+
+      // Show success message
       setSubmitStatus("success");
+
+      // Clear form after successful submission
       reset();
+
+      // Clear success message after 5 seconds
+      setTimeout(() => {
+        setSubmitStatus(null);
+      }, 5000);
     } catch (error) {
-      console.error("Error sending email:", error);
+      console.error("Error processing contact form:", error);
       setSubmitStatus("error");
+
+      // Clear error message after 5 seconds
+      setTimeout(() => {
+        setSubmitStatus(null);
+      }, 5000);
     }
   };
 
@@ -172,14 +183,24 @@ export const ContactContent: React.FC = () => {
               <Mail className="mt-1 h-5 w-5 text-primary" />
               <div>
                 <h3 className="font-semibold">Email</h3>
-                <p className="text-muted-foreground">{CONTACT_INFO.EMAIL}</p>
+                <a
+                  href={`mailto:${CONTACT_INFO.EMAIL}`}
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {CONTACT_INFO.EMAIL}
+                </a>
               </div>
             </div>
             <div className="flex items-start gap-4">
               <Phone className="mt-1 h-5 w-5 text-primary" />
               <div>
                 <h3 className="font-semibold">Phone</h3>
-                <p className="text-muted-foreground">{CONTACT_INFO.PHONE}</p>
+                <a
+                  href={`tel:${CONTACT_INFO.PHONE}`}
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {CONTACT_INFO.PHONE}
+                </a>
               </div>
             </div>
             <div className="flex items-start gap-4">
@@ -198,6 +219,7 @@ export const ContactContent: React.FC = () => {
                   href={SOCIAL_LINKS.GITHUB}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Visit my GitHub profile"
                 >
                   <Github className="h-5 w-5" />
                 </a>
@@ -207,6 +229,7 @@ export const ContactContent: React.FC = () => {
                   href={SOCIAL_LINKS.LINKEDIN}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Visit my LinkedIn profile"
                 >
                   <Linkedin className="h-5 w-5" />
                 </a>
@@ -216,6 +239,7 @@ export const ContactContent: React.FC = () => {
                   href={SOCIAL_LINKS.TWITTER}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Visit my Twitter profile"
                 >
                   <Twitter className="h-5 w-5" />
                 </a>
@@ -277,7 +301,9 @@ export const ContactContent: React.FC = () => {
                 id="message"
                 {...register("message")}
                 required
-                className="min-h-[150px]"
+                className={`min-h-[150px] ${
+                  errors.message ? "border-red-500" : ""
+                }`}
               />
               {errors.message && (
                 <p className="text-sm text-red-500 mt-1">
@@ -290,21 +316,37 @@ export const ContactContent: React.FC = () => {
                 type="submit"
                 size="lg"
                 disabled={isSubmitting}
-                className="w-full bg-primary text-white hover:bg-primary/90"
+                className="w-full bg-primary text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? "Sending..." : "Send Message"}
+                {isSubmitting ? "Processing..." : "Send Message"}
               </Button>
             </div>
+
+            {/* Status Messages */}
             {submitStatus === "success" && (
-              <div className="text-green-500 text-center">
-                Message sent successfully!
+              <div className="text-green-500 text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-md border border-green-200 dark:border-green-800">
+                ✅ Message sent successfully! Your default email client should
+                open with a pre-filled message.
               </div>
             )}
             {submitStatus === "error" && (
-              <div className="text-red-500 text-center">
-                Error sending message. Please try again.
+              <div className="text-red-500 text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-200 dark:border-red-800">
+                ❌ Error processing your message. Please try again or contact me
+                directly at {CONTACT_INFO.EMAIL}
               </div>
             )}
+
+            {/* Note about email client */}
+            <div className="text-sm text-muted-foreground text-center">
+              <p>
+                💡 Note: This will open your default email client with a
+                pre-filled message.
+              </p>
+              <p>
+                For immediate contact, you can also email me directly at{" "}
+                {CONTACT_INFO.EMAIL}
+              </p>
+            </div>
           </form>
         </motion.div>
       </motion.div>
