@@ -53,6 +53,9 @@ export default function BlogsContent() {
         <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-[hsl(var(--hero-gradient-from))] to-[hsl(var(--hero-gradient-to))] bg-clip-text text-transparent">
           Blog Posts
         </h1>
+        <p className="text-center text-muted-foreground mb-8">
+          Click on any blog post to read the full article on my external blog.
+        </p>
         <div className="grid gap-8">
           {filteredPosts.map((post) => (
             <a
@@ -61,6 +64,7 @@ export default function BlogsContent() {
               target="_blank"
               rel="noopener noreferrer"
               className="block group"
+              aria-label={`Read full article: ${post.title}`}
             >
               <article className="bg-card rounded-lg overflow-hidden border border-border transition-all duration-300 hover:border-primary/50 hover:shadow-lg">
                 <div className="grid md:grid-cols-[2fr,3fr]">
@@ -84,8 +88,23 @@ export default function BlogsContent() {
                       </h2>
                       <p className="text-text-secondary">{post.description}</p>
                     </div>
-                    <div className="mt-6 text-primary font-medium group-hover:underline">
-                      Read More →
+                    <div className="mt-6">
+                      <span className="inline-flex items-center gap-2 text-primary font-medium group-hover:underline cursor-pointer">
+                        Read More
+                        <svg
+                          className="w-4 h-4 transition-transform group-hover:translate-x-1"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </span>
                     </div>
                   </div>
                 </div>

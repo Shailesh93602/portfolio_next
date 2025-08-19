@@ -99,7 +99,8 @@ export const ContactContent: React.FC = () => {
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: yupResolver(schema),
-    mode: "onChange",
+    mode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       fullName: "",
       email: "",
@@ -126,10 +127,20 @@ export const ContactContent: React.FC = () => {
         }\n\nMessage:\n${data.message}`
       )}`;
 
-      // Open default mail client
-      window.open(mailtoLink, "_blank");
+      // Try to open default mail client
+      const mailtoWindow = window.open(mailtoLink, "_blank");
 
-      // Show success message
+      // Check if popup was blocked
+      if (!mailtoWindow) {
+        // Popup was blocked, show error message with alternative
+        setSubmitStatus("error");
+        setTimeout(() => {
+          setSubmitStatus(null);
+        }, 5000);
+        return;
+      }
+
+      // Show success message immediately
       setSubmitStatus("success");
 
       // Clear form after successful submission
@@ -331,8 +342,8 @@ export const ContactContent: React.FC = () => {
             )}
             {submitStatus === "error" && (
               <div className="text-red-500 text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-200 dark:border-red-800">
-                ❌ Error processing your message. Please try again or contact me
-                directly at {CONTACT_INFO.EMAIL}
+                ❌ Popup blocked! Please allow popups for this site or contact
+                me directly at {CONTACT_INFO.EMAIL}
               </div>
             )}
 

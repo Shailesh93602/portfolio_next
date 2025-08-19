@@ -94,13 +94,33 @@ const PlatformSection = ({
 );
 
 export function StatisticsContent() {
-  const { data: stats, isLoading } = useQuery({
+  const [showTimeoutMessage, setShowTimeoutMessage] = React.useState(false);
+
+  const {
+    data: stats,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["stats"],
     queryFn: async () => {
       const response = await axios.get("/api/statistics");
       return response.data;
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 2,
+    retryDelay: 1000,
   });
+
+  // Show timeout message after 10 seconds
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (isLoading) {
+        setShowTimeoutMessage(true);
+      }
+    }, 10000);
+
+    return () => clearTimeout(timer);
+  }, [isLoading]);
 
   // Transform GitHub contributions data for heatmap
   const contributionHeatmapData = React.useMemo(() => {
@@ -197,6 +217,49 @@ export function StatisticsContent() {
       </motion.div>
 
       <div className="space-y-16 max-w-6xl mx-auto">
+        {/* Loading State */}
+        {isLoading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-16"
+          >
+            <div className="inline-flex items-center gap-3 text-muted-foreground">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+              <span>Loading your coding statistics...</span>
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">
+              This may take a few moments as we fetch data from multiple
+              platforms.
+            </p>
+            {showTimeoutMessage && (
+              <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md">
+                <p className="text-yellow-800 dark:text-yellow-200 text-sm">
+                  ⏰ Taking longer than expected? The external APIs might be
+                  slow. Please wait...
+                </p>
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-16"
+          >
+            <div className="inline-flex items-center gap-3 text-red-500">
+              <span>❌ Error loading statistics</span>
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">
+              Unable to fetch data at the moment. Please try refreshing the
+              page.
+            </p>
+          </motion.div>
+        )}
+
         {/* GitHub Contribution Heatmap */}
         {!isLoading && contributionHeatmapData.length > 0 && (
           <GitHubContributionHeatmap
