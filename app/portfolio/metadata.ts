@@ -62,4 +62,8 @@ export const metadata: Metadata = {
   verification: {
     google: "your-google-verification-code",
   },
+   icons: {
+      icon: "/Images/image.png", 
+      apple: "/Images/image.png",
+  },
 };
