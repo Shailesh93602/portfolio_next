@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: "About | Shailesh Chaudhari",
     description:
       "Learn more about Shailesh Chaudhari, a passionate Full Stack Developer from Gujarat, India. Discover his experience, achievements, skills, and hobbies.",
-    url: "https://yourdomain.com/about",
+    url: "https://shaileshchaudhari.vercel.app/about",
     siteName: "Shailesh Chaudhari Portfolio",
     images: [
       {
@@ -26,6 +26,10 @@ export const metadata: Metadata = {
     title: "About | Shailesh Chaudhari",
     description:
       "Learn more about Shailesh Chaudhari, a passionate Full Stack Developer from Gujarat, India. Discover his experience, achievements, skills, and hobbies.",
-    images: ["/Images/home.webp"],
+    images: ["/Images/image.png"],
+  },
+   icons: {
+      icon: "/Images/image.png", 
+      apple: "/Images/image.png",
   },
 };
