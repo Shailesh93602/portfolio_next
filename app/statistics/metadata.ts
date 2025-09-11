@@ -37,7 +37,7 @@ export const metadata: Metadata = {
       "Explore my coding journey through statistics, contributions, and achievements in software development.",
     images: [
       {
-        url: "https://shaileshchaudhari.vercel.app/Images/home.webp",
+        url: "https://shaileshchaudhari.vercel.app/Images/image.png",
         width: 1200,
         height: 630,
         alt: "Shailesh Chaudhari Statistics",
@@ -49,9 +49,9 @@ export const metadata: Metadata = {
     title: "Statistics | Shailesh Chaudhari - Full Stack Developer",
     description:
       "Check out my development metrics and coding progress across various platforms.",
-    images: ["https://shaileshchaudhari.vercel.app/Images/home.webp"],
-    site: "@shaileshchaudhari",
-    creator: "@shaileshchaudhari",
+    images: ["https://shaileshchaudhari.vercel.app/Images/image.png"],
+    site: "@ShaileshWork",
+    creator: "@ShaileshWork",
   },
   alternates: {
     canonical: "https://shaileshchaudhari.vercel.app/statistics",
@@ -61,5 +61,9 @@ export const metadata: Metadata = {
   },
   verification: {
     google: "your-google-verification-code",
+  },
+   icons: {
+      icon: "/Images/image.png", 
+      apple: "/Images/image.png",
   },
 };
