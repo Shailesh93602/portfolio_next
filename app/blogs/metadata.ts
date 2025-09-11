@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     "Explore technical articles, development insights, and coding tutorials by Shailesh Chaudhari. Learn about web development, MERN stack, and software engineering best practices.",
   applicationName: "Shailesh Chaudhari Portfolio",
   authors: [
-    { name: "Shailesh Chaudhari", url: "https://shaileshchaudhari.vercel.app" },
+    { name: "Shailesh Chaudhari", url: "https://shaileshchaudhari.vercel.app/blogs" },
   ],
   generator: "Next.js",
   keywords: [
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     siteName: "Shailesh Chaudhari Portfolio",
     images: [
       {
-        url: "https://shaileshchaudhari.vercel.app/Images/home.webp",
+        url: "https://shaileshchaudhari.vercel.app/Images/image.png",
         width: 1200,
         height: 630,
         alt: "Shailesh Chaudhari Blog",
@@ -63,8 +63,8 @@ export const metadata: Metadata = {
     title: "Blog | Shailesh Chaudhari - Full Stack Developer",
     description:
       "Read technical articles and development insights from my software engineering journey.",
-    images: ["https://shaileshchaudhari.vercel.app/Images/home.webp"],
-    creator: "@ShaileshCoder",
+    images: ["https://shaileshchaudhari.vercel.app/Images/image.png"],
+    creator: "@ShaileshWork",
   },
   verification: {
     google: "google-site-verification-code",
@@ -72,4 +72,8 @@ export const metadata: Metadata = {
   },
   category: "Technology",
   classification: "Web Development Blog",
+   icons: {
+      icon: "/Images/image.png", 
+      apple: "/Images/image.png",
+  },
 };
