@@ -28,6 +28,8 @@ export const metadata: Metadata = {
       "Welcome to the portfolio of Shailesh Chaudhari, a passionate Full Stack Developer from Gujarat, India. Explore projects, skills, and achievements.",
     images: ["/Images/image.png"],
   },
-  icon: "/Images/image.png", 
-  apple: "/Images/image.png",
+  icons: {
+      icon: "/Images/image.png", 
+      apple: "/Images/image.png",
+  },
 };
