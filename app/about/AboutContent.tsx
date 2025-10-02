@@ -79,14 +79,16 @@ export default function AboutContent() {
         >
           <div className="relative">
             <div className="absolute -inset-0.5 bg-gradient-to-r from-[hsl(var(--hero-gradient-from))] to-[hsl(var(--hero-gradient-to))] rounded-full blur opacity-75 animate-pulse"></div>
-            <Image
-              src="/Images/image.png"
-              alt="Shailesh Chaudhari"
-              width={300}
-              height={300}
-              className="relative rounded-full shadow-lg border-4 border-background profile-glow"
-              priority
-            />
+            <div className="relative w-[300px] h-[300px] rounded-full overflow-hidden">
+              <Image
+                src="/Images/image.png"
+                alt="Shailesh Chaudhari"
+                width={300}
+                height={300}
+                className="w-full h-full object-cover rounded-full shadow-lg border-4 border-background profile-glow"
+                priority
+              />
+            </div>
           </div>
         </motion.div>
         <div className="w-full lg:w-2/3">
