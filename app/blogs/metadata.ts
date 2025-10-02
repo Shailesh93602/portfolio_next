@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "Blog | Shailesh Chaudhari - Full Stack Developer Insights",
   description:
     "Explore technical articles, development insights, and coding tutorials by Shailesh Chaudhari. Learn about web development, MERN stack, and software engineering best practices.",
+  alternates: {
+    canonical: "https://shaileshchaudhari.vercel.app/blogs",
+  },
   applicationName: "Shailesh Chaudhari Portfolio",
   authors: [
     { name: "Shailesh Chaudhari", url: "https://shaileshchaudhari.vercel.app/blogs" },
@@ -37,9 +40,6 @@ export const metadata: Metadata = {
       "max-image-preview": "large",
       "max-snippet": -1,
     },
-  },
-  alternates: {
-    canonical: "https://shaileshchaudhari.vercel.app/blogs",
   },
   openGraph: {
     type: "website",

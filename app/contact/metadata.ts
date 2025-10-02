@@ -4,6 +4,9 @@ export const metadata: Metadata = {
   title: "Contact Shailesh Chaudhari | Full Stack Developer",
   description:
     "Get in touch with Shailesh Chaudhari, a Full Stack Developer specializing in modern web technologies. Available for project discussions, collaborations, and professional opportunities.",
+  alternates: {
+    canonical: "https://shaileshchaudhari.vercel.app/contact",
+  },
   metadataBase: new URL("https://shaileshchaudhari.vercel.app"),
   robots: {
     index: true,
@@ -53,17 +56,11 @@ export const metadata: Metadata = {
     site: "@ShaileshWork",
     creator: "@ShaileshWork",
   },
-  alternates: {
-    canonical: "https://shaileshchaudhari.vercel.app/contact",
-    languages: {
-      "en-US": "https://shaileshchaudhari.vercel.app/contact",
-    },
-  },
   verification: {
     google: "your-google-verification-code",
   },
-   icons: {
-      icon: "/Images/image.png", 
-      apple: "/Images/image.png",
+  icons: {
+    icon: "/Images/image.png",
+    apple: "/Images/image.png",
   },
 };

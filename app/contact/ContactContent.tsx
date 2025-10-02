@@ -11,6 +11,12 @@ import { useForm, UseFormRegister, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
+declare global {
+  interface Window {
+    gtag: (...args: unknown[]) => void;
+  }
+}
+
 // Define the form data type.
 type FormData = {
   fullName: string;
@@ -117,6 +123,15 @@ export const ContactContent: React.FC = () => {
   const onSubmit: SubmitHandler<FormData> = async () => {
     try {
       setSubmitStatus(null);
+
+      // Send GA event
+      if (typeof window !== "undefined" && window.gtag) {
+        window.gtag("event", "contact_form_submit", {
+          event_category: "engagement",
+          event_label: "contact_form",
+          value: 1,
+        });
+      }
 
       // Show success message immediately (before trying to open mail client)
       setSubmitStatus("success");

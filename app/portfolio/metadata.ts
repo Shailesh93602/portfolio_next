@@ -4,6 +4,9 @@ export const metadata: Metadata = {
   title: "Portfolio | Shailesh Chaudhari - Full Stack Developer",
   description:
     "Explore Shailesh Chaudhari's portfolio of web development projects. View my work in React, Node.js, and full-stack applications.",
+  alternates: {
+    canonical: "https://shaileshchaudhari.vercel.app/portfolio",
+  },
   metadataBase: new URL("https://shaileshchaudhari.vercel.app"),
   robots: {
     index: true,
@@ -53,17 +56,11 @@ export const metadata: Metadata = {
     site: "@shaileshchaudhari",
     creator: "@shaileshchaudhari",
   },
-  alternates: {
-    canonical: "https://shaileshchaudhari.vercel.app/portfolio",
-    languages: {
-      "en-US": "https://shaileshchaudhari.vercel.app/portfolio",
-    },
-  },
   verification: {
     google: "your-google-verification-code",
   },
-   icons: {
-      icon: "/Images/image.png", 
-      apple: "/Images/image.png",
+  icons: {
+    icon: "/Images/image.png",
+    apple: "/Images/image.png",
   },
 };

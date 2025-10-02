@@ -166,6 +166,7 @@ export default function HomeContent() {
               alt="Shailesh Chaudhari"
               fill
               priority
+              sizes="(max-width: 768px) 288px, 500px"
               className="rounded-full object-cover border-4 border-primary/20 shadow-2xl"
             />
           </div>

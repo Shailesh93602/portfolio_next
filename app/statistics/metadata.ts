@@ -4,6 +4,9 @@ export const metadata: Metadata = {
   title: "Statistics | Shailesh Chaudhari - Full Stack Developer",
   description:
     "View Shailesh Chaudhari's coding statistics, GitHub contributions, and problem-solving achievements across various platforms.",
+  alternates: {
+    canonical: "https://shaileshchaudhari.vercel.app/statistics",
+  },
   metadataBase: new URL("https://shaileshchaudhari.vercel.app"),
   robots: {
     index: true,
@@ -53,17 +56,11 @@ export const metadata: Metadata = {
     site: "@ShaileshWork",
     creator: "@ShaileshWork",
   },
-  alternates: {
-    canonical: "https://shaileshchaudhari.vercel.app/statistics",
-    languages: {
-      "en-US": "https://shaileshchaudhari.vercel.app/statistics",
-    },
-  },
   verification: {
     google: "your-google-verification-code",
   },
-   icons: {
-      icon: "/Images/image.png", 
-      apple: "/Images/image.png",
+  icons: {
+    icon: "/Images/image.png",
+    apple: "/Images/image.png",
   },
 };

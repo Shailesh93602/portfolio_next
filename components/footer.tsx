@@ -8,22 +8,22 @@ import { Github, Linkedin, Twitter, Mail } from "lucide-react";
 const socialLinks = [
   {
     name: "GitHub",
-    href: "https://github.com/shaileshchaudhary",
+    href: "https://github.com/shailesh93602",
     icon: Github,
   },
   {
     name: "LinkedIn",
-    href: "https://linkedin.com/in/shaileshchaudhary",
+    href: "https://linkedin.com/in/shaileshbhaichaudhari",
     icon: Linkedin,
   },
   {
     name: "Twitter",
-    href: "https://twitter.com/shaileshchaudhary",
+    href: "https://twitter.com/shaileshwork",
     icon: Twitter,
   },
   {
     name: "Email",
-    href: "mailto:shaileshchaudhary@example.com",
+    href: "mailto:shailesh93602@gmail.com",
     icon: Mail,
   },
 ];
@@ -41,12 +41,12 @@ export function Footer() {
           <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
             Built by{" "}
             <Link
-              href="https://github.com/shaileshchaudhary"
+              href="https://github.com/shailesh93602"
               target="_blank"
               rel="noreferrer"
               className="font-medium underline underline-offset-4"
             >
-              Shailesh Chaudhary
+              Shaileshbhai Chaudhari
             </Link>
             . Hosted on{" "}
             <Link

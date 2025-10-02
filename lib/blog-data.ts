@@ -58,6 +58,10 @@ export const blogPosts: BlogPost[] = [
       "technical interview preparation", "programming challenges"
     ],
     content: `
+      <div class="tldr">
+        <strong>TL;DR:</strong> Shailesh Chaudhari shares his journey of solving 700+ DSA problems, revealing strategic approaches, key lessons, and how mastering data structures and algorithms transformed his software engineering career. Learn practical tips for coding interview preparation and problem-solving excellence.
+      </div>
+
       <h2>Introduction: Why I Embarked on the 700+ DSA Challenge</h2>
       <p>Hello everyone! I'm <strong>Shailesh Chaudhari</strong> (many know me as <strong>Shaileshbhai</strong>), a passionate full-stack developer and software engineer. Today, I want to share my transformative journey of solving over 700 Data Structures and Algorithms problems—a challenge that fundamentally changed my approach to programming and problem-solving.</p>
 
@@ -159,6 +163,17 @@ export const blogPosts: BlogPost[] = [
       <blockquote>
         <p><em>"The expert in anything was once a beginner who never gave up."</em> - This quote perfectly encapsulates my DSA journey and continues to motivate me in my software engineering career.</p>
       </blockquote>
+
+      <div class="author-box">
+        <h3>About the Author</h3>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <img src="/Images/home.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
+          <div>
+            <p><strong>Shailesh Chaudhari (aka Shaileshbhai)</strong> is a passionate Full-Stack Developer with expertise in MERN stack technologies. He loves solving complex problems and sharing knowledge with the developer community.</p>
+            <p>Connect with him on <a href="/about">About Page</a> or via <a href="mailto:contact@shaileshchaudhari.com">email</a>.</p>
+          </div>
+        </div>
+      </div>
     `
   },
   {
@@ -179,6 +194,10 @@ export const blogPosts: BlogPost[] = [
       "programming career growth", "web development journey"
     ],
     content: `
+      <div class="tldr">
+        <strong>TL;DR:</strong> Shailesh Chaudhari reflects on his first year as a software engineer, sharing key lessons and insights gained through real-world experiences. Discover practical advice on overcoming challenges, mastering the full-stack ecosystem, and achieving professional growth in the tech industry.
+      </div>
+
       <h2>Introduction: From Student to Software Engineer</h2>
       <p>Hello everyone! I'm <strong>Shailesh Chaudhari</strong>, and many of you might know me as <strong>Shaileshbhai</strong> from my technical content and projects. Today, I want to share my transformative first year as a software engineer—the challenges, victories, and invaluable lessons that shaped my career in technology.</p>
 
@@ -307,6 +326,17 @@ export const blogPosts: BlogPost[] = [
       <blockquote>
         <p><em>"The first year of any career is about building foundations. In software engineering, those foundations include not just technical skills, but also the mindset and habits that will serve you throughout your career."</em></p>
       </blockquote>
+
+      <div class="author-box">
+        <h3>About the Author</h3>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <img src="/Images/home.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
+          <div>
+            <p><strong>Shailesh Chaudhari (aka Shaileshbhai)</strong> is a passionate Full-Stack Developer with expertise in MERN stack technologies. He loves solving complex problems and sharing knowledge with the developer community.</p>
+            <p>Connect with him on <a href="/about">About Page</a> or via <a href="mailto:contact@shaileshchaudhari.com">email</a>.</p>
+          </div>
+        </div>
+      </div>
     `
   },
   {
@@ -327,6 +357,10 @@ export const blogPosts: BlogPost[] = [
       "software engineer career path", "full stack developer journey"
     ],
     content: `
+      <div class="tldr">
+        <strong>TL;DR:</strong> Shailesh Chaudhari narrates his journey from an intern to a full-time software engineer, detailing the challenges faced, skills learned, and key milestones achieved. Gain insights into the tech industry and practical advice for navigating the early stages of a software engineering career.
+      </div>
+
       <h2>Introduction: The Beginning of My Tech Journey</h2>
       <p>Hello everyone! I'm <strong>Shailesh Chaudhari</strong>, and many of you know me as <strong>Shaileshbhai</strong> in the tech community. Today, I want to share one of the most transformative periods of my life—my journey from being a passionate coding intern to becoming a full-time software engineer.</p>
 
@@ -530,6 +564,17 @@ export const blogPosts: BlogPost[] = [
       <blockquote>
         <p><em>"Every expert was once a beginner. Every pro was once an amateur. Every icon was once an unknown. The key is to never stop learning and growing."</em></p>
       </blockquote>
+
+      <div class="author-box">
+        <h3>About the Author</h3>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <img src="/Images/home.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
+          <div>
+            <p><strong>Shailesh Chaudhari (aka Shaileshbhai)</strong> is a passionate Full-Stack Developer with expertise in MERN stack technologies. He loves solving complex problems and sharing knowledge with the developer community.</p>
+            <p>Connect with him on <a href="/about">About Page</a> or via <a href="mailto:contact@shaileshchaudhari.com">email</a>.</p>
+          </div>
+        </div>
+      </div>
     `
   },
   {
@@ -550,6 +595,10 @@ export const blogPosts: BlogPost[] = [
       "collaborative coding", "professional development team"
     ],
     content: `
+      <div class="tldr">
+        <strong>TL;DR:</strong> Shailesh Chaudhari explores the profound impact of team collaboration on his development as a software engineer. Learn how effective communication, code reviews, and mentorship transformed his approach to software development and professional growth.
+      </div>
+
       <h2>Introduction: From Solo Coder to Team Player</h2>
       <p>Hello everyone! I'm <strong>Shailesh Chaudhari</strong>, known as <strong>Shaileshbhai</strong> in the developer community. Today, I want to share one of the most profound lessons from my software engineering journey—the transformative power of team collaboration and how working with others fundamentally changed me as a developer.</p>
 
@@ -877,6 +926,17 @@ export const blogPosts: BlogPost[] = [
       <blockquote>
         <p><em>"The best code is written by teams that communicate, collaborate, and care about each other as much as they care about the code."</em></p>
       </blockquote>
+
+      <div class="author-box">
+        <h3>About the Author</h3>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <img src="/Images/home.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
+          <div>
+            <p><strong>Shailesh Chaudhari (aka Shaileshbhai)</strong> is a passionate Full-Stack Developer with expertise in MERN stack technologies. He loves solving complex problems and sharing knowledge with the developer community.</p>
+            <p>Connect with him on <a href="/about">About Page</a> or via <a href="mailto:contact@shaileshchaudhari.com">email</a>.</p>
+          </div>
+        </div>
+      </div>
     `
   },
   {
@@ -896,6 +956,10 @@ export const blogPosts: BlogPost[] = [
       "nextjs 13 portfolio", "modern portfolio design", "responsive portfolio"
     ],
     content: `
+      <div class="tldr">
+        <strong>TL;DR:</strong> Follow Shailesh Chaudhari's detailed guide on building a professional portfolio website from scratch using Next.js 13+ and TailwindCSS. Learn about the planning, design, and technical implementation phases, and discover valuable resources and tips for showcasing your work effectively.
+      </div>
+
       <h2>Introduction: Why I Built My Portfolio from Scratch</h2>
       <p>Hello everyone! I'm <strong>Shailesh Chaudhari</strong>, also known as <strong>Shaileshbhai</strong> in the tech community. As a passionate full-stack developer, I believe that a portfolio website is more than just a digital resume—it's a reflection of your skills, personality, and approach to problem-solving.</p>
 
@@ -1253,6 +1317,17 @@ export const blogPosts: BlogPost[] = [
       <blockquote>
         <p><em>"Your portfolio is your story told in code. Make every line count."</em></p>
       </blockquote>
+
+      <div class="author-box">
+        <h3>About the Author</h3>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <img src="/Images/home.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
+          <div>
+            <p><strong>Shailesh Chaudhari (aka Shaileshbhai)</strong> is a passionate Full-Stack Developer with expertise in MERN stack technologies. He loves solving complex problems and sharing knowledge with the developer community.</p>
+            <p>Connect with him on <a href="/about">About Page</a> or via <a href="mailto:contact@shaileshchaudhari.com">email</a>.</p>
+          </div>
+        </div>
+      </div>
     `
   },
   {
@@ -1272,6 +1347,10 @@ export const blogPosts: BlogPost[] = [
       "software engineering challenges", "early career development", "programming difficulties"
     ],
     content: `
+      <div class="tldr">
+        <strong>TL;DR:</strong> Shailesh Chaudhari candidly shares the challenges he faced as a junior developer, including imposter syndrome and technical hurdles. Learn about the strategies and mindset shifts that helped him overcome these challenges and achieve growth in his software engineering career.
+      </div>
+
       <h2>Introduction: The Honest Truth About Junior Development</h2>
       <p>Hello everyone! I'm <strong>Shailesh Chaudhari</strong>, also known as <strong>Shaileshbhai</strong> in the developer community. When I first started my journey as a software developer, I had grand visions of elegant code, innovative solutions, and smooth sailing through the world of programming. The reality, as many of you know, was quite different.</p>
 
@@ -1603,6 +1682,17 @@ export const blogPosts: BlogPost[] = [
       <blockquote>
         <p><em>"The only way to fail as a junior developer is to stop learning. Every challenge is an opportunity, every mistake is a lesson, and every day is progress."</em></p>
       </blockquote>
+
+      <div class="author-box">
+        <h3>About the Author</h3>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <img src="/Images/home.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
+          <div>
+            <p><strong>Shailesh Chaudhari (aka Shaileshbhai)</strong> is a passionate Full-Stack Developer with expertise in MERN stack technologies. He loves solving complex problems and sharing knowledge with the developer community.</p>
+            <p>Connect with him on <a href="/about">About Page</a> or via <a href="mailto:contact@shaileshchaudhari.com">email</a>.</p>
+          </div>
+        </div>
+      </div>
     `
   },
   {
@@ -1623,6 +1713,10 @@ export const blogPosts: BlogPost[] = [
       "professional development", "peer code review"
     ],
     content: `
+      <div class="tldr">
+        <strong>TL;DR:</strong> Discover the transformative power of code reviews through Shailesh Chaudhari's experiences. Learn how reviewing senior developers' merge requests accelerated his growth, improved code quality, and built essential collaboration skills in software engineering.
+      </div>
+
       <h2>Introduction: Code Reviews as a Professional Development Catalyst</h2>
       <p>Hello everyone! I'm <strong>Shailesh Chaudhari</strong>, and many of you know me as <strong>Shaileshbhai</strong> in the tech community. Today, I want to share one of the most transformative aspects of my software engineering journey—the power of code reviews and the invaluable lessons I learned from reviewing senior developers' merge requests (MRs).</p>
 
@@ -1962,6 +2056,17 @@ export const blogPosts: BlogPost[] = [
       <blockquote>
         <p><em>"Code reviews are where technical excellence meets human growth. Every review is an opportunity to teach, learn, and build something better together."</em></p>
       </blockquote>
+
+      <div class="author-box">
+        <h3>About the Author</h3>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <img src="/Images/home.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
+          <div>
+            <p><strong>Shailesh Chaudhari (aka Shaileshbhai)</strong> is a passionate Full-Stack Developer with expertise in MERN stack technologies. He loves solving complex problems and sharing knowledge with the developer community.</p>
+            <p>Connect with him on <a href="/about">About Page</a> or via <a href="mailto:contact@shaileshchaudhari.com">email</a>.</p>
+          </div>
+        </div>
+      </div>
     `
   },
   {
@@ -1982,6 +2087,10 @@ export const blogPosts: BlogPost[] = [
       "full stack development journey", "career transition software engineer"
     ],
     content: `
+      <div class="tldr">
+        <strong>TL;DR:</strong> Shailesh Chaudhari shares his insights on transitioning from learning programming concepts to applying them in real-world software development. Learn practical strategies for building production-ready applications, overcoming common challenges, and achieving professional growth in the tech industry.
+      </div>
+
       <h2>Introduction: The Learning-to-Application Gap</h2>
       <p>Hello everyone! I'm <strong>Shailesh Chaudhari</strong>, also known as <strong>Shaileshbhai</strong> in the tech community. Today, I want to share one of the most challenging yet rewarding transitions in my software engineering journey—the shift from academic learning to building real-world applications.</p>
 
@@ -2266,6 +2375,17 @@ export const blogPosts: BlogPost[] = [
       <blockquote>
         <p><em>"The best way to learn is to build something real. Theory gives you the foundation, but practice gives you the expertise."</em></p>
       </blockquote>
+
+      <div class="author-box">
+        <h3>About the Author</h3>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <img src="/Images/home.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
+          <div>
+            <p><strong>Shailesh Chaudhari (aka Shaileshbhai)</strong> is a passionate Full-Stack Developer with expertise in MERN stack technologies. He loves solving complex problems and sharing knowledge with the developer community.</p>
+            <p>Connect with him on <a href="/about">About Page</a> or via <a href="mailto:contact@shaileshchaudhari.com">email</a>.</p>
+          </div>
+        </div>
+      </div>
     `
   }
 ];

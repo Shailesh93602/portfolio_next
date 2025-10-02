@@ -4,6 +4,9 @@ export const metadata: Metadata = {
   title: "Home | Shailesh Chaudhari",
   description:
     "Welcome to the portfolio of Shailesh Chaudhari, a passionate Full Stack Developer from Gujarat, India. Explore projects, skills, and achievements.",
+  alternates: {
+    canonical: "https://shaileshchaudhari.vercel.app/",
+  },
   openGraph: {
     title: "Home | Shailesh Chaudhari",
     description:
