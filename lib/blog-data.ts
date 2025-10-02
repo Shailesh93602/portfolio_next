@@ -29,10 +29,10 @@ export interface BlogPost {
 export const blogPosts: BlogPost[] = [
   {
     slug: "solving-700-dsa-problems",
-    title: "My Journey to Mastering DSA: Solving 700+ Problems",
-    subtitle: "From Basic Arrays to Advanced Dynamic Programming: A Software Engineer's Coding Journey",
-    description: "Follow Shailesh Chaudhari's comprehensive journey of solving over 700 Data Structures and Algorithms problems. Learn proven strategies, overcome challenges, and discover key insights that transformed problem-solving skills for technical interviews and software engineering excellence.",
-    image: "/Images/codechef.png", // DSA/Coding problems theme
+    title: "Solving 700+ DSA Problems: My Journey to Algorithm Mastery",
+    subtitle: "From beginner to competitive programming: A comprehensive guide to mastering data structures and algorithms",
+    description: "Join Shailesh Chaudhari as he shares his comprehensive journey of solving over 700 Data Structures and Algorithms problems. Learn about effective problem-solving strategies, resource recommendations, and how to build a strong foundation in competitive programming and technical interviews.",
+    image: "/Images/portfolio1.png", // DSA/Coding problems theme
     author: {
       name: "Shailesh Chaudhari",
       avatar: "/Images/home.webp",
@@ -318,10 +318,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: "internship-to-engineer-journey",
-    title: "From Intern to Engineer: My Software Development Journey",
-    subtitle: "A Real-World Story of Growth, Challenges, and Success in Tech",
-    description: "Follow Shailesh Chaudhari's inspiring transformation from a passionate coding intern to a full-time software engineer. Discover the challenges, growth strategies, and valuable insights that paved the way for success in the competitive tech industry.",
-    image: "/Images/gecSportify.png", // Career journey theme
+    title: "From Internship to Software Engineer: My Complete Journey",
+    subtitle: "A step-by-step guide through the transition from internship to full-time software engineering role",
+    description: "Follow Shailesh Chaudhari's complete journey from internship to becoming a full-time software engineer. Learn about the challenges, milestones, and key learnings that shaped his career in the tech industry, with practical advice for aspiring developers.",
+    image: "/Images/portfolio1.png", // Career journey theme
     author: {
       name: "Shailesh Chaudhari",
       avatar: "/Images/home.webp",
@@ -552,9 +552,9 @@ export const blogPosts: BlogPost[] = [
   {
     slug: "how-team-collaboration-made-me-better-developer",
     title: "How Team Collaboration Made Me a Better Developer",
-    subtitle: "The Transformative Power of Collaborative Development and Team Dynamics",
-    description: "Discover how Shailesh Chaudhari's experiences with team collaboration shaped his development career. Learn about communication, mentorship, and the collaborative skills that transformed him from a solo coder to a professional team player.",
-    image: "/Images/ticTacToe.png", // Collaboration/team theme
+    subtitle: "The transformative power of teamwork in software development and professional growth",
+    description: "Discover how Shailesh Chaudhari's experience with team collaboration fundamentally changed his approach to software development. Learn about the importance of communication, code reviews, pair programming, and building strong relationships in tech teams.",
+    image: "/Images/portfolio1.png", // Collaboration/team theme
     author: {
       name: "Shailesh Chaudhari",
       avatar: "/Images/home.webp",
@@ -1293,10 +1293,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: "challenges-junior-developer-overcame",
-    title: "Challenges I Faced as a Junior Developer and How I Overcame Them",
-    subtitle: "Real Experiences, Practical Solutions, and Lessons Learned in Early Career Development",
-    description: "Join Shailesh Chaudhari as he shares authentic challenges faced during his junior developer phase and practical strategies that helped overcome them. From imposter syndrome to technical hurdles, discover actionable insights for navigating early career development.",
-    image: "/Images/home.webp",
+    title: "Challenges I Overcame as a Junior Developer",
+    subtitle: "Real struggles and solutions that shaped my journey in software development",
+    description: "Shailesh Chaudhari shares the most significant challenges he faced as a junior developer and how he overcame them. From imposter syndrome to technical hurdles, learn practical strategies for navigating the early stages of a software engineering career.",
+    image: "/Images/portfolio1.png",
     author: {
       name: "Shailesh Chaudhari",
       avatar: "/Images/home.webp",
@@ -1653,10 +1653,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: "importance-code-reviews-learning-senior-mrs",
-    title: "The Importance of Code Reviews and What I Learned from Reviewing Senior Devs' MRs",
-    subtitle: "Transformative Lessons from Code Review Culture and Professional Growth Through Peer Feedback",
-    description: "Discover Shailesh Chaudhari's insights on the critical role of code reviews in software development and the valuable lessons learned from reviewing senior developers' merge requests. Learn how code reviews build quality, foster learning, and accelerate professional growth.",
-    image: "/Images/codechef.png",
+    title: "The Importance of Code Reviews: Learning from Senior Developers",
+    subtitle: "How code reviews became my most valuable learning tool in software development",
+    description: "Explore Shailesh Chaudhari's journey of discovering the transformative power of code reviews. Learn how participating in code reviews with senior developers accelerated his growth, improved code quality, and built essential collaboration skills in software engineering.",
+    image: "/Images/portfolio1.png",
     author: {
       name: "Shailesh Chaudhari",
       avatar: "/Images/home.webp",
@@ -1701,8 +1701,8 @@ export const blogPosts: BlogPost[] = [
       <ul>
         <li><strong>Code Clarity:</strong> Ensuring code is self-documenting and easy to understand</li>
         <li><strong>Naming Conventions:</strong> Consistent, meaningful variable and function names</li>
-        <li><strong>Documentation:</strong> Appropriate comments and documentation for complex logic</li>
-        <li><strong>Code Organization:</strong> Logical structure and separation of concerns</li>
+        <li><strong>Code Structure:</strong> Proper organization and modular design</li>
+        <li><strong>Testing Presence:</strong> Code with comprehensive validation and error handling</li>
       </ul>
 
       <h3>Knowledge Transfer and Team Learning</h3>
@@ -2022,10 +2022,10 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: "transitioning-learning-to-real-world-applications",
-    title: "Transitioning from Learning to Building Real-World Applications",
-    subtitle: "Bridging the Gap Between Academic Knowledge and Professional Software Development",
-    description: "Join Shailesh Chaudhari as he shares his journey of transitioning from theoretical learning to building production-ready applications. Learn practical strategies for applying academic knowledge in real-world scenarios.",
-    image: "/Images/gecSportify.png",
+    title: "Transitioning from Learning to Real-World Applications",
+    subtitle: "Bridging the gap between theoretical knowledge and practical software development",
+    description: "Shailesh Chaudhari discusses the critical transition from learning programming concepts to applying them in real-world software development. Discover strategies for building practical projects, understanding industry standards, and gaining the confidence to tackle complex development challenges.",
+    image: "/Images/portfolio1.png",
     author: {
       name: "Shailesh Chaudhari",
       avatar: "/Images/home.webp",
