@@ -1,11 +1,10 @@
-
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogLayout } from "@/components/blog/blog-layout";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { getPostBySlug, getRelatedPosts } from "@/lib/blog-data";
+import { getPostBySlug, getRelatedPosts, blogPosts } from "@/lib/blog-data";
 
 const getPostData = (slug: string) => {
   const post = getPostBySlug(slug);
@@ -52,10 +51,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
   };
 }
-
-
-
-
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -114,4 +109,10 @@ export default async function Page({ params }: Props) {
       </div>
     </>
   );
+}
+
+export function generateStaticParams() {
+  return blogPosts.map((post) => ({
+    slug: post.slug,
+  }));
 }
