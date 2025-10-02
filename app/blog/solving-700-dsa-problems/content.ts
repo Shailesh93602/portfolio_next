@@ -1,5 +1,3 @@
-import { SITE_URL } from "@/lib/blog-constants";
-
 export const blogPost = {
   slug: "solving-700-dsa-problems",
   title: "My Journey to Mastering DSA: Solving 700+ Problems",
