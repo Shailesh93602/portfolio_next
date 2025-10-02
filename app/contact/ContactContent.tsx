@@ -114,43 +114,15 @@ export const ContactContent: React.FC = () => {
     null
   );
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
+  const onSubmit: SubmitHandler<FormData> = async () => {
     try {
       setSubmitStatus(null);
-
-      // Create mailto link for now (temporary solution)
-      const mailtoLink = `mailto:${
-        CONTACT_INFO.EMAIL
-      }?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(
-        `Name: ${data.fullName}\nEmail: ${data.email}\nPhone: ${
-          data.phoneNumber || "Not provided"
-        }\n\nMessage:\n${data.message}`
-      )}`;
 
       // Show success message immediately (before trying to open mail client)
       setSubmitStatus("success");
 
       // Clear form after successful submission
       reset();
-
-      // Try to open default mail client
-      try {
-        const mailtoWindow = window.open(mailtoLink, "_blank");
-
-        // Check if popup was blocked
-        if (!mailtoWindow) {
-          // Popup was blocked, but we still show success since the form was submitted
-          console.log(
-            "Mailto popup was blocked, but form submission was successful"
-          );
-        }
-      } catch (mailtoError) {
-        // Mailto failed, but form submission was still successful
-        console.log(
-          "Mailto failed, but form submission was successful:",
-          mailtoError
-        );
-      }
 
       // Clear success message after 5 seconds
       setTimeout(() => {

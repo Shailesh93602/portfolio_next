@@ -376,12 +376,9 @@ async function fetchLeetCodeStats(username: string) {
       yearsToFetch.push(year);
     }
 
-    console.log(`Fetching LeetCode data for years: ${yearsToFetch.join(", ")}`);
-
     // Fetch data for each year in parallel
     const yearDataPromises = yearsToFetch.map(async (year) => {
       try {
-        console.log(`Fetching LeetCode data for year ${year}...`);
         const response = await axios.post(
           "https://leetcode.com/graphql",
           {
@@ -407,7 +404,6 @@ async function fetchLeetCodeStats(username: string) {
           return null;
         }
 
-        console.log(`Successfully fetched LeetCode data for year ${year}`);
         return response.data.data;
       } catch (error) {
         console.error(`Error fetching LeetCode data for year ${year}:`, error);
@@ -418,10 +414,6 @@ async function fetchLeetCodeStats(username: string) {
     // Wait for all year data to be fetched
     const yearsData = await Promise.all(yearDataPromises);
     const validYearsData = yearsData.filter(Boolean);
-
-    console.log(
-      `Successfully fetched LeetCode data for ${validYearsData.length}/${yearsToFetch.length} years`
-    );
 
     // Check if we have any valid data
     if (validYearsData.length === 0) {
@@ -441,9 +433,6 @@ async function fetchLeetCodeStats(username: string) {
         hasCalendarData = true;
         try {
           const calendar = JSON.parse(yearData.matchedUser.submissionCalendar);
-          console.log(
-            `Year calendar has ${Object.keys(calendar).length} entries`
-          );
 
           // Properly merge calendars by combining entries
           Object.entries(calendar).forEach(([timestamp, count]) => {
@@ -456,21 +445,12 @@ async function fetchLeetCodeStats(username: string) {
       }
     });
 
-    console.log(
-      `Merged calendar has ${
-        Object.keys(mergedSubmissionCalendar).length
-      } entries`
-    );
-
     // Try all possible approaches to fetch historical data
     // 1. If we don't have calendar data, try alternative approach
     if (
       !hasCalendarData ||
       Object.keys(mergedSubmissionCalendar).length < 366
     ) {
-      console.log(
-        "No calendar data found or incomplete data, attempting to fetch directly"
-      );
       try {
         // Try to fetch calendar data directly using an alternative endpoint
         const calendarResponse = await axios.get(
@@ -487,11 +467,6 @@ async function fetchLeetCodeStats(username: string) {
         if (calendarResponse.data) {
           try {
             const directCalendar = JSON.parse(calendarResponse.data);
-            console.log(
-              `Directly fetched calendar has ${
-                Object.keys(directCalendar).length
-              } entries`
-            );
 
             // Merge with any existing data
             Object.entries(directCalendar).forEach(([timestamp, count]) => {
@@ -509,7 +484,6 @@ async function fetchLeetCodeStats(username: string) {
 
     // 2. Try to fetch profile page and extract submission data
     try {
-      console.log("Attempting to fetch LeetCode profile page to extract data");
       const profileResponse = await axios.get(
         `https://leetcode.com/${username}/`,
         {
@@ -533,11 +507,6 @@ async function fetchLeetCodeStats(username: string) {
             .replace(/(\w+):/g, '"$1":');
 
           const profileCalendar = JSON.parse(cleanedJsonStr);
-          console.log(
-            `Profile page calendar has ${
-              Object.keys(profileCalendar).length
-            } entries`
-          );
 
           // Merge with existing data
           Object.entries(profileCalendar).forEach(([timestamp, count]) => {
@@ -568,11 +537,6 @@ async function fetchLeetCodeStats(username: string) {
       if (universalResponse.data) {
         try {
           const universalCalendar = JSON.parse(universalResponse.data);
-          console.log(
-            `Universal API calendar has ${
-              Object.keys(universalCalendar).length
-            } entries`
-          );
 
           // Merge with existing data
           Object.entries(universalCalendar).forEach(([timestamp, count]) => {
@@ -586,12 +550,6 @@ async function fetchLeetCodeStats(username: string) {
     } catch (error) {
       console.error("Error fetching universal calendar data:", error);
     }
-
-    console.log(
-      `Final merged calendar has ${
-        Object.keys(mergedSubmissionCalendar).length
-      } entries`
-    );
 
     // Format the data using the most recent year's data
     const formattedData = formatLeetCodeData(currentYearData);
@@ -607,10 +565,6 @@ async function fetchLeetCodeStats(username: string) {
     // Calculate longest streak (now separate from current streak)
     const longestStreak = calculateLongestLeetCodeStreak(
       mergedSubmissionCalendar || {}
-    );
-
-    console.log(
-      `LeetCode streaks: current=${currentStreak.count}, longest=${longestStreak.count}`
     );
 
     return {
@@ -790,10 +744,6 @@ async function getGitHubContributions(username: string): Promise<GitHubStats> {
             currentStartDate.getTime() + oneYearInMs - 1000, // Subtract 1 second to avoid overlap
             now.getTime()
           )
-        );
-
-        console.log(
-          `Fetching GitHub data from ${currentStartDate.toISOString()} to ${currentEndDate.toISOString()}`
         );
 
         const periodData = await fetchGitHubContributionPeriod(
@@ -1088,17 +1038,12 @@ export async function GET() {
     const githubUsername = SOCIAL_LINKS.GITHUB.split("/").pop() || "";
     const leetcodeUsername = SOCIAL_LINKS.LEETCODE.split("/").pop() || "";
 
-    console.log(
-      `Fetching stats for GitHub: ${githubUsername}, LeetCode: ${leetcodeUsername}`
-    );
-
     // Use individual try/catch blocks for each API call to prevent one failure from affecting the other
     let githubStats = null;
     let leetcodeStats = null;
 
     try {
       githubStats = await fetchGithubStats(githubUsername);
-      console.log(`GitHub stats fetched successfully`);
     } catch (githubError) {
       console.error("Error fetching GitHub statistics:", githubError);
       // Provide fallback data for GitHub
@@ -1121,7 +1066,6 @@ export async function GET() {
 
     try {
       leetcodeStats = await fetchLeetCodeStats(leetcodeUsername);
-      console.log(`LeetCode stats fetched successfully`);
     } catch (leetcodeError) {
       console.error("Error fetching LeetCode statistics:", leetcodeError);
       // Provide fallback data for LeetCode
@@ -1141,14 +1085,6 @@ export async function GET() {
         submissionCalendar: {},
       };
     }
-
-    console.log(
-      `Stats processed - GitHub contributions: ${
-        githubStats?.contributionDays?.length || 0
-      }, LeetCode submissions: ${
-        Object.keys(leetcodeStats?.submissionCalendar || {}).length || 0
-      }`
-    );
 
     return NextResponse.json({
       github: githubStats,

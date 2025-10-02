@@ -4,9 +4,9 @@ export const BLOG_AUTHOR = {
   bio: "Software Engineer passionate about creating efficient, scalable, and user-friendly web applications. Experienced in full-stack development with modern technologies.",
   avatar: "/Images/home.webp",
   social: {
-    twitter: "https://twitter.com/shailesh93602",
+    twitter: "https://twitter.com/shaileshwork",
     github: "https://github.com/Shailesh93602",
-    linkedin: "https://linkedin.com/in/shailesh93602",
+    linkedin: "https://linkedin.com/in/shaileshbhaichaudhari",
   },
 };
 
@@ -41,6 +41,6 @@ export const META_DEFAULTS = {
   description: "Articles and tutorials about web development, software engineering, and tech career by Shailesh Chaudhari",
   locale: "en-US",
   type: "website",
-  twitterHandle: "@shailesh93602",
+  twitterHandle: "@shaileshwork",
   twitterCardType: "summary_large_image",
 };

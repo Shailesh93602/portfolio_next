@@ -2,7 +2,6 @@ export const SOCIAL_LINKS = {
   GITHUB: "https://github.com/shailesh93602",
   LINKEDIN: "https://www.linkedin.com/in/shaileshbhaichaudhari/",
   TWITTER: "https://twitter.com/shaileshwork",
-  INSTAGRAM: "https://www.instagram.com/shailesh93602",
   GEEKSFORGEEKS: "https://www.geeksforgeeks.org/user/thenameisshaileshbhai/",
   HACKERRANK: "https://www.hackerrank.com/profile/shailesh93602",
   CODECHEF: "https://www.codechef.com/users/shaileshbhai03",
@@ -11,6 +10,7 @@ export const SOCIAL_LINKS = {
 
 export const COMPANY_LINKS = {
   ESPARKBIZ: "https://www.esparkinfo.com/",
+  CONTEXTQA: "https://www.contextqa.com/",
   VERCEL: "https://vercel.com",
 } as const;
 

@@ -32,9 +32,9 @@ export const BLOG_AUTHOR = {
   bio: "Software Engineer passionate about creating efficient, scalable, and user-friendly web applications. Expert in full-stack development with modern technologies and strong problem-solving skills.",
   role: "Full-Stack Developer & Problem Solver",
   social: {
-    twitter: "https://twitter.com/shailesh93602",
+    twitter: "https://twitter.com/shaileshwork",
     github: "https://github.com/Shailesh93602",
-    linkedin: "https://linkedin.com/in/shailesh93602"
+    linkedin: "https://linkedin.com/in/shaileshbhaichaudhari"
   }
 };
 
@@ -154,7 +154,7 @@ export const blogPosts: BlogPost[] = [
 
       <p>For fellow developers and aspiring software engineers, remember that this journey is a marathon, not a sprint. Whether you know me as Shailesh, Shaileshbhai, or Shailesh Chaudhari, my message remains the same: consistent practice, deep understanding, and real-world application are the keys to mastering Data Structures and Algorithms.</p>
 
-      <p>I hope my journey inspires you to embark on your own DSA adventure. Feel free to connect with me on <a href="https://github.com/Shailesh93602" target="_blank">GitHub</a> or <a href="https://linkedin.com/in/shailesh93602" target="_blank">LinkedIn</a> to share your progress and learn together!</p>
+      <p>I hope my journey inspires you to embark on your own DSA adventure. Feel free to connect with me on <a href="https://github.com/Shailesh93602" target="_blank">GitHub</a> or <a href="https://linkedin.com/in/shaileshbhaichaudhari" target="_blank">LinkedIn</a> to share your progress and learn together!</p>
 
       <blockquote>
         <p><em>"The expert in anything was once a beginner who never gave up."</em> - This quote perfectly encapsulates my DSA journey and continues to motivate me in my software engineering career.</p>
@@ -302,7 +302,7 @@ export const blogPosts: BlogPost[] = [
 
       <p>Whether you know me as Shailesh, Shaileshbhai, or Shailesh Chaudhari, my commitment to excellence in software engineering remains unwavering. The journey has just begun, and I'm excited about the innovations and challenges that lie ahead.</p>
 
-      <p>Thank you for joining me on this reflective journey. I hope my experiences provide valuable insights for your own path in software engineering. Feel free to connect with me on <a href="https://github.com/Shailesh93602" target="_blank">GitHub</a> or <a href="https://linkedin.com/in/shailesh93602" target="_blank">LinkedIn</a> to continue the conversation!</p>
+      <p>Thank you for joining me on this reflective journey. I hope my experiences provide valuable insights for your own path in software engineering. Feel free to connect with me on <a href="https://github.com/Shailesh93602" target="_blank">GitHub</a> or <a href="https://linkedin.com/in/shaileshbhaichaudhari" target="_blank">LinkedIn</a> to continue the conversation!</p>
 
       <blockquote>
         <p><em>"The first year of any career is about building foundations. In software engineering, those foundations include not just technical skills, but also the mindset and habits that will serve you throughout your career."</em></p>
@@ -525,7 +525,7 @@ export const blogPosts: BlogPost[] = [
 
       <p>Whether you know me as Shailesh, Shaileshbhai, or Shailesh Chaudhari, my message to aspiring developers remains consistent: embrace the journey, learn from every experience, and never stop growing. Your internship is not just a stepping stone—it's the foundation of your future success in technology.</p>
 
-      <p>Thank you for joining me on this reflective journey. I hope my experience provides valuable insights for your own path in software engineering. Feel free to connect with me on <a href="https://github.com/Shailesh93602" target="_blank">GitHub</a> or <a href="https://linkedin.com/in/shailesh93602" target="_blank">LinkedIn</a> to share your own journey and continue learning together!</p>
+      <p>Thank you for joining me on this reflective journey. I hope my experience provides valuable insights for your own path in software engineering. Feel free to connect with me on <a href="https://github.com/Shailesh93602" target="_blank">GitHub</a> or <a href="https://linkedin.com/in/shaileshbhaichaudhari" target="_blank">LinkedIn</a> to share your own journey and continue learning together!</p>
 
       <blockquote>
         <p><em>"Every expert was once a beginner. Every pro was once an amateur. Every icon was once an unknown. The key is to never stop learning and growing."</em></p>
@@ -872,7 +872,7 @@ export const blogPosts: BlogPost[] = [
 
       <p>Remember, software development is increasingly a team sport. The developers who thrive are those who master not just coding, but collaboration. Your ability to work effectively with others will determine not just your technical success, but your professional fulfillment and career advancement.</p>
 
-      <p>Thank you for joining me in exploring how team collaboration transformed me as a developer. Whether you're just starting your collaborative journey or looking to enhance your teamwork skills, remember that every interaction is an opportunity to grow. Connect with me on <a href="https://github.com/Shailesh93602" target="_blank">GitHub</a> or <a href="https://linkedin.com/in/shailesh93602" target="_blank">LinkedIn</a> to share your collaboration experiences or get advice on building better team dynamics!</p>
+      <p>Thank you for joining me in exploring how team collaboration transformed me as a developer. Whether you're just starting your collaborative journey or looking to enhance your teamwork skills, remember that every interaction is an opportunity to grow. Connect with me on <a href="https://github.com/Shailesh93602" target="_blank">GitHub</a> or <a href="https://linkedin.com/in/shaileshbhaichaudhari" target="_blank">LinkedIn</a> to share your collaboration experiences or get advice on building better team dynamics!</p>
 
       <blockquote>
         <p><em>"The best code is written by teams that communicate, collaborate, and care about each other as much as they care about the code."</em></p>
@@ -1248,7 +1248,7 @@ export const blogPosts: BlogPost[] = [
 
       <p>Remember, your portfolio is often the first impression potential employers or clients will have of you. Make it count. Make it personal. Make it exceptional.</p>
 
-      <p>Thank you for joining me on this journey through building a modern portfolio website. I hope this guide inspires you to create something amazing. Feel free to reach out to me on <a href="https://github.com/Shailesh93602" target="_blank">GitHub</a> or <a href="https://linkedin.com/in/shailesh93602" target="_blank">LinkedIn</a> if you have questions about the implementation or want to share your own portfolio projects!</p>
+      <p>Thank you for joining me on this journey through building a modern portfolio website. I hope this guide inspires you to create something amazing. Feel free to reach out to me on <a href="https://github.com/Shailesh93602" target="_blank">GitHub</a> or <a href="https://linkedin.com/in/shaileshbhaichaudhari" target="_blank">LinkedIn</a> if you have questions about the implementation or want to share your own portfolio projects!</p>
 
       <blockquote>
         <p><em>"Your portfolio is your story told in code. Make every line count."</em></p>
@@ -1598,7 +1598,7 @@ export const blogPosts: BlogPost[] = [
 
       <p>Your junior developer phase is temporary, but the habits you build and the lessons you learn will serve you throughout your career. Embrace the challenges, seek help when needed, and trust the process. You are capable of more than you know.</p>
 
-      <p>Thank you for allowing me to share my journey with you. If you're going through similar experiences, know that you're not alone. Feel free to reach out to me on <a href="https://github.com/Shailesh93602" target="_blank">GitHub</a> or <a href="https://linkedin.com/in/shailesh93602" target="_blank">LinkedIn</a>—I'd love to hear your story and offer whatever support I can!</p>
+      <p>Thank you for allowing me to share my journey with you. If you're going through similar experiences, know that you're not alone. Feel free to reach out to me on <a href="https://github.com/Shailesh93602" target="_blank">GitHub</a> or <a href="https://linkedin.com/in/shaileshbhaichaudhari" target="_blank">LinkedIn</a>—I'd love to hear your story and offer whatever support I can!</p>
 
       <blockquote>
         <p><em>"The only way to fail as a junior developer is to stop learning. Every challenge is an opportunity, every mistake is a lesson, and every day is progress."</em></p>
@@ -1957,7 +1957,7 @@ export const blogPosts: BlogPost[] = [
 
       <p>Organizations that invest in strong code review cultures create environments where excellence becomes the norm, innovation flourishes, and team members grow into their best professional selves. Code reviews aren't just about catching bugs—they're about building better developers and better software.</p>
 
-      <p>Thank you for joining me in exploring the transformative power of code reviews. I hope these insights encourage you to approach code reviews with renewed enthusiasm and purpose. Feel free to connect with me on <a href="https://github.com/Shailesh93602" target="_blank">GitHub</a> or <a href="https://linkedin.com/in/shailesh93602" target="_blank">LinkedIn</a> to discuss code review practices, share your experiences, or get advice on improving your team's review culture!</p>
+      <p>Thank you for joining me in exploring the transformative power of code reviews. I hope these insights encourage you to approach code reviews with renewed enthusiasm and purpose. Feel free to connect with me on <a href="https://github.com/Shailesh93602" target="_blank">GitHub</a> or <a href="https://linkedin.com/in/shaileshbhaichaudhari" target="_blank">LinkedIn</a> to discuss code review practices, share your experiences, or get advice on improving your team's review culture!</p>
 
       <blockquote>
         <p><em>"Code reviews are where technical excellence meets human growth. Every review is an opportunity to teach, learn, and build something better together."</em></p>
@@ -2261,7 +2261,7 @@ export const blogPosts: BlogPost[] = [
 
       <p>As you build your first production applications, remember that quality matters, users matter, and your growth as a developer matters most of all. Stay curious, stay persistent, and never stop learning.</p>
 
-      <p>Thank you for joining me in exploring the transition from learning to real-world application development. If you're on this journey yourself, know that you're not alone—every successful developer has walked this path. Feel free to reach out to me on <a href="https://github.com/Shailesh93602" target="_blank">GitHub</a> or <a href="https://linkedin.com/in/shailesh93602" target="_blank">LinkedIn</a> to share your experiences or get advice!</p>
+      <p>Thank you for joining me in exploring the transition from learning to real-world application development. If you're on this journey yourself, know that you're not alone—every successful developer has walked this path. Feel free to reach out to me on <a href="https://github.com/Shailesh93602" target="_blank">GitHub</a> or <a href="https://linkedin.com/in/shaileshbhaichaudhari" target="_blank">LinkedIn</a> to share your experiences or get advice!</p>
 
       <blockquote>
         <p><em>"The best way to learn is to build something real. Theory gives you the foundation, but practice gives you the expertise."</em></p>

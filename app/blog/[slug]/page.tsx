@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: "summary_large_image",
       title,
       description,
-      creator: "@shailesh93602",
+      creator: "@shaileshwork",
     },
     alternates: {
       canonical: `https://shaileshchaudhari.vercel.app/blog/${slug}`,
