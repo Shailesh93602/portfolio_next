@@ -1,3 +1,8 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-require-imports */
+const blogTypography = require("./lib/blog-typography").default;
+
 module.exports = {
   darkMode: ["class"],
   content: [
@@ -5,6 +10,7 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  plugins: [blogTypography, require("tailwindcss-animate")],
   prefix: "",
   theme: {
     container: {
@@ -71,6 +77,5 @@ module.exports = {
       },
     },
   },
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  plugins: [require("tailwindcss-animate")],
+  // ...existing code...
 };

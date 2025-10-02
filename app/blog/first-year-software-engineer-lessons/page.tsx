@@ -1,37 +1,25 @@
-
+import { SITE_URL } from "@/lib/blog-constants";
+import { getPostBySlug } from "@/lib/blog-data";
+import { BlogLayout } from "@/components/blog/blog-layout";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { BlogLayout } from "@/components/blog/blog-layout";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { getPostBySlug, getRelatedPosts } from "@/lib/blog-data";
 
-const getPostData = (slug: string) => {
-  const post = getPostBySlug(slug);
-  if (!post) return null;
-  
-  const relatedPosts = getRelatedPosts(slug, 3)
-    .map(({ slug, title }) => ({ slug, title }));
-  
-  return {
-    ...post,
-    relatedPosts
-  };
-};
+const POST_SLUG = "first-year-software-engineer-lessons";
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const slug = (await params)?.slug;
-  const post = await getPostData(slug);
+export async function generateMetadata(): Promise<Metadata> {
+  const post = getPostBySlug(POST_SLUG);
   if (!post) return {};
-
+  
   const title = `${post.title} | Shailesh Chaudhari's Blog`;
   const description = `${post.description} Written by Shailesh Chaudhari, Full-Stack Developer and Software Engineer.`;
 
   return {
     title,
     description,
-    keywords: [...post.tags, "Shailesh Chaudhari", "Shaileshbhai", "Full Stack Developer", "Software Engineer"],
+    keywords: post.seoKeywords,
     authors: [{ name: "Shailesh Chaudhari" }],
     openGraph: {
       title,
@@ -40,48 +28,39 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.date,
       authors: ["Shailesh Chaudhari"],
       tags: post.tags,
+      images: [`${SITE_URL}${post.image}`],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
       creator: "@shailesh93602",
-    },
-    alternates: {
-      canonical: `https://shaileshchaudhari.vercel.app/blog/${slug}`,
+      images: [`${SITE_URL}${post.image}`],
     },
   };
 }
 
-
-
-
-
-interface Props {
-  params: Promise<{ slug: string }>;
-}
-
-export default async function Page({ params }: Props) {
-  const slug = (await params)?.slug;
-  const post = await getPostData(slug);
-
-  if (!post) {
+export default function BlogPost() {
+  const blogPost = getPostBySlug(POST_SLUG);
+  
+  if (!blogPost) {
     notFound();
   }
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    "headline": post.title,
-    "description": post.description,
+    "headline": blogPost.title,
+    "description": blogPost.description,
     "author": {
       "@type": "Person",
       "name": "Shailesh Chaudhari",
-      "url": "https://shaileshchaudhari.vercel.app"
+      "alternateName": ["Shaileshbhai", "Shaileshbhai Chaudhari", "Shailesh"],
+      "url": SITE_URL
     },
-    "datePublished": post.date,
-    "image": `https://shaileshchaudhari.vercel.app${post.image}`,
-    "keywords": [...post.tags, "Shailesh Chaudhari", "Full Stack Development"],
+    "datePublished": blogPost.date,
+    "image": `${SITE_URL}${blogPost.image}`,
+    "keywords": blogPost.seoKeywords,
     "publisher": {
       "@type": "Person",
       "name": "Shailesh Chaudhari"
@@ -105,10 +84,10 @@ export default async function Page({ params }: Props) {
           </Link>
         </div>
 
-        <BlogLayout post={post}>
+        <BlogLayout post={blogPost}>
           <div 
-            className="prose prose-invert prose-lg max-w-none"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            className="prose prose-invert prose-lg max-w-none blog-content"
+            dangerouslySetInnerHTML={{ __html: blogPost.content }}
           />
         </BlogLayout>
       </div>
