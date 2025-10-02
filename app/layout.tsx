@@ -8,7 +8,7 @@ import Navbar from "@/components/navbar/index";
 import { Providers } from "./providers";
 import Script from "next/script";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   title:
