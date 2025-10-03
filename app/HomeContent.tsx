@@ -161,7 +161,7 @@ export default function HomeContent() {
             transition={{ duration: 0.5 }}
             className="lg:w-1/2 flex justify-center lg:justify-end"
           >
-            <div className="relative w-72 h-72 lg:w-[500px] lg:h-[500px]">
+            <div className="relative w-72 h-72 lg:w-[500px] lg:h-[500px] rounded-full overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-600/20 rounded-full blur-3xl" />
               <Image
                 src="/Images/image.png"
@@ -169,7 +169,7 @@ export default function HomeContent() {
                 fill
                 priority
                 sizes="(max-width: 768px) 288px, 500px"
-                className="rounded-full object-cover border-4 border-primary/20 shadow-2xl"
+                className="rounded-full object-cover border-4 border-primary/20 shadow-2xl profile-glow"
               />
             </div>
           </motion.div>
