@@ -22,7 +22,7 @@ export const blogPosts: BlogPost[] = [
     image: "/Images/blog/dsa-journey.jpg",
     author: {
       name: "Shailesh Chaudhari",
-      avatar: "/Images/home.webp"
+    avatar: "/Images/shailesh.webp"
     },
     date: "2025-10-02",
     readTime: "10 min read",
@@ -36,7 +36,7 @@ export const blogPosts: BlogPost[] = [
     image: "/Images/blog/first-year-lessons.jpg",
     author: {
       name: "Shailesh Chaudhari",
-      avatar: "/Images/home.webp"
+  avatar: "/Images/shailesh.webp"
     },
     date: "2024-10-02",
     readTime: "15 min read",
@@ -50,7 +50,7 @@ export const blogPosts: BlogPost[] = [
     image: "/Images/blog/journey-cover.jpg",
     author: {
       name: "Shailesh Chaudhari",
-      avatar: "/Images/home.webp"
+  avatar: "/Images/shailesh.webp"
     },
     date: "2024-10-02",
     readTime: "12 min read",

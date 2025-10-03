@@ -2,7 +2,7 @@ export const BLOG_AUTHOR = {
   name: "Shailesh Chaudhari",
   role: "Full-Stack Developer & Problem Solver",
   bio: "Software Engineer passionate about creating efficient, scalable, and user-friendly web applications. Experienced in full-stack development with modern technologies.",
-  avatar: "/Images/home.webp",
+  avatar: "/Images/shailesh.webp",
   social: {
     twitter: "https://twitter.com/shaileshwork",
     github: "https://github.com/Shailesh93602",

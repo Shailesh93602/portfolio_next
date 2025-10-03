@@ -42,8 +42,8 @@ export function BlogCard({ post, index }: BlogCardProps) {
     },
   };
 
-  const imageSrc = post.image ?? "/Images/portfolio1.png";
-  const avatarSrc = post.author?.avatar ?? "/Images/home.webp";
+  const imageSrc = post.image ?? "/Images/shailesh.webp";
+  const avatarSrc = post.author?.avatar ?? "/Images/shailesh.webp";
 
   return (
     <motion.div

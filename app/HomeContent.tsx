@@ -164,7 +164,7 @@ export default function HomeContent() {
             <div className="relative w-72 h-72 lg:w-[500px] lg:h-[500px] rounded-full overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-600/20 rounded-full blur-3xl" />
               <Image
-                src="/Images/image.png"
+                src="/Images/shailesh.webp"
                 alt="Shailesh Chaudhari"
                 fill
                 priority

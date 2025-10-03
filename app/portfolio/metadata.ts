@@ -40,7 +40,7 @@ export const metadata: Metadata = {
       "Discover my collection of web development projects showcasing expertise in React, Node.js, and full-stack development.",
     images: [
       {
-        url: "https://shaileshchaudhari.vercel.app/Images/portfolio1.png",
+  url: "https://shaileshchaudhari.vercel.app/Images/shailesh.webp",
         width: 1200,
         height: 630,
         alt: "Shailesh Chaudhari Portfolio",
@@ -52,15 +52,15 @@ export const metadata: Metadata = {
     title: "Portfolio | Shailesh Chaudhari - Full Stack Developer",
     description:
       "Browse through my latest web development projects and see my technical expertise in action.",
-    images: ["https://shaileshchaudhari.vercel.app/Images/portfolio1.png"],
+  images: ["https://shaileshchaudhari.vercel.app/Images/shailesh.webp"],
     site: "@shaileshchaudhari",
-    creator: "@shaileshchaudhari",
+    creator: "@shaileshwork",
   },
   verification: {
     google: "your-google-verification-code",
   },
   icons: {
-    icon: "/Images/image.png",
-    apple: "/Images/image.png",
+  icon: "/Images/shailesh.webp",
+  apple: "/Images/shailesh.webp",
   },
 };

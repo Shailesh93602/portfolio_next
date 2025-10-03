@@ -34,7 +34,7 @@ const projects: Project[] = [
     title: "Jarvis AI",
     description:
       "An advanced Android app built with Java and XML, enabling voice commands for effortless task management on smartphones.",
-    image: "/Images/portfolio1.png",
+  image: "/Images/shailesh.webp",
     tags: ["Java", "Android", "XML", "Voice Recognition"],
     github: "https://github.com/Shailesh93602/jarvis-ai",
   },
@@ -73,7 +73,7 @@ const projects: Project[] = [
     title: "Book E-Sell",
     description:
       "A full-stack web application for buying and selling books online, built with React, Node.js, Express, and MongoDB.",
-    image: "/Images/portfolio1.png",
+  image: "/Images/shailesh.webp",
     tags: ["React", "Node.js", "Express", "MongoDB", "MERN"],
     github: "https://github.com/Shailesh93602/book-store",
   },

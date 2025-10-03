@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     siteName: "Shailesh Chaudhari Portfolio",
     images: [
       {
-        url: "https://shaileshchaudhari.vercel.app/Images/image.png",
+  url: "https://shaileshchaudhari.vercel.app/Images/shailesh.webp",
         width: 1200,
         height: 630,
         alt: "Shailesh Chaudhari Blog",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     title: "Blog | Shailesh Chaudhari - Full Stack Developer",
     description:
       "Read technical articles and development insights from my software engineering journey.",
-    images: ["https://shaileshchaudhari.vercel.app/Images/image.png"],
+  images: ["https://shaileshchaudhari.vercel.app/Images/shailesh.webp"],
     creator: "@ShaileshWork",
   },
   verification: {
@@ -73,7 +73,7 @@ export const metadata: Metadata = {
   category: "Technology",
   classification: "Web Development Blog",
    icons: {
-      icon: "/Images/image.png", 
-      apple: "/Images/image.png",
+  icon: "/Images/shailesh.webp", 
+  apple: "/Images/shailesh.webp",
   },
 };

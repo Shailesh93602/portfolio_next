@@ -28,7 +28,7 @@ export interface BlogPost {
 // Author information - centralized to avoid duplication across all blog posts
 export const BLOG_AUTHOR = {
   name: "Shailesh Chaudhari",
-  avatar: "/Images/home.webp",
+  avatar: "/Images/shailesh.webp",
   bio: "Software Engineer passionate about creating efficient, scalable, and user-friendly web applications. Expert in full-stack development with modern technologies and strong problem-solving skills.",
   role: "Full-Stack Developer & Problem Solver",
   social: {
@@ -45,7 +45,7 @@ export const blogPosts: BlogPost[] = [
     title: "Solving 700+ DSA Problems: My Journey to Algorithm Mastery",
     subtitle: "From beginner to competitive programming: A comprehensive guide to mastering data structures and algorithms",
     description: "Join Shailesh Chaudhari as he shares his comprehensive journey of solving over 700 Data Structures and Algorithms problems. Learn about effective problem-solving strategies, resource recommendations, and how to build a strong foundation in competitive programming and technical interviews.",
-    image: "/Images/portfolio1.png", // DSA/Coding problems theme
+  image: "/Images/shailesh.webp", // DSA/Coding problems theme
     author: BLOG_AUTHOR,
     date: "2024-10-02",
     readTime: "12 min read",
@@ -167,7 +167,7 @@ export const blogPosts: BlogPost[] = [
       <div class="author-box">
         <h3>About the Author</h3>
         <div style="display: flex; align-items: center; gap: 1rem;">
-          <img src="/Images/home.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
+          <img src="/Images/shailesh.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
           <div>
             <p><strong>Shailesh Chaudhari (aka Shaileshbhai)</strong> is a passionate Full-Stack Developer with expertise in MERN stack technologies. He loves solving complex problems and sharing knowledge with the developer community.</p>
             <p>Connect with him on <a href="/about">About Page</a> or via <a href="mailto:contact@shaileshchaudhari.com">email</a>.</p>
@@ -181,7 +181,7 @@ export const blogPosts: BlogPost[] = [
     title: "First Year as a Software Engineer: Key Lessons & Insights",
     subtitle: "Real-world experiences, challenges, and growth opportunities in modern software development",
     description: "Join Shailesh Chaudhari as he shares the most valuable lessons and insights from his first year as a software engineer. From technical challenges to professional growth, discover practical tips for succeeding in the tech industry and building a strong foundation in full-stack development.",
-    image: "/Images/portfolio1.png", // Professional development theme
+  image: "/Images/shailesh.webp", // Professional development theme
     author: BLOG_AUTHOR,
     date: "2024-10-01",
     readTime: "15 min read",
@@ -330,7 +330,7 @@ export const blogPosts: BlogPost[] = [
       <div class="author-box">
         <h3>About the Author</h3>
         <div style="display: flex; align-items: center; gap: 1rem;">
-          <img src="/Images/home.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
+          <img src="/Images/shailesh.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
           <div>
             <p><strong>Shailesh Chaudhari (aka Shaileshbhai)</strong> is a passionate Full-Stack Developer with expertise in MERN stack technologies. He loves solving complex problems and sharing knowledge with the developer community.</p>
             <p>Connect with him on <a href="/about">About Page</a> or via <a href="mailto:contact@shaileshchaudhari.com">email</a>.</p>
@@ -344,7 +344,7 @@ export const blogPosts: BlogPost[] = [
     title: "From Internship to Software Engineer: My Complete Journey",
     subtitle: "A step-by-step guide through the transition from internship to full-time software engineering role",
     description: "Follow Shailesh Chaudhari's complete journey from internship to becoming a full-time software engineer. Learn about the challenges, milestones, and key learnings that shaped his career in the tech industry, with practical advice for aspiring developers.",
-    image: "/Images/portfolio1.png", // Career journey theme
+  image: "/Images/shailesh.webp", // Career journey theme
     author: BLOG_AUTHOR,
     date: "2024-09-28",
     readTime: "14 min read",
@@ -568,7 +568,7 @@ export const blogPosts: BlogPost[] = [
       <div class="author-box">
         <h3>About the Author</h3>
         <div style="display: flex; align-items: center; gap: 1rem;">
-          <img src="/Images/home.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
+          <img src="/Images/shailesh.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
           <div>
             <p><strong>Shailesh Chaudhari (aka Shaileshbhai)</strong> is a passionate Full-Stack Developer with expertise in MERN stack technologies. He loves solving complex problems and sharing knowledge with the developer community.</p>
             <p>Connect with him on <a href="/about">About Page</a> or via <a href="mailto:contact@shaileshchaudhari.com">email</a>.</p>
@@ -582,7 +582,7 @@ export const blogPosts: BlogPost[] = [
     title: "How Team Collaboration Made Me a Better Developer",
     subtitle: "The transformative power of teamwork in software development and professional growth",
     description: "Discover how Shailesh Chaudhari's experience with team collaboration fundamentally changed his approach to software development. Learn about the importance of communication, code reviews, pair programming, and building strong relationships in tech teams.",
-    image: "/Images/portfolio1.png", // Collaboration/team theme
+  image: "/Images/shailesh.webp", // Collaboration/team theme
     author: BLOG_AUTHOR,
     date: "2024-10-09",
     readTime: "14 min read",
@@ -930,7 +930,7 @@ export const blogPosts: BlogPost[] = [
       <div class="author-box">
         <h3>About the Author</h3>
         <div style="display: flex; align-items: center; gap: 1rem;">
-          <img src="/Images/home.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
+          <img src="/Images/shailesh.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
           <div>
             <p><strong>Shailesh Chaudhari (aka Shaileshbhai)</strong> is a passionate Full-Stack Developer with expertise in MERN stack technologies. He loves solving complex problems and sharing knowledge with the developer community.</p>
             <p>Connect with him on <a href="/about">About Page</a> or via <a href="mailto:contact@shaileshchaudhari.com">email</a>.</p>
@@ -944,7 +944,7 @@ export const blogPosts: BlogPost[] = [
     title: "Building My Portfolio Website with Next.js & TailwindCSS",
     subtitle: "A Complete Guide to Creating a Modern, Responsive Portfolio from Scratch",
     description: "Join Shailesh Chaudhari as he walks through the complete process of building a professional portfolio website using Next.js 13+, TailwindCSS, and modern web development practices. Learn about component architecture, responsive design, and deployment strategies.",
-    image: "/Images/portfolio1.png",
+  image: "/Images/shailesh.webp",
     author: BLOG_AUTHOR,
     date: "2024-10-05",
     readTime: "15 min read",
@@ -1321,7 +1321,7 @@ export const blogPosts: BlogPost[] = [
       <div class="author-box">
         <h3>About the Author</h3>
         <div style="display: flex; align-items: center; gap: 1rem;">
-          <img src="/Images/home.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
+          <img src="/Images/shailesh.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
           <div>
             <p><strong>Shailesh Chaudhari (aka Shaileshbhai)</strong> is a passionate Full-Stack Developer with expertise in MERN stack technologies. He loves solving complex problems and sharing knowledge with the developer community.</p>
             <p>Connect with him on <a href="/about">About Page</a> or via <a href="mailto:contact@shaileshchaudhari.com">email</a>.</p>
@@ -1335,7 +1335,7 @@ export const blogPosts: BlogPost[] = [
     title: "Challenges I Overcame as a Junior Developer",
     subtitle: "Real struggles and solutions that shaped my journey in software development",
     description: "Shailesh Chaudhari shares the most significant challenges he faced as a junior developer and how he overcame them. From imposter syndrome to technical hurdles, learn practical strategies for navigating the early stages of a software engineering career.",
-    image: "/Images/portfolio1.png",
+  image: "/Images/shailesh.webp",
     author: BLOG_AUTHOR,
     date: "2024-10-06",
     readTime: "14 min read",
@@ -1686,7 +1686,7 @@ export const blogPosts: BlogPost[] = [
       <div class="author-box">
         <h3>About the Author</h3>
         <div style="display: flex; align-items: center; gap: 1rem;">
-          <img src="/Images/home.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
+          <img src="/Images/shailesh.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
           <div>
             <p><strong>Shailesh Chaudhari (aka Shaileshbhai)</strong> is a passionate Full-Stack Developer with expertise in MERN stack technologies. He loves solving complex problems and sharing knowledge with the developer community.</p>
             <p>Connect with him on <a href="/about">About Page</a> or via <a href="mailto:contact@shaileshchaudhari.com">email</a>.</p>
@@ -1700,7 +1700,7 @@ export const blogPosts: BlogPost[] = [
     title: "The Importance of Code Reviews: Learning from Senior Developers",
     subtitle: "How code reviews became my most valuable learning tool in software development",
     description: "Explore Shailesh Chaudhari's journey of discovering the transformative power of code reviews. Learn how participating in code reviews with senior developers accelerated his growth, improved code quality, and built essential collaboration skills in software engineering.",
-    image: "/Images/portfolio1.png",
+  image: "/Images/shailesh.webp",
     author: BLOG_AUTHOR,
     date: "2024-10-07",
     readTime: "16 min read",
@@ -2060,7 +2060,7 @@ export const blogPosts: BlogPost[] = [
       <div class="author-box">
         <h3>About the Author</h3>
         <div style="display: flex; align-items: center; gap: 1rem;">
-          <img src="/Images/home.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
+          <img src="/Images/shailesh.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
           <div>
             <p><strong>Shailesh Chaudhari (aka Shaileshbhai)</strong> is a passionate Full-Stack Developer with expertise in MERN stack technologies. He loves solving complex problems and sharing knowledge with the developer community.</p>
             <p>Connect with him on <a href="/about">About Page</a> or via <a href="mailto:contact@shaileshchaudhari.com">email</a>.</p>
@@ -2074,7 +2074,7 @@ export const blogPosts: BlogPost[] = [
     title: "Transitioning from Learning to Real-World Applications",
     subtitle: "Bridging the gap between theoretical knowledge and practical software development",
     description: "Shailesh Chaudhari discusses the critical transition from learning programming concepts to applying them in real-world software development. Discover strategies for building practical projects, understanding industry standards, and gaining the confidence to tackle complex development challenges.",
-    image: "/Images/portfolio1.png",
+  image: "/Images/shailesh.webp",
     author: BLOG_AUTHOR,
     date: "2024-10-08",
     readTime: "15 min read",
@@ -2379,7 +2379,7 @@ export const blogPosts: BlogPost[] = [
       <div class="author-box">
         <h3>About the Author</h3>
         <div style="display: flex; align-items: center; gap: 1rem;">
-          <img src="/Images/home.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
+          <img src="/Images/shailesh.webp" alt="Shailesh Chaudhari" style="width: 60px; height: 60px; border-radius: 50%;" />
           <div>
             <p><strong>Shailesh Chaudhari (aka Shaileshbhai)</strong> is a passionate Full-Stack Developer with expertise in MERN stack technologies. He loves solving complex problems and sharing knowledge with the developer community.</p>
             <p>Connect with him on <a href="/about">About Page</a> or via <a href="mailto:contact@shaileshchaudhari.com">email</a>.</p>

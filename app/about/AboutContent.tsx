@@ -81,7 +81,7 @@ export default function AboutContent() {
             <div className="absolute -inset-0.5 bg-gradient-to-r from-[hsl(var(--hero-gradient-from))] to-[hsl(var(--hero-gradient-to))] rounded-full blur opacity-75 animate-pulse"></div>
             <div className="relative w-[300px] h-[300px] rounded-full overflow-hidden">
               <Image
-                src="/Images/image.png"
+                src="/Images/shailesh.webp"
                 alt="Shailesh Chaudhari"
                 width={300}
                 height={300}

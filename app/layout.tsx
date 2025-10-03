@@ -40,9 +40,9 @@ export const metadata: Metadata = {
     description:
       "Professional portfolio of Shailesh Chaudhari, a Full Stack Developer specializing in MERN stack development.",
     siteName: "Shailesh Chaudhari Portfolio",
-    images: [
+        images: [
       {
-        url: "https://shaileshchaudhari.vercel.app/Images/home.webp",
+        url: "https://shaileshchaudhari.vercel.app/Images/shailesh.webp",
         width: 1200,
         height: 630,
         alt: "Shailesh Chaudhari Portfolio",
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     title: "Shailesh Chaudhari | Full Stack Developer Portfolio",
     description:
       "Professional portfolio of Shailesh Chaudhari, a Full Stack Developer specializing in MERN stack development.",
-    images: ["https://shaileshchaudhari.vercel.app/Images/home.webp"],
+  images: ["https://shaileshchaudhari.vercel.app/Images/shailesh.webp"],
   },
 };
 

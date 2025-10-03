@@ -40,7 +40,7 @@ export const metadata: Metadata = {
       "Connect with Shailesh Chaudhari for web development projects, collaborations, and professional opportunities. Let's bring your ideas to life!",
     images: [
       {
-        url: "https://shaileshchaudhari.vercel.app/Images/image.png",
+  url: "https://shaileshchaudhari.vercel.app/Images/shailesh.webp",
         width: 1200,
         height: 630,
         alt: "Shailesh Chaudhari Profile",
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     title: "Contact Shailesh Chaudhari | Full Stack Developer",
     description:
       "Reach out to discuss your next web development project with a passionate Full Stack Developer. Let's create something amazing together!",
-    images: ["https://shaileshchaudhari.vercel.app/Images/image.png"],
+  images: ["https://shaileshchaudhari.vercel.app/Images/shailesh.webp"],
     site: "@ShaileshWork",
     creator: "@ShaileshWork",
   },
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     google: "your-google-verification-code",
   },
   icons: {
-    icon: "/Images/image.png",
-    apple: "/Images/image.png",
+  icon: "/Images/shailesh.webp",
+  apple: "/Images/shailesh.webp",
   },
 };
