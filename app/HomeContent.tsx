@@ -54,7 +54,7 @@ export default function HomeContent() {
           >
             <div className="space-y-2">
               <Badge variant="outline" className="text-sm font-medium">
-                Available for hire
+                Available for hire · Open to part-time & freelance
               </Badge>
               <h1 className="text-4xl lg:text-6xl font-bold text-text-primary">
                 Hi, I&apos;m Shailesh Chaudhari
@@ -79,6 +79,13 @@ export default function HomeContent() {
                 </Badge>
               ))}
             </div>
+
+            <p className="text-sm text-muted-foreground mt-3">
+              Open to part-time, freelance (hourly or project-based) work —
+              <Link href="/contact" className="text-primary underline ml-1">
+                contact me
+              </Link>
+            </p>
 
             <div className="flex flex-wrap items-center gap-6">
               <Button
