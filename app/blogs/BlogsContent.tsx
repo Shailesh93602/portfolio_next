@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { BlogCard } from "@/components/blog/blog-card";
 import { BlogFilters } from "@/components/blog/blog-filters";
+import { Pagination } from "@/components/ui/pagination";
 import { blogPosts, getAllTags } from "@/lib/blog-data";
 
 const containerVariants = {
@@ -25,9 +26,12 @@ const pageTransition = {
   }
 };
 
+const ITEMS_PER_PAGE = 12;
+
 export default function BlogsContent() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedTag, setSelectedTag] = React.useState("");
+  const [currentPage, setCurrentPage] = React.useState(1);
 
   // Get unique tags from all blog posts
   const allTags = getAllTags();
@@ -39,6 +43,23 @@ export default function BlogsContent() {
     const matchesTag = !selectedTag || post.tags.includes(selectedTag);
     return matchesSearch && matchesTag;
   });
+
+  // Reset to page 1 when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedTag]);
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Smooth scroll to top of blog grid
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
@@ -73,12 +94,20 @@ export default function BlogsContent() {
             }}
           />
           
-          {filteredPosts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-              {filteredPosts.map((post, index) => (
-                <BlogCard key={post.slug} post={post} index={index} />
-              ))}
-            </div>
+          {paginatedPosts.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+                {paginatedPosts.map((post, index) => (
+                  <BlogCard key={post.slug} post={post} index={index} />
+                ))}
+              </div>
+              
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </>
           ) : (
             <motion.div
               variants={pageTransition}
