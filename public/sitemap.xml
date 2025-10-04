@@ -1,17 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-<url><loc>https://shaileshchaudhari.vercel.app/about</loc><lastmod>2025-10-02T16:58:54.220Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://shaileshchaudhari.vercel.app/portfolio</loc><lastmod>2025-10-02T16:58:54.220Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://shaileshchaudhari.vercel.app/blog/building-portfolio-website-nextjs-tailwindcss</loc><lastmod>2025-10-02T16:58:54.220Z</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-<url><loc>https://shaileshchaudhari.vercel.app/blog/challenges-junior-developer-overcame</loc><lastmod>2025-10-02T16:58:54.220Z</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-<url><loc>https://shaileshchaudhari.vercel.app/blog/first-year-software-engineer-lessons</loc><lastmod>2025-10-02T16:58:54.220Z</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-<url><loc>https://shaileshchaudhari.vercel.app/blog/how-team-collaboration-made-me-better-developer</loc><lastmod>2025-10-02T16:58:54.220Z</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-<url><loc>https://shaileshchaudhari.vercel.app/blog/importance-code-reviews-learning-senior-mrs</loc><lastmod>2025-10-02T16:58:54.220Z</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-<url><loc>https://shaileshchaudhari.vercel.app/blog/internship-to-engineer-journey</loc><lastmod>2025-10-02T16:58:54.220Z</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-<url><loc>https://shaileshchaudhari.vercel.app/blog/solving-700-dsa-problems</loc><lastmod>2025-10-02T16:58:54.220Z</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-<url><loc>https://shaileshchaudhari.vercel.app/blog/transitioning-learning-to-real-world-applications</loc><lastmod>2025-10-02T16:58:54.220Z</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-<url><loc>https://shaileshchaudhari.vercel.app/statistics</loc><lastmod>2025-10-02T16:58:54.220Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://shaileshchaudhari.vercel.app</loc><lastmod>2025-10-02T16:58:54.220Z</lastmod><changefreq>weekly</changefreq><priority>1</priority></url>
-<url><loc>https://shaileshchaudhari.vercel.app/contact</loc><lastmod>2025-10-02T16:58:54.220Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://shaileshchaudhari.vercel.app/blogs</loc><lastmod>2025-10-02T16:58:54.220Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-</urlset>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<sitemap><loc>https://shaileshchaudhari.vercel.app/sitemap-0.xml</loc></sitemap>
+</sitemapindex>

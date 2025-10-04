@@ -1,0 +1,43 @@
+name: Ping search engines after Vercel READY
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  wait-for-vercel-and-ping:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      SITE_URL: https://shaileshchaudhari.vercel.app
+    steps:
+      - name: Wait for Vercel deployment to be READY (poll)
+        id: wait
+        run: |
+          set -e
+          echo "Polling Vercel for a READY production deployment (timeout ~10m)..."
+          RETRIES=120
+          SLEEP=5
+          found=""
+          for i in $(seq 1 $RETRIES); do
+            # List latest deployments for the team / project, filtered for production READY
+            resp=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" "https://api.vercel.com/v6/deployments?limit=20")
+            dep=$(echo "$resp" | jq -r '.deployments[] | select(.state=="READY" and .target=="production") | .id' | head -n1)
+            if [ -n "$dep" ]; then
+              echo "Found READY deployment: $dep"
+              found="$dep"
+              break
+            fi
+            sleep $SLEEP
+          done
+          if [ -z "$found" ]; then
+            echo "No READY production deployment found within timeout; continuing anyway."
+          fi
+
+      - name: Ping Google
+        run: |
+          curl -sS "https://www.google.com/ping?sitemap=${SITE_URL}/sitemap.xml" || true
+
+      - name: Ping Bing
+        run: |
+          curl -sS "https://www.bing.com/ping?sitemap=${SITE_URL}/sitemap.xml" || true

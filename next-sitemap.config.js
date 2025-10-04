@@ -1,36 +1,44 @@
+import fs from 'fs';
+import pathModule from 'path';
+
+const siteUrl = "https://shaileshchaudhari.vercel.app";
+let blogManifest = null;
+try {
+  const manifestPath = pathModule.join(process.cwd(), 'data', 'blog-manifest.json');
+  if (fs.existsSync(manifestPath)) {
+    const raw = fs.readFileSync(manifestPath, 'utf8');
+    blogManifest = JSON.parse(raw);
+  }
+} catch (e) {
+  // ignore and fall back to generic lastmod
+}
+
 const config = {
-  siteUrl: "https://shaileshchaudhari.vercel.app",
+  siteUrl,
   generateRobotsTxt: true,
-  generateIndexSitemap: false,
+  // Let next-sitemap read the Next.js build manifest and include static pages
+  // (including pages created by `generateStaticParams`) automatically.
+  generateIndexSitemap: true,
   exclude: [],
   changefreq: "daily",
   priority: 0.7,
   autoLastmod: true,
-  additionalPaths: async () => {
-    const blogSlugs = [
-      "solving-700-dsa-problems",
-      "first-year-software-engineer-lessons",
-      "internship-to-engineer-journey",
-      "how-team-collaboration-made-me-better-developer",
-      "building-portfolio-website-nextjs-tailwindcss",
-      "challenges-junior-developer-overcame",
-      "importance-code-reviews-learning-senior-mrs",
-      "transitioning-learning-to-real-world-applications",
-    ];
+  transform: async (config, url) => {
+    const defaultLastmod = new Date().toISOString();
+    let lastmod = defaultLastmod;
 
-    return blogSlugs.map((slug) => ({
-      loc: `/blog/${slug}`,
-      changefreq: "monthly",
-      priority: 0.8,
-      lastmod: new Date().toISOString(),
-    }));
-  },
-  transform: async (config, path) => {
+    // Use blog manifest dates when available for /blog/* pages
+    if (blogManifest && url.startsWith('/blog/')) {
+      const slug = url.replace(/^\/blog\//, '').replace(/\/$/, '');
+      const entry = blogManifest.find((e) => e.slug === slug);
+      if (entry && entry.date) lastmod = entry.date;
+    }
+
     return {
-      loc: path,
+      loc: url,
       changefreq: "weekly",
-      priority: path === "/" ? 1 : 0.7,
-      lastmod: new Date().toISOString(),
+      priority: url === "/" ? 1 : 0.7,
+      lastmod,
     };
   },
 };
