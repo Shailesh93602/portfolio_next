@@ -54,18 +54,21 @@ export  const experiences: Experience[] = [
         "Prisma",
         "Chrome Extensions"
       ],
-      highlights: [
-        "Delivered 2 Chrome extensions with stunning UI and robust backend systems.",
-        "Full-stack development with a focus on scalable frontend and backend architecture.",
-        "Open to sharing more details about this role on request.",
-      ],
-      description: `Working as a Software Engineer at ContextQA, I play an impactful role as a call-to-action person, delivering things fast, shipping faster, and ensuring bug-free releases. I work with a modern tech stack including Next.js, TailwindCSS, Shadcn UI, Node.js, Express.js, PostgreSQL, MongoDB, Prisma, and Chrome Extensions.
+      description: `At <strong>ContextQA</strong>, I work as a proactive software engineer, delivering features quickly while ensuring high-quality, bug-free releases. I work with a modern stack including <strong>Next.js, TailwindCSS, Shadcn UI, Node.js, Express.js, PostgreSQL, MongoDB, Prisma, and Chrome Extensions</strong>.
 
-• AxeTOS: A comprehensive Chrome extension for accessibility testing. I built both the extension and the backend in Node.js and Express.js. The extension provides accessibility testing with proper locators, fix suggestions, and the ability to temporarily show or permanently apply fixes using script injection. Users can test their sites directly through the extension, receive detailed reports of issues found, and access fixes. The system allows users to choose what to focus on and select standards like WCAG Level A, AA, or AAA.
+<strong>🔧 Accessibility Testing Extension (AxeTOS)</strong>
+Built a comprehensive Chrome extension and backend system that enables automated accessibility testing with intelligent fix suggestions, standards-based validation (WCAG A/AA/AAA), and detailed issue reports with proper locators.
 
-• Vibe Testing: A Chrome extension for testing websites built using vibe coding platforms like V0, Lovable, or Replit. The extension integrates into the chat section of these platforms. Users can configure agents, timeouts, URLs, and email notifications, then start testing to see live execution steps with real-time screenshots via Socket.io and network logs for debugging. After completion, users receive detailed AI-generated reports with bug summaries, detailed scenarios, metadata for failed test cases, and screen recordings. Reports are also emailed if specified. Users can provide testing instructions or additional info for the AI agent. The "Apply Fixes to Chat" button fetches consolidated bug reports and feeds them into the platform's chat, allowing users to modify and submit for agent fixing. The AI project manager asks contextual questions based on previous runs to better understand the project. I primarily worked on the extension frontend while leveraging the existing backend infrastructure.
+<strong>🧪 Web Testing Extension (Vibe Testing)</strong>
+Developed a versatile Chrome extension for testing websites, with seamless integration for platforms like V0, Lovable, and Replit. Features include real-time debugging with screenshots, configurable test parameters, AI-generated bug reports with detailed scenarios, and innovative chat-based bug-fix workflows.
 
-• ContextQA Portal: I contributed to the backend using Node.js, Express.js, and Playwright, helping resolve crucial bugs and adding new features that enhance the platform's capabilities.`,
+<strong>🏢 ContextQA Portal</strong>
+Enhanced backend infrastructure using Node.js, Express.js, and Playwright, resolving critical bugs and implementing new features to improve platform stability and performance.
+
+<strong>🏆 Key Achievements</strong>
+• Delivered 2 production-ready Chrome extensions with scalable backend systems and intuitive UIs
+• Full-stack development with emphasis on performance, scalability, and developer experience
+• Open to sharing more details about this role upon request`,
     },
     {
       title: "Software Developer",
@@ -83,19 +86,21 @@ export  const experiences: Experience[] = [
         "Stripe",
         "Firebase"
       ],
-      highlights: [
-        "Managed two projects simultaneously: client requirements and time-based delivery for in-house projects",
-        "Led development of Brightmont platform with complex data synchronization and real-time scheduling features",
-        "Built comprehensive ASL Shop e-learning platform with dictionary module and Supabase authentication",
-        "Resolved critical bugs and improved system reliability across multiple projects including Proleven"
-      ],
-      description: `Working as a Full Stack Developer, I successfully managed two projects simultaneously while meeting client requirements and delivering in-house projects on time. I worked on several impactful projects that showcased my full-stack capabilities.
+      description: `As a <strong>Full Stack Developer</strong> at <strong>eSparkBiz Technologies</strong>, I managed multiple projects simultaneously, balancing client requirements with in-house development deadlines. I delivered impactful solutions across several platforms that showcased my expertise in both frontend and backend development.
 
-• Brightmont: A comprehensive platform used by institutes providing one-on-one teaching. I integrated with Teachworks API to manage large databases, synchronized records in desired formats, and provided data to Python services using Cplex for schedule generation. The generated schedules are stored in S3 buckets, and I implemented queue-based systems to pull and format this data. I created stunning UIs with advanced calendar features for data manipulation, real-time updates using Socket.io, and comprehensive data management interfaces.
+<strong>📚 Brightmont - Education Scheduling Platform</strong>
+Built comprehensive scheduling and data management features for institutes providing one-on-one teaching. Integrated external APIs (Teachworks) with Python-based scheduling services using Cplex, synchronized large datasets, implemented cloud storage workflows with S3, and developed real-time calendar UIs with advanced data manipulation capabilities.
 
-• The ASL Shop: An e-learning platform for American Sign Language. I developed the crucial Dictionary module, synchronizing data from Coda platform and storing it in our database with a beautiful UI featuring filters, search, and advanced functionality. I handled all Supabase-related authentication and integration. Additionally, I contributed significantly to course and quiz modules, playing an impactful role in their completion.
+<strong>🤟 The ASL Shop - Sign Language E-Learning Platform</strong>
+Developed key modules for an American Sign Language e-learning platform. Built the Dictionary module with advanced search, filtering, and synchronization from external platforms (Coda), implemented complete Supabase authentication system, and contributed significantly to course and quiz features with intuitive user interfaces.
 
-• Proleven: A learning platform for employee training. I resolved critical bugs across the system, particularly focusing on email functionality, template management, triggers, and various system improvements to enhance reliability and user experience.`,
+<strong>🏢 Proleven - Corporate Learning Platform</strong>
+Improved reliability of an employee training platform by resolving critical bugs, enhancing email workflows, streamlining template and trigger systems, and implementing various performance optimizations.
+
+<strong>🏆 Key Achievements</strong>
+• Successfully delivered multiple client and in-house projects on time
+• Full-stack contributions spanning API integrations, data pipelines, authentication, and UI development
+• Strengthened platform reliability and user experience through critical bug fixes and performance improvements`,
     },
     {
       title: "Software Developer Intern",
@@ -124,19 +129,17 @@ export  const experiences: Experience[] = [
         "IndexedDB",
         "Redux"
       ],
-      highlights: [
-        "Developed robust authentication system with role-based access control for Garage Management System",
-        "Built stunning user interfaces for multiple modules using modern web technologies",
-        "Contributed to full-stack team project from concept to deployment",
-        "Learned industry best practices through hands-on dummy projects including e-commerce website",
-        "Progressed from fundamentals (HTML/CSS/JS) to advanced frameworks (React/Next.js/Node.js)"
-      ],
-      description: `Embarked on an intensive learning journey starting with web fundamentals including MySQL, HTML, CSS, and JavaScript. Rapidly progressed to mastering TypeScript, Node.js, and Express.js with EJS templating. Further expanded skills to include React.js, Next.js, Sequelize, TypeORM, and various other modern technologies.
+      description: `During my <strong>Software Developer Internship</strong> at <strong>eSparkBiz Technologies</strong>, I embarked on an intensive learning journey starting with web fundamentals (<strong>MySQL, HTML, CSS, JavaScript</strong>) and quickly advanced to modern technologies including <strong>TypeScript, Node.js, Express.js with EJS, React.js, Next.js, Sequelize, TypeORM, NestJS, TailwindCSS, and Redux</strong>.
 
-Worked on a significant team project - Garage Management System built with Node.js, Express.js, and EJS. Took ownership of the critical authentication module, implementing robust authentication mechanisms with comprehensive role-based access control to ensure secure user management and data protection.
+<strong>🚗 Garage Management System - Full-Stack Team Project</strong>
+Contributed to a major team project built with Node.js, Express.js, and EJS. Owned the critical authentication module, implementing secure role-based access control and comprehensive user management features. Also contributed to frontend development, building responsive and intuitive UIs across core system modules with focus on user experience and design.
 
-Additionally contributed to the frontend development, crafting stunning and intuitive user interfaces for most of the system's modules, focusing on user experience and responsive design principles.
+<strong>🛍️ Practice Projects - Skill Development</strong>
+Developed multiple smaller projects, including an e-commerce platform, to strengthen understanding of scalable architecture, industry best practices, and real-world development patterns. This hands-on experience solidified my foundational skills and prepared me for professional software engineering challenges.
 
-Following the main project, developed several dummy projects including an e-commerce website to deepen understanding of industry best practices, scalable architecture, and real-world application development patterns. This hands-on experience solidified foundational skills while preparing for professional software development challenges.`,
+<strong>📈 Key Learning Outcomes</strong>
+• Gained comprehensive hands-on experience across the full stack, from databases to modern frontend frameworks
+• Strengthened expertise in authentication systems, role-based access control, and responsive UI design
+• Built a solid foundation for professional software engineering through intensive learning and practical application`,
     },
   ];

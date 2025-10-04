@@ -15,9 +15,7 @@ export function ExperienceSection() {
     return (
       <div className="text-text-secondary">
         {paras.map((p, i) => (
-          <p key={`p-${i}`} className="mb-3 leading-relaxed">
-            {p}
-          </p>
+          <p key={`p-${i}`} className="mb-3 leading-relaxed" dangerouslySetInnerHTML={{ __html: p }} />
         ))}
         {bullets.length > 0 && (
           <ul className="list-disc list-inside ml-4 space-y-2 mt-3">
