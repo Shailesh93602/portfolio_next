@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "generate-blog-manifest": "node --experimental-specifier-resolution=node scripts/generate-blog-manifest.mjs",
-    "postbuild": "npm run generate-blog-manifest && next-sitemap",
+    "postbuild": "npm run generate-blog-manifest",
     "start": "next start",
     "lint": "next lint"
   },
