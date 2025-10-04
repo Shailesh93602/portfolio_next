@@ -6,16 +6,16 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import {
-  Briefcase,
-  Trophy,
-  Code,
-  Heart,
-  ChevronRight,
-  ChevronUp,
-  ChevronDown,
-  Star,
-  Award,
-} from "lucide-react";
+  BriefcaseIcon,
+  TrophyIcon,
+  CodeIcon,
+  HeartIcon,
+  ChevronRightIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+  StarIcon,
+  AwardIcon,
+} from "@/components/icons";
 import { Card, CardContent } from "@/components/ui/card";
 import { SOCIAL_LINKS } from "@/lib/constants";
 
@@ -148,9 +148,9 @@ export default function AboutContent() {
                 {showFullContent ? "Show Less" : "Show More"}
               </span>
               {showFullContent ? (
-                <ChevronUp className="h-5 w-5 text-primary transition-transform group-hover:-translate-y-1" />
+                <ChevronUpIcon className="h-5 w-5 text-primary transition-transform group-hover:-translate-y-1" />
               ) : (
-                <ChevronDown className="h-5 w-5 text-primary transition-transform group-hover:translate-y-1" />
+                <ChevronDownIcon className="h-5 w-5 text-primary transition-transform group-hover:translate-y-1" />
               )}
             </motion.button>
           </motion.div>
@@ -199,7 +199,7 @@ function ExperienceSection() {
   return (
     <motion.div variants={itemVariants}>
       <h3 className="text-2xl font-semibold mb-6 text-text-primary flex items-center">
-        <Briefcase className="w-6 h-6 mr-2 text-primary" />
+        <BriefcaseIcon className="w-6 h-6 mr-2 text-primary" />
         Experience
       </h3>
       <div className="space-y-4">
@@ -225,7 +225,7 @@ function ExperienceSection() {
                     {exp.company} • {exp.period}
                   </p>
                 </div>
-                <ChevronRight
+                <ChevronRightIcon
                   className={`w-5 h-5 text-primary transition-transform duration-300 ${
                     expandedIndex === index ? "rotate-90" : ""
                   }`}
@@ -283,20 +283,20 @@ function AchievementsSection() {
   const getIcon = (iconName: Achievement["iconName"]) => {
     switch (iconName) {
       case "trophy":
-        return <Trophy className="w-6 h-6 text-primary mr-3 mt-1" />;
+        return <TrophyIcon className="w-6 h-6 text-primary mr-3 mt-1" />;
       case "code":
-        return <Code className="w-6 h-6 text-primary mr-3 mt-1" />;
+        return <CodeIcon className="w-6 h-6 text-primary mr-3 mt-1" />;
       case "star":
-        return <Star className="w-6 h-6 text-primary mr-3 mt-1" />;
+        return <StarIcon className="w-6 h-6 text-primary mr-3 mt-1" />;
       case "award":
-        return <Award className="w-6 h-6 text-primary mr-3 mt-1" />;
+        return <AwardIcon className="w-6 h-6 text-primary mr-3 mt-1" />;
     }
   };
 
   return (
     <motion.div variants={itemVariants}>
       <h3 className="text-2xl font-semibold mb-6 text-text-primary flex items-center">
-        <Trophy className="w-6 h-6 mr-2 text-primary" />
+        <TrophyIcon className="w-6 h-6 mr-2 text-primary" />
         Achievements
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -383,7 +383,7 @@ function SkillsSection() {
   return (
     <motion.div variants={itemVariants}>
       <h3 className="text-2xl font-semibold mb-6 text-text-primary flex items-center">
-        <Code className="w-6 h-6 mr-2 text-primary" />
+        <CodeIcon className="w-6 h-6 mr-2 text-primary" />
         Skills
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -440,7 +440,7 @@ function HobbiesSection() {
   return (
     <motion.div variants={itemVariants}>
       <h3 className="text-2xl font-semibold mb-6 text-text-primary flex items-center">
-        <Heart className="w-6 h-6 mr-2 text-primary" />
+        <HeartIcon className="w-6 h-6 mr-2 text-primary" />
         Hobbies
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Github, ExternalLink, X } from "lucide-react";
+import { GithubIcon, ExternalLinkIcon, XIcon } from "@/components/icons";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,7 @@ const projects: Project[] = [
     title: "Jarvis AI",
     description:
       "An advanced Android app built with Java and XML, enabling voice commands for effortless task management on smartphones.",
-  image: "/Images/shailesh.webp",
+  image: "/Images/portfolio1.png",
     tags: ["Java", "Android", "XML", "Voice Recognition"],
     github: "https://github.com/Shailesh93602/jarvis-ai",
   },
@@ -73,7 +73,7 @@ const projects: Project[] = [
     title: "Book E-Sell",
     description:
       "A full-stack web application for buying and selling books online, built with React, Node.js, Express, and MongoDB.",
-  image: "/Images/shailesh.webp",
+  image: "/Images/portfolio1.png",
     tags: ["React", "Node.js", "Express", "MongoDB", "MERN"],
     github: "https://github.com/Shailesh93602/book-store",
   },
@@ -158,7 +158,7 @@ export function PortfolioContent() {
                 size="sm"
                 className="flex items-center gap-2"
               >
-                <X className="w-4 h-4" />
+                <XIcon className="w-4 h-4" />
                 Show All
               </Button>
             )}
@@ -254,7 +254,7 @@ export function PortfolioContent() {
                             rel="noopener noreferrer"
                             aria-label={`View ${project.title} source code on GitHub`}
                           >
-                            <Github className="w-4 h-4 mr-2" />
+                            <GithubIcon className="w-4 h-4 mr-2" />
                             GitHub
                           </a>
                         </Button>
@@ -271,7 +271,7 @@ export function PortfolioContent() {
                               rel="noopener noreferrer"
                               aria-label={`View live demo of ${project.title}`}
                             >
-                              <ExternalLink className="w-4 h-4 mr-2" />
+                              <ExternalLinkIcon className="w-4 h-4 mr-2" />
                               Live Demo
                             </a>
                           </Button>

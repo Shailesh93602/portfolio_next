@@ -4,16 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import {
-  SiLeetcode,
-  SiGeeksforgeeks,
-  SiCodechef,
-  SiHackerrank,
-  SiLinkedin,
-  SiGithub,
-  SiX,
-} from "react-icons/si";
-import { Download, Briefcase } from "lucide-react";
+import { DownloadIcon, BriefcaseIcon } from "@/components/icons";
+import { GithubIcon, LinkedinIcon, TwitterIcon } from "@/components/icons";
 import SocialLink from "./components/SocialLink";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -95,7 +87,7 @@ export default function HomeContent() {
                 className="rounded-full bg-gradient-to-r from-primary to-purple-600 hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-primary/25"
               >
                 <Link href="/contact">
-                  <Briefcase className="w-4 h-4 mr-2 inline-block" />
+                  <BriefcaseIcon className="w-4 h-4 mr-2 inline-block" />
                   Hire Me
                 </Link>
               </Button>
@@ -110,7 +102,7 @@ export default function HomeContent() {
                   target="_blank"
                   download
                 >
-                  <Download className="w-4 h-4 mr-2 inline-block" />
+                  <DownloadIcon className="w-4 h-4 mr-2 inline-block" />
                   Download Resume
                 </Link>
               </Button>
@@ -119,37 +111,37 @@ export default function HomeContent() {
             <div className="flex flex-wrap gap-4 pt-4">
               <SocialLink
                 href={SOCIAL_LINKS.LINKEDIN}
-                icon={<SiLinkedin className="w-5 h-5" />}
+                icon={<LinkedinIcon className="w-5 h-5" />}
                 label="LinkedIn"
               />
               <SocialLink
                 href={SOCIAL_LINKS.GITHUB}
-                icon={<SiGithub className="w-5 h-5" />}
+                icon={<GithubIcon className="w-5 h-5" />}
                 label="GitHub"
               />
               <SocialLink
                 href={SOCIAL_LINKS.TWITTER}
-                icon={<SiX className="w-5 h-5" />}
+                icon={<TwitterIcon className="w-5 h-5" />}
                 label="X"
               />
               <SocialLink
                 href={SOCIAL_LINKS.CODECHEF}
-                icon={<SiCodechef className="w-5 h-5" />}
+                icon={<GithubIcon className="w-5 h-5" />}
                 label="CodeChef"
               />
               <SocialLink
                 href={SOCIAL_LINKS.HACKERRANK}
-                icon={<SiHackerrank className="w-5 h-5" />}
+                icon={<GithubIcon className="w-5 h-5" />}
                 label="HackerRank"
               />
               <SocialLink
                 href={SOCIAL_LINKS.LEETCODE}
-                icon={<SiLeetcode className="w-5 h-5" />}
+                icon={<GithubIcon className="w-5 h-5" />}
                 label="LeetCode"
               />
               <SocialLink
                 href={SOCIAL_LINKS.GEEKSFORGEEKS}
-                icon={<SiGeeksforgeeks className="w-5 h-5" />}
+                icon={<GithubIcon className="w-5 h-5" />}
                 label="GeeksforGeeks"
               />
             </div>

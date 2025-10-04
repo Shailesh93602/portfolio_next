@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
-import { Github, ExternalLink } from "lucide-react";
+// framer-motion removed to reduce initial bundle size; use CSS transitions instead
+import { GithubIcon, ExternalLinkIcon } from "@/components/icons";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -52,29 +52,19 @@ export function FeaturedProjects() {
   return (
     <section className="py-16">
       <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
+        <div className="text-center mb-12 transition-transform duration-500">
           <h2 className="text-3xl font-bold mb-4">Featured Projects</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Here are some of my recent projects that showcase my skills and
             experience.
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
-            <motion.div
+          {projects.map((project) => (
+            <div
               key={project.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              className="group relative overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm"
+              className="group relative overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm transition-transform duration-500"
             >
               <div className="relative h-48 w-full">
                 <Image
@@ -102,19 +92,19 @@ export function FeaturedProjects() {
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" asChild>
                     <Link href={project.github} target="_blank">
-                      <Github className="mr-2 h-4 w-4" />
+                      <GithubIcon className="mr-2 h-4 w-4" />
                       GitHub
                     </Link>
                   </Button>
                   <Button variant="outline" size="sm" asChild>
                     <Link href={project.live} target="_blank">
-                      <ExternalLink className="mr-2 h-4 w-4" />
+                      <ExternalLinkIcon className="mr-2 h-4 w-4" />
                       Live Demo
                     </Link>
                   </Button>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
+import { XIcon } from "@/components/icons";
 
 interface BlogFiltersProps {
   searchQuery: string;
@@ -54,11 +54,11 @@ export function BlogFilters({
         </div>
 
         {hasActiveFilters && (
-          <button
+            <button
             onClick={onClearFilters}
             className="mt-3 md:mt-0 md:ml-2 inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm bg-muted/10 hover:bg-muted/20"
           >
-            <X className="w-4 h-4" />
+            <XIcon className="w-4 h-4" />
             Clear
           </button>
         )}

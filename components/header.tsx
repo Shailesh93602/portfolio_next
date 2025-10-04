@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
 import { fadeIn } from "@/lib/animations";
+import { motion } from "framer-motion";
 
 const navigation = [
   { name: "Home", href: "/" },

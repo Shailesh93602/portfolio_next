@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { Tag } from "lucide-react";
+import { TagIcon } from "@/components/icons";
 import { Badge } from "../ui/badge";
 
 declare global {
@@ -42,7 +42,9 @@ export function BlogCard({ post, index }: BlogCardProps) {
     },
   };
 
-  const imageSrc = post.image ?? "/Images/shailesh.webp";
+  // Use a neutral project/preview image as the fallback for post previews so
+  // the author's personal photo isn't used as a blog preview image.
+  const imageSrc = post.image ?? "/Images/portfolio1.png";
   const avatarSrc = post.author?.avatar ?? "/Images/shailesh.webp";
 
   return (
@@ -84,7 +86,7 @@ export function BlogCard({ post, index }: BlogCardProps) {
                     variant="secondary"
                     className="bg-background/80 backdrop-blur-sm text-xs"
                   >
-                    <Tag className="w-3 h-3 mr-1" />
+                    <TagIcon className="w-3 h-3 mr-1" />
                     {tag}
                   </Badge>
                 ))}

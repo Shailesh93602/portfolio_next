@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { fadeIn, staggerContainer } from "@/lib/animations";
-import { Mail, Phone, MapPin, Github, Linkedin, Twitter } from "lucide-react";
+import { MailIcon, PhoneIcon, MapPinIcon, GithubIcon, LinkedinIcon, TwitterIcon } from "@/components/icons";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { SOCIAL_LINKS, CONTACT_INFO } from "@/lib/constants";
@@ -184,7 +184,7 @@ export const ContactContent: React.FC = () => {
           <h2 className="mb-8 text-2xl font-bold">Get in Touch</h2>
           <div className="space-y-6">
             <div className="flex items-start gap-4">
-              <Mail className="mt-1 h-5 w-5 text-primary" />
+              <MailIcon className="mt-1 h-5 w-5 text-primary" />
               <div>
                 <h3 className="font-semibold">Email</h3>
                 <a
@@ -196,7 +196,7 @@ export const ContactContent: React.FC = () => {
               </div>
             </div>
             <div className="flex items-start gap-4">
-              <Phone className="mt-1 h-5 w-5 text-primary" />
+              <PhoneIcon className="mt-1 h-5 w-5 text-primary" />
               <div>
                 <h3 className="font-semibold">Phone</h3>
                 <a
@@ -208,7 +208,7 @@ export const ContactContent: React.FC = () => {
               </div>
             </div>
             <div className="flex items-start gap-4">
-              <MapPin className="mt-1 h-5 w-5 text-primary" />
+              <MapPinIcon className="mt-1 h-5 w-5 text-primary" />
               <div>
                 <h3 className="font-semibold">Location</h3>
                 <p className="text-muted-foreground">{CONTACT_INFO.LOCATION}</p>
@@ -225,7 +225,7 @@ export const ContactContent: React.FC = () => {
                   rel="noopener noreferrer"
                   aria-label="Visit my GitHub profile"
                 >
-                  <Github className="h-5 w-5" />
+                  <GithubIcon className="h-5 w-5" />
                 </a>
               </Button>
               <Button variant="ghost" size="icon" asChild>
@@ -235,7 +235,7 @@ export const ContactContent: React.FC = () => {
                   rel="noopener noreferrer"
                   aria-label="Visit my LinkedIn profile"
                 >
-                  <Linkedin className="h-5 w-5" />
+                  <LinkedinIcon className="h-5 w-5" />
                 </a>
               </Button>
               <Button variant="ghost" size="icon" asChild>
@@ -245,7 +245,7 @@ export const ContactContent: React.FC = () => {
                   rel="noopener noreferrer"
                   aria-label="Visit my Twitter profile"
                 >
-                  <Twitter className="h-5 w-5" />
+                  <TwitterIcon className="h-5 w-5" />
                 </a>
               </Button>
             </div>

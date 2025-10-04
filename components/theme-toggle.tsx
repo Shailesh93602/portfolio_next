@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useTheme } from "next-themes";
-import { Moon, Sun, Laptop } from "lucide-react";
+import { MoonIcon, SunIcon, LaptopIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,8 +18,8 @@ export function ThemeToggle() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon" className="relative">
-          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
@@ -30,7 +30,7 @@ export function ThemeToggle() {
             theme === "light" ? "bg-accent" : ""
           }`}
         >
-          <Sun className="h-4 w-4" />
+          <SunIcon className="h-4 w-4" />
           <span>Light</span>
           {theme === "light" && <span className="ml-auto">✓</span>}
         </DropdownMenuItem>
@@ -40,7 +40,7 @@ export function ThemeToggle() {
             theme === "dark" ? "bg-accent" : ""
           }`}
         >
-          <Moon className="h-4 w-4" />
+          <MoonIcon className="h-4 w-4" />
           <span>Dark</span>
           {theme === "dark" && <span className="ml-auto">✓</span>}
         </DropdownMenuItem>
@@ -50,7 +50,7 @@ export function ThemeToggle() {
             theme === "system" ? "bg-accent" : ""
           }`}
         >
-          <Laptop className="h-4 w-4" />
+          <LaptopIcon className="h-4 w-4" />
           <span>System</span>
           {theme === "system" && <span className="ml-auto">✓</span>}
         </DropdownMenuItem>

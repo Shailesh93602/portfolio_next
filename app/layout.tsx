@@ -3,18 +3,17 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import SpeedInsightsClient from "@/components/speed-insights-client";
 import Navbar from "@/components/navbar/index";
 import { Providers } from "./providers";
 import Script from "next/script";
+import { SITE_URL, BLOG_AUTHOR, META_DEFAULTS } from "@/lib/blog-constants";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title:
-    "Shailesh Chaudhari | Software Engineer Portfolio | Full Stack Developer | MERN Stack Expert",
-  description:
-    "Professional portfolio of Shailesh Chaudhari (Shaileshbhai Chaudhari), showcasing software engineering projects and expertise. Full Stack Developer specializing in MERN stack (MongoDB, Express, React, Node.js) with experience in web development, problem solving, and building scalable applications.",
+  title: `${BLOG_AUTHOR.name} | ${META_DEFAULTS.siteName}`,
+  description: META_DEFAULTS.description,
   keywords: [
     "Full Stack Developer",
     "MERN Stack Developer",
@@ -27,36 +26,32 @@ export const metadata: Metadata = {
     "JavaScript Developer",
     "TypeScript Developer",
     "Portfolio Website",
-    "Shailesh Chaudhari",
+    BLOG_AUTHOR.name,
     "Shaileshbhai Chaudhari",
   ],
-  authors: [
-    { name: "Shailesh Chaudhari", url: "https://github.com/shailesh93602" },
-  ],
+  authors: [{ name: BLOG_AUTHOR.name, url: SITE_URL }],
   openGraph: {
     type: "website",
-    url: "https://shaileshchaudhari.vercel.app",
-    title: "Shailesh Chaudhari | Full Stack Developer Portfolio",
-    description:
-      "Professional portfolio of Shailesh Chaudhari, a Full Stack Developer specializing in MERN stack development.",
-    siteName: "Shailesh Chaudhari Portfolio",
-        images: [
+    url: SITE_URL,
+    title: `${BLOG_AUTHOR.name} | ${META_DEFAULTS.siteName}`,
+    description: META_DEFAULTS.description,
+    siteName: META_DEFAULTS.siteName,
+    images: [
       {
-        url: "https://shaileshchaudhari.vercel.app/Images/shailesh.webp",
+        url: `${SITE_URL}${BLOG_AUTHOR.avatar}`,
         width: 1200,
         height: 630,
-        alt: "Shailesh Chaudhari Portfolio",
+        alt: `${BLOG_AUTHOR.name} Portfolio`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    site: "@Shaileshbhai03",
-    creator: "@Shaileshbhai03",
-    title: "Shailesh Chaudhari | Full Stack Developer Portfolio",
-    description:
-      "Professional portfolio of Shailesh Chaudhari, a Full Stack Developer specializing in MERN stack development.",
-  images: ["https://shaileshchaudhari.vercel.app/Images/shailesh.webp"],
+    site: META_DEFAULTS.twitterHandle,
+    creator: META_DEFAULTS.twitterHandle,
+    title: `${BLOG_AUTHOR.name} | ${META_DEFAULTS.siteName}`,
+    description: META_DEFAULTS.description,
+    images: [`${SITE_URL}${BLOG_AUTHOR.avatar}`],
   },
 };
 
@@ -84,17 +79,17 @@ export default function RootLayout({
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Person",
-            name: "Shailesh Chaudhari",
+            name: BLOG_AUTHOR.name,
             alternateName: ["Shaileshbhai Chaudhari", "Shailesh"],
-            jobTitle: "Software Engineer",
-            url: "https://shaileshchaudhari.vercel.app",
+            jobTitle: BLOG_AUTHOR.role || "Software Engineer",
+            url: SITE_URL,
+            image: `${SITE_URL}${BLOG_AUTHOR.avatar}`,
             sameAs: [
-              "https://github.com/shailesh93602",
-              "https://www.linkedin.com/in/shailesh-chaudhari-93602",
-              "https://twitter.com/Shaileshbhai03",
+              BLOG_AUTHOR.social.github,
+              BLOG_AUTHOR.social.linkedin,
+              BLOG_AUTHOR.social.twitter,
             ],
-            description:
-              "Professional portfolio of Shailesh Chaudhari, a Full Stack Developer specializing in MERN stack development.",
+            description: META_DEFAULTS.description,
             knowsAbout: [
               "JavaScript",
               "TypeScript",
@@ -108,12 +103,7 @@ export default function RootLayout({
             hasOccupation: {
               "@type": "Occupation",
               name: "Full Stack Developer",
-              description:
-                "Building web applications using MERN stack technologies",
-            },
-            alumniOf: {
-              "@type": "EducationalOrganization",
-              name: "Gujarat Technological University",
+              description: "Building web applications using modern web technologies",
             },
           })}
         </script>
@@ -160,7 +150,7 @@ export default function RootLayout({
               </footer>
             </div>
             <Analytics />
-            <SpeedInsights />
+            <SpeedInsightsClient />
           </ThemeProvider>
         </Providers>
       </body>

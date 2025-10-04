@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { MenuIcon, XIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "../theme-toggle";
@@ -78,69 +77,55 @@ export default function Navbar() {
               aria-label={menuOpen ? "Close menu" : "Open menu"}
             >
               {menuOpen ? (
-                <X className="h-5 w-5" />
+                <XIcon className="h-5 w-5" />
               ) : (
-                <Menu className="h-5 w-5" />
+                <MenuIcon className="h-5 w-5" />
               )}
             </Button>
           </div>
         </div>
       </div>
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed inset-0 bg-background/95 backdrop-blur-sm z-[999] md:hidden border-l border-border/40 flex flex-col h-[100vh]"
+      {/* Mobile menu (simple CSS-based toggle to avoid bundling framer-motion) */}
+      <div
+        className={`fixed inset-0 bg-background/95 backdrop-blur-sm z-[999] md:hidden border-l border-border/40 flex flex-col h-[100vh] transform transition-transform duration-300 ease-out ${
+          menuOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0 pointer-events-none"
+        }`}
+        aria-hidden={!menuOpen}
+      >
+        <div className="flex justify-between items-center px-6 py-5 border-b">
+          <Link href="/" className="text-xl font-bold text-gradient" onClick={closeMenu}>
+            <span>SC</span>
+          </Link>
+            <Button
+            variant="ghost"
+            size="icon"
+            onClick={closeMenu}
+            aria-label="Close menu"
+            className="hover:bg-muted"
           >
-            <div className="flex justify-between items-center px-6 py-5 border-b">
-              <Link
-                href="/"
-                className="text-xl font-bold text-gradient"
-                onClick={closeMenu}
-              >
-                <span>SC</span>
-              </Link>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={closeMenu}
-                aria-label="Close menu"
-                className="hover:bg-muted"
-              >
-                <X className="h-6 w-6" />
-              </Button>
-            </div>
-            <nav className="flex-1 flex items-center justify-center">
-              <ul className="space-y-6 w-full px-6">
-                {navigation.map((item) => (
-                  <motion.li
-                    key={item.href}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <Link
-                      href={item.href}
-                      className={`block py-3 px-4 text-base font-medium transition-colors rounded-lg ${
-                        isActive(item.href)
-                          ? "text-primary font-bold"
-                          : "text-foreground hover:text-primary hover:bg-muted/80"
-                      }`}
-                      onClick={closeMenu}
-                    >
-                      {item.name}
-                    </Link>
-                  </motion.li>
-                ))}
-              </ul>
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <XIcon className="h-6 w-6" />
+          </Button>
+        </div>
+        <nav className="flex-1 flex items-center justify-center">
+          <ul className="space-y-6 w-full px-6">
+            {navigation.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className={`block py-3 px-4 text-base font-medium transition-colors rounded-lg ${
+                    isActive(item.href)
+                      ? "text-primary font-bold"
+                      : "text-foreground hover:text-primary hover:bg-muted/80"
+                  }`}
+                  onClick={closeMenu}
+                >
+                  {item.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
     </nav>
   );
 }

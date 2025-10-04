@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogLayout } from "@/components/blog/blog-layout";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeftIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getPostBySlug, getRelatedPosts, blogPosts } from "@/lib/blog-data";
@@ -94,7 +94,7 @@ export default async function Page({ params }: Props) {
         <div className="container mx-auto px-4 py-8">
           <Link href="/blogs" className="inline-block mb-8">
             <Button variant="ghost" className="group">
-              <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
+              <ArrowLeftIcon className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
               Back to Blogs
             </Button>
           </Link>

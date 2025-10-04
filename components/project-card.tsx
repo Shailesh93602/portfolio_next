@@ -1,8 +1,8 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { Github, ExternalLink, Tag } from "lucide-react";
+// framer-motion removed to reduce initial bundle size; use CSS transitions instead
+import { GithubIcon, ExternalLinkIcon, TagIcon } from "@/components/icons";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -28,12 +28,7 @@ export function ProjectCard({
   onShowDetails,
 }: ProjectCardProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-    >
+    <div className="transition-transform duration-500 ease-out will-change-transform">
       <Card className="bg-dark overflow-hidden hover:shadow-lg transition-shadow duration-300">
         <div className="relative h-48">
           <Image src={image} alt={title} fill className="object-cover" />
@@ -50,7 +45,7 @@ export function ProjectCard({
                 key={index}
                 className="px-2 py-1 bg-primary/10 text-primary text-sm rounded-full flex items-center gap-1"
               >
-                <Tag className="w-3 h-3" />
+                <TagIcon className="w-3 h-3" />
                 {tag}
               </span>
             ))}
@@ -59,16 +54,16 @@ export function ProjectCard({
           <div className="flex items-center gap-4">
             {github && (
               <Link href={github} target="_blank" rel="noopener noreferrer">
-                <Button variant="ghost" size="sm" className="text-text-primary">
-                  <Github className="w-4 h-4 mr-2" />
+                  <Button variant="ghost" size="sm" className="text-text-primary">
+                  <GithubIcon className="w-4 h-4 mr-2" />
                   GitHub
                 </Button>
               </Link>
             )}
             {live && (
               <Link href={live} target="_blank" rel="noopener noreferrer">
-                <Button variant="ghost" size="sm" className="text-text-primary">
-                  <ExternalLink className="w-4 h-4 mr-2" />
+                  <Button variant="ghost" size="sm" className="text-text-primary">
+                  <ExternalLinkIcon className="w-4 h-4 mr-2" />
                   Live Demo
                 </Button>
               </Link>
@@ -86,6 +81,6 @@ export function ProjectCard({
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

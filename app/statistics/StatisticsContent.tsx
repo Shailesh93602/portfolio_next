@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import {
   GitHubLogoIcon,
@@ -14,20 +13,18 @@ import {
   TimerIcon,
   CalendarIcon,
 } from "@radix-ui/react-icons";
-import { Trophy, Award, Zap } from "lucide-react";
+import { TrophyIcon, AwardIcon, StarIcon } from "@/components/icons";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { StatsCharts } from "@/components/stats-charts";
+import dynamic from "next/dynamic";
+const StatsCharts = dynamic(
+  () => import("@/components/stats-charts").then((mod) => mod.StatsCharts),
+  { ssr: false }
+);
 import { Badge } from "@/components/ui/badge";
 import { GitHubLanguages } from "@/components/github-languages";
 import { GitHubContributionHeatmap } from "@/components/github-contribution-heatmap";
-
-const fadeInUp = {
-  initial: { y: 20, opacity: 0 },
-  animate: { y: 0, opacity: 1 },
-  transition: { duration: 0.5 },
-};
 
 const StatCard = ({
   label,
@@ -42,12 +39,7 @@ const StatCard = ({
   color?: string;
   textColor?: string;
 }) => (
-  <motion.div
-    className="relative"
-    whileHover={{ scale: 1.02 }}
-    whileTap={{ scale: 0.98 }}
-    {...fadeInUp}
-  >
+  <div className="relative transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]">
     <Card
       className={`p-5 backdrop-blur-sm border hover:border-primary/50 transition-all duration-300 overflow-hidden ${color}`}
     >
@@ -61,28 +53,21 @@ const StatCard = ({
         </div>
       </div>
     </Card>
-  </motion.div>
+  </div>
 );
 
 const PlatformSection = ({
   title,
   icon: Icon,
   children,
-  delay = 0,
   className = "",
 }: {
   title: string;
   icon?: React.ElementType;
   children: React.ReactNode;
-  delay?: number;
   className?: string;
 }) => (
-  <motion.div
-    initial={{ y: 20, opacity: 0 }}
-    animate={{ y: 0, opacity: 1 }}
-    transition={{ duration: 0.5, delay }}
-    className={`mb-12 ${className}`}
-  >
+  <div className={`mb-12 ${className} transition-opacity duration-500`}>
     <h2 className="text-2xl font-bold tracking-tight mb-6 flex items-center gap-2">
       {Icon && <Icon className="w-6 h-6" />}
       {title}
@@ -90,7 +75,7 @@ const PlatformSection = ({
     <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full max-w-6xl mx-auto">
       {children}
     </div>
-  </motion.div>
+  </div>
 );
 
 export function StatisticsContent() {
@@ -181,12 +166,7 @@ export function StatisticsContent() {
 
   return (
     <div className="container mx-auto px-4 py-16">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-center mb-16"
-      >
+      <div className="text-center mb-16 transition-transform duration-500">
         <h1 className="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
           Coding Statistics
         </h1>
@@ -214,16 +194,12 @@ export function StatisticsContent() {
             <CommitIcon className="w-3 h-3 mr-1" /> Open Source
           </Badge>
         </div>
-      </motion.div>
+      </div>
 
       <div className="space-y-16 max-w-6xl mx-auto">
         {/* Loading State */}
         {isLoading && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-16"
-          >
+          <div className="text-center py-16 transition-opacity duration-500">
             <div className="inline-flex items-center gap-3 text-muted-foreground">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
               <span>Loading your coding statistics...</span>
@@ -240,16 +216,12 @@ export function StatisticsContent() {
                 </p>
               </div>
             )}
-          </motion.div>
+          </div>
         )}
 
         {/* Error State */}
         {error && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-16"
-          >
+          <div className="text-center py-16 transition-opacity duration-500">
             <div className="inline-flex items-center gap-3 text-red-500">
               <span>❌ Error loading statistics</span>
             </div>
@@ -257,7 +229,7 @@ export function StatisticsContent() {
               Unable to fetch data at the moment. Please try refreshing the
               page.
             </p>
-          </motion.div>
+          </div>
         )}
 
         {/* GitHub Contribution Heatmap */}
@@ -271,7 +243,6 @@ export function StatisticsContent() {
         <PlatformSection
           title="GitHub Statistics"
           icon={GitHubLogoIcon}
-          delay={0.1}
         >
           {isLoading ? (
             <div className="col-span-4 grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -340,7 +311,6 @@ export function StatisticsContent() {
         <PlatformSection
           title="LeetCode Statistics"
           icon={CodeIcon}
-          delay={0.2}
         >
           {/* LeetCode Contribution Heatmap */}
           {!isLoading && leetcodeHeatmapData.length > 0 && (
@@ -397,21 +367,21 @@ export function StatisticsContent() {
                 <StatCard
                   label="Global Ranking"
                   value={`#${stats?.leetcode?.ranking || "N/A"}`}
-                  icon={Trophy}
+                  icon={TrophyIcon}
                   color="bg-gradient-to-br from-purple-500/10 to-purple-600/5"
                   textColor="text-purple-500"
                 />
                 <StatCard
                   label="Reputation"
                   value={stats?.leetcode?.reputation || "0"}
-                  icon={Award}
+                  icon={AwardIcon}
                   color="bg-gradient-to-br from-blue-500/10 to-blue-600/5"
                   textColor="text-blue-500"
                 />
                 <StatCard
                   label="Contribution Points"
                   value={stats?.leetcode?.contributionPoint || "0"}
-                  icon={Zap}
+                  icon={StarIcon}
                   color="bg-gradient-to-br from-amber-500/10 to-amber-600/5"
                   textColor="text-amber-500"
                 />

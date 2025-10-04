@@ -1,30 +1,27 @@
+
 "use client";
 
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { fadeIn } from "@/lib/animations";
-import { Github, Linkedin, Twitter, Mail } from "lucide-react";
+import { GithubIcon, LinkedinIcon, TwitterIcon, MailIcon } from "@/components/icons";
 
 const socialLinks = [
   {
     name: "GitHub",
     href: "https://github.com/shailesh93602",
-    icon: Github,
   },
   {
     name: "LinkedIn",
     href: "https://linkedin.com/in/shaileshbhaichaudhari",
-    icon: Linkedin,
   },
   {
     name: "Twitter",
     href: "https://twitter.com/shaileshwork",
-    icon: Twitter,
   },
   {
     name: "Email",
     href: "mailto:shailesh93602@gmail.com",
-    icon: Mail,
   },
 ];
 
@@ -61,7 +58,7 @@ export function Footer() {
           </p>
         </div>
         <div className="flex items-center space-x-4">
-          {socialLinks.map((item) => (
+            {socialLinks.map((item) => (
             <Link
               key={item.name}
               href={item.href}
@@ -69,7 +66,11 @@ export function Footer() {
               rel="noreferrer"
               className="text-muted-foreground transition-colors hover:text-primary"
             >
-              <item.icon className="h-5 w-5" />
+                {/* Inline icons from local icon set to reduce bundle size */}
+                {item.name === 'GitHub' && <GithubIcon className="h-5 w-5" />}
+                {item.name === 'LinkedIn' && <LinkedinIcon className="h-5 w-5" />}
+                {item.name === 'Twitter' && <TwitterIcon className="h-5 w-5" />}
+                {item.name === 'Email' && <MailIcon className="h-5 w-5" />}
               <span className="sr-only">{item.name}</span>
             </Link>
           ))}
