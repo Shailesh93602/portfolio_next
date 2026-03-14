@@ -147,12 +147,14 @@ export default function ProjectDetailContent({ project }: Props) {
             >
               <h3 className="text-xl font-bold mb-6">Project Links</h3>
               <div className="space-y-4">
-                <Button asChild className="w-full justify-start h-12 text-base">
-                  <a href={project.github} target="_blank" rel="noopener noreferrer">
-                    <GithubIcon className="w-5 h-5 mr-3" />
-                    Source Code
-                  </a>
-                </Button>
+                {project.github && (
+                  <Button asChild className="w-full justify-start h-12 text-base">
+                    <a href={project.github} target="_blank" rel="noopener noreferrer">
+                      <GithubIcon className="w-5 h-5 mr-3" />
+                      Source Code
+                    </a>
+                  </Button>
+                )}
                 {project.live && (
                   <Button asChild variant="outline" className="w-full justify-start h-12 text-base">
                     <a href={project.live} target="_blank" rel="noopener noreferrer">
@@ -162,6 +164,7 @@ export default function ProjectDetailContent({ project }: Props) {
                   </Button>
                 )}
               </div>
+
 
               <hr className="my-8 border-border" />
 

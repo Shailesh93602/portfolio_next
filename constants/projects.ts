@@ -4,7 +4,7 @@ export interface Project {
   description: string;
   image: string;
   tags: string[];
-  github: string;
+  github?: string;
   live?: string;
   detailedDescription?: string;
   features?: string[];
@@ -21,7 +21,6 @@ export const projects: Project[] = [
       "AI-Powered Web Testing Chrome Extension that automates UI testing using advanced AI agents and real-time execution engines.",
     image: "/Images/portfolio1.png", // Using portfolio1.png as placeholder or I can generate one
     tags: ["Next.js", "TypeScript", "Tailwind CSS", "Chrome Extension", "AI/ML"],
-    github: "https://github.com/Shailesh93602/vibe-testing",
     detailedDescription: "Vibe Testing is a sophisticated Chrome extension designed for the modern web ecosystem. it specifically targets websites built on rapid development platforms like Replit, v0, and Lovable, while maintaining full compatibility with any standard web application. It integrates with ContextQA's AI agents to perform autonomous UI validation.",
     features: [
       "AI-driven autonomous UI testing and validation",
@@ -41,7 +40,6 @@ export const projects: Project[] = [
       "Professional Accessibility Testing Suite (Chrome Extension + Node.js) for automated WCAG compliance and instant fixes.",
     image: "/Images/portfolio1.png",
     tags: ["Node.js", "Next.js", "TypeScript", "Tailwind CSS", "Accessibility"],
-    github: "https://github.com/Shailesh93602/axetos",
     detailedDescription: "AxeTos is a comprehensive solution for web accessibility. It combines a powerful Chrome extension with a dedicated Node.js backend to audit websites against WCAG A, AA, and AAA standards. Beyond just identifying issues, it offers a revolutionary 'instant fix' capability.",
     features: [
       "Automated WCAG A/AA/AAA standards auditing",

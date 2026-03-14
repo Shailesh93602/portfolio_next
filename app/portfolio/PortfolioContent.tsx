@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { fadeIn, staggerContainer } from "@/lib/animations";
 
-import { Project, projects } from "@/constants/projects";
+import { projects } from "@/constants/projects";
 
 
 const itemVariants = {
@@ -146,25 +146,25 @@ export function PortfolioContent() {
                 transition={{ duration: 0.2 }}
                 role="listitem"
               >
-                <Card className="bg-dark overflow-hidden h-full flex flex-col">
-                  <div className="relative h-48 w-full">
-                    <Image
-                      src={project.image}
-                      alt={`Screenshot of ${project.title} project`}
-                      fill
-                      className="object-cover rounded-t-lg"
-                      priority={true}
-                    />
-                  </div>
-                  <CardContent className="p-6 flex-1 flex flex-col">
-                    <h3 className="text-xl font-semibold mb-2 text-text-primary">
-                      {project.title}
-                    </h3>
-                    <p className="text-text-secondary mb-4 flex-1">
-                      {project.description}
-                    </p>
-                    <div className="space-y-4">
-                      <div className="flex flex-wrap gap-2">
+                <Card className="bg-dark overflow-hidden h-full flex flex-col group hover:shadow-primary/10 hover:shadow-2xl transition-all duration-300">
+                  <Link href={`/portfolio/${project.id}`} className="flex-1 flex flex-col">
+                    <div className="relative h-48 w-full overflow-hidden">
+                      <Image
+                        src={project.image}
+                        alt={`Screenshot of ${project.title} project`}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        priority={true}
+                      />
+                    </div>
+                    <CardContent className="p-6 flex-1 flex flex-col">
+                      <h3 className="text-xl font-semibold mb-2 text-text-primary group-hover:text-primary transition-colors">
+                        {project.title}
+                      </h3>
+                      <p className="text-text-secondary mb-4 flex-1">
+                        {project.description}
+                      </p>
+                      <div className="flex flex-wrap gap-2 mb-4">
                         {project.tags.map((tag) => (
                           <span
                             key={tag}
@@ -174,21 +174,25 @@ export function PortfolioContent() {
                           </span>
                         ))}
                       </div>
-                      <div className="flex gap-2">
+                    </CardContent>
+                  </Link>
+                  <div className="px-6 pb-6 mt-auto">
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 hover:bg-primary/10"
+                        asChild
+                      >
+                        <Link href={`/portfolio/${project.id}`}>
+                          View Details
+                        </Link>
+                      </Button>
+                      {project.github && (
                         <Button
                           variant="outline"
                           size="sm"
-                          className="flex-1"
-                          asChild
-                        >
-                          <Link href={`/portfolio/${project.id}`}>
-                            View Details
-                          </Link>
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1"
+                          className="flex-1 hover:bg-primary/10"
                           asChild
                         >
                           <a
@@ -201,12 +205,12 @@ export function PortfolioContent() {
                             GitHub
                           </a>
                         </Button>
-                      </div>
-
+                      )}
                     </div>
-                  </CardContent>
+                  </div>
                 </Card>
               </motion.div>
+
             ))}
           </div>
         )}
