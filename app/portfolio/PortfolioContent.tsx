@@ -2,82 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { GithubIcon, ExternalLinkIcon, XIcon } from "@/components/icons";
+import Link from "next/link";
+import { GithubIcon, XIcon } from "@/components/icons";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { fadeIn, staggerContainer } from "@/lib/animations";
 
-interface Project {
-  title: string;
-  description: string;
-  image: string;
-  tags: string[];
-  github: string;
-  live?: string;
-  id: string;
-}
+import { Project, projects } from "@/constants/projects";
 
-const projects: Project[] = [
-  {
-    id: "gecsportify",
-    title: "Cricket Auction System",
-    description:
-      "A web application developed for the college cricket league, simplifying the player registration and auction process. Built with Node.js, Express.js, EJS, and MongoDB.",
-    image: "/Images/gecSportify.png",
-    tags: ["Node.js", "Express.js", "MongoDB", "EJS", "Bootstrap"],
-    github: "https://github.com/Shailesh93602/gecsportify/",
-    live: "https://gecsportify.vercel.app/",
-  },
-  {
-    id: "jarvis-ai",
-    title: "Jarvis AI",
-    description:
-      "An advanced Android app built with Java and XML, enabling voice commands for effortless task management on smartphones.",
-  image: "/Images/portfolio1.png",
-    tags: ["Java", "Android", "XML", "Voice Recognition"],
-    github: "https://github.com/Shailesh93602/jarvis-ai",
-  },
-  {
-    id: "masteryprep",
-    title: "MasteryPrep",
-    description:
-      "An online platform to learn programming fundamentals for technical interviews, built with the MERN stack.",
-    image: "/Images/masteryPrep.png",
-    tags: ["React", "Node.js", "Express", "MongoDB", "MERN"],
-    github: "https://github.com/shailesh93602/MasteryPrep",
-    live: "https://masteryprep.netlify.app/",
-  },
-  {
-    id: "todolist",
-    title: "TODO List",
-    description:
-      "A user-friendly task management application, built with HTML, CSS, and JavaScript.",
-    image: "/Images/toDoList.png",
-    tags: ["HTML", "CSS", "JavaScript"],
-    github: "https://github.com/Shailesh93602/todolist",
-    live: "https://shailesh93602.github.io/todolist/",
-  },
-  {
-    id: "tictactoe",
-    title: "Tic Tac Toe",
-    description:
-      "A simple web-based game with sound effects, built with HTML, CSS, and JavaScript.",
-    image: "/Images/ticTacToe.png",
-    tags: ["HTML", "CSS", "JavaScript", "Game Development"],
-    github: "https://github.com/Shailesh93602/tictactoe",
-    live: "https://shailesh93602.github.io/TicTacToe/",
-  },
-  {
-    id: "bookesell",
-    title: "Book E-Sell",
-    description:
-      "A full-stack web application for buying and selling books online, built with React, Node.js, Express, and MongoDB.",
-  image: "/Images/portfolio1.png",
-    tags: ["React", "Node.js", "Express", "MongoDB", "MERN"],
-    github: "https://github.com/Shailesh93602/book-store",
-  },
-];
 
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
@@ -248,6 +181,16 @@ export function PortfolioContent() {
                           className="flex-1"
                           asChild
                         >
+                          <Link href={`/portfolio/${project.id}`}>
+                            View Details
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          asChild
+                        >
                           <a
                             href={project.github}
                             target="_blank"
@@ -258,25 +201,8 @@ export function PortfolioContent() {
                             GitHub
                           </a>
                         </Button>
-                        {project.live && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex-1"
-                            asChild
-                          >
-                            <a
-                              href={project.live}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              aria-label={`View live demo of ${project.title}`}
-                            >
-                              <ExternalLinkIcon className="w-4 h-4 mr-2" />
-                              Live Demo
-                            </a>
-                          </Button>
-                        )}
                       </div>
+
                     </div>
                   </CardContent>
                 </Card>

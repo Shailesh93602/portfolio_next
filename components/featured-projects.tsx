@@ -2,51 +2,15 @@
 
 import React from "react";
 // framer-motion removed to reduce initial bundle size; use CSS transitions instead
-import { GithubIcon, ExternalLinkIcon } from "@/components/icons";
+import { GithubIcon } from "@/components/icons";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-interface Project {
-  title: string;
-  description: string;
-  image: string;
-  tags: string[];
-  github: string;
-  live: string;
-}
+import { Project, projects as allProjects } from "@/constants/projects";
 
-const projects: Project[] = [
-  {
-    title: "E-commerce Platform",
-    description:
-      "A full-stack e-commerce platform with payment integration and admin dashboard.",
-    image:
-      "https://images.unsplash.com/photo-1556741533-6e6a62bd8b49?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    tags: ["Next.js", "TypeScript", "Prisma", "Stripe"],
-    github: "https://github.com/yourusername/ecommerce",
-    live: "https://ecommerce-demo.com",
-  },
-  {
-    title: "Task Management App",
-    description:
-      "A collaborative task management application with real-time updates.",
-    image:
-      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    tags: ["React", "Node.js", "WebSocket", "MongoDB"],
-    github: "https://github.com/yourusername/task-manager",
-    live: "https://task-manager-demo.com",
-  },
-  {
-    title: "Portfolio Website",
-    description: "A modern portfolio website showcasing projects and skills.",
-    image:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2026&q=80",
-    tags: ["Next.js", "Tailwind CSS", "Framer Motion"],
-    github: "https://github.com/yourusername/portfolio",
-    live: "https://your-portfolio.com",
-  },
-];
+const projects = allProjects.slice(0, 3);
+
 
 export function FeaturedProjects() {
   return (
@@ -91,18 +55,18 @@ export function FeaturedProjects() {
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" asChild>
+                    <Link href={`/portfolio/${project.id}`}>
+                      View Details
+                    </Link>
+                  </Button>
+                  <Button variant="outline" size="sm" asChild>
                     <Link href={project.github} target="_blank">
                       <GithubIcon className="mr-2 h-4 w-4" />
                       GitHub
                     </Link>
                   </Button>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href={project.live} target="_blank">
-                      <ExternalLinkIcon className="mr-2 h-4 w-4" />
-                      Live Demo
-                    </Link>
-                  </Button>
                 </div>
+
               </div>
             </div>
           ))}
