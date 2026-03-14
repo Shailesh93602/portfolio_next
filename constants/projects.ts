@@ -52,6 +52,7 @@ export const projects: Project[] = [
     challenges: "Translating complex accessibility standards into actionable, automated fixes that could be applied without breaking site functionality required deep understanding of DOM manipulation and CSS scoping.",
     solutions: "Developed an intelligent script injection engine that sanitizes and applies fixes in a temporary viewer mode before allowing the user to export a production-ready fix script."
   },
+  /*
   {
     id: "gecsportify",
     title: "Cricket Auction System",
@@ -126,4 +127,5 @@ export const projects: Project[] = [
     ],
     techStack: ["React", "Node.js", "Express", "MongoDB", "Cloudinary", "JWT"],
   },
+  */
 ];
