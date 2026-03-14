@@ -7,16 +7,11 @@ import Link from "next/link";
 import { Project } from "@/constants/projects";
 import { Button } from "@/components/ui/button";
 import { GithubIcon, ExternalLinkIcon, ArrowLeftIcon, CodeIcon, BriefcaseIcon, StarIcon } from "@/components/icons";
-import { fadeIn, staggerContainer } from "@/lib/animations";
+import { fadeIn } from "@/lib/animations";
 
 interface Props {
   project: Project;
 }
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1 },
-};
 
 export default function ProjectDetailContent({ project }: Props) {
   return (
@@ -185,29 +180,18 @@ export default function ProjectDetailContent({ project }: Props) {
               <hr className="my-8 border-border" />
 
               <div className="space-y-4">
-                <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Share Project</h4>
-                <div className="flex gap-4">
-                   {/* Placeholder for social sharing if needed */}
-                   <p className="text-sm italic">Coming soon</p>
-                </div>
+                <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Contact</h4>
+                <p className="text-sm text-muted-foreground">
+                  Interested in this work?
+                </p>
+                <Button asChild variant="link" className="px-0">
+                  <Link href="/contact">Get in touch →</Link>
+                </Button>
               </div>
             </motion.div>
           </div>
         </div>
       </div>
-
-      {/* Contact CTA */}
-      <section className="container mt-24">
-        <div className="p-12 rounded-3xl bg-primary/5 border border-primary/10 text-center space-y-6">
-          <h2 className="text-3xl font-bold">Have a similar project in mind?</h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            I&apos;m always open to discussing new opportunities and how I can help bring your vision to life with modern web technologies.
-          </p>
-          <Button asChild size="lg" className="rounded-full px-8">
-            <Link href="/contact">Let&apos;s Work Together</Link>
-          </Button>
-        </div>
-      </section>
     </main>
   );
 }
