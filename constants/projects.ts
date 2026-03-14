@@ -15,6 +15,46 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: "vibe-testing",
+    title: "Vibe Testing",
+    description:
+      "AI-Powered Web Testing Chrome Extension that automates UI testing using advanced AI agents and real-time execution engines.",
+    image: "/Images/portfolio1.png", // Using portfolio1.png as placeholder or I can generate one
+    tags: ["Next.js", "TypeScript", "Tailwind CSS", "Chrome Extension", "AI/ML"],
+    github: "https://github.com/Shailesh93602/vibe-testing",
+    detailedDescription: "Vibe Testing is a sophisticated Chrome extension designed for the modern web ecosystem. it specifically targets websites built on rapid development platforms like Replit, v0, and Lovable, while maintaining full compatibility with any standard web application. It integrates with ContextQA's AI agents to perform autonomous UI validation.",
+    features: [
+      "AI-driven autonomous UI testing and validation",
+      "Real-time communication with execution engine",
+      "Interactive modals for live test results and logs",
+      "Support for v0, Replit, and Lovable platforms",
+      "Advanced image previews and execution data visualization"
+    ],
+    techStack: ["Next.js", "TypeScript", "Tailwind CSS", "ContextQA AI API", "WebSockets"],
+    challenges: "Developing a real-time bridge between a browser extension and a remote AI execution engine while maintaining a low-latency, 'stunning' user experience was the primary technical hurdle.",
+    solutions: "Implemented a robust WebSocket-based communication layer and optimized Next.js rendering within the Chrome extension environment to ensure smooth, real-time UI updates."
+  },
+  {
+    id: "axetos",
+    title: "AxeTos",
+    description:
+      "Professional Accessibility Testing Suite (Chrome Extension + Node.js) for automated WCAG compliance and instant fixes.",
+    image: "/Images/portfolio1.png",
+    tags: ["Node.js", "Next.js", "TypeScript", "Tailwind CSS", "Accessibility"],
+    github: "https://github.com/Shailesh93602/axetos",
+    detailedDescription: "AxeTos is a comprehensive solution for web accessibility. It combines a powerful Chrome extension with a dedicated Node.js backend to audit websites against WCAG A, AA, and AAA standards. Beyond just identifying issues, it offers a revolutionary 'instant fix' capability.",
+    features: [
+      "Automated WCAG A/AA/AAA standards auditing",
+      "Component-level issue visualization in the UI",
+      "Intelligent fix suggestions with live preview",
+      "Script generation for permanent, development-free fixes",
+      "High-performance Node.js backend for complex analysis"
+    ],
+    techStack: ["Node.js", "Next.js", "TypeScript", "Tailwind CSS", "Express", "Chrome Scripting API"],
+    challenges: "Translating complex accessibility standards into actionable, automated fixes that could be applied without breaking site functionality required deep understanding of DOM manipulation and CSS scoping.",
+    solutions: "Developed an intelligent script injection engine that sanitizes and applies fixes in a temporary viewer mode before allowing the user to export a production-ready fix script."
+  },
+  {
     id: "gecsportify",
     title: "Cricket Auction System",
     description:
