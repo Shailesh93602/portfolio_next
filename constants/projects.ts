@@ -9,8 +9,10 @@ export interface Project {
   detailedDescription?: string;
   features?: string[];
   techStack?: string[];
+  problem?: string;
+  solution?: string;
   challenges?: string;
-  solutions?: string;
+  engineeringChallenges?: string; // Add this for specific focus if needed, but I'll map 'challenges' in UI
 }
 
 export const projects: Project[] = [
@@ -30,8 +32,9 @@ export const projects: Project[] = [
       "Advanced image previews and execution data visualization"
     ],
     techStack: ["Next.js", "TypeScript", "Tailwind CSS", "ContextQA AI API", "WebSockets"],
-    challenges: "Developing a real-time bridge between a browser extension and a remote AI execution engine while maintaining a low-latency, 'stunning' user experience was the primary technical hurdle.",
-    solutions: "Implemented a robust WebSocket-based communication layer and optimized Next.js rendering within the Chrome extension environment to ensure smooth, real-time UI updates."
+    problem: "Rapid web development on platforms like v0 or Replit outpaces traditional testing. Developers lack a way to perform real-time, automated UI validation on dynamically generated, AI-driven websites without complex setup.",
+    solution: "A high-performance Chrome extension that leverages ContextQA's AI agents. It captures live browser state and communicates via WebSockets with an automated execution engine to perform complex UI tests and report results instantly.",
+    engineeringChallenges: "Architecting a real-time, bi-directional communication bridge between the browser extension and a remote AI engine. I had to ensure sub-100ms latency for live log streaming and visual state updates to maintain a seamless developer experience."
   },
   {
     id: "axetos",
@@ -49,8 +52,9 @@ export const projects: Project[] = [
       "High-performance Node.js backend for complex analysis"
     ],
     techStack: ["Node.js", "Next.js", "TypeScript", "Tailwind CSS", "Express", "Chrome Scripting API"],
-    challenges: "Translating complex accessibility standards into actionable, automated fixes that could be applied without breaking site functionality required deep understanding of DOM manipulation and CSS scoping.",
-    solutions: "Developed an intelligent script injection engine that sanitizes and applies fixes in a temporary viewer mode before allowing the user to export a production-ready fix script."
+    problem: "Web accessibility (WCAG) compliance is a critical but often manual and neglected process. Identifying and fixing thousands of accessibility violations across large-scale sites creates a significant developmental bottleneck.",
+    solution: "Comprehensive auditing suite that runs detailed WCAG A/AA/AAA diagnostics. It features a unique remediation engine that applies persistent fixes via script injection, allowing for 'zero-code' accessibility fixes.",
+    engineeringChallenges: "Building a non-destructive DOM manipulation engine that could reliably apply accessibility fixes (like contrast adjustments and ARIA role remediation) across varied third-party frameworks without interfering with existing site logic."
   },
   /*
   {
