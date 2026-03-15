@@ -30,7 +30,7 @@ export const projects: Project[] = [
     description: "A premium, all-in-one engineering learning platform featuring personalized roadmaps, real-time coding battles, and comprehensive placement preparation.",
     image: "/Images/eduscale_landing_dark.png",
     isShowcase: true,
-    tags: ["Next.js 15", "React 19", "TypeScript", "Tailwind CSS", "Prisma", "PostgreSQL", "Supabase", "Socket.io", "Redis"],
+    tags: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Prisma", "PostgreSQL", "Supabase", "Socket.io", "Redis", "Node.js"],
     live: "https://eduscale.vercel.app/",
     github: "https://github.com/Shailesh93602/devscale",
     detailedDescription: "A high-performance EdTech ecosystem architected for sub-second latency and absolute data integrity. Built using Next.js 15 and Supabase, it features a distributed real-time state engine for competitive coding and dynamic career mapping. The platform leverages PostgreSQL for complex relational queries and an event-driven architecture to handle real-time user interactions.",
@@ -87,7 +87,7 @@ export const projects: Project[] = [
     description:
       "AI-Powered Web Testing Chrome Extension that automates UI testing using advanced AI agents and real-time execution engines.",
     image: "/Images/vibe_testing/full_report.png",
-    tags: ["Next.js", "TypeScript", "Tailwind CSS", "Chrome Extension", "AI/ML", "WebSockets"],
+    tags: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Chrome Extension", "AI/ML", "WebSockets", "Node.js", "Prisma"],
     detailedDescription: "Vibe Testing (also known as ContextQA) is a sophisticated Chrome extension designed for the modern web ecosystem. It integrates with AI agents to perform autonomous UI validation, broken link detection, performance analysis, and accessibility testing. It specifically targets sites built on platforms like v0.dev and Replit.",
     features: [
       "AI-driven autonomous UI testing and validation",
@@ -115,7 +115,7 @@ export const projects: Project[] = [
     description:
       "Professional Accessibility Testing Suite (Chrome Extension + Node.js) for automated WCAG compliance and instant fixes.",
     image: "/Images/portfolio1.png",
-    tags: ["Node.js", "Next.js", "TypeScript", "Tailwind CSS", "Accessibility"],
+    tags: ["Node.js", "Next.js", "TypeScript", "Tailwind CSS", "Accessibility", "Chrome Extension"],
     detailedDescription: "AxeTos (part of the ContextQA suite) is a comprehensive solution for web accessibility. It combines a powerful Chrome extension with a dedicated Node.js backend to audit websites against WCAG A, AA, and AAA standards. Beyond just identifying issues, it offers a revolutionary 'instant fix' capability.",
     features: [
       "Automated WCAG A/AA/AAA standards auditing",
