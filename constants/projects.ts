@@ -111,12 +111,12 @@ export const projects: Project[] = [
   },
   {
     id: "axetos",
-    title: "AxeTos",
+    title: "AxeTos (ContextQA)",
     description:
       "Professional Accessibility Testing Suite (Chrome Extension + Node.js) for automated WCAG compliance and instant fixes.",
     image: "/Images/portfolio1.png",
     tags: ["Node.js", "Next.js", "TypeScript", "Tailwind CSS", "Accessibility"],
-    detailedDescription: "AxeTos is a comprehensive solution for web accessibility. It combines a powerful Chrome extension with a dedicated Node.js backend to audit websites against WCAG A, AA, and AAA standards. Beyond just identifying issues, it offers a revolutionary 'instant fix' capability.",
+    detailedDescription: "AxeTos (part of the ContextQA suite) is a comprehensive solution for web accessibility. It combines a powerful Chrome extension with a dedicated Node.js backend to audit websites against WCAG A, AA, and AAA standards. Beyond just identifying issues, it offers a revolutionary 'instant fix' capability.",
     features: [
       "Automated WCAG A/AA/AAA standards auditing",
       "Component-level issue visualization in the UI",
