@@ -3,13 +3,13 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { GithubIcon, XIcon } from "@/components/icons";
 import Image from "next/image";
+import { XIcon } from "@/components/icons";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { fadeIn, staggerContainer } from "@/lib/animations";
-
 import { projects } from "@/constants/projects";
+import { PortfolioSkeleton } from "./PortfolioSkeleton";
 
 
 const itemVariants = {
@@ -22,7 +22,7 @@ export function PortfolioContent() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1000);
+    const timer = setTimeout(() => setIsLoading(false), 1500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -47,11 +47,7 @@ export function PortfolioContent() {
     : projects;
 
   if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-16 flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <PortfolioSkeleton />;
   }
 
   return (
