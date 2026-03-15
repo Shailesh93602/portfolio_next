@@ -129,80 +129,39 @@ export const projects: Project[] = [
     solution: "Comprehensive auditing suite that runs detailed WCAG A/AA/AAA diagnostics. It features a unique remediation engine that applies persistent fixes via script injection, allowing for 'zero-code' accessibility fixes.",
     engineeringChallenges: "Building a non-destructive DOM manipulation engine that could reliably apply accessibility fixes (like contrast adjustments and ARIA role remediation) across varied third-party frameworks without interfering with existing site logic."
   },
-  /*
   {
-    id: "gecsportify",
-    title: "Cricket Auction System",
-    description:
-      "A web application developed for the college cricket league, simplifying the player registration and auction process. Built with Node.js, Express.js, EJS, and MongoDB.",
-    image: "/Images/gecSportify.png",
-    tags: ["Node.js", "Express.js", "MongoDB", "EJS", "Bootstrap"],
-    github: "https://github.com/Shailesh93602/gecsportify/",
-    live: "https://gecsportify.vercel.app/",
-    detailedDescription: "GEC Sportify is a comprehensive cricket auction system designed to handle real-time player bidding for college sports leagues. It features a robust backend to manage player statistics, team budgets, and live auction updates.",
+    id: "khatago",
+    title: "KhataGO",
+    description: "WhatsApp-first AI Accounting & Billing platform for small businesses, featuring real-time transaction recording via chat and automated i18n support.",
+    image: "/Images/khatago/landing.png",
+    isShowcase: true,
+    tags: ["Next.js", "TypeScript", "Prisma", "PostgreSQL", "Supabase", "Gemini AI", "i18n", "Node.js", "Redis"],
+    live: "https://khatago.vercel.app/",
+    github: "https://github.com/Shailesh93602/khatago",
+    detailedDescription: "KhataGO is a revolutionary WhatsApp-first SaaS billing platform designed for the Indian MSME market. It leverages Gemini AI to parse natural language messages (English, Hindi, Hinglish) and images of receipts directly from WhatsApp, automatically recording transactions into a cloud-based ledger. The system features a stunning dashboard for deep financial analysis, a dedicated CA portal for seamless accounting exports (CSV/Tally), and robust multi-language support (English, Hindi, Gujarati) with a single-json extensibility model.",
     features: [
-      "Real-time bidding management",
-      "Player profile and statistics tracking",
-      "Team budget management with validation",
-      "Dynamic auction leaderboard",
-      "Admin dashboard for league management"
+      "Natural Language WhatsApp Bot: Record sales, purchases, and expenses like you talk.",
+      "AI Receipt Processing: Send bill photos to WhatsApp - the AI extracts and records all details.",
+      "CA & Accountant Portal: Date-range exports in CSV and Tally-ready formats.",
+      "Dynamic i18n Engine: Full UI in 3+ languages (English, Hindi, Gujarati) with single-json extensibility.",
+      "Financial Analytics: Real-time charts for sales, purchases, and net profit trends.",
+      "Zero-App Footprint: Manage your entire business accounting without ever leaving WhatsApp."
     ],
-    techStack: ["Node.js", "Express.js", "MongoDB", "EJS", "Bootstrap", "WebSockets"],
-  },
-  {
-    id: "jarvis-ai",
-    title: "Jarvis AI",
-    description:
-      "An advanced Android app built with Java and XML, enabling voice commands for effortless task management on smartphones.",
-    image: "/Images/portfolio1.png",
-    tags: ["Java", "Android", "XML", "Voice Recognition"],
-    github: "https://github.com/Shailesh93602/jarvis-ai",
-    detailedDescription: "Jarvis AI is a personal assistant application for Android that leverages Google's Voice Recognition API to perform various tasks on the device. It aims to provide a hands-free experience for common smartphone activities.",
-    features: [
-      "Voice command execution (Call, Text, Apps)",
-      "Daily schedule and reminders management",
-      "Real-time weather and news updates",
-      "Custom voice responses",
-      "Integration with device hardware (Camera, Flashlight)"
+    techStack: [
+      "Frontend: Next.js (App Router), React, Tailwind CSS, Recharts, i18next",
+      "Backend: Node.js, Express (TypeScript), Prisma ORM, PostgreSQL",
+      "AI & Messaging: Google Gemini AI, WhatsApp Cloud API, Redis/Bull Queues",
+      "Infrastructure: Supabase (Auth & Real-time), Vercel"
     ],
-    techStack: ["Java", "Android SDK", "XML", "Google Voice API"],
+    problem: "Small business owners in India struggle with complex accounting software. They often rely on manual notebooks (Khatas), which lead to data loss, calculation errors, and delays in GST compliance.",
+    solution: "A 'zero-learning-curve' platform that works where the user already is: WhatsApp. By combining the simplicity of chat with the power of AI, KhataGO makes business accounting as easy as sending a message.",
+    engineeringChallenges: "The biggest challenge was building a resilient, low-latency messaging pipeline. I architected an event-driven system using Redis and Bull queues to handle Gemini AI calls and Tally XML generation as background tasks, ensuring the WhatsApp bot remains responsive while processing complex business data.",
+    gallery: [
+      "/Images/khatago/landing.png",
+      "/Images/khatago/dashboard.png",
+      "/Images/khatago/transactions.png",
+      "/Images/khatago/ca_portal.png",
+      "/Images/khatago/dashboard_hindi.png"
+    ]
   },
-  {
-    id: "masteryprep",
-    title: "MasteryPrep",
-    description:
-      "An online platform to learn programming fundamentals for technical interviews, built with the MERN stack.",
-    image: "/Images/masteryPrep.png",
-    tags: ["React", "Node.js", "Express", "MongoDB", "MERN"],
-    github: "https://github.com/shailesh93602/MasteryPrep",
-    live: "https://masteryprep.netlify.app/",
-    detailedDescription: "MasteryPrep is an educational platform focused on preparing students for technical interviews. It provides a curated set of problems, learning resources, and a community space for developers.",
-    features: [
-      "Curated coding challenges with categories",
-      "Interactive learning modules for DSA",
-      "User progress tracking and badges",
-      "Discussion forums for problem solving",
-      "Responsive design for mobile learning"
-    ],
-    techStack: ["React", "Node.js", "Express", "MongoDB", "Redux", "Tailwind CSS"],
-  },
-  {
-    id: "bookesell",
-    title: "Book E-Sell",
-    description:
-      "A full-stack web application for buying and selling books online, built with React, Node.js, Express, and MongoDB.",
-    image: "/Images/portfolio1.png",
-    tags: ["React", "Node.js", "Express", "MongoDB", "MERN"],
-    github: "https://github.com/Shailesh93602/book-store",
-    detailedDescription: "Book E-Sell is a marketplace for second-hand books, allowing users to list their books for sale and buy from others. It streamlines the process of finding affordable educational resources.",
-    features: [
-      "User authentication and profile management",
-      "Book listing with image upload",
-      "Advanced search and filtering by category",
-      "Inner messaging system for buyers and sellers",
-      "Rating and review system"
-    ],
-    techStack: ["React", "Node.js", "Express", "MongoDB", "Cloudinary", "JWT"],
-  },
-  */
 ];
