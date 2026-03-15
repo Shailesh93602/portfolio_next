@@ -1,33 +1,36 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { XIcon } from "@/components/icons";
+import { XIcon, SearchIcon, FilterIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { fadeIn, staggerContainer } from "@/lib/animations";
 import { projects } from "@/constants/projects";
 import { PortfolioSkeleton } from "./PortfolioSkeleton";
 
-
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
   visible: { y: 0, opacity: 1 },
+  exit: { y: -20, opacity: 0 }
 };
 
 export function PortfolioContent() {
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1500);
+    const timer = setTimeout(() => setIsLoading(false), 1200);
     return () => clearTimeout(timer);
   }, []);
 
-  const allTags = Array.from(
-    new Set(projects.flatMap((project) => project.tags))
+  const allTags = useMemo(() => 
+    Array.from(new Set(projects.flatMap((project) => project.tags))).sort((a, b) => a.localeCompare(b)),
+    []
   );
 
   const toggleTag = (tag: string) => {
@@ -36,15 +39,24 @@ export function PortfolioContent() {
     );
   };
 
+  const filteredProjects = useMemo(() => {
+    return projects.filter((project) => {
+      const searchStr = searchQuery.toLowerCase();
+      const matchesSearch = !searchQuery || 
+                          project.title.toLowerCase().includes(searchStr) ||
+                          project.description.toLowerCase().includes(searchStr) ||
+                          project.tags.some(t => t.toLowerCase().includes(searchStr));
+      
+      const matchesTags = selectedTags.every((tag) => project.tags.includes(tag));
+      
+      return matchesSearch && matchesTags;
+    });
+  }, [searchQuery, selectedTags]);
+
   const resetFilters = () => {
     setSelectedTags([]);
+    setSearchQuery("");
   };
-
-  const filteredProjects = selectedTags.length
-    ? projects.filter((project) =>
-        selectedTags.some((tag) => project.tags.includes(tag))
-      )
-    : projects;
 
   if (isLoading) {
     return <PortfolioSkeleton />;
@@ -73,53 +85,80 @@ export function PortfolioContent() {
         viewport={{ once: true }}
         variants={staggerContainer(0.1)}
       >
-        {/* Filter Section */}
-        <motion.div variants={itemVariants} className="mb-12">
-          <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
-            <h3 className="text-lg font-semibold">
-              Filter by Technology:
-            </h3>
-            {selectedTags.length > 0 && (
-              <Button
-                onClick={resetFilters}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2 rounded-full"
-              >
-                <XIcon className="w-4 h-4" />
-                Show All
-              </Button>
-            )}
+        {/* Filter & Search Section */}
+        <motion.div variants={itemVariants} className="mb-12 space-y-8">
+          <div className="max-w-xl mx-auto relative group">
+            <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <Input
+              placeholder="Search projects by name, tech, or description..."
+              className="pl-12 h-14 rounded-2xl bg-card/50 border-border group-focus-within:border-primary/50 transition-all text-lg"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
-          <div className="flex flex-wrap justify-center gap-3">
-            {allTags.map((tag) => (
-              <button
-                key={tag}
-                onClick={() => toggleTag(tag)}
-                className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 border ${
-                  selectedTags.includes(tag)
-                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105"
-                    : "bg-card text-muted-foreground border-border hover:border-primary/50"
-                }`}
-              >
-                {tag}
-              </button>
-            ))}
+
+          <div className="space-y-6">
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 text-primary text-sm font-bold uppercase tracking-wider">
+                <FilterIcon className="w-4 h-4" />
+                Technical Stack
+              </div>
+              {(selectedTags.length > 0 || searchQuery) && (
+                <Button
+                  onClick={resetFilters}
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-2 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
+                >
+                  <XIcon className="w-4 h-4" />
+                  Clear All
+                </Button>
+              )}
+            </div>
+            <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
+              {allTags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => toggleTag(tag)}
+                  className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 border ${
+                    selectedTags.includes(tag)
+                      ? "bg-primary text-white border-primary shadow-xl shadow-primary/20 scale-105 z-10"
+                      : "bg-card/50 text-muted-foreground border-border hover:border-primary/50 backdrop-blur-sm"
+                  }`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
           </div>
         </motion.div>
 
-        {filteredProjects.length === 0 ? (
-          <motion.div
-            variants={itemVariants}
-            className="text-center text-muted-foreground py-20 bg-card/30 rounded-[2rem] border border-dashed border-border"
-          >
-            No projects match the selected filters.
-          </motion.div>
-        ) : (
-          <motion.div
-            variants={staggerContainer(0.05)}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
-          >
+        <AnimatePresence mode="wait">
+          {filteredProjects.length === 0 ? (
+            <motion.div
+              key="no-results"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="text-center py-32 bg-card/10 rounded-[3rem] border border-dashed border-border flex flex-col items-center gap-4"
+            >
+              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+                 <SearchIcon className="w-8 h-8 text-muted-foreground" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-xl font-bold">No projects found</h3>
+                <p className="text-muted-foreground">Try adjusting your search or filters to broaden your results.</p>
+              </div>
+              <Button onClick={resetFilters} variant="outline" className="mt-4 rounded-full">
+                Show all projects
+              </Button>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="results-grid"
+              variants={staggerContainer(0.05)}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
+            >
             {filteredProjects.map((project) => {
               const isShowcase = project.isShowcase;
               return (
@@ -170,8 +209,9 @@ export function PortfolioContent() {
                 </motion.div>
               );
             })}
-          </motion.div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </div>
   );
