@@ -12,6 +12,7 @@ import ArchitectureDiagram from "@/components/Showcase/ArchitectureDiagram";
 import KeyMetrics from "@/components/Showcase/KeyMetrics";
 import ThemeComparison from "@/components/Showcase/ThemeComparison";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 
 interface Props {
   project: Project;
@@ -399,9 +400,9 @@ export default function ProjectDetailContent({ project }: Props) {
                   Core Capabilities
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {project.features.map((feature, index) => (
+                  {project.features.map((feature) => (
                     <div 
-                      key={index}
+                      key={feature}
                       className="p-5 rounded-xl bg-card border border-border hover:border-primary/50 transition-all duration-300 group"
                     >
                       <div className="flex items-start gap-3">
@@ -448,12 +449,9 @@ export default function ProjectDetailContent({ project }: Props) {
               <h3 className="text-lg font-bold mb-4">Tech Stack</h3>
               <div className="flex flex-wrap gap-2">
                 {project.techStack?.map((tech) => (
-                  <span
-                    key={tech}
-                    className="px-3 py-1.5 bg-primary/10 text-primary border border-primary/20 rounded-lg text-xs font-semibold uppercase tracking-wider"
-                  >
+                  <Badge key={tech} variant="secondary">
                     {tech}
-                  </span>
+                  </Badge>
                 ))}
               </div>
 
