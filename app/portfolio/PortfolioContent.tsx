@@ -14,8 +14,8 @@ import { PortfolioSkeleton } from "./PortfolioSkeleton";
 
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1 },
-  exit: { y: -20, opacity: 0 }
+  visible: { y: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
+  exit: { y: -20, opacity: 0, transition: { duration: 0.2 } }
 };
 
 export function PortfolioContent() {
@@ -133,13 +133,14 @@ export function PortfolioContent() {
           </div>
         </motion.div>
 
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout">
           {filteredProjects.length === 0 ? (
             <motion.div
               key="no-results"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              variants={itemVariants}
               className="text-center py-32 bg-card/10 rounded-[3rem] border border-dashed border-border flex flex-col items-center gap-4"
             >
               <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
@@ -156,6 +157,9 @@ export function PortfolioContent() {
           ) : (
             <motion.div
               key="results-grid"
+              initial="hidden"
+              animate="visible"
+              exit="exit"
               variants={staggerContainer(0.05)}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
             >
@@ -164,6 +168,7 @@ export function PortfolioContent() {
               return (
                 <motion.div
                   key={project.id}
+                  layout
                   variants={itemVariants}
                   className={`${isShowcase ? 'md:col-span-2 lg:col-span-2' : ''} group h-full`}
                 >
