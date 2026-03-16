@@ -11,9 +11,8 @@ export interface Project {
   techStack?: string[];
   problem?: string;
   solution?: string;
-  challenges?: string;
-  engineeringChallenges?: string; // Add this for specific focus if needed, but I'll map 'challenges' in UI
-    gallery?: string[]; // Add gallery for showcase projects
+  challengesSolved?: string;
+  gallery?: string[]; // Add gallery for showcase projects
   isShowcase?: boolean; // Flag for special rendering
   architecture?: {
     layers: { name: string; items: string[] }[];
@@ -69,7 +68,7 @@ export const projects: Project[] = [
     ],
     problem: "Engineering education is often disjointed, with students moving between static roadmaps, isolated coding editors, and scattered community forums. This lack of integration leads to poor progress tracking and a higher dropout rate during self-paced learning.",
     solution: "A unified Engineering Learning Platform (SaaS) that seamlessly integrates structured curriculum with interactive coding tools and real-time social competition. EduScale provides a 'single source of truth' for the student's entire technical journey.",
-    engineeringChallenges: "The primary challenge was building the 'Battle Zone'—a distributed real-time state machine that synchronizes test execution results across thousands of concurrent users. I implemented a Redis-backed message broker with Bull queues to ensure reliable delivery of code execution logs and leaderboard updates with sub-200ms latency.",
+    challengesSolved: "The primary challenge was building the 'Battle Zone'—a distributed real-time state machine that synchronizes test execution results across thousands of concurrent users. I implemented a Redis-backed message broker with Bull queues to ensure reliable delivery of code execution logs and leaderboard updates with sub-200ms latency.",
     gallery: [
       "/Images/eduscale_landing_dark.png",
       "/Images/eduscale_landing_light.png",
@@ -88,19 +87,31 @@ export const projects: Project[] = [
       "AI-Powered Web Testing Chrome Extension that automates UI testing using advanced AI agents and real-time execution engines.",
     image: "/Images/vibe_testing/full_report.png",
     tags: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Chrome Extension", "AI/ML", "WebSockets"],
-    detailedDescription: "Vibe Testing (also known as ContextQA) is a sophisticated Chrome extension designed for the modern web ecosystem. It integrates with AI agents to perform autonomous UI validation, broken link detection, performance analysis, and accessibility testing. It specifically targets sites built on platforms like v0.dev and Replit.",
+    detailedDescription: "Vibe Testing (also known as ContextQA) is a sophisticated Chrome extension designed for the modern web ecosystem. It integrates with AI agents to perform autonomous UI validation, broken link detection, performance analysis, and accessibility testing. It specifically targets sites built on platforms like v0.dev and Replit, providing real-time feedback and screenshots of execution.",
+    architecture: {
+      layers: [
+        { name: "Frontend (Extension)", items: ["Next.js", "Tailwind CSS", "React", "Chrome Extension API"] },
+        { name: "Backend (Intelligence)", items: ["Python (AI Agent)", "Node.js (Execution)", "Playwright Engine"] },
+        { name: "Communication", items: ["Socket.io (Live Logs)", "Browser Storage"] }
+      ],
+      description: "A hybrid architecture combining a lightweight browser extension with a powerful remote AI execution engine for autonomous web testing."
+    },
     features: [
       "AI-driven autonomous UI testing and validation",
       "Real-time communication with execution engine via WebSockets",
       "Integrated broken link detection and SEO analysis",
       "WCAG 2.1 AA accessibility compliance testing",
-      "Core Web Vitals performance monitoring",
+      "Live log streaming and visual state updates with screenshots",
       "One-click fix suggestions for AI-generated code"
     ],
-    techStack: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Puppeteer", "Axe-core", "Manifest V3"],
+    techStack: [
+      "Frontend: Next.js, React, TypeScript, Tailwind CSS, Manifest V3",
+      "Backend: Node.js, Python (AI Agent), Playwright",
+      "Communication: Socket.io, Browser Local Storage"
+    ],
     problem: "Rapid web development outpaces traditional testing. Developers lack a way to perform real-time, automated UI validation on dynamically generated, AI-driven websites without complex manual setup.",
     solution: "A high-performance Chrome extension that leverages AI agents to capture live browser state and perform complex UI tests. It provides detailed reports with prioritized bugs and actionable fix suggestions.",
-    engineeringChallenges: "Architecting a real-time, bi-directional communication bridge between the browser extension and a remote testing engine while ensuring sub-200ms latency for live log streaming and visual state updates.",
+    challengesSolved: "Architecting a real-time, bi-directional communication bridge between the browser extension and a remote testing engine while ensuring sub-200ms latency for live log streaming and visual state updates.",
     gallery: [
       "/Images/vibe_testing/full_report.png",
       "/Images/vibe_testing/live_execution_with_steps_and_screenshots.png",
@@ -116,7 +127,15 @@ export const projects: Project[] = [
       "Professional Accessibility Testing Suite (Chrome Extension + Node.js) for automated WCAG compliance and instant fixes.",
     image: "/Images/portfolio1.png",
     tags: ["Node.js", "Next.js", "React", "TypeScript", "Tailwind CSS", "Accessibility", "Chrome Extension"],
-    detailedDescription: "AxeTos (part of the ContextQA suite) is a comprehensive solution for web accessibility. It combines a powerful Chrome extension with a dedicated Node.js backend to audit websites against WCAG A, AA, and AAA standards. Beyond just identifying issues, it offers a revolutionary 'instant fix' capability.",
+    detailedDescription: "AxeTos (part of the ContextQA suite) is a comprehensive solution for web accessibility. It combines a powerful Chrome extension with a dedicated Node.js backend to audit websites against WCAG A, AA, and AAA standards. Beyond just identifying issues, it offers a revolutionary 'instant fix' capability via script injection.",
+    architecture: {
+      layers: [
+        { name: "Frontend (Extension)", items: ["Next.js", "Tailwind CSS", "TypeScript", "Chrome Scripting API"] },
+        { name: "Backend (Service)", items: ["Node.js", "Express.js", "Axe-core Engine"] },
+        { name: "Infrastructure", items: ["AWS S3 (Script Storage)"] }
+      ],
+      description: "A comprehensive auditing and remediation suite that identifies accessibility violations and generates persistent fixes."
+    },
     features: [
       "Automated WCAG A/AA/AAA standards auditing",
       "Component-level issue visualization in the UI",
@@ -124,10 +143,14 @@ export const projects: Project[] = [
       "Script generation for permanent, development-free fixes",
       "High-performance Node.js backend for complex analysis"
     ],
-    techStack: ["Node.js", "Next.js", "TypeScript", "Tailwind CSS", "Express", "Chrome Scripting API"],
+    techStack: [
+      "Frontend: Next.js, React, TypeScript, Tailwind CSS, Chrome Scripting API",
+      "Backend: Node.js, Express.js, Axe-core",
+      "Infrastructure: AWS S3"
+    ],
     problem: "Web accessibility (WCAG) compliance is a critical but often manual and neglected process. Identifying and fixing thousands of accessibility violations across large-scale sites creates a significant developmental bottleneck.",
     solution: "Comprehensive auditing suite that runs detailed WCAG A/AA/AAA diagnostics. It features a unique remediation engine that applies persistent fixes via script injection, allowing for 'zero-code' accessibility fixes.",
-    engineeringChallenges: "Building a non-destructive DOM manipulation engine that could reliably apply accessibility fixes (like contrast adjustments and ARIA role remediation) across varied third-party frameworks without interfering with existing site logic."
+    challengesSolved: "Building a non-destructive DOM manipulation engine that could reliably apply accessibility fixes (like contrast adjustments and ARIA role remediation) across varied third-party frameworks without interfering with existing site logic."
   },
   {
     id: "khatago",
@@ -138,12 +161,20 @@ export const projects: Project[] = [
     tags: ["Next.js", "TypeScript", "Prisma", "PostgreSQL", "Supabase", "Gemini AI", "i18n", "Node.js", "Redis"],
     live: "https://khatago.vercel.app/",
     github: "https://github.com/Shailesh93602/khatago",
-    detailedDescription: "KhataGO is a revolutionary WhatsApp-first SaaS billing platform designed for the Indian MSME market. It leverages Gemini AI to parse natural language messages (English, Hindi, Hinglish) and images of receipts directly from WhatsApp, automatically recording transactions into a cloud-based ledger. The system features a stunning dashboard for deep financial analysis, a dedicated CA portal for seamless accounting exports (CSV/Tally), and robust multi-language support (English, Hindi, Gujarati) with a single-json extensibility model.",
+    detailedDescription: "KhataGO is a revolutionary WhatsApp-first SaaS billing platform designed for the Indian MSME market. It leverages Gemini AI to parse natural language messages and images of receipts directly from WhatsApp, automatically recording transactions into a cloud-based ledger.",
+    architecture: {
+      layers: [
+        { name: "Interface", items: ["WhatsApp Cloud API", "Next.js (Web Dashboard)", "Tailwind CSS"] },
+        { name: "Intelligence", items: ["Google Gemini AI", "Node.js (Webhooks)"] },
+        { name: "Data & Ops", items: ["Prisma ORM", "PostgreSQL (Supabase)", "Redis / Bull Queues"] }
+      ],
+      description: "An event-driven, WhatsApp-first architecture designed for simplicity and scalability in small business accounting."
+    },
     features: [
       "Natural Language WhatsApp Bot: Record sales, purchases, and expenses like you talk.",
       "AI Receipt Processing: Send bill photos to WhatsApp - the AI extracts and records all details.",
       "CA & Accountant Portal: Date-range exports in CSV and Tally-ready formats.",
-      "Dynamic i18n Engine: Full UI in 3+ languages (English, Hindi, Gujarati) with single-json extensibility.",
+      "Dynamic i18n Engine: Full UI in 3+ languages (English, Hindi, Gujarati).",
       "Financial Analytics: Real-time charts for sales, purchases, and net profit trends.",
       "Zero-App Footprint: Manage your entire business accounting without ever leaving WhatsApp."
     ],
@@ -155,13 +186,6 @@ export const projects: Project[] = [
     ],
     problem: "Small business owners in India struggle with complex accounting software. They often rely on manual notebooks (Khatas), which lead to data loss, calculation errors, and delays in GST compliance.",
     solution: "A 'zero-learning-curve' platform that works where the user already is: WhatsApp. By combining the simplicity of chat with the power of AI, KhataGO makes business accounting as easy as sending a message.",
-    engineeringChallenges: "The biggest challenge was building a resilient, low-latency messaging pipeline. I architected an event-driven system using Redis and Bull queues to handle Gemini AI calls and Tally XML generation as background tasks, ensuring the WhatsApp bot remains responsive while processing complex business data.",
-    gallery: [
-      "/Images/khatago/landing.png",
-      "/Images/khatago/dashboard.png",
-      "/Images/khatago/transactions.png",
-      "/Images/khatago/ca_portal.png",
-      "/Images/khatago/dashboard_hindi.png"
-    ]
-  },
+    challengesSolved: "The biggest challenge was building a resilient, low-latency messaging pipeline. I architected an event-driven system using Redis and Bull queues to handle Gemini AI calls and Tally XML generation as background tasks, ensuring the WhatsApp bot remains responsive while processing complex business data."
+  }
 ];

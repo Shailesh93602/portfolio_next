@@ -109,6 +109,49 @@ export default function ProjectDetailContent({ project }: Props) {
              <KeyMetrics metrics={project.keyMetrics} />
           </section>
 
+          {/* Problem & Solution Section */}
+          <section className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {project.problem && (
+              <motion.div 
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeIn(0.25)}
+                className="space-y-4 p-8 rounded-[2rem] bg-destructive/5 border border-destructive/10"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-lg bg-destructive/10">
+                    <StarIcon className="w-5 h-5 text-destructive rotate-45" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-destructive">The Problem</h3>
+                </div>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  {project.problem}
+                </p>
+              </motion.div>
+            )}
+
+            {project.solution && (
+              <motion.div 
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeIn(0.3)}
+                className="space-y-4 p-8 rounded-[2rem] bg-primary/5 border border-primary/10"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <CheckIcon className="w-5 h-5 text-primary" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-primary">The Solution</h3>
+                </div>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  {project.solution}
+                </p>
+              </motion.div>
+            )}
+          </section>
+
           {/* Deep Dive & Architecture */}
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <motion.div 
@@ -189,11 +232,11 @@ export default function ProjectDetailContent({ project }: Props) {
               <div className="space-y-12">
                  <div className="space-y-4">
                     <h4 className="text-sm font-black uppercase tracking-[0.3em] text-primary">The Engineering Challenge</h4>
-                    <h3 className="text-3xl font-bold leading-tight line-clamp-3">{project.engineeringChallenges?.split('?')[0]}</h3>
+                    <h3 className="text-3xl font-bold leading-tight line-clamp-3">{project.challengesSolved?.split('?')[0]}</h3>
                  </div>
                  <div className="space-y-8">
                    <div className="p-6 rounded-2xl bg-white/5 border border-white/5 space-y-4 italic text-muted-foreground leading-relaxed text-lg">
-                      &quot;{project.engineeringChallenges}&quot;
+                      &quot;{project.challengesSolved}&quot;
                    </div>
                    <div className="flex gap-6">
                       <div className="space-y-1">
@@ -366,7 +409,7 @@ export default function ProjectDetailContent({ project }: Props) {
             )}
 
             {/* Engineering Challenges */}
-            {project.engineeringChallenges && (
+            {project.challengesSolved && (
               <motion.section 
                 initial="hidden"
                 whileInView="visible"
@@ -380,7 +423,7 @@ export default function ProjectDetailContent({ project }: Props) {
                 </h2>
                 <div className="p-8 rounded-2xl bg-card border border-border space-y-4">
                   <p className="text-lg text-muted-foreground leading-relaxed">
-                    {project.engineeringChallenges}
+                    {project.challengesSolved}
                   </p>
                 </div>
               </motion.section>
