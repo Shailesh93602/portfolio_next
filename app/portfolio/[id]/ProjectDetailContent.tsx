@@ -183,47 +183,83 @@ export default function ProjectDetailContent({ project }: Props) {
             <ArchitectureDiagram architecture={project.architecture} />
           </section>
 
-          {/* Visual Showcase (Light/Dark Comparison) */}
-          <section className="space-y-12">
-            <div className="text-center space-y-4 max-w-2xl mx-auto mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight italic uppercase">Visual Fidelity</h2>
-              <p className="text-muted-foreground leading-relaxed">
-                Crafted with attention to detail, supporting both Light and Dark environments with unique semantic tokens and micro-interactions.
-              </p>
-            </div>
-            
-            <Tabs defaultValue="dashboard" className="w-full">
-              <div className="flex justify-center mb-10">
-                <TabsList className="bg-card border border-border p-1 rounded-full h-auto">
-                  <TabsTrigger value="dashboard" className="rounded-full px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white font-bold tracking-wider">DASHBOARD</TabsTrigger>
-                  <TabsTrigger value="roadmap" className="rounded-full px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white font-bold tracking-wider">ROADMAPS</TabsTrigger>
-                  <TabsTrigger value="challenges" className="rounded-full px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white font-bold tracking-wider">CHALLENGES</TabsTrigger>
-                </TabsList>
+          {/* Visual Showcase (Light/Dark Comparison for EduScale) */}
+          {project.id === "eduscale" && (
+            <section className="space-y-12">
+              <div className="text-center space-y-4 max-w-2xl mx-auto mb-16">
+                <h2 className="text-4xl md:text-5xl font-bold tracking-tight italic uppercase">Visual Fidelity</h2>
+                <p className="text-muted-foreground leading-relaxed">
+                  Crafted with attention to detail, supporting both Light and Dark environments with unique semantic tokens and micro-interactions.
+                </p>
               </div>
               
-              <TabsContent value="dashboard" className="outline-none">
-                 <ThemeComparison 
-                   title="Unified User Dashboard"
-                   darkImage="/Images/eduscale_dashboard_dark.png" 
-                   lightImage="/Images/eduscale_dashboard_light.png" 
-                 />
-              </TabsContent>
-              <TabsContent value="roadmap" className="outline-none">
-                 <ThemeComparison 
-                   title="Interactive Career Roadmaps"
-                   darkImage="/Images/eduscale_roadmap_dark.png" 
-                   lightImage="/Images/eduscale_roadmap_light.png" 
-                 />
-              </TabsContent>
-              <TabsContent value="challenges" className="outline-none">
-                 <ThemeComparison 
-                   title="Technical Assessment Suite"
-                   darkImage="/Images/eduscale_challenges_dark.png" 
-                   lightImage="/Images/eduscale_challenges_light.png" 
-                 />
-              </TabsContent>
-            </Tabs>
-          </section>
+              <Tabs defaultValue="dashboard" className="w-full">
+                <div className="flex justify-center mb-10">
+                  <TabsList className="bg-card border border-border p-1 rounded-full h-auto">
+                    <TabsTrigger value="dashboard" className="rounded-full px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white font-bold tracking-wider">DASHBOARD</TabsTrigger>
+                    <TabsTrigger value="roadmap" className="rounded-full px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white font-bold tracking-wider">ROADMAPS</TabsTrigger>
+                    <TabsTrigger value="challenges" className="rounded-full px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white font-bold tracking-wider">CHALLENGES</TabsTrigger>
+                  </TabsList>
+                </div>
+                
+                <TabsContent value="dashboard" className="outline-none">
+                  <ThemeComparison 
+                    title="Unified User Dashboard"
+                    darkImage="/Images/eduscale_dashboard_dark.png" 
+                    lightImage="/Images/eduscale_dashboard_light.png" 
+                  />
+                </TabsContent>
+                <TabsContent value="roadmap" className="outline-none">
+                  <ThemeComparison 
+                    title="Interactive Career Roadmaps"
+                    darkImage="/Images/eduscale_roadmap_dark.png" 
+                    lightImage="/Images/eduscale_roadmap_light.png" 
+                  />
+                </TabsContent>
+                <TabsContent value="challenges" className="outline-none">
+                  <ThemeComparison 
+                    title="Technical Assessment Suite"
+                    darkImage="/Images/eduscale_challenges_dark.png" 
+                    lightImage="/Images/eduscale_challenges_light.png" 
+                  />
+                </TabsContent>
+              </Tabs>
+            </section>
+          )}
+
+          {/* Generic Gallery for other Showcase Projects */}
+          {project.id !== "eduscale" && project.gallery && project.gallery.length > 0 && (
+            <section className="space-y-12">
+              <div className="text-center space-y-4 max-w-2xl mx-auto mb-16">
+                <h2 className="text-4xl md:text-5xl font-bold tracking-tight italic uppercase">Project Gallery</h2>
+                <p className="text-muted-foreground leading-relaxed">
+                  A visual walkthrough of the platform's core interfaces and user experiences.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {project.gallery.map((img, idx) => (
+                  <motion.div
+                    key={img}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="relative aspect-video rounded-3xl overflow-hidden border border-border shadow-2xl group"
+                  >
+                    <Image
+                      src={img}
+                      alt={`${project.title} screenshot ${idx + 1}`}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-8">
+                      <p className="text-white font-bold tracking-wider uppercase text-sm">View Full Resolution</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Development Narrative */}
           <section className="bg-card border border-border rounded-[3rem] p-12 md:p-20 relative overflow-hidden group">
@@ -238,22 +274,24 @@ export default function ProjectDetailContent({ project }: Props) {
                    <div className="p-6 rounded-2xl bg-white/5 border border-white/5 space-y-4 italic text-muted-foreground leading-relaxed text-lg">
                       &quot;{project.challengesSolved}&quot;
                    </div>
-                   <div className="flex gap-6">
-                      <div className="space-y-1">
-                        <p className="text-2xl font-bold text-foreground">Next.js 15</p>
-                        <p className="text-xs uppercase font-bold tracking-widest text-muted-foreground">Framework</p>
-                      </div>
-                      <div className="w-px h-10 bg-border" />
-                      <div className="space-y-1">
-                        <p className="text-2xl font-bold text-foreground">PostgreSQL</p>
-                        <p className="text-xs uppercase font-bold tracking-widest text-muted-foreground">Engine</p>
-                      </div>
-                      <div className="w-px h-10 bg-border" />
-                      <div className="space-y-1">
-                        <p className="text-2xl font-bold text-primary">High</p>
-                        <p className="text-xs uppercase font-bold tracking-widest text-muted-foreground">Complexity</p>
-                      </div>
-                   </div>
+                   {project.id === "eduscale" && (
+                     <div className="flex gap-6">
+                        <div className="space-y-1">
+                          <p className="text-2xl font-bold text-foreground">Next.js 15</p>
+                          <p className="text-xs uppercase font-bold tracking-widest text-muted-foreground">Framework</p>
+                        </div>
+                        <div className="w-px h-10 bg-border" />
+                        <div className="space-y-1">
+                          <p className="text-2xl font-bold text-foreground">PostgreSQL</p>
+                          <p className="text-xs uppercase font-bold tracking-widest text-muted-foreground">Engine</p>
+                        </div>
+                        <div className="w-px h-10 bg-border" />
+                        <div className="space-y-1">
+                          <p className="text-2xl font-bold text-primary">High</p>
+                          <p className="text-xs uppercase font-bold tracking-widest text-muted-foreground">Complexity</p>
+                        </div>
+                     </div>
+                   )}
                  </div>
               </div>
               
