@@ -153,33 +153,41 @@ export default function ProjectDetailContent({ project }: Props) {
           </section>
 
           {/* Deep Dive & Architecture */}
-          <section className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <motion.div 
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeIn(0.2)}
-              className="space-y-8"
-            >
-              <div className="inline-flex p-3 rounded-2xl bg-primary/10 border border-primary/20 text-primary mb-2">
-                <CodeIcon className="w-6 h-6" />
-              </div>
-              <h3 className="text-4xl md:text-5xl font-bold tracking-tight">System Architecture</h3>
-              <p className="text-xl text-muted-foreground leading-relaxed">
-                {project.detailedDescription}
-              </p>
-              <div className="space-y-4 pt-4 text-muted-foreground">
-                 <p className="font-semibold text-foreground">Core Engineering Achievements:</p>
-                 <div className="space-y-3">
+          <section className="space-y-16">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
+              <motion.div 
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeIn(0.2)}
+                className="space-y-8"
+              >
+                <div className="inline-flex p-3 rounded-2xl bg-primary/10 border border-primary/20 text-primary mb-2">
+                  <CodeIcon className="w-6 h-6" />
+                </div>
+                <h3 className="text-4xl md:text-5xl font-bold tracking-tight">System Architecture</h3>
+                <p className="text-xl text-muted-foreground leading-relaxed">
+                  {project.detailedDescription}
+                </p>
+              </motion.div>
+              <motion.div 
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeIn(0.3)}
+                className="space-y-4 text-muted-foreground bg-card p-8 rounded-[2rem] border border-border"
+              >
+                 <p className="font-semibold text-foreground text-lg mb-6">Core Engineering Achievements:</p>
+                 <div className="space-y-4">
                    {project.features?.slice(0, 3).map((f) => (
                       <div key={f.split(':')[0]} className="flex gap-3">
-                        <CheckIcon className="w-5 h-5 text-primary shrink-0 mt-1" />
-                        <span>{f.split(':')[0]}</span>
+                        <CheckIcon className="w-6 h-6 text-primary shrink-0 mt-0.5" />
+                        <span className="leading-relaxed">{f.split(':')[0]}</span>
                       </div>
                    ))}
                  </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
             <ArchitectureDiagram architecture={project.architecture} />
           </section>
 
@@ -199,6 +207,7 @@ export default function ProjectDetailContent({ project }: Props) {
                     <TabsTrigger value="dashboard" className="rounded-full px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white font-bold tracking-wider">DASHBOARD</TabsTrigger>
                     <TabsTrigger value="roadmap" className="rounded-full px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white font-bold tracking-wider">ROADMAPS</TabsTrigger>
                     <TabsTrigger value="challenges" className="rounded-full px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white font-bold tracking-wider">CHALLENGES</TabsTrigger>
+                    <TabsTrigger value="demo" className="rounded-full px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white font-bold tracking-wider">DEMO VIDEO</TabsTrigger>
                   </TabsList>
                 </div>
                 
@@ -223,6 +232,11 @@ export default function ProjectDetailContent({ project }: Props) {
                     lightImage="/Images/eduscale_challenges_light.png" 
                   />
                 </TabsContent>
+                <TabsContent value="demo" className="outline-none">
+                   <div className="rounded-[2rem] overflow-hidden border border-border shadow-2xl relative aspect-video flex flex-col bg-black">
+                     <video src="/Videos/eduscale/eduscale_demo.webm" className="w-full h-full object-cover" autoPlay loop muted playsInline />
+                   </div>
+                </TabsContent>
               </Tabs>
             </section>
           )}
@@ -246,12 +260,16 @@ export default function ProjectDetailContent({ project }: Props) {
                     transition={{ delay: idx * 0.1 }}
                     className="relative aspect-video rounded-3xl overflow-hidden border border-border shadow-2xl group"
                   >
-                    <Image
-                      src={img}
-                      alt={`${project.title} screenshot ${idx + 1}`}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
+                    {img.endsWith('.webm') || img.endsWith('.mp4') ? (
+                       <video src={img} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700 pointer-events-none" autoPlay loop muted playsInline />
+                    ) : (
+                      <Image
+                        src={img}
+                        alt={`${project.title} screenshot ${idx + 1}`}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-8">
                       <p className="text-white font-bold tracking-wider uppercase text-sm">View Full Resolution</p>
                     </div>
@@ -302,7 +320,7 @@ export default function ProjectDetailContent({ project }: Props) {
                        {project.userFlow?.map((step) => (
                           <div key={step.step} className="flex gap-6 items-start group/step">
                             <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-black shrink-0 group-hover/step:bg-primary group-hover/step:text-white transition-all">
-                              {project.userFlow?.indexOf(step)! + 1}
+                              {(project.userFlow?.indexOf(step) ?? 0) + 1}
                             </div>
                             <div className="space-y-1">
                               <p className="font-bold text-foreground underline decoration-primary/30 underline-offset-4">{step.step}</p>
@@ -493,6 +511,23 @@ export default function ProjectDetailContent({ project }: Props) {
                     </div>
                   ))}
                 </div>
+              </motion.section>
+            )}
+
+            {/* Architecture Diagram for Non-Showcase */}
+            {project.architecture && (
+              <motion.section 
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeIn(0.6)}
+                className="space-y-6 pt-8"
+              >
+                <h2 className="text-3xl font-bold flex items-center gap-3">
+                  <CodeIcon className="w-8 h-8 text-primary" />
+                  System Architecture
+                </h2>
+                <ArchitectureDiagram architecture={project.architecture} />
               </motion.section>
             )}
           </div>

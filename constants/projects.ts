@@ -187,7 +187,15 @@ export const projects: Project[] = [
     problem: "Small business owners in India struggle with complex accounting software. They often rely on manual notebooks (Khatas), which lead to data loss, calculation errors, and delays in GST compliance.",
     solution: "A 'zero-learning-curve' platform that works where the user already is: WhatsApp. By combining the simplicity of chat with the power of AI, KhataGO makes business accounting as easy as sending a message.",
     challengesSolved: "The biggest challenge was building a resilient, low-latency messaging pipeline. I architected an event-driven system using Redis and Bull queues to handle Gemini AI calls and Tally XML generation as background tasks, ensuring the WhatsApp bot remains responsive while processing complex business data.",
+    userFlow: [
+      { step: "Onboarding", description: "Business owners register via the web portal and connect their WhatsApp Business API." },
+      { step: "Master Data Setup", description: "Configure customer/vendor records and categories in the web dashboard." },
+      { step: "Transaction Logging", description: "Send text messages or photos of bills directly to the KhataGO WhatsApp bot." },
+      { step: "AI Processing OCR", description: "The AI agent processes receipts via OCR and creates draft transactions automatically." },
+      { step: "Reporting & Export", description: "Review monthly GST summaries and export Tally-compatible XML vouchers for accountants." }
+    ],
     gallery: [
+      "/Videos/khatago/khatago_demo.webm",
       "/Images/khatago/landing.png",
       "/Images/khatago/dashboard.png",
       "/Images/khatago/transactions.png",
