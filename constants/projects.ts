@@ -223,7 +223,7 @@ export const projects: Project[] = [
       {
         title: "Business Ledger Dashboard",
         description: "A responsive, single-page summary tracking daily, weekly, and monthly incoming/outgoing financial trends.",
-        image: "/Images/khatago/dashboard_hindi.png",
+        image: "/Images/khatago/dashboard.png",
       },
       {
         title: "Transaction Activity Feed",
@@ -233,7 +233,7 @@ export const projects: Project[] = [
       {
         title: "Monthly Revenue & GST Portal",
         description: "An integrated report generation interface allowing CA firms to download precise GST-ready and Tally XML statements.",
-        image: "/Images/khatago/ca_portal.png"
+        image: "/Images/khatago/reports.png"
       }
     ]
   }
