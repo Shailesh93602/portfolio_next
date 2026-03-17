@@ -11,7 +11,7 @@ import { fadeIn } from "@/lib/animations";
 import ArchitectureDiagram from "@/components/Showcase/ArchitectureDiagram";
 import KeyMetrics from "@/components/Showcase/KeyMetrics";
 import ThemeComparison from "@/components/Showcase/ThemeComparison";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { Badge } from "@/components/ui/badge";
 
 interface Props {
@@ -191,58 +191,65 @@ export default function ProjectDetailContent({ project }: Props) {
             <ArchitectureDiagram architecture={project.architecture} />
           </section>
 
-          {/* Visual Showcase (Light/Dark Comparison for EduScale) */}
-          {project.id === "eduscale" && (
-            <section className="space-y-12">
-              <div className="text-center space-y-4 max-w-2xl mx-auto mb-16">
-                <h2 className="text-4xl md:text-5xl font-bold tracking-tight italic uppercase">Visual Fidelity</h2>
-                <p className="text-muted-foreground leading-relaxed">
-                  Crafted with attention to detail, supporting both Light and Dark environments with unique semantic tokens and micro-interactions.
+          {/* Unified Visual Showcase / High Fidelity Presentation */}
+          {project.showcases && project.showcases.length > 0 && (
+            <section className="space-y-16">
+              <div className="text-center space-y-4 max-w-3xl mx-auto mb-20">
+                <h2 className="text-4xl md:text-5xl font-black tracking-tight italic uppercase">Visual Showcase</h2>
+                <p className="text-xl text-muted-foreground leading-relaxed">
+                  A high-fidelity walkthrough of the core interfaces and user experiences, designed with modern aesthetics.
                 </p>
               </div>
-              
-              <Tabs defaultValue="dashboard" className="w-full">
-                <div className="flex justify-center mb-10">
-                  <TabsList className="bg-card border border-border p-1 rounded-full h-auto">
-                    <TabsTrigger value="dashboard" className="rounded-full px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white font-bold tracking-wider">DASHBOARD</TabsTrigger>
-                    <TabsTrigger value="roadmap" className="rounded-full px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white font-bold tracking-wider">ROADMAPS</TabsTrigger>
-                    <TabsTrigger value="challenges" className="rounded-full px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white font-bold tracking-wider">CHALLENGES</TabsTrigger>
-                    <TabsTrigger value="demo" className="rounded-full px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-white font-bold tracking-wider">DEMO VIDEO</TabsTrigger>
-                  </TabsList>
-                </div>
-                
-                <TabsContent value="dashboard" className="outline-none">
-                  <ThemeComparison 
-                    title="Unified User Dashboard"
-                    darkImage="/Images/eduscale_dashboard_dark.png" 
-                    lightImage="/Images/eduscale_dashboard_light.png" 
-                  />
-                </TabsContent>
-                <TabsContent value="roadmap" className="outline-none">
-                  <ThemeComparison 
-                    title="Interactive Career Roadmaps"
-                    darkImage="/Images/eduscale_roadmap_dark.png" 
-                    lightImage="/Images/eduscale_roadmap_light.png" 
-                  />
-                </TabsContent>
-                <TabsContent value="challenges" className="outline-none">
-                  <ThemeComparison 
-                    title="Technical Assessment Suite"
-                    darkImage="/Images/eduscale_challenges_dark.png" 
-                    lightImage="/Images/eduscale_challenges_light.png" 
-                  />
-                </TabsContent>
-                <TabsContent value="demo" className="outline-none">
-                   <div className="rounded-[2rem] overflow-hidden border border-border shadow-2xl relative aspect-video flex flex-col bg-black">
-                     <video src="/Videos/eduscale/eduscale_demo.webm" className="w-full h-full object-cover" autoPlay loop muted playsInline />
-                   </div>
-                </TabsContent>
-              </Tabs>
+
+              <div className="space-y-32">
+                {project.showcases.map((showcase, idx) => (
+                  <motion.div
+                    key={showcase.title}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.7, ease: "easeOut" }}
+                    className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
+                  >
+                    <div className={`lg:col-span-4 space-y-6 ${idx % 2 === 1 ? 'lg:order-2' : ''}`}>
+                      <div className="inline-flex w-12 h-12 rounded-full bg-primary/10 items-center justify-center text-primary font-black text-xl mb-2">
+                        0{idx + 1}
+                      </div>
+                      <h3 className="text-3xl font-bold">{showcase.title}</h3>
+                      <p className="text-lg text-muted-foreground leading-relaxed">{showcase.description}</p>
+                    </div>
+
+                    <div className={`lg:col-span-8 relative ${idx % 2 === 1 ? 'lg:order-1' : ''}`}>
+                      <div className="absolute inset-0 bg-primary/5 blur-[100px] rounded-full scale-90" />
+                      
+                      <div className="relative z-10 w-full rounded-[2rem] p-4 bg-gradient-to-b from-white/10 to-transparent border border-white/5 shadow-2xl glassmorphism">
+                        <div className="rounded-[1.5rem] bg-black overflow-hidden relative aspect-[16/10] ring-1 ring-white/10">
+                          {showcase.imageDark && showcase.imageLight ? (
+                            <ThemeComparison
+                              title=""
+                              darkImage={showcase.imageDark}
+                              lightImage={showcase.imageLight}
+                            />
+                          ) : (
+                            <Image
+                              src={showcase.image || showcase.imageDark || showcase.imageLight || ''}
+                              alt={showcase.title}
+                              fill
+                              unoptimized
+                              className="object-cover transition-transform duration-1000 hover:scale-[1.02]"
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </section>
           )}
 
-          {/* Generic Gallery for other Showcase Projects */}
-          {project.id !== "eduscale" && project.gallery && project.gallery.length > 0 && (
+          {/* Legacy Gallery fallback for other Showcase Projects */}
+          {(!project.showcases || project.showcases.length === 0) && project.gallery && project.gallery.length > 0 && (
             <section className="space-y-12">
               <div className="text-center space-y-4 max-w-2xl mx-auto mb-16">
                 <h2 className="text-4xl md:text-5xl font-bold tracking-tight italic uppercase">Project Gallery</h2>

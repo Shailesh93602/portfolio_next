@@ -16,8 +16,8 @@ export default function ThemeComparison({ lightImage, darkImage, title }: Props)
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between px-2">
-        <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{title}</h4>
+      <div className={`flex flex-wrap items-center px-2 ${title ? 'justify-between' : 'justify-end'}`}>
+        {title && <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{title}</h4>}
         <div className="flex bg-muted rounded-full p-1 border border-border/50">
           <button
             onClick={() => setTheme("dark")}

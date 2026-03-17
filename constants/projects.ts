@@ -1,3 +1,11 @@
+export interface ShowcaseItem {
+  title: string;
+  imageLight?: string;
+  imageDark?: string;
+  image?: string; // fallback if only one theme
+  description?: string;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -12,7 +20,8 @@ export interface Project {
   problem?: string;
   solution?: string;
   challengesSolved?: string;
-  gallery?: string[]; // Add gallery for showcase projects
+  gallery?: string[]; // Legacy basic gallery
+  showcases?: ShowcaseItem[]; // Standardized high-fidelity preview layout
   isShowcase?: boolean; // Flag for special rendering
   architecture?: {
     layers: { name: string; items: string[] }[];
@@ -69,15 +78,31 @@ export const projects: Project[] = [
     problem: "Engineering education is often disjointed, with students moving between static roadmaps, isolated coding editors, and scattered community forums. This lack of integration leads to poor progress tracking and a higher dropout rate during self-paced learning.",
     solution: "A unified Engineering Learning Platform (SaaS) that seamlessly integrates structured curriculum with interactive coding tools and real-time social competition. EduScale provides a 'single source of truth' for the student's entire technical journey.",
     challengesSolved: "The primary challenge was building the 'Battle Zone'—a distributed real-time state machine that synchronizes test execution results across thousands of concurrent users. I implemented a Redis-backed message broker with Bull queues to ensure reliable delivery of code execution logs and leaderboard updates with sub-200ms latency.",
-    gallery: [
-      "/Images/eduscale_landing_dark.png",
-      "/Images/eduscale_landing_light.png",
-      "/Images/eduscale_dashboard_dark.png",
-      "/Images/eduscale_dashboard_light.png",
-      "/Images/eduscale_roadmap_dark.png",
-      "/Images/eduscale_roadmap_light.png",
-      "/Images/eduscale_challenges_dark.png",
-      "/Images/eduscale_challenges_light.png"
+    showcases: [
+      {
+        title: "Unified User Dashboard",
+        description: "A centralized hub tracking enrolled roadmaps, ongoing battle states, and overall technical progress. Completely unified between Light and Dark modes.",
+        imageDark: "/Images/eduscale/dashboard_dark.png",
+        imageLight: "/Images/eduscale/dashboard_light.png"
+      },
+      {
+        title: "Interactive Career Roadmaps",
+        description: "Node-based curriculum visualization allowing students to track granular progress and unlock specialized technical tracks.",
+        imageDark: "/Images/eduscale/roadmap_dark.png",
+        imageLight: "/Images/eduscale/roadmap_light.png"
+      },
+      {
+        title: "Technical Assessment Suite",
+        description: "A specialized multi-language execution environment providing integrated testing, static analysis, and time complexity benchmarking.",
+        imageDark: "/Images/eduscale/challenges_dark.png",
+        imageLight: "/Images/eduscale/challenges_light.png"
+      },
+      {
+        title: "Real-time Battle Zone",
+        description: "A competitive arena powered by WebSockets, allowing sub-second real-time multiplayer coding showdowns with live leaderboards.",
+        imageDark: "/Images/eduscale/battle_dark.png",
+        imageLight: "/Images/eduscale/battle_light.png"
+      }
     ]
   },
   {
@@ -194,13 +219,22 @@ export const projects: Project[] = [
       { step: "AI Processing OCR", description: "The AI agent processes receipts via OCR and creates draft transactions automatically." },
       { step: "Reporting & Export", description: "Review monthly GST summaries and export Tally-compatible XML vouchers for accountants." }
     ],
-    gallery: [
-      "/Videos/khatago/khatago_demo.webm",
-      "/Images/khatago/landing.png",
-      "/Images/khatago/dashboard.png",
-      "/Images/khatago/transactions.png",
-      "/Images/khatago/ca_portal.png",
-      "/Images/khatago/dashboard_hindi.png"
+    showcases: [
+      {
+        title: "Business Ledger Dashboard",
+        description: "A responsive, single-page summary tracking daily, weekly, and monthly incoming/outgoing financial trends.",
+        image: "/Images/khatago/dashboard_hindi.png",
+      },
+      {
+        title: "Transaction Activity Feed",
+        description: "A chronological list of all categorized invoices, expenses, and payments with immediate export and edit capabilities.",
+        image: "/Images/khatago/transactions.png",
+      },
+      {
+        title: "Monthly Revenue & GST Portal",
+        description: "An integrated report generation interface allowing CA firms to download precise GST-ready and Tally XML statements.",
+        image: "/Images/khatago/ca_portal.png"
+      }
     ]
   }
 ];
