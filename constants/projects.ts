@@ -106,6 +106,76 @@ export const projects: Project[] = [
     ]
   },
   {
+    id: "devtrack",
+    title: "DevTrack",
+    description: "A premium developer intelligence dashboard that track coding progress, analyzes learning patterns, and provides actionable insights for continuous improvement.",
+    image: "/projects/devtrack/dashboard_dark.png",
+    isShowcase: true,
+    tags: ["Next.js", "TypeScript", "Prisma", "PostgreSQL", "Supabase", "Tailwind CSS", "Shadcn UI", "Recharts"],
+    live: "https://daily-dev-track.vercel.app",
+    github: "https://github.com/Shailesh93602/devtrack",
+    detailedDescription: "DevTrack is a high-performance developer productivity ecosystem built to centralize tracking of DSA progress, project milestones, and daily coding activity. It features a rule-based intelligence engine that generates personalized insights and prescriptive recommendations to help developers build a balanced technical profile.",
+    architecture: {
+      layers: [
+        { name: "Frontend", items: ["Next.js (App Router)", "React 19", "Tailwind CSS", "Shadcn UI", "Recharts"] },
+        { name: "Backend / Services", items: ["Next.js Server Components", "Prisma ORM", "PostgreSQL (Supabase)", "Rule Engine"] },
+        { name: "Infrastructure", items: ["Supabase Auth", "PostgreSQL Hosting", "Vercel Deployment"] }
+      ],
+      description: "A modern full-stack architecture leveraging server-side business logic and parallel database execution for sub-second dashboard updates."
+    },
+    keyMetrics: [
+      { label: "Dashboard Latency", value: "< 300ms", description: "Parallelized data aggregation and in-memory scoring" },
+      { label: "Pattern Intelligence", value: "Real-time", description: "Automated analysis of DSA problem distributions" },
+      { label: "Data Integrity", value: "100%", description: "Atomic transactions for multi-entity tracking" }
+    ],
+    userFlow: [
+      { step: "Authentication", description: "Secure login via Supabase with automatic session management." },
+      { step: "Dashboard Overview", description: "Real-time visualization of developer score, streaks, and weekly momentum." },
+      { step: "Activity Tracking", description: "Granular logging of daily study topics and DSA problem solving." },
+      { step: "Intelligent Guidance", description: "Receive AI-driven recommendations for next learning steps based on analysis." }
+    ],
+    features: [
+      "Developer Scoring System: A comprehensive 0-100 score based on consistency, DSA depth, and project productivity.",
+      "Pattern Analysis: Automatically categorizes solved problems and identifies strongest/weakest technical patterns.",
+      "Prescriptive Recommendations: Rule-based engine that suggests specific daily tasks to optimize learning high-yield patterns.",
+      "Session Tracking: Integrated timing and activity logging for deep-work focus sessions.",
+      "Visual Analytics: High-fidelity charts for weekly progress, difficulty distribution, and activity heatmaps.",
+      "Dynamic Insights: AI-driven observational feedback on streak milestones and activity trends."
+    ],
+    techStack: [
+      "Frontend: Next.js 15, React 19, Tailwind CSS v4, Lucide React, Shadcn UI, Recharts",
+      "Backend: Next.js Server Actions, Prisma ORM, PostgreSQL (via Supabase)",
+      "Services: Scoping Engine, Pattern Intelligence Service, Streak Manager, Recommendation Logic",
+      "Dev Tools: Playwright E2E Testing, ESLint, Prettier"
+    ],
+    problem: "Developers often lack a centralized way to track their growth across disparate areas like DSA, projects, and daily consistency. Manual tracking is fragmented, and raw data doesn't offer actionable paths to improvement.",
+    solution: "DevTrack solves this by providing a unified intelligence layer. It doesn't just record data; it analyzes it using a proprietary scoring and recommendation engine to guide developers toward their technical goals.",
+    challengesSolved: "The core challenge was building a real-time analytics suite that remains performant as the number of logged activities grows. I implemented a modular service architecture that uses Promise.all for database fetching and handles complex aggregations in-memory before reaching the client.",
+    showcases: [
+      {
+        title: "Intelligence Dashboard",
+        description: "A centralized hub featuring the Developer Score, streak tracking, and personalized next-step recommendations.",
+        imageDark: "/projects/devtrack/dashboard_dark.png",
+        imageLight: "/projects/devtrack/dashboard_light.png"
+      },
+      {
+        title: "DSA Tracking & Insights",
+        description: "Detailed problem tracking with automated pattern analysis and difficulty distribution visualization.",
+        imageLight: "/projects/devtrack/dsa_tracking.png"
+      },
+      {
+        title: "Daily Activity Logging",
+        description: "Streamlined data entry for daily coding logs with topic tagging and progress history.",
+        imageLight: "/projects/devtrack/daily_log_form.png"
+      },
+      {
+        title: "Developer Settings",
+        description: "Premium user management and profile configuration with seamless theme switching.",
+        imageLight: "/projects/devtrack/settings_ui.png"
+      }
+    ]
+  },
+  {
     id: "vibe-testing",
     title: "Vibe Testing (ContextQA)",
     description:
