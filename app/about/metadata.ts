@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
+import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "About | Shailesh Chaudhari",
   description:
     "Learn more about Shailesh Chaudhari, a passionate Full Stack Developer from Gujarat, India. Discover his experience, achievements, skills, and hobbies.",
   alternates: {
-    canonical: "https://shaileshchaudhari.vercel.app/about",
+    canonical: `${SITE_URL}/about`,
   },
   openGraph: {
     title: "About | Shailesh Chaudhari",
     description:
       "Learn more about Shailesh Chaudhari, a passionate Full Stack Developer from Gujarat, India. Discover his experience, achievements, skills, and hobbies.",
-    url: "https://shaileshchaudhari.vercel.app/about",
-    siteName: "Shailesh Chaudhari Portfolio",
+    url: `${SITE_URL}/about`,
+    siteName: META_DEFAULTS.siteName,
     images: [
       {
         url: "/Images/shailesh.webp",
@@ -30,6 +32,8 @@ export const metadata: Metadata = {
     description:
       "Learn more about Shailesh Chaudhari, a passionate Full Stack Developer from Gujarat, India. Discover his experience, achievements, skills, and hobbies.",
     images: ["/Images/shailesh.webp"],
+    site: META_DEFAULTS.twitterHandle,
+    creator: META_DEFAULTS.twitterHandle,
   },
   icons: {
     icon: "/Images/shailesh.webp",

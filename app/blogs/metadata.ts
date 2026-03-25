@@ -1,18 +1,19 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
+import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://shaileshchaudhari.vercel.app"),
+  metadataBase: new URL(SITE_URL),
   title: "Blog | Shailesh Chaudhari - Full Stack Developer Insights",
   description:
     "Explore technical articles, development insights, and coding tutorials by Shailesh Chaudhari. Learn about web development, MERN stack, and software engineering best practices.",
   alternates: {
-    canonical: "https://shaileshchaudhari.vercel.app/blogs",
+    canonical: `${SITE_URL}/blogs`,
   },
-  applicationName: "Shailesh Chaudhari Portfolio",
+  applicationName: META_DEFAULTS.siteName,
   authors: [
     {
       name: "Shailesh Chaudhari",
-      url: "https://shaileshchaudhari.vercel.app/blogs",
+      url: `${SITE_URL}/blogs`,
     },
   ],
   generator: "Next.js",
@@ -46,14 +47,14 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    url: "https://shaileshchaudhari.vercel.app/blogs",
+    url: `${SITE_URL}/blogs`,
     title: "Blog | Shailesh Chaudhari - Full Stack Developer Insights",
     description:
       "Dive into web development articles, tutorials, and insights from a Full Stack Developer's perspective.",
-    siteName: "Shailesh Chaudhari Portfolio",
+    siteName: META_DEFAULTS.siteName,
     images: [
       {
-        url: "https://shaileshchaudhari.vercel.app/Images/shailesh.webp",
+        url: "/Images/shailesh.webp",
         width: 1200,
         height: 630,
         alt: "Shailesh Chaudhari Blog",
@@ -66,8 +67,9 @@ export const metadata: Metadata = {
     title: "Blog | Shailesh Chaudhari - Full Stack Developer",
     description:
       "Read technical articles and development insights from my software engineering journey.",
-    images: ["https://shaileshchaudhari.vercel.app/Images/shailesh.webp"],
-    creator: "@ShaileshWork",
+    images: ["/Images/shailesh.webp"],
+    site: META_DEFAULTS.twitterHandle,
+    creator: META_DEFAULTS.twitterHandle,
   },
   verification: {
     google: "google-site-verification-code",

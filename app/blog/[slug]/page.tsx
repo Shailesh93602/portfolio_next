@@ -5,6 +5,7 @@ import { ArrowLeftIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getPostBySlug, getRelatedPosts, blogPosts } from "@/lib/blog-data";
+import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 
 const getPostData = (slug: string) => {
   const post = getPostBySlug(slug);
@@ -47,15 +48,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.date,
       authors: ["Shailesh Chaudhari"],
       tags: post.tags,
+      images: [
+        {
+          url: post.image,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      creator: "@shaileshwork",
+      creator: META_DEFAULTS.twitterHandle,
+      site: META_DEFAULTS.twitterHandle,
+      images: [post.image],
     },
     alternates: {
-      canonical: `https://shaileshchaudhari.vercel.app/blog/${slug}`,
+      canonical: `${SITE_URL}/blog/${slug}`,
     },
   };
 }
@@ -80,10 +91,10 @@ export default async function Page({ params }: Props) {
     author: {
       "@type": "Person",
       name: "Shailesh Chaudhari",
-      url: "https://shaileshchaudhari.vercel.app",
+      url: SITE_URL,
     },
     datePublished: post.date,
-    image: `https://shaileshchaudhari.vercel.app${post.image}`,
+    image: `${SITE_URL}${post.image}`,
     keywords: [...post.tags, "Shailesh Chaudhari", "Full Stack Development"],
     publisher: {
       "@type": "Person",

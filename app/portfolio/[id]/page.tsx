@@ -2,6 +2,7 @@ import { projects } from "@/constants/projects";
 import ProjectDetailContent from "./ProjectDetailContent";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -23,9 +24,38 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  const title = `${project.title} | Shailesh Chaudhary`;
+  const description = project.description;
+  const image = project.image || "/Images/shailesh.webp";
+
   return {
-    title: `${project.title} | Shailesh Chaudhary`,
-    description: project.description,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: `${SITE_URL}/portfolio/${id}`,
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: project.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      site: META_DEFAULTS.twitterHandle,
+      creator: META_DEFAULTS.twitterHandle,
+      images: [image],
+    },
+    alternates: {
+      canonical: `${SITE_URL}/portfolio/${id}`,
+    },
   };
 }
 

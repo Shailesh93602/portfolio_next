@@ -12,7 +12,11 @@ import { SITE_URL, BLOG_AUTHOR, META_DEFAULTS } from "@/lib/blog-constants";
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: `${BLOG_AUTHOR.name} | ${META_DEFAULTS.siteName}`,
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${BLOG_AUTHOR.name} | ${META_DEFAULTS.siteName}`,
+    template: `%s | ${META_DEFAULTS.siteName}`,
+  },
   description: META_DEFAULTS.description,
   keywords: [
     "Full Stack Developer",
@@ -38,7 +42,7 @@ export const metadata: Metadata = {
     siteName: META_DEFAULTS.siteName,
     images: [
       {
-        url: `${SITE_URL}${BLOG_AUTHOR.avatar}`,
+        url: BLOG_AUTHOR.avatar,
         width: 1200,
         height: 630,
         alt: `${BLOG_AUTHOR.name} Portfolio`,
@@ -51,7 +55,7 @@ export const metadata: Metadata = {
     creator: META_DEFAULTS.twitterHandle,
     title: `${BLOG_AUTHOR.name} | ${META_DEFAULTS.siteName}`,
     description: META_DEFAULTS.description,
-    images: [`${SITE_URL}${BLOG_AUTHOR.avatar}`],
+    images: [BLOG_AUTHOR.avatar],
   },
 };
 

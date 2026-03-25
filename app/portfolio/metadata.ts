@@ -1,13 +1,14 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
+import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 
 export const metadata: Metadata = {
   title: "Portfolio | Shailesh Chaudhari - Full Stack Developer",
   description:
     "Explore Shailesh Chaudhari's portfolio of web development projects. View my work in React, Node.js, and full-stack applications.",
   alternates: {
-    canonical: "https://shaileshchaudhari.vercel.app/portfolio",
+    canonical: `${SITE_URL}/portfolio`,
   },
-  metadataBase: new URL("https://shaileshchaudhari.vercel.app"),
+  metadataBase: new URL(SITE_URL),
   robots: {
     index: true,
     follow: true,
@@ -40,7 +41,7 @@ export const metadata: Metadata = {
       "Discover my collection of web development projects showcasing expertise in React, Node.js, and full-stack development.",
     images: [
       {
-        url: "https://shaileshchaudhari.vercel.app/Images/shailesh.webp",
+        url: "/Images/shailesh.webp",
         width: 1200,
         height: 630,
         alt: "Shailesh Chaudhari Portfolio",
@@ -52,9 +53,9 @@ export const metadata: Metadata = {
     title: "Portfolio | Shailesh Chaudhari - Full Stack Developer",
     description:
       "Browse through my latest web development projects and see my technical expertise in action.",
-    images: ["https://shaileshchaudhari.vercel.app/Images/shailesh.webp"],
-    site: "@shaileshchaudhari",
-    creator: "@shaileshwork",
+    images: ["/Images/shailesh.webp"],
+    site: META_DEFAULTS.twitterHandle,
+    creator: META_DEFAULTS.twitterHandle,
   },
   verification: {
     google: "your-google-verification-code",
