@@ -1,6 +1,7 @@
 # SEO Outreach Templates
 
 ## LinkedIn Post Template
+
 ```
 🚀 Just published a new article on my blog!
 
@@ -16,6 +17,7 @@ What are your thoughts on [topic]? Share in the comments! 👇
 ```
 
 ## Dev.to Cross-Post Template
+
 ```
 ---
 title: "[Article Title]"
@@ -33,6 +35,7 @@ canonical_url: https://shaileshchaudhari.vercel.app/blog/[slug]
 ```
 
 ## Reddit Submission Template
+
 ```
 Title: [Article Title] - [Brief hook]
 
@@ -51,6 +54,7 @@ What are your experiences with [related topic]?
 ```
 
 ## Outreach Email Template
+
 ```
 Subject: Collaboration Opportunity: Guest Post on [Their Site] About [Topic]
 
@@ -75,6 +79,7 @@ https://linkedin.com/in/shaileshbhaichaudhari
 ```
 
 ## Target Sites List
+
 1. freeCodeCamp - Guest post on JavaScript/React topics
 2. CSS-Tricks - Frontend development articles
 3. Smashing Magazine - Web development best practices
@@ -85,4 +90,4 @@ https://linkedin.com/in/shaileshbhaichaudhari
 8. Daily.dev - Developer productivity tips
 9. Dev.to Community - Cross-posting
 10. Hashnode - Technical writing platform</content>
-<parameter name="filePath">/Users/shaileshchaudhary/Desktop/Coding/portfolio_next/OUTREACH_TEMPLATES.md
+    <parameter name="filePath">/Users/shaileshchaudhary/Desktop/Coding/portfolio_next/OUTREACH_TEMPLATES.md

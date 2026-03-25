@@ -11,15 +11,15 @@ export default function AchievementsSection() {
   const getIcon = (iconName: Achievement["iconName"]) => {
     switch (iconName) {
       case "trophy":
-        return <TrophyIcon className="w-6 h-6 text-primary mr-3 mt-1" />;
+        return <TrophyIcon className="mr-3 mt-1 h-6 w-6 text-primary" />;
       case "code":
-        return <CodeIcon className="w-6 h-6 text-primary mr-3 mt-1" />;
+        return <CodeIcon className="mr-3 mt-1 h-6 w-6 text-primary" />;
       case "star":
-        return <StarIcon className="w-6 h-6 text-primary mr-3 mt-1" />;
+        return <StarIcon className="mr-3 mt-1 h-6 w-6 text-primary" />;
       case "award":
-        return <AwardIcon className="w-6 h-6 text-primary mr-3 mt-1" />;
+        return <AwardIcon className="mr-3 mt-1 h-6 w-6 text-primary" />;
       default:
-        return <TrophyIcon className="w-6 h-6 text-primary mr-3 mt-1" />;
+        return <TrophyIcon className="mr-3 mt-1 h-6 w-6 text-primary" />;
     }
   };
 
@@ -31,12 +31,12 @@ export default function AchievementsSection() {
 
   return (
     <motion.div variants={itemVariants}>
-      <h3 className="text-2xl font-semibold mb-6 text-text-primary flex items-center">
-        <TrophyIcon className="w-6 h-6 mr-2 text-primary" />
+      <h3 className="text-text-primary mb-6 flex items-center text-2xl font-semibold">
+        <TrophyIcon className="mr-2 h-6 w-6 text-primary" />
         Achievements
       </h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {achievements.map((achievement, index) => (
           <Card
             key={index}
@@ -49,12 +49,16 @@ export default function AchievementsSection() {
               <div className="flex items-start">
                 {getIcon(achievement.iconName)}
                 <div>
-                  <h4 className="text-lg font-semibold text-text-primary">
+                  <h4 className="text-text-primary text-lg font-semibold">
                     {achievement.title}
                   </h4>
-                  <p className="text-text-secondary">{achievement.description}</p>
+                  <p className="text-text-secondary">
+                    {achievement.description}
+                  </p>
                   {achievement.link && (
-                    <p className="text-primary text-sm mt-1 hover:underline">View Profile →</p>
+                    <p className="mt-1 text-sm text-primary hover:underline">
+                      View Profile →
+                    </p>
                   )}
                 </div>
               </div>

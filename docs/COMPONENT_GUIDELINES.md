@@ -19,35 +19,42 @@ src/
 ## 🧱 Component Creation
 
 ### Basic Component Structure
+
 ```tsx
 // Button.tsx
-import React from 'react'
+import React from "react";
 
 interface ButtonProps {
-  variant?: 'primary' | 'secondary'
-  size?: 'sm' | 'md' | 'lg'
-  children: React.ReactNode
+  variant?: "primary" | "secondary";
+  size?: "sm" | "md" | "lg";
+  children: React.ReactNode;
 }
 
-export function Button({ variant = 'primary', size = 'md', children }: ButtonProps) {
-  const baseStyles = "rounded font-medium transition-colors"
-  
+export function Button({
+  variant = "primary",
+  size = "md",
+  children,
+}: ButtonProps) {
+  const baseStyles = "rounded font-medium transition-colors";
+
   const variantStyles = {
     primary: "bg-blue-500 hover:bg-blue-600 text-white",
-    secondary: "bg-gray-200 hover:bg-gray-300 text-gray-800"
-  }
-  
+    secondary: "bg-gray-200 hover:bg-gray-300 text-gray-800",
+  };
+
   const sizeStyles = {
     sm: "px-2 py-1 text-sm",
     md: "px-4 py-2",
-    lg: "px-6 py-3 text-lg"
-  }
-  
+    lg: "px-6 py-3 text-lg",
+  };
+
   return (
-    <button className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]}`}>
+    <button
+      className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]}`}
+    >
       {children}
     </button>
-  )
+  );
 }
 ```
 
@@ -81,6 +88,7 @@ export function Button({ variant = 'primary', size = 'md', children }: ButtonPro
 ## 📝 Documentation
 
 All components should include:
+
 - A clear doc comment with purpose and usage
 - Prop type definitions with descriptions
 - Example usage (when not obvious)
@@ -89,6 +97,7 @@ All components should include:
 ## 🧪 Testing
 
 All components should be tested with:
+
 - Basic rendering tests
 - Input variation tests (props, states)
 - Interaction tests (when applicable)
@@ -97,6 +106,7 @@ All components should be tested with:
 ## 🔄 Versioning
 
 Use version numbers for components when:
+
 - Creating public component libraries
 - Making breaking changes
 - Creating versioned documentation

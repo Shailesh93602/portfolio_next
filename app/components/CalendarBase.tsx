@@ -44,7 +44,7 @@ const CalendarBase: React.FC<CalendarBaseProps> = ({
       <h3 className="mb-6 text-lg font-semibold tracking-tight">{title}</h3>
       <div className="relative min-w-[750px] md:min-w-[800px]">
         {/* Months */}
-        <div className="mb-4 relative h-8 pl-10">
+        <div className="relative mb-4 h-8 pl-10">
           <div className="absolute left-0 right-0 z-10">
             {months.map((month, index) => {
               const weekWidth = 15; // Width of each week (13px + 2px gap)
@@ -69,7 +69,7 @@ const CalendarBase: React.FC<CalendarBaseProps> = ({
         {/* Calendar grid */}
         <div className="flex text-xs">
           {/* Days of week */}
-          <div className="flex flex-col justify-between pr-3 pt-[2px] text-muted-foreground font-medium">
+          <div className="flex flex-col justify-between pr-3 pt-[2px] font-medium text-muted-foreground">
             <span className="h-[13px]">Sun</span>
             <span className="h-[13px]">Mon</span>
             <span className="h-[13px]">Tue</span>
@@ -94,8 +94,8 @@ const CalendarBase: React.FC<CalendarBaseProps> = ({
                       )} ${isToday ? "ring-1 ring-ring ring-offset-1" : ""}`}
                       title={tooltipText(day.count, day.date)}
                     >
-                      <div className="absolute left-1/2 bottom-full z-[60] mb-2 -translate-x-1/2 hidden group-hover:block">
-                        <div className="relative px-2 py-1.5 text-xs leading-none text-popover-foreground bg-popover rounded-md shadow-md whitespace-nowrap border border-border/50">
+                      <div className="absolute bottom-full left-1/2 z-[60] mb-2 hidden -translate-x-1/2 group-hover:block">
+                        <div className="relative whitespace-nowrap rounded-md border border-border/50 bg-popover px-2 py-1.5 text-xs leading-none text-popover-foreground shadow-md">
                           {tooltipText(day.count, day.date)}
                           <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-popover"></div>
                         </div>

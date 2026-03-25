@@ -10,7 +10,11 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-export function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
+export function Pagination({
+  currentPage,
+  totalPages,
+  onPageChange,
+}: PaginationProps) {
   if (totalPages <= 1) return null;
 
   const getPageNumbers = () => {
@@ -25,9 +29,24 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
       if (currentPage <= 3) {
         pages.push(1, 2, 3, 4, "...", totalPages);
       } else if (currentPage >= totalPages - 2) {
-        pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+        pages.push(
+          1,
+          "...",
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages
+        );
       } else {
-        pages.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
+        pages.push(
+          1,
+          "...",
+          currentPage - 1,
+          currentPage,
+          currentPage + 1,
+          "...",
+          totalPages
+        );
       }
     }
 
@@ -37,7 +56,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
   const pageNumbers = getPageNumbers();
 
   return (
-    <div className="flex items-center justify-center space-x-1 mt-12">
+    <div className="mt-12 flex items-center justify-center space-x-1">
       {/* Previous Button */}
       <Button
         variant="outline"
@@ -61,7 +80,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
                 variant={currentPage === page ? "default" : "outline"}
                 size="sm"
                 onClick={() => onPageChange(page as number)}
-                className={`px-3 py-2 min-w-[40px] ${
+                className={`min-w-[40px] px-3 py-2 ${
                   currentPage === page
                     ? "bg-primary text-primary-foreground hover:bg-primary/90"
                     : "hover:bg-accent hover:text-accent-foreground"

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     siteName: "Shailesh Chaudhari Portfolio",
     images: [
       {
-  url: "/Images/shailesh.webp",
+        url: "/Images/shailesh.webp",
         width: 1200,
         height: 630,
         alt: "Shailesh Chaudhari Profile Picture",
@@ -29,10 +29,10 @@ export const metadata: Metadata = {
     title: "About | Shailesh Chaudhari",
     description:
       "Learn more about Shailesh Chaudhari, a passionate Full Stack Developer from Gujarat, India. Discover his experience, achievements, skills, and hobbies.",
-  images: ["/Images/shailesh.webp"],
+    images: ["/Images/shailesh.webp"],
   },
-   icons: {
-  icon: "/Images/shailesh.webp", 
-  apple: "/Images/shailesh.webp",
+  icons: {
+    icon: "/Images/shailesh.webp",
+    apple: "/Images/shailesh.webp",
   },
 };

@@ -3,6 +3,7 @@
 My personal portfolio website built with modern web technologies to showcase my professional work, skills, and projects.
 
 ## 🚀 Features
+
 - Responsive, mobile-first design
 - Theme switching with dark/light modes
 - Interactive project showcase
@@ -11,6 +12,7 @@ My personal portfolio website built with modern web technologies to showcase my 
 - GitHub API integration
 
 ## 💡 Technologies Used
+
 - Next.js 13+ with App Directory
 - TypeScript
 - Tailwind CSS
@@ -18,10 +20,11 @@ My personal portfolio website built with modern web technologies to showcase my 
 - GitHub Actions for CI/CD
 
 ## 🛠 Requirements
+
 - Node.js 18+
 - Git
-- GitHub personal access token (for API integration)
-=======
+- # GitHub personal access token (for API integration)
+
 ## Getting Started
 
 First, run the development server:
@@ -35,31 +38,38 @@ yarn dev
 Open [http://localhost:3000](http://localhost:3000) to view the portfolio.
 
 ## 📁 Project Structure
+
 - `/app` - Core application routes and layouts
 - `/components` - Reusable UI components
 - `/lib` - Business logic and utility functions
 - `/config` - Configuration files
 - `/public` - Static assets
-- `/content` - Blog posts and portfolio content
-=======
+- # `/content` - Blog posts and portfolio content
+
 ## 🧪 Testing
+
 First, install testing dependencies:
+
 ```bash
 npm install --save-dev jest @testing-library/react @testing-library/jest-dom
 ```
 
 Then run:
+
 ```bash
 npm run test
 ```
 
 ## 📦 Deployment
+
 This project is optimized for deployment on Vercel. To deploy, follow the [Next.js deployment guide](https://nextjs.org/docs/deployment), or set up automatic deployments with GitHub integration.
 
 ## 🤝 Contributions
+
 Please read [CONTRIBUTING.md](docs/CONTRIBUTING.md) for details on the code of conduct and contribution process.
 
 ## 📜 License
+
 This project is licensed under the MIT License - see the LICENSE.md file for details.
 
 ## Learn More

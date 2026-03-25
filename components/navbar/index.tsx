@@ -43,13 +43,13 @@ export default function Navbar() {
   const isActive = (path: string): boolean => pathname === path;
 
   return (
-    <nav className="bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60 border-b border-border/40 w-full fixed top-0 z-[100]">
+    <nav className="fixed top-0 z-[100] w-full border-b border-border/40 bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold text-xl text-gradient">SC</span>
+            <span className="text-gradient text-xl font-bold">SC</span>
           </Link>
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden items-center space-x-6 md:flex">
             {navigation.map((item) => (
               <Link
                 key={item.href}
@@ -57,7 +57,7 @@ export default function Navbar() {
                 className={cn(
                   "relative text-sm font-medium transition-colors hover:text-primary",
                   {
-                    "text-primary after:absolute after:left-0 after:-bottom-4 after:h-[2px] after:w-full after:bg-gradient":
+                    "after:bg-gradient text-primary after:absolute after:-bottom-4 after:left-0 after:h-[2px] after:w-full":
                       pathname === item.href,
                     "text-muted-foreground": pathname !== item.href,
                   }
@@ -87,16 +87,22 @@ export default function Navbar() {
       </div>
       {/* Mobile menu (simple CSS-based toggle to avoid bundling framer-motion) */}
       <div
-        className={`fixed inset-0 bg-background/95 backdrop-blur-sm z-[999] md:hidden border-l border-border/40 flex flex-col h-[100vh] transform transition-transform duration-300 ease-out ${
-          menuOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0 pointer-events-none"
+        className={`fixed inset-0 z-[999] flex h-[100vh] transform flex-col border-l border-border/40 bg-background/95 backdrop-blur-sm transition-transform duration-300 ease-out md:hidden ${
+          menuOpen
+            ? "translate-x-0 opacity-100"
+            : "pointer-events-none translate-x-full opacity-0"
         }`}
         aria-hidden={!menuOpen}
       >
-        <div className="flex justify-between items-center px-6 py-5 border-b">
-          <Link href="/" className="text-xl font-bold text-gradient" onClick={closeMenu}>
+        <div className="flex items-center justify-between border-b px-6 py-5">
+          <Link
+            href="/"
+            className="text-gradient text-xl font-bold"
+            onClick={closeMenu}
+          >
             <span>SC</span>
           </Link>
-            <Button
+          <Button
             variant="ghost"
             size="icon"
             onClick={closeMenu}
@@ -106,16 +112,16 @@ export default function Navbar() {
             <XIcon className="h-6 w-6" />
           </Button>
         </div>
-        <nav className="flex-1 flex items-center justify-center">
-          <ul className="space-y-6 w-full px-6">
+        <nav className="flex flex-1 items-center justify-center">
+          <ul className="w-full space-y-6 px-6">
             {navigation.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className={`block py-3 px-4 text-base font-medium transition-colors rounded-lg ${
+                  className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors ${
                     isActive(item.href)
-                      ? "text-primary font-bold"
-                      : "text-foreground hover:text-primary hover:bg-muted/80"
+                      ? "font-bold text-primary"
+                      : "text-foreground hover:bg-muted/80 hover:text-primary"
                   }`}
                   onClick={closeMenu}
                 >

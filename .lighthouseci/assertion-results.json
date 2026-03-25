@@ -3,11 +3,7 @@
     "name": "minScore",
     "expected": 0.9,
     "actual": 0,
-    "values": [
-      0,
-      0,
-      0
-    ],
+    "values": [0, 0, 0],
     "operator": ">=",
     "passed": false,
     "auditId": "bootup-time",
@@ -20,11 +16,7 @@
     "name": "minScore",
     "expected": 0.9,
     "actual": 0.5,
-    "values": [
-      0.5,
-      0.5,
-      0.5
-    ],
+    "values": [0.5, 0.5, 0.5],
     "operator": ">=",
     "passed": false,
     "auditId": "image-delivery-insight",
@@ -37,11 +29,7 @@
     "name": "minScore",
     "expected": 0.9,
     "actual": 0.14,
-    "values": [
-      0.14,
-      0,
-      0
-    ],
+    "values": [0.14, 0, 0],
     "operator": ">=",
     "passed": false,
     "auditId": "largest-contentful-paint",
@@ -54,11 +42,7 @@
     "name": "maxLength",
     "expected": 0,
     "actual": 1,
-    "values": [
-      1,
-      1,
-      1
-    ],
+    "values": [1, 1, 1],
     "operator": "<=",
     "passed": false,
     "auditId": "legacy-javascript",
@@ -71,11 +55,7 @@
     "name": "minScore",
     "expected": 0.9,
     "actual": 0,
-    "values": [
-      0,
-      0,
-      0
-    ],
+    "values": [0, 0, 0],
     "operator": ">=",
     "passed": false,
     "auditId": "mainthread-work-breakdown",
@@ -88,11 +68,7 @@
     "name": "minScore",
     "expected": 0.9,
     "actual": 0,
-    "values": [
-      0,
-      0,
-      0
-    ],
+    "values": [0, 0, 0],
     "operator": ">=",
     "passed": false,
     "auditId": "max-potential-fid",
@@ -105,11 +81,7 @@
     "name": "minScore",
     "expected": 0.9,
     "actual": 0,
-    "values": [
-      0,
-      0,
-      0
-    ],
+    "values": [0, 0, 0],
     "operator": ">=",
     "passed": false,
     "auditId": "network-dependency-tree-insight",
@@ -122,11 +94,7 @@
     "name": "maxLength",
     "expected": 0,
     "actual": 1,
-    "values": [
-      1,
-      1,
-      1
-    ],
+    "values": [1, 1, 1],
     "operator": "<=",
     "passed": false,
     "auditId": "render-blocking-insight",
@@ -139,11 +107,7 @@
     "name": "maxLength",
     "expected": 0,
     "actual": 1,
-    "values": [
-      1,
-      1,
-      1
-    ],
+    "values": [1, 1, 1],
     "operator": "<=",
     "passed": false,
     "auditId": "render-blocking-resources",
@@ -156,11 +120,7 @@
     "name": "minScore",
     "expected": 0.9,
     "actual": 0.5,
-    "values": [
-      0.5,
-      0.5,
-      0.5
-    ],
+    "values": [0.5, 0.5, 0.5],
     "operator": ">=",
     "passed": false,
     "auditId": "total-byte-weight",
@@ -173,11 +133,7 @@
     "name": "maxLength",
     "expected": 0,
     "actual": 1,
-    "values": [
-      1,
-      1,
-      1
-    ],
+    "values": [1, 1, 1],
     "operator": "<=",
     "passed": false,
     "auditId": "unminified-css",
@@ -190,11 +146,7 @@
     "name": "maxLength",
     "expected": 0,
     "actual": 1,
-    "values": [
-      1,
-      1,
-      1
-    ],
+    "values": [1, 1, 1],
     "operator": "<=",
     "passed": false,
     "auditId": "unminified-javascript",
@@ -207,11 +159,7 @@
     "name": "maxLength",
     "expected": 0,
     "actual": 1,
-    "values": [
-      1,
-      3,
-      3
-    ],
+    "values": [1, 3, 3],
     "operator": "<=",
     "passed": false,
     "auditId": "unused-javascript",
@@ -224,11 +172,7 @@
     "name": "minScore",
     "expected": 0.9,
     "actual": 0,
-    "values": [
-      0,
-      0,
-      0
-    ],
+    "values": [0, 0, 0],
     "operator": ">=",
     "passed": false,
     "auditId": "valid-source-maps",
@@ -241,11 +185,7 @@
     "name": "minScore",
     "expected": 0.9,
     "actual": 0,
-    "values": [
-      0,
-      0,
-      0
-    ],
+    "values": [0, 0, 0],
     "operator": ">=",
     "passed": false,
     "auditId": "interactive",

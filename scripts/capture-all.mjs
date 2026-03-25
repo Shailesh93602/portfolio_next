@@ -11,51 +11,62 @@ fs.mkdirSync(khatagoDir, { recursive: true });
 async function captureEduScale() {
   console.log("Starting EduScale capture...");
   const browser = await chromium.launch({ headless: true });
-  
-  for (const theme of ['dark', 'light']) {
+
+  for (const theme of ["dark", "light"]) {
     const context = await browser.newContext({
       viewport: { width: 1440, height: 900 },
-      colorScheme: theme
+      colorScheme: theme,
     });
-    
-    // Set cookie or local storage to enforce theme if needed. 
+
+    // Set cookie or local storage to enforce theme if needed.
     // Usually colorScheme: theme sets the prefers-color-scheme media query.
     const page = await context.newPage();
-    
+
     try {
-      await page.goto('https://eduscale.vercel.app/auth');
+      await page.goto("https://eduscale.vercel.app/auth");
       await page.waitForTimeout(3000);
-      
+
       const emailInput = await page.$('input[type="email"]');
       if (emailInput) {
-          await emailInput.fill('testuser@yopmail.com');
-          await page.fill('input[type="password"]', 'Test@123');
-          await page.click('button[type="submit"]');
-          await page.waitForURL('**/dashboard', { timeout: 15000 });
+        await emailInput.fill("testuser@yopmail.com");
+        await page.fill('input[type="password"]', "Test@123");
+        await page.click('button[type="submit"]');
+        await page.waitForURL("**/dashboard", { timeout: 15000 });
       } else {
-          console.log("Already logged in or login not found");
+        console.log("Already logged in or login not found");
       }
-      
-      await page.goto('https://eduscale.vercel.app/dashboard');
-      await page.waitForTimeout(6000); 
-      await page.screenshot({ path: path.join(eduscaleDir, `dashboard_${theme}.png`), fullPage: false });
-      
-      await page.goto('https://eduscale.vercel.app/career-roadmap');
+
+      await page.goto("https://eduscale.vercel.app/dashboard");
+      await page.waitForTimeout(6000);
+      await page.screenshot({
+        path: path.join(eduscaleDir, `dashboard_${theme}.png`),
+        fullPage: false,
+      });
+
+      await page.goto("https://eduscale.vercel.app/career-roadmap");
       await page.waitForTimeout(6000);
       await page.mouse.wheel(0, 500); // Scroll down to show actual roadmap content
       await page.waitForTimeout(1000);
-      await page.screenshot({ path: path.join(eduscaleDir, `roadmap_${theme}.png`), fullPage: false });
+      await page.screenshot({
+        path: path.join(eduscaleDir, `roadmap_${theme}.png`),
+        fullPage: false,
+      });
 
-      await page.goto('https://eduscale.vercel.app/coding-challenges');
+      await page.goto("https://eduscale.vercel.app/coding-challenges");
       await page.waitForTimeout(6000);
-      await page.screenshot({ path: path.join(eduscaleDir, `challenges_${theme}.png`), fullPage: false });
+      await page.screenshot({
+        path: path.join(eduscaleDir, `challenges_${theme}.png`),
+        fullPage: false,
+      });
 
-      await page.goto('https://eduscale.vercel.app/battle-zone/battles');
+      await page.goto("https://eduscale.vercel.app/battle-zone/battles");
       await page.waitForTimeout(6000);
-      await page.screenshot({ path: path.join(eduscaleDir, `battle_${theme}.png`), fullPage: false });
-      
-    } catch(e) {
-      console.log('Error in EduScale:', e);
+      await page.screenshot({
+        path: path.join(eduscaleDir, `battle_${theme}.png`),
+        fullPage: false,
+      });
+    } catch (e) {
+      console.log("Error in EduScale:", e);
     }
     await context.close();
   }
@@ -66,42 +77,50 @@ async function captureEduScale() {
 async function captureKhataGo() {
   console.log("Starting KhataGO capture...");
   const browser = await chromium.launch({ headless: true });
-  
+
   const context = await browser.newContext({
     viewport: { width: 1440, height: 900 },
-    colorScheme: 'light'
+    colorScheme: "light",
   });
-  
+
   const page = await context.newPage();
-  
+
   try {
-    await page.goto('https://khatago.vercel.app/login');
-    
+    await page.goto("https://khatago.vercel.app/login");
+
     // Fill phone number using exact ID
-    await page.waitForSelector('#phone', { timeout: 10000 });
-    await page.fill('#phone', '9313026530');
+    await page.waitForSelector("#phone", { timeout: 10000 });
+    await page.fill("#phone", "9313026530");
     await page.click('button[type="submit"]');
 
     // Fill OTP
-    await page.waitForSelector('#otp', { timeout: 10000 });
-    await page.fill('#otp', '123456');
+    await page.waitForSelector("#otp", { timeout: 10000 });
+    await page.fill("#otp", "123456");
     await page.click('button[type="submit"]');
 
-    await page.waitForURL('**/dashboard', { timeout: 15000 });
-    
-    await page.waitForTimeout(6000);
-    await page.screenshot({ path: path.join(khatagoDir, `dashboard.png`), fullPage: false });
+    await page.waitForURL("**/dashboard", { timeout: 15000 });
 
-    await page.goto('https://khatago.vercel.app/transactions');
     await page.waitForTimeout(6000);
-    await page.screenshot({ path: path.join(khatagoDir, `transactions.png`), fullPage: false });
+    await page.screenshot({
+      path: path.join(khatagoDir, `dashboard.png`),
+      fullPage: false,
+    });
 
-    await page.goto('https://khatago.vercel.app/reports/monthly');
+    await page.goto("https://khatago.vercel.app/transactions");
     await page.waitForTimeout(6000);
-    await page.screenshot({ path: path.join(khatagoDir, `reports.png`), fullPage: false });
+    await page.screenshot({
+      path: path.join(khatagoDir, `transactions.png`),
+      fullPage: false,
+    });
 
-  } catch(e) {
-    console.log('Error in KhataGo:', e);
+    await page.goto("https://khatago.vercel.app/reports/monthly");
+    await page.waitForTimeout(6000);
+    await page.screenshot({
+      path: path.join(khatagoDir, `reports.png`),
+      fullPage: false,
+    });
+  } catch (e) {
+    console.log("Error in KhataGo:", e);
   }
 
   await context.close();

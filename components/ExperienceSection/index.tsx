@@ -7,21 +7,31 @@ export function ExperienceSection() {
   // Helper: convert description text into paragraphs and bullet items
   const renderDescription = (text: string) => {
     // Split by new lines and trim
-    const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+    const lines = text
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
     // Lines that start with • are bullets
-    const bullets = lines.filter((l) => l.startsWith('•'));
-    const paras = lines.filter((l) => !l.startsWith('•'));
+    const bullets = lines.filter((l) => l.startsWith("•"));
+    const paras = lines.filter((l) => !l.startsWith("•"));
 
     return (
       <div className="text-text-secondary">
         {paras.map((p, i) => (
-          <p key={`p-${i}`} className="mb-3 leading-relaxed" dangerouslySetInnerHTML={{ __html: p }} />
+          <p
+            key={`p-${i}`}
+            className="mb-3 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: p }}
+          />
         ))}
         {bullets.length > 0 && (
-          <ul className="list-disc list-inside ml-4 space-y-2 mt-3">
+          <ul className="ml-4 mt-3 list-inside list-disc space-y-2">
             {bullets.map((b, i) => (
-              <li key={`b-${i}`} className="text-sm text-text-secondary leading-relaxed">
-                {b.replace(/^•\s*/, '')}
+              <li
+                key={`b-${i}`}
+                className="text-text-secondary text-sm leading-relaxed"
+              >
+                {b.replace(/^•\s*/, "")}
               </li>
             ))}
           </ul>
@@ -31,18 +41,19 @@ export function ExperienceSection() {
   };
 
   // Helper to determine if experience is internship
-  const isInternship = (title: string) => title.toLowerCase().includes('intern');
+  const isInternship = (title: string) =>
+    title.toLowerCase().includes("intern");
 
   return (
     <motion.div variants={itemVariants}>
-      <h3 className="text-2xl font-semibold mb-8 text-text-primary flex items-center">
-        <BriefcaseIcon className="w-7 h-7 mr-3 text-primary" />
+      <h3 className="text-text-primary mb-8 flex items-center text-2xl font-semibold">
+        <BriefcaseIcon className="mr-3 h-7 w-7 text-primary" />
         Professional Experience
       </h3>
 
       <div className="relative pl-8">
         {/* vertical line */}
-        <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-transparent" />
+        <div className="absolute bottom-0 left-3 top-0 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-transparent" />
 
         <div className="space-y-10">
           {experiences.map((exp, index) => (
@@ -55,29 +66,34 @@ export function ExperienceSection() {
             >
               {/* marker */}
               <div className="absolute -left-8 top-3">
-                <div className={`w-6 h-6 rounded-full border-3 border-card shadow-lg flex items-center justify-center ${
-                  isInternship(exp.title)
-                    ? 'bg-gradient-to-br from-blue-500 to-blue-600'
-                    : 'bg-gradient-to-br from-primary to-purple-600'
-                }`}>
+                <div
+                  className={`border-3 flex h-6 w-6 items-center justify-center rounded-full border-card shadow-lg ${
+                    isInternship(exp.title)
+                      ? "bg-gradient-to-br from-blue-500 to-blue-600"
+                      : "bg-gradient-to-br from-primary to-purple-600"
+                  }`}
+                >
                   {isInternship(exp.title) ? (
-                    <LaptopIcon className="w-3.5 h-3.5 text-white" />
+                    <LaptopIcon className="h-3.5 w-3.5 text-white" />
                   ) : (
-                    <BriefcaseIcon className="w-3.5 h-3.5 text-white" />
+                    <BriefcaseIcon className="h-3.5 w-3.5 text-white" />
                   )}
                 </div>
               </div>
 
-              <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 hover:shadow-xl hover:border-primary/20 transition-all duration-300 group">
+              <div className="group rounded-xl border border-border/50 bg-card/50 p-6 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:shadow-xl">
                 <div className="flex flex-col gap-4">
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <div className="flex items-center gap-3 mb-1">
-                        <h4 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                      <div className="mb-1 flex items-center gap-3">
+                        <h4 className="text-xl font-bold text-foreground transition-colors group-hover:text-primary">
                           {exp.title}
                         </h4>
                         {isInternship(exp.title) && (
-                          <Badge variant="outline" className="text-xs border-blue-500/50 text-blue-600">
+                          <Badge
+                            variant="outline"
+                            className="border-blue-500/50 text-xs text-blue-600"
+                          >
                             Internship
                           </Badge>
                         )}
@@ -89,26 +105,26 @@ export function ExperienceSection() {
                             href={exp.companyUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-primary hover:underline text-sm"
+                            className="text-sm text-primary hover:underline"
                           >
                             Visit →
                           </a>
                         )}
                       </div>
                     </div>
-                    <div className="text-sm text-muted-foreground font-medium bg-muted/50 px-3 py-1 rounded-full">
+                    <div className="rounded-full bg-muted/50 px-3 py-1 text-sm font-medium text-muted-foreground">
                       {exp.period}
                     </div>
                   </div>
 
                   <div className="mt-2">
                     {exp.skills && exp.skills.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mb-4">
+                      <div className="mb-4 flex flex-wrap gap-2">
                         {exp.skills.map((s) => (
                           <Badge
                             key={s}
                             variant="secondary"
-                            className="text-xs px-2 py-1 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors"
+                            className="border-primary/20 bg-primary/10 px-2 py-1 text-xs text-primary transition-colors hover:bg-primary/20"
                           >
                             {s}
                           </Badge>
@@ -121,8 +137,11 @@ export function ExperienceSection() {
                     {exp.highlights && exp.highlights.length > 0 && (
                       <div className="mt-4 border-l-2 border-primary/20 pl-4">
                         {exp.highlights.map((h, i) => (
-                          <p key={i} className="text-sm text-text-secondary mb-2 flex items-start">
-                            <span className="text-primary mr-2 mt-1">•</span>
+                          <p
+                            key={i}
+                            className="text-text-secondary mb-2 flex items-start text-sm"
+                          >
+                            <span className="mr-2 mt-1 text-primary">•</span>
                             {h}
                           </p>
                         ))}

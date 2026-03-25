@@ -1,10 +1,14 @@
-
 "use client";
 
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { fadeIn } from "@/lib/animations";
-import { GithubIcon, LinkedinIcon, TwitterIcon, MailIcon } from "@/components/icons";
+import {
+  GithubIcon,
+  LinkedinIcon,
+  TwitterIcon,
+  MailIcon,
+} from "@/components/icons";
 
 const socialLinks = [
   {
@@ -58,7 +62,7 @@ export function Footer() {
           </p>
         </div>
         <div className="flex items-center space-x-4">
-            {socialLinks.map((item) => (
+          {socialLinks.map((item) => (
             <Link
               key={item.name}
               href={item.href}
@@ -66,11 +70,11 @@ export function Footer() {
               rel="noreferrer"
               className="text-muted-foreground transition-colors hover:text-primary"
             >
-                {/* Inline icons from local icon set to reduce bundle size */}
-                {item.name === 'GitHub' && <GithubIcon className="h-5 w-5" />}
-                {item.name === 'LinkedIn' && <LinkedinIcon className="h-5 w-5" />}
-                {item.name === 'Twitter' && <TwitterIcon className="h-5 w-5" />}
-                {item.name === 'Email' && <MailIcon className="h-5 w-5" />}
+              {/* Inline icons from local icon set to reduce bundle size */}
+              {item.name === "GitHub" && <GithubIcon className="h-5 w-5" />}
+              {item.name === "LinkedIn" && <LinkedinIcon className="h-5 w-5" />}
+              {item.name === "Twitter" && <TwitterIcon className="h-5 w-5" />}
+              {item.name === "Email" && <MailIcon className="h-5 w-5" />}
               <span className="sr-only">{item.name}</span>
             </Link>
           ))}

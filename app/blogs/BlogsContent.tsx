@@ -19,11 +19,11 @@ const containerVariants = {
 
 const pageTransition = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
-    transition: { duration: 0.6 }
-  }
+    transition: { duration: 0.6 },
+  },
 };
 
 const ITEMS_PER_PAGE = 12;
@@ -58,7 +58,7 @@ export default function BlogsContent() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     // Smooth scroll to top of blog grid
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -68,17 +68,15 @@ export default function BlogsContent() {
           initial="hidden"
           animate="visible"
           variants={containerVariants}
-          className="max-w-7xl mx-auto"
+          className="mx-auto max-w-7xl"
         >
-          <motion.div
-            variants={pageTransition}
-            className="text-center mb-12"
-          >
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-[hsl(var(--hero-gradient-from))] to-[hsl(var(--hero-gradient-to))] bg-clip-text text-transparent">
+          <motion.div variants={pageTransition} className="mb-12 text-center">
+            <h1 className="mb-4 bg-gradient-to-r from-[hsl(var(--hero-gradient-from))] to-[hsl(var(--hero-gradient-to))] bg-clip-text text-4xl font-bold text-transparent md:text-5xl">
               Latest Blog Posts
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Insights, tutorials, and experiences from my journey in software development and technology.
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+              Insights, tutorials, and experiences from my journey in software
+              development and technology.
             </p>
           </motion.div>
 
@@ -93,15 +91,15 @@ export default function BlogsContent() {
               setSelectedTag("");
             }}
           />
-          
+
           {paginatedPosts.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+              <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {paginatedPosts.map((post, index) => (
                   <BlogCard key={post.slug} post={post} index={index} />
                 ))}
               </div>
-              
+
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -109,11 +107,8 @@ export default function BlogsContent() {
               />
             </>
           ) : (
-            <motion.div
-              variants={pageTransition}
-              className="text-center py-16"
-            >
-              <h2 className="text-2xl font-semibold mb-2">No posts found</h2>
+            <motion.div variants={pageTransition} className="py-16 text-center">
+              <h2 className="mb-2 text-2xl font-semibold">No posts found</h2>
               <p className="text-muted-foreground">
                 Try adjusting your search or filter criteria
               </p>

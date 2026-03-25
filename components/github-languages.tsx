@@ -18,10 +18,10 @@ export function GitHubLanguages({ languages }: GitHubLanguagesProps) {
   const filteredLanguages = languages.filter((lang) => lang.percentage > 0);
 
   return (
-    <Card className="bg-card border-border">
+    <Card className="border-border bg-card">
       <CardContent className="pt-6">
         <div className="space-y-4">
-          <div className="h-2 w-full flex rounded-full overflow-hidden">
+          <div className="flex h-2 w-full overflow-hidden rounded-full">
             {filteredLanguages.map((lang) => (
               <div
                 key={lang.name}
@@ -33,11 +33,11 @@ export function GitHubLanguages({ languages }: GitHubLanguagesProps) {
               />
             ))}
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
             {filteredLanguages.map((lang) => (
               <div key={lang.name} className="flex items-center gap-2">
                 <div
-                  className="w-3 h-3 rounded-full"
+                  className="h-3 w-3 rounded-full"
                   style={{ backgroundColor: lang.color }}
                 />
                 <span className="text-sm">

@@ -29,23 +29,23 @@ export function ProjectCard({
 }: ProjectCardProps) {
   return (
     <div className="transition-transform duration-500 ease-out will-change-transform">
-      <Card className="bg-dark overflow-hidden hover:shadow-lg transition-shadow duration-300">
+      <Card className="bg-dark overflow-hidden transition-shadow duration-300 hover:shadow-lg">
         <div className="relative h-48">
           <Image src={image} alt={title} fill className="object-cover" />
         </div>
         <CardContent className="p-6">
-          <h3 className="text-xl font-semibold mb-2 text-text-primary">
+          <h3 className="text-text-primary mb-2 text-xl font-semibold">
             {title}
           </h3>
           <p className="text-text-secondary mb-4">{description}</p>
 
-          <div className="flex flex-wrap gap-2 mb-4">
+          <div className="mb-4 flex flex-wrap gap-2">
             {tags.map((tag, index) => (
               <span
                 key={index}
-                className="px-2 py-1 bg-primary/10 text-primary text-sm rounded-full flex items-center gap-1"
+                className="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-sm text-primary"
               >
-                <TagIcon className="w-3 h-3" />
+                <TagIcon className="h-3 w-3" />
                 {tag}
               </span>
             ))}
@@ -54,16 +54,16 @@ export function ProjectCard({
           <div className="flex items-center gap-4">
             {github && (
               <Link href={github} target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" size="sm" className="text-text-primary">
-                  <GithubIcon className="w-4 h-4 mr-2" />
+                <Button variant="ghost" size="sm" className="text-text-primary">
+                  <GithubIcon className="mr-2 h-4 w-4" />
                   GitHub
                 </Button>
               </Link>
             )}
             {live && (
               <Link href={live} target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" size="sm" className="text-text-primary">
-                  <ExternalLinkIcon className="w-4 h-4 mr-2" />
+                <Button variant="ghost" size="sm" className="text-text-primary">
+                  <ExternalLinkIcon className="mr-2 h-4 w-4" />
                   Live Demo
                 </Button>
               </Link>

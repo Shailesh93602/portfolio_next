@@ -23,40 +23,77 @@ interface AuthorBoxProps {
   showBio?: boolean; // show bio text
 }
 
-export default function AuthorBox({ author, compact, showBio = false }: AuthorBoxProps) {
+export default function AuthorBox({
+  author,
+  compact,
+  showBio = false,
+}: AuthorBoxProps) {
   return (
-    <div className={`flex ${compact ? 'items-center gap-3' : 'flex-col gap-4'}`}>
-      <div className={`flex items-center ${compact ? '' : 'gap-4'}`}>
-        <Avatar className={compact ? 'h-10 w-10' : 'h-16 w-16 border-2 border-primary/20'}>
+    <div
+      className={`flex ${compact ? "items-center gap-3" : "flex-col gap-4"}`}
+    >
+      <div className={`flex items-center ${compact ? "" : "gap-4"}`}>
+        <Avatar
+          className={
+            compact ? "h-10 w-10" : "h-16 w-16 border-2 border-primary/20"
+          }
+        >
           <AvatarImage src={author.avatar} alt={author.name} />
-          <AvatarFallback>{(author.name || 'A').split(' ').map(n=>n[0]).slice(0,2).join('')}</AvatarFallback>
+          <AvatarFallback>
+            {(author.name || "A")
+              .split(" ")
+              .map((n) => n[0])
+              .slice(0, 2)
+              .join("")}
+          </AvatarFallback>
         </Avatar>
 
-        <div className={compact ? '' : ''}>
-          <div className="font-medium">{author.name ? `Written by ${author.name}` : 'Written by'}</div>
-          {author.role && <div className="text-sm text-muted-foreground">{author.role}</div>}
+        <div className={compact ? "" : ""}>
+          <div className="font-medium">
+            {author.name ? `Written by ${author.name}` : "Written by"}
+          </div>
+          {author.role && (
+            <div className="text-sm text-muted-foreground">{author.role}</div>
+          )}
         </div>
       </div>
 
       {showBio && author.bio && (
-        <p className="text-sm text-muted-foreground leading-relaxed">{author.bio}</p>
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          {author.bio}
+        </p>
       )}
 
       {!compact && (
         <div className="flex gap-3">
           {author.social?.twitter && (
-            <a href={author.social.twitter} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors p-2 rounded-lg hover:bg-primary/10">
-              <TwitterIcon className="w-5 h-5" />
+            <a
+              href={author.social.twitter}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+            >
+              <TwitterIcon className="h-5 w-5" />
             </a>
           )}
           {author.social?.github && (
-            <a href={author.social.github} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors p-2 rounded-lg hover:bg-primary/10">
-              <GithubIcon className="w-5 h-5" />
+            <a
+              href={author.social.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+            >
+              <GithubIcon className="h-5 w-5" />
             </a>
           )}
           {author.social?.linkedin && (
-            <a href={author.social.linkedin} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors p-2 rounded-lg hover:bg-primary/10">
-              <LinkedinIcon className="w-5 h-5" />
+            <a
+              href={author.social.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+            >
+              <LinkedinIcon className="h-5 w-5" />
             </a>
           )}
         </div>

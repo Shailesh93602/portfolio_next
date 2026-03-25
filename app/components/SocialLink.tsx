@@ -22,7 +22,7 @@ const SocialLink: React.FC<SocialLinkProps> = ({ href, icon, label }) => {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-text-primary hover:text-primary transition-colors"
+          className="text-text-primary transition-colors hover:text-primary"
         >
           {icon}
         </a>

@@ -15,7 +15,7 @@ import { PortfolioSkeleton } from "./PortfolioSkeleton";
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
   visible: { y: 0, opacity: 1, transition: { duration: 0.4, ease: "easeOut" } },
-  exit: { y: -20, opacity: 0, transition: { duration: 0.2 } }
+  exit: { y: -20, opacity: 0, transition: { duration: 0.2 } },
 };
 
 export function PortfolioContent() {
@@ -28,8 +28,11 @@ export function PortfolioContent() {
     return () => clearTimeout(timer);
   }, []);
 
-  const allTags = useMemo(() => 
-    Array.from(new Set(projects.flatMap((project) => project.tags))).sort((a, b) => a.localeCompare(b)),
+  const allTags = useMemo(
+    () =>
+      Array.from(new Set(projects.flatMap((project) => project.tags))).sort(
+        (a, b) => a.localeCompare(b)
+      ),
     []
   );
 
@@ -42,13 +45,16 @@ export function PortfolioContent() {
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
       const searchStr = searchQuery.toLowerCase();
-      const matchesSearch = !searchQuery || 
-                          project.title.toLowerCase().includes(searchStr) ||
-                          project.description.toLowerCase().includes(searchStr) ||
-                          project.tags.some(t => t.toLowerCase().includes(searchStr));
-      
-      const matchesTags = selectedTags.every((tag) => project.tags.includes(tag));
-      
+      const matchesSearch =
+        !searchQuery ||
+        project.title.toLowerCase().includes(searchStr) ||
+        project.description.toLowerCase().includes(searchStr) ||
+        project.tags.some((t) => t.toLowerCase().includes(searchStr));
+
+      const matchesTags = selectedTags.every((tag) =>
+        project.tags.includes(tag)
+      );
+
       return matchesSearch && matchesTags;
     });
   }, [searchQuery, selectedTags]);
@@ -72,10 +78,11 @@ export function PortfolioContent() {
         className="mb-16 text-center"
       >
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-          My <span className="text-primary italic">Projects</span>
+          My <span className="italic text-primary">Projects</span>
         </h1>
-        <p className="text-muted-foreground mt-4 text-lg">
-          A showcase of engineering excellence, from distributed systems to AI-driven tools.
+        <p className="mt-4 text-lg text-muted-foreground">
+          A showcase of engineering excellence, from distributed systems to
+          AI-driven tools.
         </p>
       </motion.div>
 
@@ -87,11 +94,11 @@ export function PortfolioContent() {
       >
         {/* Filter & Search Section */}
         <motion.div variants={itemVariants} className="mb-12 space-y-8">
-          <div className="max-w-xl mx-auto relative group">
-            <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+          <div className="group relative mx-auto max-w-xl">
+            <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
             <Input
               placeholder="Search projects by name, tech, or description..."
-              className="pl-12 h-14 rounded-2xl bg-card/50 border-border group-focus-within:border-primary/50 transition-all text-lg"
+              className="h-14 rounded-2xl border-border bg-card/50 pl-12 text-lg transition-all group-focus-within:border-primary/50"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -99,8 +106,8 @@ export function PortfolioContent() {
 
           <div className="space-y-6">
             <div className="flex flex-wrap items-center justify-center gap-4">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 text-primary text-sm font-bold uppercase tracking-wider">
-                <FilterIcon className="w-4 h-4" />
+              <div className="flex items-center gap-2 rounded-full border border-primary/10 bg-primary/5 px-4 py-2 text-sm font-bold uppercase tracking-wider text-primary">
+                <FilterIcon className="h-4 w-4" />
                 Technical Stack
               </div>
               {(selectedTags.length > 0 || searchQuery) && (
@@ -108,22 +115,22 @@ export function PortfolioContent() {
                   onClick={resetFilters}
                   variant="ghost"
                   size="sm"
-                  className="flex items-center gap-2 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
+                  className="flex items-center gap-2 rounded-full transition-colors hover:bg-destructive/10 hover:text-destructive"
                 >
-                  <XIcon className="w-4 h-4" />
+                  <XIcon className="h-4 w-4" />
                   Clear All
                 </Button>
               )}
             </div>
-            <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
+            <div className="mx-auto flex max-w-4xl flex-wrap justify-center gap-3">
               {allTags.map((tag) => (
                 <button
                   key={tag}
                   onClick={() => toggleTag(tag)}
-                  className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 border ${
+                  className={`rounded-xl border px-5 py-2.5 text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
                     selectedTags.includes(tag)
-                      ? "bg-primary text-white border-primary shadow-xl shadow-primary/20 scale-105 z-10"
-                      : "bg-card/50 text-muted-foreground border-border hover:border-primary/50 backdrop-blur-sm"
+                      ? "z-10 scale-105 border-primary bg-primary text-white shadow-xl shadow-primary/20"
+                      : "border-border bg-card/50 text-muted-foreground backdrop-blur-sm hover:border-primary/50"
                   }`}
                 >
                   {tag}
@@ -141,16 +148,22 @@ export function PortfolioContent() {
               animate="visible"
               exit="exit"
               variants={itemVariants}
-              className="text-center py-32 bg-card/10 rounded-[3rem] border border-dashed border-border flex flex-col items-center gap-4"
+              className="flex flex-col items-center gap-4 rounded-[3rem] border border-dashed border-border bg-card/10 py-32 text-center"
             >
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                 <SearchIcon className="w-8 h-8 text-muted-foreground" />
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                <SearchIcon className="h-8 w-8 text-muted-foreground" />
               </div>
               <div className="space-y-1">
                 <h3 className="text-xl font-bold">No projects found</h3>
-                <p className="text-muted-foreground">Try adjusting your search or filters to broaden your results.</p>
+                <p className="text-muted-foreground">
+                  Try adjusting your search or filters to broaden your results.
+                </p>
               </div>
-              <Button onClick={resetFilters} variant="outline" className="mt-4 rounded-full">
+              <Button
+                onClick={resetFilters}
+                variant="outline"
+                className="mt-4 rounded-full"
+              >
                 Show all projects
               </Button>
             </motion.div>
@@ -161,59 +174,62 @@ export function PortfolioContent() {
               animate="visible"
               exit="exit"
               variants={staggerContainer(0.05)}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
+              className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3"
             >
-            {filteredProjects.map((project) => {
-              const isShowcase = project.isShowcase;
-              return (
-                <motion.div
-                  key={project.id}
-                  layout
-                  variants={itemVariants}
-                  className={`${isShowcase ? 'md:col-span-2 lg:col-span-2' : ''} group h-full`}
-                >
-                  <Card className="h-full relative overflow-hidden bg-card/50 backdrop-blur-sm border-border hover:border-primary/50 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 rounded-[2rem]">
-                    <Link href={`/portfolio/${project.id}`} className="flex flex-col h-full">
-                      <div className="relative h-64 w-full overflow-hidden">
-                        <Image
-                          src={project.image}
-                          alt={project.title}
-                          fill
-                          className="object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                        {isShowcase && (
-                          <div className="absolute top-6 left-6">
-                            <span className="px-4 py-1.5 bg-primary text-white text-[10px] font-black rounded-full uppercase tracking-widest shadow-2xl">
-                              Showcase Project
-                            </span>
+              {filteredProjects.map((project) => {
+                const isShowcase = project.isShowcase;
+                return (
+                  <motion.div
+                    key={project.id}
+                    layout
+                    variants={itemVariants}
+                    className={`${isShowcase ? "md:col-span-2 lg:col-span-2" : ""} group h-full`}
+                  >
+                    <Card className="relative h-full overflow-hidden rounded-[2rem] border-border bg-card/50 backdrop-blur-sm transition-all duration-500 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/5">
+                      <Link
+                        href={`/portfolio/${project.id}`}
+                        className="flex h-full flex-col"
+                      >
+                        <div className="relative h-64 w-full overflow-hidden">
+                          <Image
+                            src={project.image}
+                            alt={project.title}
+                            fill
+                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                          />
+                          {isShowcase && (
+                            <div className="absolute left-6 top-6">
+                              <span className="rounded-full bg-primary px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-2xl">
+                                Showcase Project
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <CardContent className="flex-1 p-8">
+                          <div className="mb-4 flex items-start justify-between">
+                            <h3 className="text-2xl font-bold transition-colors group-hover:text-primary">
+                              {project.title}
+                            </h3>
                           </div>
-                        )}
-                      </div>
-                      <CardContent className="flex-1 p-8">
-                        <div className="flex justify-between items-start mb-4">
-                          <h3 className="text-2xl font-bold group-hover:text-primary transition-colors">
-                            {project.title}
-                          </h3>
-                        </div>
-                        <p className="text-muted-foreground mb-8 line-clamp-3 leading-relaxed font-medium">
-                          {project.description}
-                        </p>
-                        <div className="flex flex-wrap gap-2 mt-auto">
-                          {project.tags.slice(0, 6).map((tag) => (
-                            <span
-                              key={tag}
-                              className="px-3 py-1.5 text-[10px] uppercase font-bold tracking-widest rounded-xl bg-secondary/80 text-secondary-foreground border border-border/50"
-                            >
-                              {techMap(tag)}
-                            </span>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Link>
-                  </Card>
-                </motion.div>
-              );
-            })}
+                          <p className="mb-8 line-clamp-3 font-medium leading-relaxed text-muted-foreground">
+                            {project.description}
+                          </p>
+                          <div className="mt-auto flex flex-wrap gap-2">
+                            {project.tags.slice(0, 6).map((tag) => (
+                              <span
+                                key={tag}
+                                className="rounded-xl border border-border/50 bg-secondary/80 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-secondary-foreground"
+                              >
+                                {techMap(tag)}
+                              </span>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Link>
+                    </Card>
+                  </motion.div>
+                );
+              })}
             </motion.div>
           )}
         </AnimatePresence>

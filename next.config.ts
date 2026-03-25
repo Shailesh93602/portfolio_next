@@ -18,6 +18,7 @@ const baseConfig: NextConfig = {
     // !! WARN !!
     ignoreBuildErrors: false,
   },
+  // @ts-ignore - 'eslint' might be missing from NextConfig type in this version
   eslint: {
     // Warning: This allows production builds to successfully complete even if
     // your project has ESLint errors.
@@ -36,7 +37,7 @@ try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     nextConfig = withBundleAnalyzer(baseConfig as any) as NextConfig;
   }
-} catch (e) {
+} catch (_e) {
   // If analyzer isn't installed, fall back to base config
   nextConfig = baseConfig;
 }

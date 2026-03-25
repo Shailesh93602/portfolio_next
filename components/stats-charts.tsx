@@ -62,18 +62,18 @@ export function StatsCharts({
   );
 
   // Custom tooltip for GitHub contributions
-  const CustomTooltip = ({ 
-    active, 
-    payload, 
-    label 
+  const CustomTooltip = ({
+    active,
+    payload,
+    label,
   }: {
     active?: boolean;
-    payload?: Array<{value: number}>;
+    payload?: Array<{ value: number }>;
     label?: string;
   }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-card border border-border p-2 rounded-md shadow-md">
+        <div className="rounded-md border border-border bg-card p-2 shadow-md">
           <p className="text-xs font-medium">{label}</p>
           <p className="text-sm font-bold text-primary">
             {`${payload[0].value} contributions`}
@@ -85,15 +85,15 @@ export function StatsCharts({
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
       {/* GitHub Contributions Chart */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Card className="p-6 border-primary/20 bg-gradient-to-br from-background to-background/80 backdrop-blur-sm">
-          <h3 className="text-lg font-semibold mb-4">GitHub Contributions</h3>
+        <Card className="border-primary/20 bg-gradient-to-br from-background to-background/80 p-6 backdrop-blur-sm">
+          <h3 className="mb-4 text-lg font-semibold">GitHub Contributions</h3>
           <div className="h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={contributionsData}>
@@ -150,9 +150,9 @@ export function StatsCharts({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        <Card className="p-6 border-primary/20 bg-gradient-to-br from-background to-background/80 backdrop-blur-sm">
-          <h3 className="text-lg font-semibold mb-4">LeetCode Problems</h3>
-          <div className="h-[250px] flex items-center">
+        <Card className="border-primary/20 bg-gradient-to-br from-background to-background/80 p-6 backdrop-blur-sm">
+          <h3 className="mb-4 text-lg font-semibold">LeetCode Problems</h3>
+          <div className="flex h-[250px] items-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie

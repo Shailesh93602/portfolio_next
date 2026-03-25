@@ -53,11 +53,11 @@ export function BlogCard({ post, index }: BlogCardProps) {
       initial="hidden"
       animate="visible"
       whileHover={{ scale: 1.02 }}
-      className="w-full h-full"
+      className="h-full w-full"
     >
       <Link
         href={`/blog/${post.slug}`}
-        className="block group h-full"
+        className="group block h-full"
         aria-label={`Read full article: ${post.title}`}
         onClick={() => {
           if (typeof window !== "undefined" && window.gtag) {
@@ -69,9 +69,9 @@ export function BlogCard({ post, index }: BlogCardProps) {
           }
         }}
       >
-        <article className="flex flex-col h-full bg-card/50 backdrop-blur-sm rounded-xl overflow-hidden border border-border/50 transition-all duration-300 hover:shadow-xl hover:border-primary/20">
-          <div className="relative w-full h-56 md:h-52 lg:h-56">
-            <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent z-10" />
+        <article className="flex h-full flex-col overflow-hidden rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:shadow-xl">
+          <div className="relative h-56 w-full md:h-52 lg:h-56">
+            <div className="absolute inset-0 z-10 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
             <Image
               src={imageSrc}
               alt={post.title}
@@ -84,9 +84,9 @@ export function BlogCard({ post, index }: BlogCardProps) {
                   <Badge
                     key={tag}
                     variant="secondary"
-                    className="bg-background/80 backdrop-blur-sm text-xs"
+                    className="bg-background/80 text-xs backdrop-blur-sm"
                   >
-                    <TagIcon className="w-3 h-3 mr-1" />
+                    <TagIcon className="mr-1 h-3 w-3" />
                     {tag}
                   </Badge>
                 ))}
@@ -94,10 +94,10 @@ export function BlogCard({ post, index }: BlogCardProps) {
             )}
           </div>
 
-          <div className="p-6 flex-1 flex flex-col">
-            <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-1 flex-col p-6">
+            <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary/20">
+                <div className="relative h-10 w-10 overflow-hidden rounded-full border-2 border-primary/20">
                   <Image
                     src={avatarSrc}
                     alt={post.author.name}
@@ -114,21 +114,21 @@ export function BlogCard({ post, index }: BlogCardProps) {
                   </time>
                 </div>
               </div>
-              <div className="text-xs font-medium px-3 py-1 rounded-full bg-primary/10 text-primary">
+              <div className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                 {post.readTime}
               </div>
             </div>
 
-            <h2 className="text-xl font-semibold mb-3 text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+            <h2 className="mb-3 line-clamp-2 text-xl font-semibold leading-tight text-foreground transition-colors group-hover:text-primary">
               {post.title}
             </h2>
 
-            <p className="text-muted-foreground mb-4 line-clamp-2 leading-relaxed flex-grow">
+            <p className="mb-4 line-clamp-2 flex-grow leading-relaxed text-muted-foreground">
               {post.description}
             </p>
 
             <div className="mt-auto">
-              <div className="text-sm text-primary font-medium group-hover:underline transition-all duration-200">
+              <div className="text-sm font-medium text-primary transition-all duration-200 group-hover:underline">
                 Read more →
               </div>
             </div>

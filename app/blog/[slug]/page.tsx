@@ -9,13 +9,15 @@ import { getPostBySlug, getRelatedPosts, blogPosts } from "@/lib/blog-data";
 const getPostData = (slug: string) => {
   const post = getPostBySlug(slug);
   if (!post) return null;
-  
-  const relatedPosts = getRelatedPosts(slug, 3)
-    .map(({ slug, title }) => ({ slug, title }));
-  
+
+  const relatedPosts = getRelatedPosts(slug, 3).map(({ slug, title }) => ({
+    slug,
+    title,
+  }));
+
   return {
     ...post,
-    relatedPosts
+    relatedPosts,
   };
 };
 
@@ -30,7 +32,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
-    keywords: [...post.tags, "Shailesh Chaudhari", "Shaileshbhai", "Full Stack Developer", "Software Engineer"],
+    keywords: [
+      ...post.tags,
+      "Shailesh Chaudhari",
+      "Shaileshbhai",
+      "Full Stack Developer",
+      "Software Engineer",
+    ],
     authors: [{ name: "Shailesh Chaudhari" }],
     openGraph: {
       title,
@@ -67,20 +75,20 @@ export default async function Page({ params }: Props) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    "headline": post.title,
-    "description": post.description,
-    "author": {
+    headline: post.title,
+    description: post.description,
+    author: {
       "@type": "Person",
-      "name": "Shailesh Chaudhari",
-      "url": "https://shaileshchaudhari.vercel.app"
+      name: "Shailesh Chaudhari",
+      url: "https://shaileshchaudhari.vercel.app",
     },
-    "datePublished": post.date,
-    "image": `https://shaileshchaudhari.vercel.app${post.image}`,
-    "keywords": [...post.tags, "Shailesh Chaudhari", "Full Stack Development"],
-    "publisher": {
+    datePublished: post.date,
+    image: `https://shaileshchaudhari.vercel.app${post.image}`,
+    keywords: [...post.tags, "Shailesh Chaudhari", "Full Stack Development"],
+    publisher: {
       "@type": "Person",
-      "name": "Shailesh Chaudhari"
-    }
+      name: "Shailesh Chaudhari",
+    },
   };
 
   return (
@@ -89,10 +97,10 @@ export default async function Page({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      
+
       <div className="min-h-screen">
         <div className="container mx-auto px-4 py-8">
-          <Link href="/blogs" className="inline-block mb-8">
+          <Link href="/blogs" className="mb-8 inline-block">
             <Button variant="ghost" className="group">
               <ArrowLeftIcon className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
               Back to Blogs
@@ -101,7 +109,7 @@ export default async function Page({ params }: Props) {
         </div>
 
         <BlogLayout post={post}>
-          <div 
+          <div
             className="prose prose-invert prose-lg max-w-none"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />

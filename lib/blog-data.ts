@@ -34,8 +34,8 @@ export const BLOG_AUTHOR = {
   social: {
     twitter: "https://twitter.com/shaileshwork",
     github: "https://github.com/Shailesh93602",
-    linkedin: "https://linkedin.com/in/shaileshbhaichaudhari"
-  }
+    linkedin: "https://linkedin.com/in/shaileshbhaichaudhari",
+  },
 };
 
 // SEO-optimized blog posts data
@@ -43,19 +43,39 @@ export const blogPosts: BlogPost[] = [
   {
     slug: "introduction-to-nestjs-for-backend-development",
     title: "Introduction to Nest.js for Backend Development",
-    subtitle: "Master Nest.js fundamentals, architecture patterns, and best practices for building scalable Node.js applications",
-    description: "Discover Nest.js, the progressive Node.js framework for building efficient, scalable, and enterprise-grade backend applications. Learn about modules, controllers, services, dependency injection, and modern development patterns.",
+    subtitle:
+      "Master Nest.js fundamentals, architecture patterns, and best practices for building scalable Node.js applications",
+    description:
+      "Discover Nest.js, the progressive Node.js framework for building efficient, scalable, and enterprise-grade backend applications. Learn about modules, controllers, services, dependency injection, and modern development patterns.",
     image: "/Images/portfolio1.png",
     author: BLOG_AUTHOR,
     date: "2024-10-04",
     readTime: "15 min read",
-    tags: ["Nest.js", "Node.js", "Backend Development", "TypeScript", "API Development", "Microservices", "Enterprise Applications"],
+    tags: [
+      "Nest.js",
+      "Node.js",
+      "Backend Development",
+      "TypeScript",
+      "API Development",
+      "Microservices",
+      "Enterprise Applications",
+    ],
     featured: true,
     seoKeywords: [
-      "Shailesh Chaudhari", "Shaileshbhai", "Shaileshbhai Chaudhari", "Shailesh",
-      "Nest.js tutorial", "Nest.js backend", "Node.js framework", "Nest.js API",
-      "Nest.js TypeScript", "Nest.js architecture", "Nest.js modules",
-      "Nest.js controllers", "Nest.js services", "Nest.js dependency injection"
+      "Shailesh Chaudhari",
+      "Shaileshbhai",
+      "Shaileshbhai Chaudhari",
+      "Shailesh",
+      "Nest.js tutorial",
+      "Nest.js backend",
+      "Node.js framework",
+      "Nest.js API",
+      "Nest.js TypeScript",
+      "Nest.js architecture",
+      "Nest.js modules",
+      "Nest.js controllers",
+      "Nest.js services",
+      "Nest.js dependency injection",
     ],
     content: `
       <div class="tldr">
@@ -833,24 +853,43 @@ export class UsersService {
       <blockquote>
         <p><em>"Nest.js doesn't just make backend development easier—it makes it better."</em> - Shailesh Chaudhari</p>
       </blockquote>
-    `
+    `,
   },
   {
     slug: "how-to-use-nextjs-for-seo-friendly-web-apps",
     title: "How to Use Next.js for SEO-Friendly Web Apps",
-    subtitle: "Master Next.js SEO techniques, server-side rendering, and optimization strategies for better search engine rankings",
-    description: "Unlock the full potential of Next.js for SEO. Learn advanced techniques including SSR, SSG, metadata optimization, structured data, and performance strategies to create search engine-friendly web applications that rank higher and load faster.",
+    subtitle:
+      "Master Next.js SEO techniques, server-side rendering, and optimization strategies for better search engine rankings",
+    description:
+      "Unlock the full potential of Next.js for SEO. Learn advanced techniques including SSR, SSG, metadata optimization, structured data, and performance strategies to create search engine-friendly web applications that rank higher and load faster.",
     image: "/Images/portfolio1.png",
     author: BLOG_AUTHOR,
     date: "2024-10-04",
     readTime: "16 min read",
-    tags: ["Next.js", "SEO", "React", "Server-Side Rendering", "Static Site Generation", "Web Performance", "Search Engine Optimization"],
+    tags: [
+      "Next.js",
+      "SEO",
+      "React",
+      "Server-Side Rendering",
+      "Static Site Generation",
+      "Web Performance",
+      "Search Engine Optimization",
+    ],
     featured: true,
     seoKeywords: [
-      "Shailesh Chaudhari", "Shaileshbhai", "Shaileshbhai Chaudhari", "Shailesh",
-      "Next.js SEO", "Next.js server-side rendering", "Next.js SSG", "React SEO",
-      "SEO optimization Next.js", "Next.js metadata", "Next.js performance",
-      "search engine optimization React", "Next.js best practices SEO"
+      "Shailesh Chaudhari",
+      "Shaileshbhai",
+      "Shaileshbhai Chaudhari",
+      "Shailesh",
+      "Next.js SEO",
+      "Next.js server-side rendering",
+      "Next.js SSG",
+      "React SEO",
+      "SEO optimization Next.js",
+      "Next.js metadata",
+      "Next.js performance",
+      "search engine optimization React",
+      "Next.js best practices SEO",
     ],
     content: `
       <div class="tldr">
@@ -1407,24 +1446,43 @@ async function runSEOChecks(url) {
       <blockquote>
         <p><em>"SEO is not about tricking Google. It's about creating the best possible user experience."</em> - Shailesh Chaudhari</p>
       </blockquote>
-    `
+    `,
   },
   {
     slug: "step-by-step-guide-mern-stack-application",
     title: "Step-by-Step Guide to Building a MERN Stack Application",
-    subtitle: "Complete tutorial for building full-stack web applications with MongoDB, Express.js, React, and Node.js",
-    description: "Master the MERN stack with this comprehensive step-by-step guide. Learn to build complete web applications from scratch using MongoDB, Express.js, React, and Node.js. Perfect for developers looking to create modern, scalable full-stack applications.",
+    subtitle:
+      "Complete tutorial for building full-stack web applications with MongoDB, Express.js, React, and Node.js",
+    description:
+      "Master the MERN stack with this comprehensive step-by-step guide. Learn to build complete web applications from scratch using MongoDB, Express.js, React, and Node.js. Perfect for developers looking to create modern, scalable full-stack applications.",
     image: "/Images/portfolio1.png",
     author: BLOG_AUTHOR,
     date: "2024-10-04",
     readTime: "18 min read",
-    tags: ["MERN Stack", "Full Stack Development", "MongoDB", "Express.js", "React", "Node.js", "Web Development", "JavaScript"],
+    tags: [
+      "MERN Stack",
+      "Full Stack Development",
+      "MongoDB",
+      "Express.js",
+      "React",
+      "Node.js",
+      "Web Development",
+      "JavaScript",
+    ],
     featured: true,
     seoKeywords: [
-      "Shailesh Chaudhari", "Shaileshbhai", "Shaileshbhai Chaudhari", "Shailesh",
-      "MERN stack tutorial", "MongoDB Express React Node", "full stack development",
-      "build MERN application", "React Node.js tutorial", "MongoDB Express guide",
-      "web application development", "JavaScript full stack"
+      "Shailesh Chaudhari",
+      "Shaileshbhai",
+      "Shaileshbhai Chaudhari",
+      "Shailesh",
+      "MERN stack tutorial",
+      "MongoDB Express React Node",
+      "full stack development",
+      "build MERN application",
+      "React Node.js tutorial",
+      "MongoDB Express guide",
+      "web application development",
+      "JavaScript full stack",
     ],
     content: `
       <div class="tldr">
@@ -1777,24 +1835,40 @@ app.listen(PORT, () => {
       <blockquote>
         <p><em>"The best way to learn is by doing. Start small, think big, and never stop building."</em></p>
       </blockquote>
-    `
+    `,
   },
   {
     slug: "solving-700-dsa-problems",
     title: "Solving 700+ DSA Problems: My Journey to Algorithm Mastery",
-    subtitle: "From beginner to competitive programming: A comprehensive guide to mastering data structures and algorithms",
-    description: "Join Shailesh Chaudhari as he shares his comprehensive journey of solving over 700 Data Structures and Algorithms problems. Learn about effective problem-solving strategies, resource recommendations, and how to build a strong foundation in competitive programming and technical interviews.",
-  image: "/Images/portfolio1.png", // DSA/Coding problems theme
+    subtitle:
+      "From beginner to competitive programming: A comprehensive guide to mastering data structures and algorithms",
+    description:
+      "Join Shailesh Chaudhari as he shares his comprehensive journey of solving over 700 Data Structures and Algorithms problems. Learn about effective problem-solving strategies, resource recommendations, and how to build a strong foundation in competitive programming and technical interviews.",
+    image: "/Images/portfolio1.png", // DSA/Coding problems theme
     author: BLOG_AUTHOR,
     date: "2024-10-02",
     readTime: "12 min read",
-    tags: ["Data Structures", "Algorithms", "Problem Solving", "Coding Practice", "Technical Interview", "Software Engineering"],
+    tags: [
+      "Data Structures",
+      "Algorithms",
+      "Problem Solving",
+      "Coding Practice",
+      "Technical Interview",
+      "Software Engineering",
+    ],
     featured: true,
     seoKeywords: [
-      "Shailesh Chaudhari", "Shaileshbhai", "Shaileshbhai Chaudhari", "Shailesh",
-      "DSA problems", "Data Structures Algorithms", "coding interview prep",
-      "software engineer problem solving", "700 leetcode problems",
-      "technical interview preparation", "programming challenges"
+      "Shailesh Chaudhari",
+      "Shaileshbhai",
+      "Shaileshbhai Chaudhari",
+      "Shailesh",
+      "DSA problems",
+      "Data Structures Algorithms",
+      "coding interview prep",
+      "software engineer problem solving",
+      "700 leetcode problems",
+      "technical interview preparation",
+      "programming challenges",
     ],
     content: `
       <div class="tldr">
@@ -1904,24 +1978,39 @@ app.listen(PORT, () => {
       </blockquote>
 
       
-    `
+    `,
   },
   {
     slug: "first-year-software-engineer-lessons",
     title: "First Year as a Software Engineer: Key Lessons & Insights",
-    subtitle: "Real-world experiences, challenges, and growth opportunities in modern software development",
-    description: "Join Shailesh Chaudhari as he shares the most valuable lessons and insights from his first year as a software engineer. From technical challenges to professional growth, discover practical tips for succeeding in the tech industry and building a strong foundation in full-stack development.",
-  image: "/Images/portfolio1.png", // Professional development theme
+    subtitle:
+      "Real-world experiences, challenges, and growth opportunities in modern software development",
+    description:
+      "Join Shailesh Chaudhari as he shares the most valuable lessons and insights from his first year as a software engineer. From technical challenges to professional growth, discover practical tips for succeeding in the tech industry and building a strong foundation in full-stack development.",
+    image: "/Images/portfolio1.png", // Professional development theme
     author: BLOG_AUTHOR,
     date: "2024-10-01",
     readTime: "15 min read",
-    tags: ["Software Engineering", "Career Growth", "Full Stack Development", "Professional Tips", "Tech Industry", "Web Development"],
+    tags: [
+      "Software Engineering",
+      "Career Growth",
+      "Full Stack Development",
+      "Professional Tips",
+      "Tech Industry",
+      "Web Development",
+    ],
     featured: true,
     seoKeywords: [
-      "Shailesh Chaudhari", "Shaileshbhai", "Shaileshbhai Chaudhari", "Shailesh",
-      "first year software engineer", "software engineering career",
-      "full stack developer experience", "tech industry insights",
-      "programming career growth", "web development journey"
+      "Shailesh Chaudhari",
+      "Shaileshbhai",
+      "Shaileshbhai Chaudhari",
+      "Shailesh",
+      "first year software engineer",
+      "software engineering career",
+      "full stack developer experience",
+      "tech industry insights",
+      "programming career growth",
+      "web development journey",
     ],
     content: `
       <div class="tldr">
@@ -2058,24 +2147,39 @@ app.listen(PORT, () => {
       </blockquote>
 
       
-    `
+    `,
   },
   {
     slug: "internship-to-engineer-journey",
     title: "From Internship to Software Engineer: My Complete Journey",
-    subtitle: "A step-by-step guide through the transition from internship to full-time software engineering role",
-    description: "Follow Shailesh Chaudhari's complete journey from internship to becoming a full-time software engineer. Learn about the challenges, milestones, and key learnings that shaped his career in the tech industry, with practical advice for aspiring developers.",
-  image: "/Images/portfolio1.png", // Career journey theme
+    subtitle:
+      "A step-by-step guide through the transition from internship to full-time software engineering role",
+    description:
+      "Follow Shailesh Chaudhari's complete journey from internship to becoming a full-time software engineer. Learn about the challenges, milestones, and key learnings that shaped his career in the tech industry, with practical advice for aspiring developers.",
+    image: "/Images/portfolio1.png", // Career journey theme
     author: BLOG_AUTHOR,
     date: "2024-09-28",
     readTime: "14 min read",
-    tags: ["Career Journey", "Internship", "Software Engineering", "Professional Growth", "Tech Career", "Full Stack Development"],
+    tags: [
+      "Career Journey",
+      "Internship",
+      "Software Engineering",
+      "Professional Growth",
+      "Tech Career",
+      "Full Stack Development",
+    ],
     featured: true,
     seoKeywords: [
-      "Shailesh Chaudhari", "Shaileshbhai", "Shaileshbhai Chaudhari", "Shailesh",
-      "internship to engineer", "software development journey",
-      "tech career growth", "coding internship experience",
-      "software engineer career path", "full stack developer journey"
+      "Shailesh Chaudhari",
+      "Shaileshbhai",
+      "Shaileshbhai Chaudhari",
+      "Shailesh",
+      "internship to engineer",
+      "software development journey",
+      "tech career growth",
+      "coding internship experience",
+      "software engineer career path",
+      "full stack developer journey",
     ],
     content: `
       <div class="tldr">
@@ -2152,24 +2256,41 @@ app.listen(PORT, () => {
       </blockquote>
 
       
-    `
+    `,
   },
   {
     slug: "how-team-collaboration-made-me-better-developer",
     title: "How Team Collaboration Made Me a Better Developer",
-    subtitle: "The transformative power of teamwork in software development and professional growth",
-    description: "Discover how Shailesh Chaudhari's experience with team collaboration fundamentally changed his approach to software development. Learn about the importance of communication, code reviews, pair programming, and building strong relationships in tech teams.",
-  image: "/Images/portfolio1.png", // Collaboration/team theme
+    subtitle:
+      "The transformative power of teamwork in software development and professional growth",
+    description:
+      "Discover how Shailesh Chaudhari's experience with team collaboration fundamentally changed his approach to software development. Learn about the importance of communication, code reviews, pair programming, and building strong relationships in tech teams.",
+    image: "/Images/portfolio1.png", // Collaboration/team theme
     author: BLOG_AUTHOR,
     date: "2024-10-09",
     readTime: "14 min read",
-    tags: ["Team Collaboration", "Software Development", "Communication", "Professional Growth", "Mentorship", "Agile Development", "Team Dynamics"],
+    tags: [
+      "Team Collaboration",
+      "Software Development",
+      "Communication",
+      "Professional Growth",
+      "Mentorship",
+      "Agile Development",
+      "Team Dynamics",
+    ],
     featured: true,
     seoKeywords: [
-      "Shailesh Chaudhari", "Shaileshbhai", "Shaileshbhai Chaudhari", "Shailesh",
-      "team collaboration developer", "software development teamwork",
-      "agile development", "team communication", "mentorship programming",
-      "collaborative coding", "professional development team"
+      "Shailesh Chaudhari",
+      "Shaileshbhai",
+      "Shaileshbhai Chaudhari",
+      "Shailesh",
+      "team collaboration developer",
+      "software development teamwork",
+      "agile development",
+      "team communication",
+      "mentorship programming",
+      "collaborative coding",
+      "professional development team",
     ],
     content: `
       <div class="tldr">
@@ -2505,23 +2626,40 @@ app.listen(PORT, () => {
       </blockquote>
 
       
-    `
+    `,
   },
   {
     slug: "building-portfolio-website-nextjs-tailwindcss",
     title: "Building My Portfolio Website with Next.js & TailwindCSS",
-    subtitle: "A Complete Guide to Creating a Modern, Responsive Portfolio from Scratch",
-    description: "Join Shailesh Chaudhari as he walks through the complete process of building a professional portfolio website using Next.js 13+, TailwindCSS, and modern web development practices. Learn about component architecture, responsive design, and deployment strategies.",
-  image: "/Images/portfolio1.png",
+    subtitle:
+      "A Complete Guide to Creating a Modern, Responsive Portfolio from Scratch",
+    description:
+      "Join Shailesh Chaudhari as he walks through the complete process of building a professional portfolio website using Next.js 13+, TailwindCSS, and modern web development practices. Learn about component architecture, responsive design, and deployment strategies.",
+    image: "/Images/portfolio1.png",
     author: BLOG_AUTHOR,
     date: "2024-10-05",
     readTime: "15 min read",
-    tags: ["Next.js", "TailwindCSS", "Portfolio Website", "React", "Web Development", "Frontend", "Responsive Design"],
+    tags: [
+      "Next.js",
+      "TailwindCSS",
+      "Portfolio Website",
+      "React",
+      "Web Development",
+      "Frontend",
+      "Responsive Design",
+    ],
     featured: true,
     seoKeywords: [
-      "Shailesh Chaudhari", "Shaileshbhai", "Shaileshbhai Chaudhari", "Shailesh",
-      "nextjs portfolio", "tailwindcss portfolio", "react portfolio website",
-      "nextjs 13 portfolio", "modern portfolio design", "responsive portfolio"
+      "Shailesh Chaudhari",
+      "Shaileshbhai",
+      "Shaileshbhai Chaudhari",
+      "Shailesh",
+      "nextjs portfolio",
+      "tailwindcss portfolio",
+      "react portfolio website",
+      "nextjs 13 portfolio",
+      "modern portfolio design",
+      "responsive portfolio",
     ],
     content: `
       <div class="tldr">
@@ -2887,23 +3025,39 @@ app.listen(PORT, () => {
       </blockquote>
 
       
-    `
+    `,
   },
   {
     slug: "challenges-junior-developer-overcame",
     title: "Challenges I Overcame as a Junior Developer",
-    subtitle: "Real struggles and solutions that shaped my journey in software development",
-    description: "Shailesh Chaudhari shares the most significant challenges he faced as a junior developer and how he overcame them. From imposter syndrome to technical hurdles, learn practical strategies for navigating the early stages of a software engineering career.",
-  image: "/Images/portfolio1.png",
+    subtitle:
+      "Real struggles and solutions that shaped my journey in software development",
+    description:
+      "Shailesh Chaudhari shares the most significant challenges he faced as a junior developer and how he overcame them. From imposter syndrome to technical hurdles, learn practical strategies for navigating the early stages of a software engineering career.",
+    image: "/Images/portfolio1.png",
     author: BLOG_AUTHOR,
     date: "2024-10-06",
     readTime: "14 min read",
-    tags: ["Junior Developer", "Career Growth", "Imposter Syndrome", "Technical Challenges", "Professional Development", "Software Engineering"],
+    tags: [
+      "Junior Developer",
+      "Career Growth",
+      "Imposter Syndrome",
+      "Technical Challenges",
+      "Professional Development",
+      "Software Engineering",
+    ],
     featured: true,
     seoKeywords: [
-      "Shailesh Chaudhari", "Shaileshbhai", "Shaileshbhai Chaudhari", "Shailesh",
-      "junior developer challenges", "overcoming imposter syndrome", "junior developer career",
-      "software engineering challenges", "early career development", "programming difficulties"
+      "Shailesh Chaudhari",
+      "Shaileshbhai",
+      "Shaileshbhai Chaudhari",
+      "Shailesh",
+      "junior developer challenges",
+      "overcoming imposter syndrome",
+      "junior developer career",
+      "software engineering challenges",
+      "early career development",
+      "programming difficulties",
     ],
     content: `
       <div class="tldr">
@@ -3252,24 +3406,42 @@ app.listen(PORT, () => {
           </div>
         </div>
       </div>
-    `
+    `,
   },
   {
     slug: "importance-code-reviews-learning-senior-mrs",
     title: "The Importance of Code Reviews: Learning from Senior Developers",
-    subtitle: "How code reviews became my most valuable learning tool in software development",
-    description: "Explore Shailesh Chaudhari's journey of discovering the transformative power of code reviews. Learn how participating in code reviews with senior developers accelerated his growth, improved code quality, and built essential collaboration skills in software engineering.",
-  image: "/Images/portfolio1.png",
+    subtitle:
+      "How code reviews became my most valuable learning tool in software development",
+    description:
+      "Explore Shailesh Chaudhari's journey of discovering the transformative power of code reviews. Learn how participating in code reviews with senior developers accelerated his growth, improved code quality, and built essential collaboration skills in software engineering.",
+    image: "/Images/portfolio1.png",
     author: BLOG_AUTHOR,
     date: "2024-10-07",
     readTime: "16 min read",
-    tags: ["Code Review", "Software Engineering", "Professional Development", "Team Collaboration", "Code Quality", "Technical Leadership", "Learning Culture"],
+    tags: [
+      "Code Review",
+      "Software Engineering",
+      "Professional Development",
+      "Team Collaboration",
+      "Code Quality",
+      "Technical Leadership",
+      "Learning Culture",
+    ],
     featured: true,
     seoKeywords: [
-      "Shailesh Chaudhari", "Shaileshbhai", "Shaileshbhai Chaudhari", "Shailesh",
-      "code review best practices", "senior developer code review", "merge request review",
-      "software engineering code quality", "technical feedback", "code review culture",
-      "professional development", "peer code review"
+      "Shailesh Chaudhari",
+      "Shaileshbhai",
+      "Shaileshbhai Chaudhari",
+      "Shailesh",
+      "code review best practices",
+      "senior developer code review",
+      "merge request review",
+      "software engineering code quality",
+      "technical feedback",
+      "code review culture",
+      "professional development",
+      "peer code review",
     ],
     content: `
       <div class="tldr">
@@ -3626,24 +3798,40 @@ app.listen(PORT, () => {
           </div>
         </div>
       </div>
-    `
+    `,
   },
   {
     slug: "transitioning-learning-to-real-world-applications",
     title: "Transitioning from Learning to Real-World Applications",
-    subtitle: "Bridging the gap between theoretical knowledge and practical software development",
-    description: "Shailesh Chaudhari discusses the critical transition from learning programming concepts to applying them in real-world software development. Discover strategies for building practical projects, understanding industry standards, and gaining the confidence to tackle complex development challenges.",
-  image: "/Images/portfolio1.png",
+    subtitle:
+      "Bridging the gap between theoretical knowledge and practical software development",
+    description:
+      "Shailesh Chaudhari discusses the critical transition from learning programming concepts to applying them in real-world software development. Discover strategies for building practical projects, understanding industry standards, and gaining the confidence to tackle complex development challenges.",
+    image: "/Images/portfolio1.png",
     author: BLOG_AUTHOR,
     date: "2024-10-08",
     readTime: "15 min read",
-    tags: ["Software Development", "Career Transition", "Real-World Applications", "Learning Journey", "Professional Development", "Full-Stack Development", "Production Ready"],
+    tags: [
+      "Software Development",
+      "Career Transition",
+      "Real-World Applications",
+      "Learning Journey",
+      "Professional Development",
+      "Full-Stack Development",
+      "Production Ready",
+    ],
     featured: true,
     seoKeywords: [
-      "Shailesh Chaudhari", "Shaileshbhai", "Shaileshbhai Chaudhari", "Shailesh",
-      "learning to real world applications", "academic to professional development",
-      "software engineering transition", "production ready applications",
-      "full stack development journey", "career transition software engineer"
+      "Shailesh Chaudhari",
+      "Shaileshbhai",
+      "Shaileshbhai Chaudhari",
+      "Shailesh",
+      "learning to real world applications",
+      "academic to professional development",
+      "software engineering transition",
+      "production ready applications",
+      "full stack development journey",
+      "career transition software engineer",
     ],
     content: `
       <div class="tldr">
@@ -3945,36 +4133,56 @@ app.listen(PORT, () => {
           </div>
         </div>
       </div>
-    `
+    `,
   },
   {
-  slug: "setting-up-authentication-supabase-nextjs",
-  title: "Setting Up Authentication with Supabase and Next.js",
-  subtitle: "Complete guide to implementing secure authentication in Next.js applications using Supabase Auth",
-  description: "Learn how to integrate Supabase authentication with Next.js. Build secure login, signup, password reset, and social authentication features with step-by-step instructions and best practices.",
-  image: "/Images/portfolio1.png",
-  author: {
-    name: "Shailesh Chaudhari",
-    avatar: "/Images/shailesh.webp",
-    bio: "Software Engineer passionate about creating efficient, scalable, and user-friendly web applications. Expert in full-stack development with modern technologies and strong problem-solving skills.",
-    role: "Full-Stack Developer & Problem Solver",
-    social: {
-      twitter: "https://twitter.com/shaileshwork",
-      github: "https://github.com/Shailesh93602",
-      linkedin: "https://linkedin.com/in/shaileshbhaichaudhari"
-    }
-  },
-  date: "2024-10-04",
-  readTime: "17 min read",
-  tags: ["Supabase", "Next.js", "Authentication", "React", "Backend as a Service", "JWT", "OAuth"],
-  featured: true,
-  seoKeywords: [
-    "Shailesh Chaudhari", "Shaileshbhai", "Shaileshbhai Chaudhari", "Shailesh",
-    "Supabase authentication", "Next.js auth", "Supabase Next.js", "React authentication",
-    "Supabase setup", "Next.js authentication", "JWT authentication", "OAuth Supabase",
-    "social login Next.js", "Supabase auth tutorial"
-  ],
-  content: `
+    slug: "setting-up-authentication-supabase-nextjs",
+    title: "Setting Up Authentication with Supabase and Next.js",
+    subtitle:
+      "Complete guide to implementing secure authentication in Next.js applications using Supabase Auth",
+    description:
+      "Learn how to integrate Supabase authentication with Next.js. Build secure login, signup, password reset, and social authentication features with step-by-step instructions and best practices.",
+    image: "/Images/portfolio1.png",
+    author: {
+      name: "Shailesh Chaudhari",
+      avatar: "/Images/shailesh.webp",
+      bio: "Software Engineer passionate about creating efficient, scalable, and user-friendly web applications. Expert in full-stack development with modern technologies and strong problem-solving skills.",
+      role: "Full-Stack Developer & Problem Solver",
+      social: {
+        twitter: "https://twitter.com/shaileshwork",
+        github: "https://github.com/Shailesh93602",
+        linkedin: "https://linkedin.com/in/shaileshbhaichaudhari",
+      },
+    },
+    date: "2024-10-04",
+    readTime: "17 min read",
+    tags: [
+      "Supabase",
+      "Next.js",
+      "Authentication",
+      "React",
+      "Backend as a Service",
+      "JWT",
+      "OAuth",
+    ],
+    featured: true,
+    seoKeywords: [
+      "Shailesh Chaudhari",
+      "Shaileshbhai",
+      "Shaileshbhai Chaudhari",
+      "Shailesh",
+      "Supabase authentication",
+      "Next.js auth",
+      "Supabase Next.js",
+      "React authentication",
+      "Supabase setup",
+      "Next.js authentication",
+      "JWT authentication",
+      "OAuth Supabase",
+      "social login Next.js",
+      "Supabase auth tutorial",
+    ],
+    content: `
     <div class="tldr">
       <strong>TL;DR:</strong> Complete guide to implementing authentication in Next.js with Supabase. Learn to set up user registration, login, password reset, social authentication, and secure route protection with middleware and session management.
     </div>
@@ -4941,36 +5149,57 @@ const redirectTo = process.env.NODE_ENV === 'production'
     <blockquote>
       <p><em>"Security is not a product, but a process. Building authentication is just the beginning of securing your users' trust."</em> - Shailesh Chaudhari</p>
     </blockquote>
-  `
-},
-{
-  slug: "integrating-stripe-payments-nodejs-nextjs",
-  title: "Integrating Stripe Payments in a Node.js/Next.js App",
-  subtitle: "Complete guide to implementing secure payment processing with Stripe API, webhooks, and subscription management",
-  description: "Learn how to integrate Stripe payments into your Node.js/Next.js application. Build secure payment forms, handle webhooks, manage subscriptions, and implement proper error handling for production-ready payment processing.",
-  image: "/Images/portfolio1.png",
-  author: {
-    name: "Shailesh Chaudhari",
-    avatar: "/Images/shailesh.webp",
-    bio: "Software Engineer passionate about creating efficient, scalable, and user-friendly web applications. Expert in full-stack development with modern technologies and strong problem-solving skills.",
-    role: "Full-Stack Developer & Problem Solver",
-    social: {
-      twitter: "https://twitter.com/shaileshwork",
-      github: "https://github.com/Shailesh93602",
-      linkedin: "https://linkedin.com/in/shaileshbhaichaudhari"
-    }
+  `,
   },
-  date: "2024-10-04",
-  readTime: "16 min read",
-  tags: ["Stripe", "Payments", "Next.js", "Node.js", "API Integration", "Webhooks", "Subscriptions", "E-commerce"],
-  featured: true,
-  seoKeywords: [
-    "Shailesh Chaudhari", "Shaileshbhai", "Shaileshbhai Chaudhari", "Shailesh",
-    "Stripe payments", "Next.js Stripe", "Node.js payments", "Stripe integration",
-    "payment processing", "Stripe webhooks", "Stripe subscriptions", "payment gateway",
-    "e-commerce payments", "Stripe API tutorial"
-  ],
-  content: `
+  {
+    slug: "integrating-stripe-payments-nodejs-nextjs",
+    title: "Integrating Stripe Payments in a Node.js/Next.js App",
+    subtitle:
+      "Complete guide to implementing secure payment processing with Stripe API, webhooks, and subscription management",
+    description:
+      "Learn how to integrate Stripe payments into your Node.js/Next.js application. Build secure payment forms, handle webhooks, manage subscriptions, and implement proper error handling for production-ready payment processing.",
+    image: "/Images/portfolio1.png",
+    author: {
+      name: "Shailesh Chaudhari",
+      avatar: "/Images/shailesh.webp",
+      bio: "Software Engineer passionate about creating efficient, scalable, and user-friendly web applications. Expert in full-stack development with modern technologies and strong problem-solving skills.",
+      role: "Full-Stack Developer & Problem Solver",
+      social: {
+        twitter: "https://twitter.com/shaileshwork",
+        github: "https://github.com/Shailesh93602",
+        linkedin: "https://linkedin.com/in/shaileshbhaichaudhari",
+      },
+    },
+    date: "2024-10-04",
+    readTime: "16 min read",
+    tags: [
+      "Stripe",
+      "Payments",
+      "Next.js",
+      "Node.js",
+      "API Integration",
+      "Webhooks",
+      "Subscriptions",
+      "E-commerce",
+    ],
+    featured: true,
+    seoKeywords: [
+      "Shailesh Chaudhari",
+      "Shaileshbhai",
+      "Shaileshbhai Chaudhari",
+      "Shailesh",
+      "Stripe payments",
+      "Next.js Stripe",
+      "Node.js payments",
+      "Stripe integration",
+      "payment processing",
+      "Stripe webhooks",
+      "Stripe subscriptions",
+      "payment gateway",
+      "e-commerce payments",
+      "Stripe API tutorial",
+    ],
+    content: `
     <div class="tldr">
       <strong>TL;DR:</strong> Complete guide to integrating Stripe payments in Node.js/Next.js applications. Learn to create payment intents, handle webhooks, manage subscriptions, implement proper security, and build production-ready payment flows.
     </div>
@@ -5828,36 +6057,58 @@ processedEvents.add(event.id)
     <blockquote>
       <p><em>"Payments are the lifeblood of digital commerce. Handle them with care, security, and user-centric design."</em> - Shailesh Chaudhari</p>
     </blockquote>
-  `
-},
-{
-  slug: "implementing-oauth-web-application",
-  title: "How to Implement OAuth in Your Web Application",
-  subtitle: "Complete guide to implementing OAuth 2.0 authentication with popular providers like Google, GitHub, and Facebook",
-  description: "Learn how to implement OAuth 2.0 authentication in your web applications. Build secure login flows, handle tokens, manage user sessions, and integrate with major OAuth providers like Google, GitHub, and Facebook.",
-  image: "/Images/portfolio1.png",
-  author: {
-    name: "Shailesh Chaudhari",
-    avatar: "/Images/shailesh.webp",
-    bio: "Software Engineer passionate about creating efficient, scalable, and user-friendly web applications. Expert in full-stack development with modern technologies and strong problem-solving skills.",
-    role: "Full-Stack Developer & Problem Solver",
-    social: {
-      twitter: "https://twitter.com/shaileshwork",
-      github: "https://github.com/Shailesh93602",
-      linkedin: "https://linkedin.com/in/shaileshbhaichaudhari"
-    }
+  `,
   },
-  date: "2024-10-04",
-  readTime: "15 min read",
-  tags: ["OAuth", "Authentication", "Security", "Web Development", "API", "JWT", "Next.js", "Node.js"],
-  featured: true,
-  seoKeywords: [
-    "Shailesh Chaudhari", "Shaileshbhai", "Shaileshbhai Chaudhari", "Shailesh",
-    "OAuth implementation", "OAuth 2.0", "authentication", "social login",
-    "Google OAuth", "GitHub OAuth", "Facebook OAuth", "JWT tokens",
-    "web security", "authentication flow", "OAuth providers"
-  ],
-  content: `
+  {
+    slug: "implementing-oauth-web-application",
+    title: "How to Implement OAuth in Your Web Application",
+    subtitle:
+      "Complete guide to implementing OAuth 2.0 authentication with popular providers like Google, GitHub, and Facebook",
+    description:
+      "Learn how to implement OAuth 2.0 authentication in your web applications. Build secure login flows, handle tokens, manage user sessions, and integrate with major OAuth providers like Google, GitHub, and Facebook.",
+    image: "/Images/portfolio1.png",
+    author: {
+      name: "Shailesh Chaudhari",
+      avatar: "/Images/shailesh.webp",
+      bio: "Software Engineer passionate about creating efficient, scalable, and user-friendly web applications. Expert in full-stack development with modern technologies and strong problem-solving skills.",
+      role: "Full-Stack Developer & Problem Solver",
+      social: {
+        twitter: "https://twitter.com/shaileshwork",
+        github: "https://github.com/Shailesh93602",
+        linkedin: "https://linkedin.com/in/shaileshbhaichaudhari",
+      },
+    },
+    date: "2024-10-04",
+    readTime: "15 min read",
+    tags: [
+      "OAuth",
+      "Authentication",
+      "Security",
+      "Web Development",
+      "API",
+      "JWT",
+      "Next.js",
+      "Node.js",
+    ],
+    featured: true,
+    seoKeywords: [
+      "Shailesh Chaudhari",
+      "Shaileshbhai",
+      "Shaileshbhai Chaudhari",
+      "Shailesh",
+      "OAuth implementation",
+      "OAuth 2.0",
+      "authentication",
+      "social login",
+      "Google OAuth",
+      "GitHub OAuth",
+      "Facebook OAuth",
+      "JWT tokens",
+      "web security",
+      "authentication flow",
+      "OAuth providers",
+    ],
+    content: `
     <div class="tldr">
       <strong>TL;DR:</strong> Complete guide to implementing OAuth 2.0 in web applications. Learn to integrate with Google, GitHub, and Facebook, handle authentication flows, manage tokens securely, and build production-ready auth systems.
     </div>
@@ -6598,36 +6849,58 @@ app.post('/auth/link-provider', async (req, res) =&gt; {
     <blockquote>
       <p><em>"Authentication is not just about security—it's about building trust with your users."</em> - Shailesh Chaudhari</p>
     </blockquote>
-  `
+  `,
   },
-{
-  slug: "tailwindcss-nextjs-faster-ui-development",
-  title: "Using TailwindCSS with Next.js for Faster UI Development",
-  subtitle: "Master utility-first CSS with Next.js: from setup to production-ready components and performance optimization",
-  description: "Learn how to supercharge your Next.js development with Tailwind CSS. Build responsive, maintainable UIs faster with utility-first approach, custom components, and production optimization techniques.",
-  image: "/Images/portfolio1.png",
-  author: {
-    name: "Shailesh Chaudhari",
-    avatar: "/Images/shailesh.webp",
-    bio: "Software Engineer passionate about creating efficient, scalable, and user-friendly web applications. Expert in full-stack development with modern technologies and strong problem-solving skills.",
-    role: "Full-Stack Developer & Problem Solver",
-    social: {
-      twitter: "https://twitter.com/shaileshwork",
-      github: "https://github.com/Shailesh93602",
-      linkedin: "https://linkedin.com/in/shaileshbhaichaudhari"
-    }
-  },
-  date: "2024-10-04",
-  readTime: "14 min read",
-  tags: ["TailwindCSS", "Next.js", "CSS", "Frontend", "UI Development", "Responsive Design", "Performance", "React"],
-  featured: true,
-  seoKeywords: [
-    "Shailesh Chaudhari", "Shaileshbhai", "Shaileshbhai Chaudhari", "Shailesh",
-    "Tailwind CSS", "Next.js Tailwind", "utility-first CSS", "Tailwind setup",
-    "responsive design", "Tailwind components", "CSS framework", "frontend development",
-    "Tailwind dark mode", "CSS optimization", "Next.js styling"
-  ],
-  content: `
+  {
+    slug: "tailwindcss-nextjs-faster-ui-development",
+    title: "Using TailwindCSS with Next.js for Faster UI Development",
+    subtitle:
+      "Master utility-first CSS with Next.js: from setup to production-ready components and performance optimization",
+    description:
+      "Learn how to supercharge your Next.js development with Tailwind CSS. Build responsive, maintainable UIs faster with utility-first approach, custom components, and production optimization techniques.",
+    image: "/Images/portfolio1.png",
+    author: {
+      name: "Shailesh Chaudhari",
+      avatar: "/Images/shailesh.webp",
+      bio: "Software Engineer passionate about creating efficient, scalable, and user-friendly web applications. Expert in full-stack development with modern technologies and strong problem-solving skills.",
+      role: "Full-Stack Developer & Problem Solver",
+      social: {
+        twitter: "https://twitter.com/shaileshwork",
+        github: "https://github.com/Shailesh93602",
+        linkedin: "https://linkedin.com/in/shaileshbhaichaudhari",
+      },
+    },
+    date: "2024-10-04",
+    readTime: "14 min read",
+    tags: [
+      "TailwindCSS",
+      "Next.js",
+      "CSS",
+      "Frontend",
+      "UI Development",
+      "Responsive Design",
+      "Performance",
+      "React",
+    ],
+    featured: true,
+    seoKeywords: [
+      "Shailesh Chaudhari",
+      "Shaileshbhai",
+      "Shaileshbhai Chaudhari",
+      "Shailesh",
+      "Tailwind CSS",
+      "Next.js Tailwind",
+      "utility-first CSS",
+      "Tailwind setup",
+      "responsive design",
+      "Tailwind components",
+      "CSS framework",
+      "frontend development",
+      "Tailwind dark mode",
+      "CSS optimization",
+      "Next.js styling",
+    ],
+    content: `
     <div class="tldr">
       <strong>TL;DR:</strong> Complete guide to using Tailwind CSS with Next.js for faster UI development. Learn setup, utility-first approach, responsive design, dark mode, component patterns, and production optimization.
     </div>
@@ -7335,36 +7608,58 @@ module.exports = {
       <p><em>"Good design is obvious. Great design is transparent." - Joe Sparano</em></p>
       <p><em>"With Tailwind CSS, your code becomes the design." - Shailesh Chaudhari</em></p>
     </blockquote>
-  `
-},
-{
-  slug: "getting-started-shadcn-ui-modern-react-applications",
-  title: "Getting Started with Shadcn UI for Modern React Applications",
-  subtitle: "Build beautiful, accessible, and customizable UI components with Shadcn UI and Tailwind CSS",
-  description: "Learn how to integrate Shadcn UI into your React applications. Master component customization, theming, accessibility, and build production-ready interfaces with modern design patterns.",
-  image: "/Images/portfolio1.png",
-  author: {
-    name: "Shailesh Chaudhari",
-    avatar: "/Images/shailesh.webp",
-    bio: "Software Engineer passionate about creating efficient, scalable, and user-friendly web applications. Expert in full-stack development with modern technologies and strong problem-solving skills.",
-    role: "Full-Stack Developer & Problem Solver",
-    social: {
-      twitter: "https://twitter.com/shaileshwork",
-      github: "https://github.com/Shailesh93602",
-      linkedin: "https://linkedin.com/in/shaileshbhaichaudhari"
-    }
+  `,
   },
-  date: "2024-10-04",
-  readTime: "13 min read",
-  tags: ["Shadcn UI", "React", "TailwindCSS", "UI Components", "Next.js", "Design System", "Accessibility", "TypeScript"],
-  featured: true,
-  seoKeywords: [
-    "Shailesh Chaudhari", "Shaileshbhai", "Shaileshbhai Chaudhari", "Shailesh",
-    "Shadcn UI", "shadcn/ui", "React components", "UI library", "Tailwind CSS",
-    "component library", "design system", "accessible components", "Next.js UI",
-    "modern React UI", "component customization"
-  ],
-  content: `
+  {
+    slug: "getting-started-shadcn-ui-modern-react-applications",
+    title: "Getting Started with Shadcn UI for Modern React Applications",
+    subtitle:
+      "Build beautiful, accessible, and customizable UI components with Shadcn UI and Tailwind CSS",
+    description:
+      "Learn how to integrate Shadcn UI into your React applications. Master component customization, theming, accessibility, and build production-ready interfaces with modern design patterns.",
+    image: "/Images/portfolio1.png",
+    author: {
+      name: "Shailesh Chaudhari",
+      avatar: "/Images/shailesh.webp",
+      bio: "Software Engineer passionate about creating efficient, scalable, and user-friendly web applications. Expert in full-stack development with modern technologies and strong problem-solving skills.",
+      role: "Full-Stack Developer & Problem Solver",
+      social: {
+        twitter: "https://twitter.com/shaileshwork",
+        github: "https://github.com/Shailesh93602",
+        linkedin: "https://linkedin.com/in/shaileshbhaichaudhari",
+      },
+    },
+    date: "2024-10-04",
+    readTime: "13 min read",
+    tags: [
+      "Shadcn UI",
+      "React",
+      "TailwindCSS",
+      "UI Components",
+      "Next.js",
+      "Design System",
+      "Accessibility",
+      "TypeScript",
+    ],
+    featured: true,
+    seoKeywords: [
+      "Shailesh Chaudhari",
+      "Shaileshbhai",
+      "Shaileshbhai Chaudhari",
+      "Shailesh",
+      "Shadcn UI",
+      "shadcn/ui",
+      "React components",
+      "UI library",
+      "Tailwind CSS",
+      "component library",
+      "design system",
+      "accessible components",
+      "Next.js UI",
+      "modern React UI",
+      "component customization",
+    ],
+    content: `
     <div class="tldr">
       <strong>TL;DR:</strong> Complete guide to Shadcn UI for React applications. Learn installation, component usage, customization, theming, accessibility, and building production-ready interfaces with modern design patterns.
     </div>
@@ -8413,36 +8708,61 @@ endMeasure()</code></pre>
       <p><em>"Design is not just what it looks like and feels like. Design is how it works." - Steve Jobs</em></p>
       <p><em>"With Shadcn UI, your components work beautifully and feel right at home." - Shailesh Chaudhari</em></p>
     </blockquote>
-  `
-},
-{
-  slug: "best-practices-api-development-express-nestjs",
-  title: "Best Practices for API Development with Express and Nest.js",
-  subtitle: "Build scalable, secure, and maintainable APIs with Express.js and Nest.js following industry standards and proven patterns",
-  description: "Master API development with Express and Nest.js. Learn authentication, validation, error handling, testing, security, and performance optimization for production-ready REST APIs.",
-  image: "/Images/portfolio1.png",
-  author: {
-    name: "Shailesh Chaudhari",
-    avatar: "/Images/shailesh.webp",
-    bio: "Software Engineer passionate about creating efficient, scalable, and user-friendly web applications. Expert in full-stack development with modern technologies and strong problem-solving skills.",
-    role: "Full-Stack Developer & Problem Solver",
-    social: {
-      twitter: "https://twitter.com/shaileshwork",
-      github: "https://github.com/Shailesh93602",
-      linkedin: "https://linkedin.com/in/shaileshbhaichaudhari"
-    }
+  `,
   },
-  date: "2024-10-04",
-  readTime: "16 min read",
-  tags: ["API Development", "Express.js", "Nest.js", "Node.js", "REST API", "Authentication", "Security", "Testing", "Performance"],
-  featured: true,
-  seoKeywords: [
-    "Shailesh Chaudhari", "Shaileshbhai", "Shaileshbhai Chaudhari", "Shailesh",
-    "API development", "Express.js best practices", "Nest.js best practices", "REST API",
-    "Node.js API", "API authentication", "API security", "API testing", "API performance",
-    "Express middleware", "Nest.js modules", "API documentation", "JWT authentication"
-  ],
-  content: `
+  {
+    slug: "best-practices-api-development-express-nestjs",
+    title: "Best Practices for API Development with Express and Nest.js",
+    subtitle:
+      "Build scalable, secure, and maintainable APIs with Express.js and Nest.js following industry standards and proven patterns",
+    description:
+      "Master API development with Express and Nest.js. Learn authentication, validation, error handling, testing, security, and performance optimization for production-ready REST APIs.",
+    image: "/Images/portfolio1.png",
+    author: {
+      name: "Shailesh Chaudhari",
+      avatar: "/Images/shailesh.webp",
+      bio: "Software Engineer passionate about creating efficient, scalable, and user-friendly web applications. Expert in full-stack development with modern technologies and strong problem-solving skills.",
+      role: "Full-Stack Developer & Problem Solver",
+      social: {
+        twitter: "https://twitter.com/shaileshwork",
+        github: "https://github.com/Shailesh93602",
+        linkedin: "https://linkedin.com/in/shaileshbhaichaudhari",
+      },
+    },
+    date: "2024-10-04",
+    readTime: "16 min read",
+    tags: [
+      "API Development",
+      "Express.js",
+      "Nest.js",
+      "Node.js",
+      "REST API",
+      "Authentication",
+      "Security",
+      "Testing",
+      "Performance",
+    ],
+    featured: true,
+    seoKeywords: [
+      "Shailesh Chaudhari",
+      "Shaileshbhai",
+      "Shaileshbhai Chaudhari",
+      "Shailesh",
+      "API development",
+      "Express.js best practices",
+      "Nest.js best practices",
+      "REST API",
+      "Node.js API",
+      "API authentication",
+      "API security",
+      "API testing",
+      "API performance",
+      "Express middleware",
+      "Nest.js modules",
+      "API documentation",
+      "JWT authentication",
+    ],
+    content: `
     <div class="tldr">
       <strong>TL;DR:</strong> Complete guide to API development best practices with Express.js and Nest.js. Learn authentication, validation, error handling, testing, security, and performance optimization for scalable REST APIs.
     </div>
@@ -9716,40 +10036,43 @@ module.exports = router</code></pre>
     <blockquote>
       <p><em>"APIs are the connective tissue of modern applications. Design them with care, security, and scalability in mind."</em> - Shailesh Chaudhari</p>
     </blockquote>
-  `
-}
+  `,
+  },
 ];
 
 // Helper functions for blog management
 export const getFeaturedPosts = (): BlogPost[] => {
-  return blogPosts.filter(post => post.featured);
+  return blogPosts.filter((post) => post.featured);
 };
 
 export const getPostBySlug = (slug: string): BlogPost | undefined => {
-
-  return blogPosts.find(post => post.slug === slug);
+  return blogPosts.find((post) => post.slug === slug);
 };
 
-export const getRelatedPosts = (currentSlug: string, limit: number = 3): BlogPost[] => {
+export const getRelatedPosts = (
+  currentSlug: string,
+  limit: number = 3
+): BlogPost[] => {
   const currentPost = getPostBySlug(currentSlug);
   if (!currentPost) return [];
-  
+
   return blogPosts
-    .filter(post => 
-      post.slug !== currentSlug && 
-      post.tags.some(tag => currentPost.tags.includes(tag))
+    .filter(
+      (post) =>
+        post.slug !== currentSlug &&
+        post.tags.some((tag) => currentPost.tags.includes(tag))
     )
     .slice(0, limit);
 };
 
 export const getAllTags = (): string[] => {
   const tags = new Set<string>();
-  blogPosts.forEach(post => {
-    post.tags.forEach(tag => tags.add(tag));
+  blogPosts.forEach((post) => {
+    post.tags.forEach((tag) => tags.add(tag));
   });
   return Array.from(tags).sort();
 };
 
 export const getPostsByTag = (tag: string): BlogPost[] => {
-  return blogPosts.filter(post => post.tags.includes(tag));
+  return blogPosts.filter((post) => post.tags.includes(tag));
 };

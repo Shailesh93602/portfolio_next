@@ -1,12 +1,16 @@
-import fs from 'fs';
-import pathModule from 'path';
+import fs from "fs";
+import pathModule from "path";
 
 const siteUrl = "https://shaileshchaudhari.vercel.app";
 let blogManifest = null;
 try {
-  const manifestPath = pathModule.join(process.cwd(), 'data', 'blog-manifest.json');
+  const manifestPath = pathModule.join(
+    process.cwd(),
+    "data",
+    "blog-manifest.json"
+  );
   if (fs.existsSync(manifestPath)) {
-    const raw = fs.readFileSync(manifestPath, 'utf8');
+    const raw = fs.readFileSync(manifestPath, "utf8");
     blogManifest = JSON.parse(raw);
   }
 } catch (e) {
@@ -28,8 +32,8 @@ const config = {
     let lastmod = defaultLastmod;
 
     // Use blog manifest dates when available for /blog/* pages
-    if (blogManifest && url.startsWith('/blog/')) {
-      const slug = url.replace(/^\/blog\//, '').replace(/\/$/, '');
+    if (blogManifest && url.startsWith("/blog/")) {
+      const slug = url.replace(/^\/blog\//, "").replace(/\/$/, "");
       const entry = blogManifest.find((e) => e.slug === slug);
       if (entry && entry.date) lastmod = entry.date;
     }

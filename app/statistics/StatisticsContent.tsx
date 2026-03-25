@@ -41,15 +41,15 @@ const StatCard = ({
 }) => (
   <div className="relative transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]">
     <Card
-      className={`p-5 backdrop-blur-sm border hover:border-primary/50 transition-all duration-300 overflow-hidden ${color}`}
+      className={`overflow-hidden border p-5 backdrop-blur-sm transition-all duration-300 hover:border-primary/50 ${color}`}
     >
-      <div className="flex items-center justify-between relative z-10">
+      <div className="relative z-10 flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-muted-foreground">{label}</p>
-          <h3 className={`text-xl font-bold mt-1 ${textColor}`}>{value}</h3>
+          <h3 className={`mt-1 text-xl font-bold ${textColor}`}>{value}</h3>
         </div>
-        <div className="p-2.5 rounded-full bg-background/80">
-          <Icon className="w-5 h-5" />
+        <div className="rounded-full bg-background/80 p-2.5">
+          <Icon className="h-5 w-5" />
         </div>
       </div>
     </Card>
@@ -68,11 +68,11 @@ const PlatformSection = ({
   className?: string;
 }) => (
   <div className={`mb-12 ${className} transition-opacity duration-500`}>
-    <h2 className="text-2xl font-bold tracking-tight mb-6 flex items-center gap-2">
-      {Icon && <Icon className="w-6 h-6" />}
+    <h2 className="mb-6 flex items-center gap-2 text-2xl font-bold tracking-tight">
+      {Icon && <Icon className="h-6 w-6" />}
       {title}
     </h2>
-    <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full max-w-6xl mx-auto">
+    <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {children}
     </div>
   </div>
@@ -166,51 +166,51 @@ export function StatisticsContent() {
 
   return (
     <div className="container mx-auto px-4 py-16">
-      <div className="text-center mb-16 transition-transform duration-500">
-        <h1 className="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
+      <div className="mb-16 text-center transition-transform duration-500">
+        <h1 className="mb-4 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-5xl font-bold text-transparent">
           Coding Statistics
         </h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto mb-6 text-lg">
+        <p className="mx-auto mb-6 max-w-2xl text-lg text-muted-foreground">
           A comprehensive overview of my coding journey and achievements across
           various platforms.
         </p>
         <div className="flex flex-wrap justify-center gap-2">
           <Badge
             variant="outline"
-            className="text-sm px-3 py-1 border-primary/30"
+            className="border-primary/30 px-3 py-1 text-sm"
           >
-            <RocketIcon className="w-3 h-3 mr-1" /> Active Developer
+            <RocketIcon className="mr-1 h-3 w-3" /> Active Developer
           </Badge>
           <Badge
             variant="outline"
-            className="text-sm px-3 py-1 border-primary/30"
+            className="border-primary/30 px-3 py-1 text-sm"
           >
-            <LayersIcon className="w-3 h-3 mr-1" /> Full Stack
+            <LayersIcon className="mr-1 h-3 w-3" /> Full Stack
           </Badge>
           <Badge
             variant="outline"
-            className="text-sm px-3 py-1 border-primary/30"
+            className="border-primary/30 px-3 py-1 text-sm"
           >
-            <CommitIcon className="w-3 h-3 mr-1" /> Open Source
+            <CommitIcon className="mr-1 h-3 w-3" /> Open Source
           </Badge>
         </div>
       </div>
 
-      <div className="space-y-16 max-w-6xl mx-auto">
+      <div className="mx-auto max-w-6xl space-y-16">
         {/* Loading State */}
         {isLoading && (
-          <div className="text-center py-16 transition-opacity duration-500">
+          <div className="py-16 text-center transition-opacity duration-500">
             <div className="inline-flex items-center gap-3 text-muted-foreground">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+              <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-primary"></div>
               <span>Loading your coding statistics...</span>
             </div>
-            <p className="text-sm text-muted-foreground mt-2">
+            <p className="mt-2 text-sm text-muted-foreground">
               This may take a few moments as we fetch data from multiple
               platforms.
             </p>
             {showTimeoutMessage && (
-              <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md">
-                <p className="text-yellow-800 dark:text-yellow-200 text-sm">
+              <div className="mt-4 rounded-md border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-800 dark:bg-yellow-900/20">
+                <p className="text-sm text-yellow-800 dark:text-yellow-200">
                   ⏰ Taking longer than expected? The external APIs might be
                   slow. Please wait...
                 </p>
@@ -221,11 +221,11 @@ export function StatisticsContent() {
 
         {/* Error State */}
         {error && (
-          <div className="text-center py-16 transition-opacity duration-500">
+          <div className="py-16 text-center transition-opacity duration-500">
             <div className="inline-flex items-center gap-3 text-red-500">
               <span>❌ Error loading statistics</span>
             </div>
-            <p className="text-sm text-muted-foreground mt-2">
+            <p className="mt-2 text-sm text-muted-foreground">
               Unable to fetch data at the moment. Please try refreshing the
               page.
             </p>
@@ -240,12 +240,9 @@ export function StatisticsContent() {
         )}
 
         {/* GitHub Section */}
-        <PlatformSection
-          title="GitHub Statistics"
-          icon={GitHubLogoIcon}
-        >
+        <PlatformSection title="GitHub Statistics" icon={GitHubLogoIcon}>
           {isLoading ? (
-            <div className="col-span-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="col-span-4 grid grid-cols-2 gap-4 md:grid-cols-4">
               {Array(8)
                 .fill(0)
                 .map((_, i) => (
@@ -254,7 +251,7 @@ export function StatisticsContent() {
             </div>
           ) : (
             <>
-              <div className="col-span-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="col-span-4 grid grid-cols-2 gap-4 md:grid-cols-4">
                 <StatCard
                   label="Repositories"
                   value={stats?.github?.repositories || "0"}
@@ -295,8 +292,8 @@ export function StatisticsContent() {
               {/* Languages Chart */}
               {stats?.github?.languages?.length > 0 && (
                 <div className="col-span-4 mt-6">
-                  <Card className="p-6 border-primary/20">
-                    <h3 className="text-lg font-semibold mb-4">
+                  <Card className="border-primary/20 p-6">
+                    <h3 className="mb-4 text-lg font-semibold">
                       Language Distribution
                     </h3>
                     <GitHubLanguages languages={stats.github.languages} />
@@ -308,15 +305,12 @@ export function StatisticsContent() {
         </PlatformSection>
 
         {/* LeetCode Section */}
-        <PlatformSection
-          title="LeetCode Statistics"
-          icon={CodeIcon}
-        >
+        <PlatformSection title="LeetCode Statistics" icon={CodeIcon}>
           {/* LeetCode Contribution Heatmap */}
           {!isLoading && leetcodeHeatmapData.length > 0 && (
             <div className="col-span-4 mb-6">
-              <Card className="p-6 overflow-hidden">
-                <h3 className="text-lg font-semibold mb-4">
+              <Card className="overflow-hidden p-6">
+                <h3 className="mb-4 text-lg font-semibold">
                   LeetCode Submission Activity
                 </h3>
                 <GitHubContributionHeatmap
@@ -326,7 +320,7 @@ export function StatisticsContent() {
             </div>
           )}
           {isLoading ? (
-            <div className="col-span-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="col-span-4 grid grid-cols-2 gap-4 md:grid-cols-4">
               {Array(8)
                 .fill(0)
                 .map((_, i) => (
@@ -335,7 +329,7 @@ export function StatisticsContent() {
             </div>
           ) : (
             <>
-              <div className="col-span-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="col-span-4 grid grid-cols-2 gap-4 md:grid-cols-4">
                 <StatCard
                   label="Total Solved"
                   value={stats?.leetcode?.totalSolved || "0"}
@@ -388,7 +382,7 @@ export function StatisticsContent() {
                 {/* Acceptance Rate section removed as requested */}
               </div>
 
-              <div className="col-span-4 grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+              <div className="col-span-4 mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
                 <StatCard
                   label="Current Streak"
                   value={`${stats?.leetcode?.currentStreak?.count || "0"} days`}

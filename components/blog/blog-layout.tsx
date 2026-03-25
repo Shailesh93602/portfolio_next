@@ -40,51 +40,56 @@ export function BlogLayout({ children, post }: BlogLayoutProps) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
       <div className="container mx-auto px-4 py-12 md:py-20">
-        <div className="grid lg:grid-cols-[1fr,320px] gap-12 max-w-7xl mx-auto">
-          <article className="prose prose-invert max-w-none transition-all duration-600 ease-out" aria-labelledby="post-title">
+        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr,320px]">
+          <article
+            className="prose prose-invert duration-600 max-w-none transition-all ease-out"
+            aria-labelledby="post-title"
+          >
             <header className="mb-12 space-y-6">
-              <h1 className="text-4xl md:text-5xl font-bold leading-tight bg-gradient-to-r from-[hsl(var(--hero-gradient-from))] to-[hsl(var(--hero-gradient-to))] bg-clip-text text-transparent">
+              <h1 className="bg-gradient-to-r from-[hsl(var(--hero-gradient-from))] to-[hsl(var(--hero-gradient-to))] bg-clip-text text-4xl font-bold leading-tight text-transparent md:text-5xl">
                 {post.title}
               </h1>
-              
+
               <div className="flex flex-wrap items-center gap-6 text-muted-foreground">
                 <div className="flex items-center gap-2">
-                  <CalendarIcon className="w-4 h-4" />
+                  <CalendarIcon className="h-4 w-4" />
                   <time dateTime={post.date}>{post.date}</time>
                 </div>
                 <div className="flex items-center gap-2">
-                  <ClockIcon className="w-4 h-4" />
+                  <ClockIcon className="h-4 w-4" />
                   <span>{post.readTime}</span>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-2">
                 {post.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary" className="bg-primary/10 text-primary border-primary/20">
-                    <TagIcon className="w-3 h-3 mr-1" />
+                  <Badge
+                    key={tag}
+                    variant="secondary"
+                    className="border-primary/20 bg-primary/10 text-primary"
+                  >
+                    <TagIcon className="mr-1 h-3 w-3" />
                     {tag}
                   </Badge>
                 ))}
               </div>
 
-              <div className="p-6 bg-card/50 backdrop-blur-sm rounded-xl border border-border/50 not-prose">
+              <div className="not-prose rounded-xl border border-border/50 bg-card/50 p-6 backdrop-blur-sm">
                 <AuthorBox author={post.author} />
               </div>
             </header>
 
-            <div className="blog-content relative">
-              {children}
-            </div>
+            <div className="blog-content relative">{children}</div>
 
-            <footer className="mt-16 pt-8 border-t border-border">
+            <footer className="mt-16 border-t border-border pt-8">
               <AuthorBox author={post.author} compact showBio={false} />
             </footer>
           </article>
 
           <aside className="space-y-8 transition-transform duration-500 ease-out">
             <div className="sticky top-24 space-y-6">
-              <Card className="p-6 bg-card/50 backdrop-blur-sm border-border/50">
-                <div className="text-lg font-semibold mb-4 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+              <Card className="border-border/50 bg-card/50 p-6 backdrop-blur-sm">
+                <div className="mb-4 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-lg font-semibold text-transparent">
                   About the Author
                 </div>
                 <div className="flex flex-col gap-4">
@@ -93,8 +98,8 @@ export function BlogLayout({ children, post }: BlogLayoutProps) {
               </Card>
 
               {post.relatedPosts && post.relatedPosts.length > 0 && (
-                <Card className="p-6 bg-card/50 backdrop-blur-sm border-border/50">
-                  <div className="text-lg font-semibold mb-4 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                <Card className="border-border/50 bg-card/50 p-6 backdrop-blur-sm">
+                  <div className="mb-4 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-lg font-semibold text-transparent">
                     Related Posts
                   </div>
                   <div className="space-y-3">
@@ -102,9 +107,11 @@ export function BlogLayout({ children, post }: BlogLayoutProps) {
                       <Link
                         key={relatedPost.slug}
                         href={`/blog/${relatedPost.slug}`}
-                        className="block text-sm hover:text-primary transition-all duration-200 p-3 rounded-lg hover:bg-primary/5 border border-transparent hover:border-primary/20"
+                        className="block rounded-lg border border-transparent p-3 text-sm transition-all duration-200 hover:border-primary/20 hover:bg-primary/5 hover:text-primary"
                       >
-                        <div className="font-medium line-clamp-2">{relatedPost.title}</div>
+                        <div className="line-clamp-2 font-medium">
+                          {relatedPost.title}
+                        </div>
                       </Link>
                     ))}
                   </div>

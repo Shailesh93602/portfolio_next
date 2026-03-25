@@ -103,7 +103,8 @@ export default function RootLayout({
             hasOccupation: {
               "@type": "Occupation",
               name: "Full Stack Developer",
-              description: "Building web applications using modern web technologies",
+              description:
+                "Building web applications using modern web technologies",
             },
           })}
         </script>
@@ -116,12 +117,12 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <div className="relative min-h-screen flex flex-col bg-gradient-to-b from-background to-secondary/20">
-              <header className="sticky top-0 z-50 w-full border-b bg-nav-bg/80 backdrop-blur supports-[backdrop-filter]:bg-nav-bg/60">
+            <div className="relative flex min-h-screen flex-col bg-gradient-to-b from-background to-secondary/20">
+              <header className="bg-nav-bg/80 supports-[backdrop-filter]:bg-nav-bg/60 sticky top-0 z-50 w-full border-b backdrop-blur">
                 <Navbar />
               </header>
-              <main className="flex-1 mt-10">{children}</main>
-              <footer className="border-t bg-nav-bg/80 backdrop-blur supports-[backdrop-filter]:bg-nav-bg/60">
+              <main className="mt-10 flex-1">{children}</main>
+              <footer className="bg-nav-bg/80 supports-[backdrop-filter]:bg-nav-bg/60 border-t backdrop-blur">
                 <div className="container flex flex-col items-center justify-between gap-4 py-10 md:h-24 md:flex-row md:py-0">
                   <div className="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-2 md:px-0">
                     <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">

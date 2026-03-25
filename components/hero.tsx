@@ -27,7 +27,7 @@ export function Hero() {
           </Button>
         </div>
       </div>
-      <div className="relative h-[300px] w-[300px] sm:h-[400px] sm:w-[400px] transition-transform duration-500 ease-out">
+      <div className="relative h-[300px] w-[300px] transition-transform duration-500 ease-out sm:h-[400px] sm:w-[400px]">
         <Image
           src="/Images/shailesh.webp"
           alt="Shailesh Chaudhari"

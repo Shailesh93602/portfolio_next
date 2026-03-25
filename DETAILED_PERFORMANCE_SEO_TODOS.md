@@ -1,14 +1,17 @@
 ## Detailed Performance & SEO TODOs
 
 Purpose
+
 - Capture high-impact, prioritized, and actionable tasks derived from the recent Next.js portfolio audit (bundle analysis, metadata, images, fonts, client/server component split, and SEO schema).
 - For each task: include a short contract, files to change, implementation steps, validation commands, acceptance criteria, and estimated effort.
 
 How to use this file
+
 - Pick tasks in priority order (P0 -> P1 -> P2). Each task is actionable and small enough to implement, test, and iterate.
 - After implementing a task, run the verification commands (build/analyze + Lighthouse) and mark it Done.
 
 Summary of priorities
+
 - P0 — Critical: affects initial page load, LCP, or large shared bundles. Fix these first.
 - P1 — High: meaningful impact on JS/CSS or SEO but lower immediate risk.
 - P2 — Nice-to-have: incremental gains, content improvements, or documentation.
@@ -17,7 +20,8 @@ Summary of priorities
 
 P0 — Immediate (highest impact)
 
-1) Extract top modules from the large shared chunks and create per-module plan
+1. Extract top modules from the large shared chunks and create per-module plan
+
 - Contract: Produce an exact list of modules that compose the two ~50KB shared chunks reported by the build analyzer. Output the top 6 contributors (by bytes) and map them to source files/components.
 - Files touched: none (analysis step). Optionally create a follow-up branch/PR per module.
 - Steps:
@@ -30,6 +34,7 @@ P0 — Immediate (highest impact)
 - Est. effort: 15–30 min.
 
 Commands:
+
 ```bash
 ANALYZE=true npm run build
 open .next/analyze/client.html
@@ -37,7 +42,8 @@ open .next/analyze/client.html
 # npx source-map-explorer .next/static/chunks/<chunk>.js .next/static/chunks/<chunk>.js.map
 ```
 
-2) Eliminate framer-motion from initial render path (site-wide sweep)
+2. Eliminate framer-motion from initial render path (site-wide sweep)
+
 - Contract: Replace framer-motion usage in components that affect initial render (Hero, Navbar, Header, Footer, and any SSR/Server components rendered on first paint) with either CSS transitions or lazy/dynamic import of framer-motion.
 - Files to change (examples):
   - `components/hero.tsx` (already done)
@@ -58,7 +64,8 @@ open .next/analyze/client.html
   - Re-run `ANALYZE=true npm run build` and verify `.next/analyze/client.html` shows framer-motion code removed from initial chunks.
 - Est. effort: 1–3 hours depending on number of uses.
 
-3) Icon strategy: stop importing large icon libraries into shared bundle
+3. Icon strategy: stop importing large icon libraries into shared bundle
+
 - Contract: Replace broad imports from `lucide-react`, `react-icons`, or `@radix-ui/react-icons` that pull whole icon sets into the shared chunk. Use per-icon direct imports, inline optimized SVG, or a lightweight icon sprite.
 - Files to change (examples):
   - `components/header.tsx`, `components/footer.tsx`, `components/theme-switcher.tsx`, `components/ui/*` components that import icons
@@ -72,7 +79,8 @@ open .next/analyze/client.html
   - Acceptance: icon library code no longer appears in the top shared chunks; total JS decreases appropriately (measure with analyzer).
 - Est. effort: 1–2 hours.
 
-4) Convert remaining raw <img> usages and optimize images
+4. Convert remaining raw <img> usages and optimize images
+
 - Contract: Convert any remaining inlined `<img>` markup that appears in blog data or components to `next/image` when images are part of content rendered by Next, and ensure explicit width/height, `decoding="async"`, `loading="lazy"` (for non-LCP), and modern formats (AVIF/WebP).
 - Files to change:
   - `lib/blog-data.ts` (some fixes already done)
@@ -89,7 +97,8 @@ open .next/analyze/client.html
 
 P1 — High priority
 
-5) Audit and reduce client components (convert to server where possible)
+5. Audit and reduce client components (convert to server where possible)
+
 - Contract: Find components that are currently client-only ("use client") but do not use client-only features (state/hooks/browser APIs) and convert them back to server components. This reduces client bundle size and tree-shakes dependencies.
 - Files to check: `components/ui/*`, `components/blog/*`, `components/navbar/*`, `components/header.tsx` etc.
 - Steps:
@@ -100,7 +109,8 @@ P1 — High priority
   - Acceptance: measurable reduction in First Load JS and/or removal of large imports from client-bundles.
 - Est. effort: 1–3 hours (depends on codebase size).
 
-6) Dynamic import large feature components and pages
+6. Dynamic import large feature components and pages
+
 - Contract: Lazy load non-critical UI and feature modules (blog preview cards, project-card, featured-projects, heatmap, charts) using `dynamic()` or `React.lazy` + Suspense to ensure they load only when needed.
 - Files to change:
   - `components/blog/blog-card.tsx` -> lazy in blog listing
@@ -117,7 +127,8 @@ P1 — High priority
   - Acceptance: decreased initial bundle and improved Lighthouse "Reduce unused JS" metric.
 - Est. effort: 1–4 hours across components.
 
-7) Fonts: preload & subset critical fonts
+7. Fonts: preload & subset critical fonts
+
 - Contract: Preload only the fonts required for initial render and ensure the font CSS uses `font-display: swap`. Consider subsetted variable fonts for the site to reduce font bytes.
 - Files to change:
   - `app/layout.tsx` (or head/metadata) to add link rel=preload
@@ -135,7 +146,8 @@ P1 — High priority
 
 P2 — Medium / Lower priority
 
-8) Improve metadataBase & canonical host wiring
+8. Improve metadataBase & canonical host wiring
+
 - Contract: Ensure `metadataBase` is set from `SITE_URL` in `app/metadata.ts` and `app/layout.tsx` (already present but double-check during build). Add canonical tags and open graph image optimization.
 - Steps:
   1. Confirm the SITE_URL env/constant is correct for production builds.
@@ -144,7 +156,8 @@ P2 — Medium / Lower priority
   - Acceptance: no metadataBase warning at build time; correct canonical URLs in page source.
 - Est. effort: 15–30 min.
 
-9) Content/SEO improvements (schema, internal linking). Note: /hire page was removed per request.
+9. Content/SEO improvements (schema, internal linking). Note: /hire page was removed per request.
+
 - Contract: Continue to expand per-post structured data (if blog author varies), add internal linking for high-value keywords (e.g., "full stack developer Shailesh Chaudhari") and target high-value pages with clear CTAs.
 - Steps:
   1. Audit blog posts for H1/H2 usage and keyword presence.
@@ -153,7 +166,8 @@ P2 — Medium / Lower priority
   - Acceptance: structured data tests pass (Rich Results Test); on-page headings include primary keywords.
 - Est. effort: 1–6 hours (content work varies).
 
-10) Build & CI checks: add automated analyzer runs and Lighthouse (LHCI) to CI
+10. Build & CI checks: add automated analyzer runs and Lighthouse (LHCI) to CI
+
 - Contract: Add a CI job that runs `npm run build`, `ANALYZE=true npm run build` (or a smaller analyzer job), and a Lighthouse audit (or LHCI) for the main pages to detect regressions automatically.
 - Steps:
   1. Add a GitHub Actions workflow that runs on PR and pushes to main.
@@ -165,24 +179,29 @@ P2 — Medium / Lower priority
 ---
 
 Quality gates and verification
+
 - Always run these after each change:
+
 ```bash
 npm run build
 ANALYZE=true npm run build   # check .next/analyze/client.html
 # Run a local Lighthouse audit or LHCI
 npx lhci autorun --collect.collectUrl=http://localhost:3000 --upload.target=temporary-public-storage
 ```
+
 - Minimum acceptance criteria for major tasks:
   - P0 tasks: decrease First Load JS by measurable bytes and remove the heavy module from the `shared by all` chunks.
   - LCP: improve or keep stable after image optimizations.
   - No new build errors or type errors.
 
 Notes & edge cases
+
 - Some visual animations removed for performance may reduce polish. Prefer to replace with lightweight CSS transitions.
 - Dynamic-importing too aggressively can hurt UX (content not present until JS loads). Use skeletons and placeholders.
 - On external image hosting or CDNs, verify CORS/headers for `next/image` when switching to AVIF/WebP.
 
 Next immediate actions (what I recommend doing now)
+
 1. Parse `.next/analyze/client.html` to extract the exact module list for the two large shared chunks (task #1). I can do this and produce a prioritized per-file remediation list.
 2. Sweep remaining `framer-motion` imports and plan replacements/dynamic imports (task #2).
 
@@ -191,4 +210,5 @@ If you want, I can start with the analyzer parsing now and open a PR for the top
 ---
 
 Revision history
+
 - 2025-10-04: Created by automated audit assistant; covers audit findings and prioritized todos for performance and SEO.

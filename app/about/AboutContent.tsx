@@ -5,10 +5,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import {
-  ChevronUpIcon,
-  ChevronDownIcon,
-} from "@/components/icons";
+import { ChevronUpIcon, ChevronDownIcon } from "@/components/icons";
 import { itemVariants } from "@/constants";
 import { ExperienceSection } from "@/components/ExperienceSection";
 import AchievementsSection from "@/components/Achievements";
@@ -32,21 +29,21 @@ export default function AboutContent() {
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="flex flex-col lg:flex-row items-center gap-16"
+        className="flex flex-col items-center gap-16 lg:flex-row"
       >
         <motion.div
           variants={itemVariants}
-          className="w-full lg:w-1/3 flex justify-center"
+          className="flex w-full justify-center lg:w-1/3"
         >
           <div className="relative">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-[hsl(var(--hero-gradient-from))] to-[hsl(var(--hero-gradient-to))] rounded-full blur opacity-75 animate-pulse"></div>
-            <div className="relative w-[300px] h-[300px] rounded-full overflow-hidden">
+            <div className="absolute -inset-0.5 animate-pulse rounded-full bg-gradient-to-r from-[hsl(var(--hero-gradient-from))] to-[hsl(var(--hero-gradient-to))] opacity-75 blur"></div>
+            <div className="relative h-[300px] w-[300px] overflow-hidden rounded-full">
               <Image
                 src="/Images/shailesh.webp"
                 alt="Shailesh Chaudhari"
                 width={300}
                 height={300}
-                className="w-full h-full object-cover rounded-full shadow-lg border-4 border-background profile-glow"
+                className="profile-glow h-full w-full rounded-full border-4 border-background object-cover shadow-lg"
                 priority
               />
             </div>
@@ -57,7 +54,7 @@ export default function AboutContent() {
             variants={itemVariants}
             className="text-center lg:text-left"
           >
-            <div className="space-y-4 mb-8">
+            <div className="mb-8 space-y-4">
               <h1 className="text-5xl font-bold">
                 About <span className="text-primary">Me</span>
               </h1>
@@ -66,7 +63,7 @@ export default function AboutContent() {
               </h2> */}
               <motion.p
                 variants={itemVariants}
-                className="text-lg text-text-secondary leading-relaxed"
+                className="text-text-secondary text-lg leading-relaxed"
               >
                 I am a passionate Full Stack Developer based in Gujarat, India,
                 dedicated to crafting high-quality, user-centric web
@@ -85,13 +82,13 @@ export default function AboutContent() {
               {showFullContent && (
                 <>
                   <ExperienceSection />
-                  
+
                   <AchievementsSection />
                   <SkillsSection />
                   <HobbiesSection />
                   <motion.blockquote
                     variants={itemVariants}
-                    className="italic text-text-secondary border-l-4 border-primary pl-6 py-4 my-8 text-lg"
+                    className="text-text-secondary my-8 border-l-4 border-primary py-4 pl-6 text-lg italic"
                   >
                     &quot;Code is like humor. When you have to explain it,
                     it&apos;s bad.&quot;
@@ -102,11 +99,11 @@ export default function AboutContent() {
 
             <motion.button
               variants={itemVariants}
-              className="mt-8 group flex items-center justify-center w-full bg-card hover:bg-card-hover rounded-lg p-4 transition-all duration-300 border border-border hover:border-primary"
+              className="hover:bg-card-hover group mt-8 flex w-full items-center justify-center rounded-lg border border-border bg-card p-4 transition-all duration-300 hover:border-primary"
               onClick={() => setShowFullContent(!showFullContent)}
               aria-expanded={showFullContent}
             >
-              <span className="text-lg font-semibold text-text-primary mr-2">
+              <span className="text-text-primary mr-2 text-lg font-semibold">
                 {showFullContent ? "Show Less" : "Show More"}
               </span>
               {showFullContent ? (

@@ -32,13 +32,13 @@ export function BlogCard({
   return (
     <div className="transition-transform duration-500 ease-out will-change-transform">
       <Link href={`/blog/${slug}`}>
-        <Card className="bg-dark overflow-hidden hover:shadow-lg transition-shadow duration-300">
+        <Card className="bg-dark overflow-hidden transition-shadow duration-300 hover:shadow-lg">
           <div className="relative h-48">
             <Image src={image} alt={title} fill className="object-cover" />
           </div>
           <CardContent className="p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="relative w-8 h-8 rounded-full overflow-hidden">
+            <div className="mb-4 flex items-center gap-2">
+              <div className="relative h-8 w-8 overflow-hidden rounded-full">
                 <Image
                   src={author.avatar}
                   alt={author.name}
@@ -49,22 +49,22 @@ export function BlogCard({
               <span className="text-text-primary">{author.name}</span>
             </div>
 
-            <h3 className="text-xl font-semibold mb-2 text-text-primary">
+            <h3 className="text-text-primary mb-2 text-xl font-semibold">
               {title}
             </h3>
             <p className="text-text-secondary mb-4 line-clamp-2">
               {description}
             </p>
 
-            <div className="flex items-center gap-4 mb-4 text-text-secondary">
+            <div className="text-text-secondary mb-4 flex items-center gap-4">
               <div className="flex items-center gap-1">
-                <CalendarIcon className="w-4 h-4" />
+                <CalendarIcon className="h-4 w-4" />
                 <span className="text-sm">
                   {new Date(date).toLocaleDateString()}
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                <ClockIcon className="w-4 h-4" />
+                <ClockIcon className="h-4 w-4" />
                 <span className="text-sm">{readTime}</span>
               </div>
             </div>
@@ -73,9 +73,9 @@ export function BlogCard({
               {tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="px-2 py-1 bg-primary/10 text-primary text-sm rounded-full flex items-center gap-1"
+                  className="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-sm text-primary"
                 >
-                  <TagIcon className="w-3 h-3" />
+                  <TagIcon className="h-3 w-3" />
                   {tag}
                 </span>
               ))}

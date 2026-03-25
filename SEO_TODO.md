@@ -1,6 +1,7 @@
 # SEO Audit & Improvements TODO
 
 ## Completed
+
 - [x] STEP 1: Full site audit (sitemap fixed, canonicals added)
 - [x] STEP 2: Tracking & Webmaster (GA4 setup, events added)
 - [x] STEP 3: Sitemap / Robots / Canonicals (single sitemap generated)
@@ -13,10 +14,12 @@
 - [x] STEP 10: Monitor, report & iterate (monthly report template created)
 
 ## In Progress
+
 - [ ] STEP 5: Complete on-page content for all blog posts (keywords)
 - [ ] STEP 7: Performance optimization (image compression, fonts)
 
 ## Acceptance Criteria
+
 - [x] Titles & meta descriptions unique for all blog posts
 - [x] JSON-LD passes Rich Results Test for 90% of posts (test manually)
 - [x] Sitemap present and submitted (ready for submission)

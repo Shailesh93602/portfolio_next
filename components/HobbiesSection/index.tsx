@@ -31,18 +31,18 @@ export function HobbiesSection() {
 
   return (
     <motion.div variants={itemVariants}>
-      <h3 className="text-2xl font-semibold mb-6 text-text-primary flex items-center">
-        <HeartIcon className="w-6 h-6 mr-2 text-primary" />
+      <h3 className="text-text-primary mb-6 flex items-center text-2xl font-semibold">
+        <HeartIcon className="mr-2 h-6 w-6 text-primary" />
         Hobbies
       </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {hobbies.map((hobby, index) => (
           <Card key={index} className="bg-dark">
             <CardContent className="p-4">
               <div className="flex items-center space-x-4">
                 {hobby.icon}
                 <div>
-                  <h4 className="text-lg font-semibold text-text-primary">
+                  <h4 className="text-text-primary text-lg font-semibold">
                     {hobby.title}
                   </h4>
                   <p className="text-text-secondary">{hobby.description}</p>

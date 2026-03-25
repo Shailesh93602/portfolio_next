@@ -10,11 +10,11 @@ interface BlogPost {
   date: string;
   readTime: string;
   link?: string;
-    tags: string[];
-    author: {
-      name: string;
-      avatar: string;
-    };
+  tags: string[];
+  author: {
+    name: string;
+    avatar: string;
+  };
 }
 
 export function useBlogPosts(initialTag = "", initialSearch = "") {

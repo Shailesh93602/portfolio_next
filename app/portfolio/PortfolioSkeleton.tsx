@@ -8,22 +8,22 @@ export function PortfolioSkeleton() {
   return (
     <div className="container py-24">
       {/* Hero Section Skeleton */}
-      <motion.div 
+      <motion.div
         initial="hidden"
         animate="visible"
         variants={staggerContainer(0.1)}
-        className="mb-16 text-center space-y-4"
+        className="mb-16 space-y-4 text-center"
       >
         <motion.div variants={fadeIn(0.1)} className="flex justify-center">
-          <Skeleton className="h-12 w-64 md:w-96 rounded-2xl bg-primary/5" />
+          <Skeleton className="h-12 w-64 rounded-2xl bg-primary/5 md:w-96" />
         </motion.div>
         <motion.div variants={fadeIn(0.2)} className="flex justify-center">
-          <Skeleton className="h-6 w-80 md:w-[32rem] rounded-xl opacity-60" />
+          <Skeleton className="h-6 w-80 rounded-xl opacity-60 md:w-[32rem]" />
         </motion.div>
       </motion.div>
 
       {/* Filter Section Skeleton */}
-      <motion.div 
+      <motion.div
         initial="hidden"
         animate="visible"
         variants={staggerContainer(0.05)}
@@ -42,21 +42,21 @@ export function PortfolioSkeleton() {
       </motion.div>
 
       {/* Projects Grid Skeleton */}
-      <motion.div 
+      <motion.div
         initial="hidden"
         animate="visible"
         variants={staggerContainer(0.1)}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
+        className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3"
       >
         {[1, 2, 3, 4].map((i) => (
-          <motion.div 
-            key={i} 
+          <motion.div
+            key={i}
             variants={fadeIn(0.5 + i * 0.1)}
             className={i === 1 ? "md:col-span-2 lg:col-span-2" : ""}
           >
-            <Card className="h-full border-border/50 rounded-[2rem] overflow-hidden bg-card/30 backdrop-blur-sm">
+            <Card className="h-full overflow-hidden rounded-[2rem] border-border/50 bg-card/30 backdrop-blur-sm">
               <Skeleton className="h-64 w-full opacity-20" />
-              <CardContent className="p-8 space-y-6">
+              <CardContent className="space-y-6 p-8">
                 <div className="space-y-3">
                   <Skeleton className="h-8 w-1/2 rounded-lg bg-primary/10" />
                   <Skeleton className="h-4 w-full rounded-md opacity-40" />
@@ -64,7 +64,10 @@ export function PortfolioSkeleton() {
                 </div>
                 <div className="flex flex-wrap gap-2 pt-4">
                   {[1, 2, 3].map((j) => (
-                    <Skeleton key={j} className="h-6 w-16 rounded-xl opacity-30" />
+                    <Skeleton
+                      key={j}
+                      className="h-6 w-16 rounded-xl opacity-30"
+                    />
                   ))}
                 </div>
               </CardContent>

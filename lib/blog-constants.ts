@@ -38,7 +38,8 @@ export const BLOG_CATEGORIES = [
 
 export const META_DEFAULTS = {
   siteName: "Shailesh Chaudhari's Blog",
-  description: "Articles and tutorials about web development, software engineering, and tech career by Shailesh Chaudhari",
+  description:
+    "Articles and tutorials about web development, software engineering, and tech career by Shailesh Chaudhari",
   locale: "en-US",
   type: "website",
   twitterHandle: "@shaileshwork",

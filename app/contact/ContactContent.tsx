@@ -3,7 +3,14 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { fadeIn, staggerContainer } from "@/lib/animations";
-import { MailIcon, PhoneIcon, MapPinIcon, GithubIcon, LinkedinIcon, TwitterIcon } from "@/components/icons";
+import {
+  MailIcon,
+  PhoneIcon,
+  MapPinIcon,
+  GithubIcon,
+  LinkedinIcon,
+  TwitterIcon,
+} from "@/components/icons";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { SOCIAL_LINKS, CONTACT_INFO } from "@/lib/constants";
@@ -79,7 +86,7 @@ const InputField: React.FC<InputFieldProps> = ({
     <div className="mb-4">
       <label
         htmlFor={name}
-        className="block text-sm font-medium text-text-primary mb-2"
+        className="text-text-primary mb-2 block text-sm font-medium"
       >
         {label}
       </label>
@@ -88,11 +95,11 @@ const InputField: React.FC<InputFieldProps> = ({
         type={type}
         {...register(name)}
         required={required}
-        className={`w-full px-4 py-2 bg-dark border rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-text-primary ${
+        className={`bg-dark text-text-primary w-full rounded-md border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary ${
           error ? "border-red-500" : "border-gray-700"
         }`}
       />
-      {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
     </div>
   );
 };
@@ -189,7 +196,7 @@ export const ContactContent: React.FC = () => {
                 <h3 className="font-semibold">Email</h3>
                 <a
                   href={`mailto:${CONTACT_INFO.EMAIL}`}
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  className="text-muted-foreground transition-colors hover:text-primary"
                 >
                   {CONTACT_INFO.EMAIL}
                 </a>
@@ -201,7 +208,7 @@ export const ContactContent: React.FC = () => {
                 <h3 className="font-semibold">Phone</h3>
                 <a
                   href={`tel:${CONTACT_INFO.PHONE}`}
-                  className="text-muted-foreground hover:text-primary transition-colors"
+                  className="text-muted-foreground transition-colors hover:text-primary"
                 >
                   {CONTACT_INFO.PHONE}
                 </a>
@@ -259,7 +266,7 @@ export const ContactContent: React.FC = () => {
             className="space-y-6"
             noValidate
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <InputField
                 label="Full Name *"
                 name="fullName"
@@ -277,7 +284,7 @@ export const ContactContent: React.FC = () => {
                 register={register}
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <InputField
                 label="Phone Number"
                 name="phoneNumber"
@@ -310,7 +317,7 @@ export const ContactContent: React.FC = () => {
                 }`}
               />
               {errors.message && (
-                <p className="text-sm text-red-500 mt-1">
+                <p className="mt-1 text-sm text-red-500">
                   {errors.message.message}
                 </p>
               )}
@@ -320,7 +327,7 @@ export const ContactContent: React.FC = () => {
                 type="submit"
                 size="lg"
                 disabled={isSubmitting}
-                className="w-full bg-primary text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-primary text-white hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSubmitting ? "Processing..." : "Send Message"}
               </Button>
@@ -328,7 +335,7 @@ export const ContactContent: React.FC = () => {
 
             {/* Status Messages */}
             {submitStatus === "success" && (
-              <div className="text-green-500 text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-md border border-green-200 dark:border-green-800">
+              <div className="rounded-md border border-green-200 bg-green-50 p-3 text-center text-green-500 dark:border-green-800 dark:bg-green-900/20">
                 ✅ Thank you for your message! Your default email client should
                 open with a pre-filled message. If it doesn't open
                 automatically, please check your email client or contact me
@@ -336,14 +343,14 @@ export const ContactContent: React.FC = () => {
               </div>
             )}
             {submitStatus === "error" && (
-              <div className="text-red-500 text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-200 dark:border-red-800">
+              <div className="rounded-md border border-red-200 bg-red-50 p-3 text-center text-red-500 dark:border-red-800 dark:bg-red-900/20">
                 ❌ There was an error processing your message. Please try again
                 or contact me directly at {CONTACT_INFO.EMAIL}
               </div>
             )}
 
             {/* Note about email client */}
-            <div className="text-sm text-muted-foreground text-center">
+            <div className="text-center text-sm text-muted-foreground">
               <p>
                 💡 Note: This will open your default email client with a
                 pre-filled message.

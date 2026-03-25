@@ -14,20 +14,24 @@ Thank you for considering contributing to my portfolio website! Whether you're f
 ## 🧩 How to Contribute
 
 **Bug Reports:**
+
 - Check if the issue already exists in [GitHub Issues](https://github.com/username/portfolio/issues)
 - Provide detailed steps to reproduce the bug
 
 **Feature Requests:**
+
 - Open an issue explaining what you'd like to add and why it would improve the project
 - Wait for discussion and approval before starting development
 
 **Documentation Improvements:**
+
 - Small fixes to typos and formatting are always welcome
 - Major documentation overhaul should be discussed first
 
 ## 🧪 Testing
 
 Before submitting your changes:
+
 - Ensure all existing tests pass
 - Add new tests for any added functionality
 - Run `npm run lint` to check for code quality issues
