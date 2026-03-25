@@ -1,14 +1,10 @@
 import plugin from "tailwindcss/plugin";
+import type { PluginAPI } from "tailwindcss/types/config";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const blogTypography = plugin(function ({
   addComponents,
   theme,
-}: {
-  addComponents: any;
-  theme: any;
-}) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+}: PluginAPI) {
   addComponents({
     ".blog-content": {
       // Headings

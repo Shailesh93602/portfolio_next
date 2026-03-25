@@ -1,5 +1,5 @@
-import fs from "fs";
-import pathModule from "path";
+import fs from "node:fs";
+import pathModule from "node:path";
 
 const siteUrl = "https://shaileshchaudhari.vercel.app";
 let blogManifest = null;
@@ -13,7 +13,7 @@ try {
     const raw = fs.readFileSync(manifestPath, "utf8");
     blogManifest = JSON.parse(raw);
   }
-} catch (e) {
+} catch {
   // ignore and fall back to generic lastmod
 }
 
@@ -35,7 +35,7 @@ const config = {
     if (blogManifest && url.startsWith("/blog/")) {
       const slug = url.replace(/^\/blog\//, "").replace(/\/$/, "");
       const entry = blogManifest.find((e) => e.slug === slug);
-      if (entry && entry.date) lastmod = entry.date;
+      if (entry?.date) lastmod = entry.date;
     }
 
     return {

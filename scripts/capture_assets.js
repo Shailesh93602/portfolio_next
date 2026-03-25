@@ -1,6 +1,6 @@
+/* eslint-disable */
 const { chromium } = require("playwright");
 const path = require("path");
-const fs = require("fs");
 
 const BASE_URL = "https://eduscale.vercel.app";
 const IMAGES_DIR =
