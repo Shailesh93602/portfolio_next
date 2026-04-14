@@ -66,11 +66,13 @@ export default function AboutContent() {
                 variants={itemVariants}
                 className="text-text-secondary text-lg leading-relaxed"
               >
-                I am a passionate Full Stack Developer based in Gujarat, India,
-                dedicated to crafting high-quality, user-centric web
-                applications. With a strong foundation in both front-end and
-                back-end technologies, I strive to deliver seamless user
-                experiences and efficient solutions.
+                I&apos;m a Software Engineer from Bhavnagar, Gujarat. Right now
+                I&apos;m at ContextQA building developer tools — Chrome
+                extensions for automated web testing and accessibility auditing.
+                Before that I spent a year at eSparkBiz shipping features for
+                EdTech, e-commerce, and corporate training platforms. I like
+                working on systems where correctness matters: real-time sync,
+                auth flows, data pipelines.
               </motion.p>
             </div>
 

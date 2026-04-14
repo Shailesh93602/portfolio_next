@@ -3,9 +3,9 @@ import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Statistics | Shailesh Chaudhari - Full Stack Developer",
+  title: "Coding Stats — Shailesh Chaudhari",
   description:
-    "View Shailesh Chaudhari's coding statistics, GitHub contributions, and problem-solving achievements across various platforms.",
+    "GitHub contribution heatmap, LeetCode progress, and competitive programming metrics. Institute Rank 1 on GeeksforGeeks with 604+ problems solved.",
   alternates: {
     canonical: `${SITE_URL}/statistics`,
   },
@@ -36,9 +36,9 @@ export const metadata: Metadata = {
     "GitHub Metrics",
   ],
   openGraph: {
-    title: "Statistics | Shailesh Chaudhari - Full Stack Developer",
+    title: "Coding Stats — Shailesh Chaudhari",
     description:
-      "Explore my coding journey through statistics, contributions, and achievements in software development.",
+      "GitHub contributions, LeetCode stats, and competitive programming achievements. Institute Rank 1 on GeeksforGeeks.",
     images: [
       {
         url: "/Images/shailesh.webp",
@@ -50,15 +50,12 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Statistics | Shailesh Chaudhari - Full Stack Developer",
+    title: "Coding Stats — Shailesh Chaudhari",
     description:
-      "Check out my development metrics and coding progress across various platforms.",
+      "GitHub heatmap, LeetCode progress, GFG Institute Rank 1.",
     images: ["/Images/shailesh.webp"],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,
-  },
-  verification: {
-    google: "your-google-verification-code",
   },
   icons: {
     icon: "/Images/shailesh.webp",

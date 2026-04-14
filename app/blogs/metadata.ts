@@ -3,9 +3,9 @@ import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Blog | Shailesh Chaudhari - Full Stack Developer Insights",
+  title: "Blog — Shailesh Chaudhari",
   description:
-    "Explore technical articles, development insights, and coding tutorials by Shailesh Chaudhari. Learn about web development, MERN stack, and software engineering best practices.",
+    "Technical writing from 2+ years of shipping full-stack products. Topics: Next.js, NestJS, authentication, Stripe, DSA, and lessons from real production work.",
   alternates: {
     canonical: `${SITE_URL}/blogs`,
   },
@@ -48,9 +48,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: `${SITE_URL}/blogs`,
-    title: "Blog | Shailesh Chaudhari - Full Stack Developer Insights",
+    title: "Blog — Shailesh Chaudhari",
     description:
-      "Dive into web development articles, tutorials, and insights from a Full Stack Developer's perspective.",
+      "Technical articles on Next.js, Node.js, authentication, Stripe, and software engineering from real project experience.",
     siteName: META_DEFAULTS.siteName,
     images: [
       {
@@ -64,16 +64,12 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Blog | Shailesh Chaudhari - Full Stack Developer",
+    title: "Blog — Shailesh Chaudhari",
     description:
-      "Read technical articles and development insights from my software engineering journey.",
+      "Technical articles on Next.js, NestJS, DSA, and real lessons from production engineering.",
     images: ["/Images/shailesh.webp"],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,
-  },
-  verification: {
-    google: "google-site-verification-code",
-    yandex: "yandex-verification-code",
   },
   category: "Technology",
   classification: "Web Development Blog",

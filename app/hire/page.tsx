@@ -1,61 +1,74 @@
-import { Metadata } from "next";
+export { metadata } from "./metadata";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { BLOG_AUTHOR, SITE_URL } from "@/lib/blog-constants";
+import { SITE_URL, BLOG_AUTHOR } from "@/lib/blog-constants";
 
-export const metadata: Metadata = {
-  title: `Hire | ${BLOG_AUTHOR.name}`,
+const hireMeta = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: "Freelance Web Development",
+  provider: { "@id": `${SITE_URL}/#person` },
+  serviceType: "Full-Stack Web Development",
+  areaServed: "Worldwide",
   description:
-    "Hire Shailesh Chaudhari — Full-stack developer available for freelance and contract work. Specializes in Next.js, React, Node.js, and scalable web apps.",
-  alternates: { canonical: `${SITE_URL}/hire` },
+    "Full-stack web development services: Next.js apps, Node.js backends, Chrome extensions, and real-time systems.",
 };
 
 export default function HirePage() {
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="prose prose-invert mx-auto max-w-3xl">
-        <h1>Hire Me — Full-Stack Developer</h1>
-        <p>
-          I'm a full-stack developer focused on building performant, scalable
-          web applications. I work with Next.js, React, Node.js, and databases
-          like MongoDB. I take on freelance, contract, and full-time
-          opportunities.
-        </p>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(hireMeta) }}
+      />
+      <div className="container mx-auto px-4 py-12">
+        <div className="prose prose-invert mx-auto max-w-3xl">
+          <h1>Hire {BLOG_AUTHOR.name}</h1>
+          <p>
+            I&apos;m a Software Engineer who builds full-stack web applications,
+            Chrome extensions, and real-time systems. I write TypeScript,
+            ship fast, and don&apos;t disappear after the first PR.
+          </p>
 
-        <h2>Services I offer</h2>
-        <ul>
-          <li>
-            Full-stack web application development (Next.js / React / Node)
-          </li>
-          <li>Performance optimization & Core Web Vitals improvements</li>
-          <li>API design and backend architecture</li>
-          <li>Migration and modernization (legacy → modern stack)</li>
-          <li>Consulting, code reviews, and technical mentoring</li>
-        </ul>
+          <h2>What I work on</h2>
+          <ul>
+            <li>Full-stack web apps — Next.js frontend, Node.js / Express backend</li>
+            <li>Chrome extensions (content scripts, service workers, backend APIs)</li>
+            <li>Real-time features — Socket.io, Redis pub/sub, event-driven queues</li>
+            <li>Performance work — Core Web Vitals, bundle analysis, edge caching</li>
+            <li>Database design — PostgreSQL, MongoDB, Prisma, Supabase</li>
+            <li>API integrations — REST, third-party SDKs, WebSockets</li>
+          </ul>
 
-        <h2>How I work</h2>
-        <p>
-          I prefer clear requirements, small iterations, and delivering value
-          quickly. I share progress frequently and provide testable,
-          maintainable code with documentation.
-        </p>
+          <h2>How I work</h2>
+          <p>
+            I prefer small, shippable iterations over big-bang deliveries. I
+            share working code early, flag blockers quickly, and write tests for
+            anything that needs to stay working. I&apos;m remote-first and
+            async-friendly.
+          </p>
 
-        <h2>Rates & availability</h2>
-        <p>
-          Availability and rates vary by project. For short engagements I prefer
-          fixed-price milestones; for long-term work I can work hourly or on a
-          retainer basis. Contact me for a custom quote.
-        </p>
+          <h2>Rates &amp; availability</h2>
+          <p>
+            Open to project-based fixed-price work and hourly retainers. Part-time
+            availability alongside my full-time role. Contact me and we can figure
+            out what makes sense for your project.
+          </p>
 
-        <div className="flex gap-4">
-          <Link href="/contact">
-            <Button>Contact Me</Button>
-          </Link>
-          <a href="/resume.pdf" target="_blank" rel="noreferrer">
-            <Button variant="ghost">View Resume</Button>
-          </a>
+          <div className="flex gap-4 not-prose mt-8">
+            <Link href="/contact">
+              <Button>Contact Me</Button>
+            </Link>
+            <a
+              href="/Shailesh_Chaudhari_Resume.pdf"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Button variant="outline">View Resume</Button>
+            </a>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

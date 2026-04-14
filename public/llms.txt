@@ -1,0 +1,34 @@
+# Shailesh Chaudhari — Portfolio
+
+> Software Engineer specializing in full-stack web development with Next.js, React, Node.js, and TypeScript.
+
+Shailesh Chaudhari is a Software Engineer based in Gujarat, India. He currently works at ContextQA building developer tools and Chrome extensions. Previously at eSparkBiz Technologies. BE in Information Technology from Government Engineering College Bhavnagar (2024, CGPA 7.99). Institute Rank 1 on GeeksforGeeks with 604+ problems solved.
+
+## Pages
+
+- [Home](https://shaileshchaudhari.vercel.app/): Introduction, featured blog posts, availability for hire
+- [About](https://shaileshchaudhari.vercel.app/about): Professional experience, education, skills, achievements
+- [Portfolio](https://shaileshchaudhari.vercel.app/portfolio): Project showcase with architecture details and live demos
+- [Blog](https://shaileshchaudhari.vercel.app/blogs): Technical articles on web development and software engineering
+- [Statistics](https://shaileshchaudhari.vercel.app/statistics): GitHub contributions, LeetCode stats, competitive programming metrics
+- [Contact](https://shaileshchaudhari.vercel.app/contact): Contact form, available for part-time and freelance work
+- [Hire](https://shaileshchaudhari.vercel.app/hire): Services, rates, and engagement details
+
+## Projects
+
+- [EduScale](https://eduscale.vercel.app/): Real-time engineering learning platform. Stack: Next.js 15, React 19, TypeScript, Redis, Socket.io, PostgreSQL, Supabase. Features: live coding battles with <200ms sync, AI-powered roadmaps, gamified challenges.
+- [DevTrack](https://daily-dev-track.vercel.app): Developer analytics dashboard tracking coding patterns and prescriptive recommendations. Stack: Next.js, TypeScript, Prisma, PostgreSQL, Recharts.
+- [KhataGO](https://khatago.vercel.app/): WhatsApp-first AI accounting platform for small businesses. Stack: Next.js, Gemini AI, WhatsApp Cloud API, PostgreSQL, Redis, i18n. Features: natural language bot, OCR receipt processing.
+- Vibe Testing (ContextQA): Chrome extension for AI-powered web testing with real-time log streaming. Stack: Chrome Extension, Python AI Agent, Node.js, Socket.io.
+- AxeTos (ContextQA): Chrome extension for WCAG A/AA/AAA accessibility testing with intelligent fix suggestions. Stack: Chrome Extension, Node.js, axe-core, AWS S3.
+
+## Skills
+
+TypeScript · React · Next.js · Node.js · Express.js · PostgreSQL · MongoDB · Redis · Prisma · Tailwind CSS · Socket.io · Chrome Extensions · Supabase · Docker · AWS · Playwright
+
+## Contact
+
+- Email: shailesh93602@gmail.com
+- GitHub: https://github.com/shailesh93602
+- LinkedIn: https://www.linkedin.com/in/shaileshbhaichaudhari/
+- Resume: https://shaileshchaudhari.vercel.app/Shailesh_Chaudhari_Resume.pdf

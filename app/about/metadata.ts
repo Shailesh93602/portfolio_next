@@ -3,16 +3,16 @@ import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "About | Shailesh Chaudhari",
+  title: "About — Shailesh Chaudhari",
   description:
-    "Learn more about Shailesh Chaudhari, a passionate Full Stack Developer from Gujarat, India. Discover his experience, achievements, skills, and hobbies.",
+    "Software Engineer from Bhavnagar, Gujarat. Currently at ContextQA building Chrome extensions for web testing and accessibility auditing. Previously at eSparkBiz. BE in Information Technology, GEC Bhavnagar, 2024.",
   alternates: {
     canonical: `${SITE_URL}/about`,
   },
   openGraph: {
-    title: "About | Shailesh Chaudhari",
+    title: "About — Shailesh Chaudhari",
     description:
-      "Learn more about Shailesh Chaudhari, a passionate Full Stack Developer from Gujarat, India. Discover his experience, achievements, skills, and hobbies.",
+      "Software Engineer from Gujarat, India. Working on developer tools at ContextQA. Two years shipping full-stack products across EdTech, SaaS, and developer tooling.",
     url: `${SITE_URL}/about`,
     siteName: META_DEFAULTS.siteName,
     images: [
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
         url: "/Images/shailesh.webp",
         width: 1200,
         height: 630,
-        alt: "Shailesh Chaudhari Profile Picture",
+        alt: "Shailesh Chaudhari",
       },
     ],
     locale: "en_US",
@@ -28,9 +28,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "About | Shailesh Chaudhari",
+    title: "About — Shailesh Chaudhari",
     description:
-      "Learn more about Shailesh Chaudhari, a passionate Full Stack Developer from Gujarat, India. Discover his experience, achievements, skills, and hobbies.",
+      "Software Engineer at ContextQA. BE in IT from GEC Bhavnagar, 2024. Chrome extensions, real-time systems, full-stack web development.",
     images: ["/Images/shailesh.webp"],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,

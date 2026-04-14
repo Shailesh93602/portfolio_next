@@ -57,6 +57,9 @@ export const metadata: Metadata = {
     description: META_DEFAULTS.description,
     images: [BLOG_AUTHOR.avatar],
   },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
 };
 
 export default function RootLayout({
@@ -67,6 +70,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Preconnect to external origins to reduce connection latency */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://vitals.vercel-insights.com" />
+        <link rel="dns-prefetch" href="https://va.vercel-scripts.com" />
         {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
           <>
             <Script
@@ -83,39 +96,131 @@ export default function RootLayout({
             </Script>
           </>
         )}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Person",
-            name: BLOG_AUTHOR.name,
-            alternateName: ["Shaileshbhai Chaudhari", "Shailesh"],
-            jobTitle: BLOG_AUTHOR.role || "Software Engineer",
-            url: SITE_URL,
-            image: `${SITE_URL}${BLOG_AUTHOR.avatar}`,
-            sameAs: [
-              BLOG_AUTHOR.social.github,
-              BLOG_AUTHOR.social.linkedin,
-              BLOG_AUTHOR.social.twitter,
-            ],
-            description: META_DEFAULTS.description,
-            knowsAbout: [
-              "JavaScript",
-              "TypeScript",
-              "React",
-              "Node.js",
-              "Express",
-              "MongoDB",
-              "Web Development",
-              "Software Engineering",
-            ],
-            hasOccupation: {
-              "@type": "Occupation",
-              name: "Full Stack Developer",
+        {/* Person schema — rich entity for Google Knowledge Graph, Bing, and LLM crawlers */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              "@id": `${SITE_URL}/#person`,
+              name: BLOG_AUTHOR.name,
+              alternateName: ["Shaileshbhai Chaudhari", "Shailesh"],
+              jobTitle: "Software Engineer",
+              url: SITE_URL,
+              image: {
+                "@type": "ImageObject",
+                url: `${SITE_URL}${BLOG_AUTHOR.avatar}`,
+                width: 400,
+                height: 400,
+              },
+              email: "shailesh93602@gmail.com",
+              nationality: "Indian",
+              homeLocation: {
+                "@type": "Place",
+                name: "Gujarat, India",
+              },
+              sameAs: [
+                BLOG_AUTHOR.social.github,
+                BLOG_AUTHOR.social.linkedin,
+                BLOG_AUTHOR.social.twitter,
+                "https://www.geeksforgeeks.org/user/thenameisshaileshbhai/",
+                "https://www.hackerrank.com/profile/shailesh93602",
+                "https://leetcode.com/u/Shaileshbhai/",
+              ],
               description:
-                "Building web applications using modern web technologies",
-            },
-          })}
-        </script>
+                "Software Engineer with expertise in full-stack web development using Next.js, React, Node.js, TypeScript, and PostgreSQL. Currently at ContextQA building developer tools and Chrome extensions.",
+              knowsAbout: [
+                "JavaScript",
+                "TypeScript",
+                "React",
+                "Next.js",
+                "Node.js",
+                "Express.js",
+                "PostgreSQL",
+                "MongoDB",
+                "Redis",
+                "Socket.io",
+                "Prisma",
+                "Tailwind CSS",
+                "Chrome Extensions",
+                "Web Development",
+                "Software Engineering",
+                "REST APIs",
+                "Full Stack Development",
+              ],
+              worksFor: {
+                "@type": "Organization",
+                name: "ContextQA",
+                url: "https://contextqa.com",
+              },
+              hasOccupation: {
+                "@type": "Occupation",
+                name: "Software Engineer",
+                occupationLocation: {
+                  "@type": "Country",
+                  name: "India",
+                },
+                estimatedSalary: [],
+                skills:
+                  "Next.js, React, TypeScript, Node.js, PostgreSQL, Chrome Extensions",
+              },
+              award: [
+                "GeeksforGeeks Institute Rank 1 with 604+ problems solved",
+                "HackerRank 5-Star rating in Problem Solving",
+                "Finalist — New India Vibrant Hackathon 2023",
+              ],
+              workExample: [
+                {
+                  "@type": "SoftwareSourceCode",
+                  name: "EduScale",
+                  description:
+                    "Real-time engineering learning platform with coding battles, Redis pub/sub, and <200ms sync latency",
+                  url: "https://eduscale.vercel.app/",
+                  codeRepository: "https://github.com/Shailesh93602/devscale",
+                  programmingLanguage: [
+                    "TypeScript",
+                    "JavaScript",
+                  ],
+                  runtimePlatform: "Next.js",
+                },
+                {
+                  "@type": "SoftwareSourceCode",
+                  name: "KhataGO",
+                  description:
+                    "WhatsApp-first AI accounting platform using Gemini AI for OCR and natural language processing",
+                  url: "https://khatago.vercel.app/",
+                  codeRepository: "https://github.com/Shailesh93602/khatago",
+                  programmingLanguage: ["TypeScript"],
+                  runtimePlatform: "Next.js",
+                },
+              ],
+            }),
+          }}
+        />
+        {/* WebSite schema — enables Sitelinks Searchbox in Google results */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "@id": `${SITE_URL}/#website`,
+              url: SITE_URL,
+              name: `${BLOG_AUTHOR.name} — Portfolio`,
+              description: META_DEFAULTS.description,
+              author: { "@id": `${SITE_URL}/#person` },
+              potentialAction: {
+                "@type": "SearchAction",
+                target: {
+                  "@type": "EntryPoint",
+                  urlTemplate: `${SITE_URL}/blogs?search={search_term_string}`,
+                },
+                "query-input": "required name=search_term_string",
+              },
+            }),
+          }}
+        />
       </head>
       <body className={inter.className}>
         <Providers>

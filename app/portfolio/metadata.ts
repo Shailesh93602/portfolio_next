@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 
 export const metadata: Metadata = {
-  title: "Portfolio | Shailesh Chaudhari - Full Stack Developer",
+  title: "Projects — Shailesh Chaudhari",
   description:
-    "Explore Shailesh Chaudhari's portfolio of web development projects. View my work in React, Node.js, and full-stack applications.",
+    "5 production projects: EduScale (real-time coding battles with Redis), DevTrack (developer analytics), KhataGO (WhatsApp + Gemini AI accounting), Vibe Testing (AI web testing extension), AxeTos (WCAG accessibility extension).",
   alternates: {
     canonical: `${SITE_URL}/portfolio`,
   },
@@ -36,9 +36,9 @@ export const metadata: Metadata = {
     "Web Applications",
   ],
   openGraph: {
-    title: "Portfolio | Shailesh Chaudhari - Full Stack Developer",
+    title: "Projects — Shailesh Chaudhari",
     description:
-      "Discover my collection of web development projects showcasing expertise in React, Node.js, and full-stack development.",
+      "5 production projects spanning EdTech, developer tooling, AI, and SaaS. Real-time systems, Chrome extensions, and full-stack web apps.",
     images: [
       {
         url: "/Images/shailesh.webp",
@@ -50,15 +50,12 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Portfolio | Shailesh Chaudhari - Full Stack Developer",
+    title: "Projects — Shailesh Chaudhari",
     description:
-      "Browse through my latest web development projects and see my technical expertise in action.",
+      "Real-time platforms, AI tools, Chrome extensions, and SaaS apps. All built and shipped.",
     images: ["/Images/shailesh.webp"],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,
-  },
-  verification: {
-    google: "your-google-verification-code",
   },
   icons: {
     icon: "/Images/shailesh.webp",

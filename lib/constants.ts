@@ -16,7 +16,7 @@ export const COMPANY_LINKS = {
 
 export const PROFILE_LINKS = {
   PORTFOLIO: "https://shaileshchaudhari.vercel.app/",
-  RESUME: "/resume.pdf",
+  RESUME: "/Shailesh_Chaudhari_Resume.pdf",
 } as const;
 
 export const CONTACT_INFO = {

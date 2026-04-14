@@ -1,151 +1,134 @@
 # Manual Tasks — Things Only You Can Do
 
-This file contains step-by-step instructions for tasks that require your credentials, personal info, or writing.
+Everything that can be automated has been done. This file contains only the tasks that require your credentials, personal information, or your writing.
 
 ---
 
-## Section 1 — Education Details (URGENT — needed to unblock code)
+## Section 1 — Education Details (URGENT — unblocks About page)
 
-I need the following to add your education section to the About page:
+The Education section is wired into the About page but uses placeholder data. Provide:
 
 ```
 University/College Name: ___________________
-Degree: ___________________  (e.g., B.Tech in Computer Science)
-Graduation Year: ___________________
-CGPA/Percentage: ___________________ (only include if ≥ 8.0 CGPA or ≥ 75%)
-Location: ___________________ (e.g., Gujarat, India)
-Relevant Coursework (optional, 3-5 subjects): ___________________
+Degree:                  ___________________  (e.g., B.Tech in Computer Engineering)
+Graduation Year:         ___________________  (e.g., 2020 - 2024)
+CGPA/Percentage:         ___________________  (include only if ≥ 8.0 CGPA or ≥ 75%)
 ```
 
-Once you fill this in and tell me, I'll add the full Education section to the About page immediately.
+Then update [`constants/index.ts`](constants/index.ts) — replace `"YOUR_COLLEGE_NAME"` and adjust the other fields. That's the only file you need to change.
 
 ---
 
-## Section 2 — Google Analytics Setup (30 min)
+## Section 2 — Google Analytics (30 min)
 
-Your portfolio currently has a `GA_MEASUREMENT_ID` placeholder that sends zero data.
+The GA script is wired correctly and only activates when the env var is set.
 
-**Steps:**
 1. Go to https://analytics.google.com
-2. Click **Admin** (gear icon, bottom left)
-3. Click **Create** → **Account** → fill in "Shailesh Portfolio"
-4. Under Account, click **Create Property** → name it "Portfolio"
-5. Choose **Web** platform → enter `https://shaileshchaudhari.vercel.app`
-6. Copy the **Measurement ID** that starts with `G-` (e.g., `G-ABC123XYZ`)
-7. Go to your Vercel Dashboard → your portfolio project → **Settings** → **Environment Variables**
-8. Add: `NEXT_PUBLIC_GA_MEASUREMENT_ID` = `G-ABC123XYZ`
-9. Redeploy (Vercel → Deployments → Redeploy latest)
-
-The code is already fixed to use this env var — you just need the real value.
+2. Create Account → Property → Data Stream (Web) → `https://shaileshchaudhari.vercel.app`
+3. Copy the **Measurement ID** (`G-XXXXXXXXXX`)
+4. Vercel Dashboard → your project → **Settings → Environment Variables**
+5. Add: `NEXT_PUBLIC_GA_MEASUREMENT_ID` = `G-XXXXXXXXXX`
+6. Redeploy
 
 ---
 
-## Section 3 — Lighthouse Performance Audit (1 hour)
+## Section 3 — Google Search Console Verification (15 min)
 
-This replaces your unverified "<200ms latency" claims with real proof.
+The verification meta tag is wired to an env var.
 
-**Steps:**
-1. Open Chrome → go to https://shaileshchaudhari.vercel.app
-2. Open DevTools (F12) → **Lighthouse** tab
-3. Select: Desktop, All categories → click **Analyze page load**
-4. Screenshot the results (especially the colored score circles)
-5. Save as `public/Images/lighthouse-portfolio.png`
+1. Go to https://search.google.com/search-console
+2. Add property → URL prefix → `https://shaileshchaudhari.vercel.app`
+3. Choose **HTML tag** verification method
+4. Copy only the `content="..."` value (not the whole tag)
+5. Add to Vercel env vars: `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` = that value
+6. Redeploy → click Verify in Search Console
 
-Repeat for:
-- https://eduscale.vercel.app → save as `public/Images/lighthouse-eduscale.png`
-- https://khatago.vercel.app → save as `public/Images/lighthouse-khatago.png`
-
-Then tell me your scores and I'll add them to the project cards.
+Note: `public/google5c16a36058a0e9e7.html` is already there as a backup verification file.
 
 ---
 
-## Section 4 — Write One Deep Technical Blog Post (3-5 hours)
+## Section 4 — Run Playwright E2E Tests (after deploy)
 
-Your 17 existing blog posts were written in 2 weeks and are surface-level. One genuinely deep post outweighs all 17.
+The full E2E suite is in `e2e/` covering navigation, SEO schemas, and llms.txt.
 
-**Recommended Option A: The EduScale Architecture Post**
+To run locally against your dev server:
+```bash
+npx playwright install --with-deps chromium   # first time only
+npm run test:e2e
+```
 
-Title: "Building a Real-Time Coding Battle Zone: Redis, Socket.io, and the Race to <200ms"
+To run with the interactive UI:
+```bash
+npm run test:e2e:ui
+```
+
+Expected: 16 tests across navigation + SEO suites passing.
+
+---
+
+## Section 5 — Write One Deep Technical Blog Post (highest ROI)
+
+Your 17 existing posts are surface-level. One genuinely deep post outweighs all of them.
+
+**Best option — your real experience:**
+
+**Title:** "Building Real-Time Coding Battles: Redis Pub/Sub + Socket.io Inside EduScale"
 
 Structure:
-```
-1. Problem: why real-time matters in EdTech
-2. Architecture decision: why Redis pub/sub over DB polling
-3. The Socket.io room management pattern you used
-4. How you hit <200ms (what you measured, what you optimized)
-5. What broke in production and how you fixed it
-6. What you'd do differently (Redis Streams vs pub/sub)
-```
+1. Why real-time matters (the UX problem you were solving)
+2. Why Redis pub/sub over WebSocket-only or DB polling
+3. How you structured the Socket.io rooms (user rooms, battle rooms)
+4. The specific latency optimization that got you under 200ms
+5. What broke in production (be honest — this makes it credible)
+6. What you'd change (Redis Streams vs pub/sub?)
 
-**Recommended Option B: The Open Source PR Post**
+**Alternative — your Next.js PR attempt (directly addresses open source gap):**
 
-Title: "My First PR to Next.js — What Happens When a Junior Dev Opens an Issue"
+**Title:** "My First PR to Next.js: What I Learned Submitting to a Framework"
 
-This is actually a powerful post because:
-- It shows you engage with the ecosystem, not just consume it
-- It shows humility (PR not merged ≠ failure, it's learning)
-- It shows you read framework source code
-- Most candidates have never even tried
+This is better than silence because it shows you:
+- Read framework source code
+- Tried to contribute (initiative)
+- Got feedback from core team (exposure to engineering bar)
+- Learned something (growth)
 
-Structure:
-```
-1. The bug/issue you found in Next.js
-2. How you navigated the Next.js source to find the right file
-3. Your fix approach
-4. The review feedback you got (if any)
-5. Why it wasn't merged (feature flag? better approach existed? still open?)
-6. What you learned about how Next.js internals work
-```
-
-Once written, add it to `lib/blog-data.ts` and `data/blog-manifest.json`.
+Add the post to [`lib/blog-data.ts`](lib/blog-data.ts) and [`data/blog-manifest.json`](data/blog-manifest.json).
 
 ---
 
-## Section 5 — Verify Live Project Links (15 min)
+## Section 6 — Lighthouse Performance Proof (1 hour)
 
-Check these URLs manually and fix any that are down:
+Replace the unverified "<200ms" claims with real Lighthouse screenshots.
 
-| Project | URL | Status |
-|---------|-----|--------|
-| EduScale | https://eduscale.vercel.app | Check |
-| DevTrack | https://daily-dev-track.vercel.app | Check |
-| KhataGO | https://khatago.vercel.app | Check |
+1. Open Chrome → `https://shaileshchaudhari.vercel.app`
+2. DevTools → Lighthouse → Desktop → Analyze
+3. Screenshot the score circles → save as `public/Images/lighthouse-portfolio.png`
+4. Repeat for `https://eduscale.vercel.app` → `public/Images/lighthouse-eduscale.png`
 
-If any are down: redeploy from Vercel dashboard or check if the Supabase/Postgres free tier paused the database (common on free plans after 7 days of inactivity).
-
----
-
-## Section 6 — Google Search Console Verification File
-
-You have `public/google5c16a36058a0e9e7.html` in your public folder. This is a GSC domain verification file.
-
-**Decision:**
-- If you use Google Search Console → keep it (it's working)
-- If you don't use GSC → delete this file (it exposes your Google account association)
-
-To check: Go to https://search.google.com/search-console → see if your property is verified.
+Then tell me the scores and I'll add them to the project cards.
 
 ---
 
-## Section 7 — GitHub Profile Polish (30 min)
+## Section 7 — Verify Live Project URLs (15 min)
 
-Your GitHub profile at https://github.com/shailesh93602 is what interviewers check after your portfolio.
+Free-tier Supabase/Postgres databases pause after 7 days of inactivity.
 
-**Quick wins:**
-1. Pin your 6 best repos (EduScale, DevTrack, KhataGO + 3 others)
-2. Add a profile README (create `shailesh93602/shailesh93602` repo)
-3. Make sure EduScale, DevTrack, KhataGO repos have good READMEs with:
-   - Live demo link
-   - Screenshot/gif
-   - Setup instructions
-   - Tech stack badges
+| Project | URL | Action if down |
+|---------|-----|----------------|
+| EduScale | https://eduscale.vercel.app | Unpause DB in Supabase dashboard |
+| DevTrack | https://daily-dev-track.vercel.app | Unpause DB in Supabase dashboard |
+| KhataGO | https://khatago.vercel.app | Unpause DB in Supabase dashboard |
 
 ---
 
 ## Priority Order
 
-1. **Right now:** Fill in Section 1 (education details) so I can write the code
-2. **Today:** Section 2 (GA setup) — 30 min, huge signal for serious candidates
-3. **This week:** Section 3 (Lighthouse) + Section 5 (verify links)
-4. **This month:** Section 4 (deep blog post) — this is the highest-ROI writing you can do
-5. **Optional:** Sections 6 and 7 — polish layer
+| Priority | Task | Time |
+|----------|------|------|
+| 🔴 Now | Fill in education details → update `constants/index.ts` | 5 min |
+| 🟠 Today | Set up Google Analytics (Section 2) | 30 min |
+| 🟠 Today | Verify all 3 live project URLs (Section 7) | 15 min |
+| 🟡 This week | Google Search Console verification (Section 3) | 15 min |
+| 🟡 This week | Run Playwright E2E tests locally (Section 4) | 30 min |
+| 🟢 This month | Write the deep technical blog post (Section 5) | 3–5 hrs |
+| 🟢 This month | Lighthouse screenshots (Section 6) | 1 hr |

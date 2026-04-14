@@ -2,17 +2,17 @@ import type { Metadata } from "next";
 import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 
 export const metadata: Metadata = {
-  title: "Home | Shailesh Chaudhari",
+  title: "Shailesh Chaudhari — Software Engineer",
   description:
-    "Welcome to the portfolio of Shailesh Chaudhari, a passionate Full Stack Developer from Gujarat, India. Available for part-time and freelance (hourly or project-based) work. Explore projects, skills, and achievements.",
+    "Software Engineer at ContextQA building developer tools and Chrome extensions. 2+ years shipping full-stack products in Next.js, React, Node.js, and TypeScript. Open to part-time and freelance work.",
   metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: `${SITE_URL}/`,
   },
   openGraph: {
-    title: "Home | Shailesh Chaudhari",
+    title: "Shailesh Chaudhari — Software Engineer",
     description:
-      "Welcome to the portfolio of Shailesh Chaudhari, a passionate Full Stack Developer from Gujarat, India. Available for part-time and freelance (hourly or project-based) work. Explore projects, skills, and achievements.",
+      "Software Engineer at ContextQA. Builds Chrome extensions, real-time systems, and full-stack web apps. Open to part-time and freelance work.",
     url: SITE_URL,
     siteName: META_DEFAULTS.siteName,
     images: [
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
         url: "/Images/shailesh.webp",
         width: 1200,
         height: 630,
-        alt: "Shailesh Chaudhari Profile Picture",
+        alt: "Shailesh Chaudhari",
       },
     ],
     locale: "en_US",
@@ -28,25 +28,24 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Home | Shailesh Chaudhari",
+    title: "Shailesh Chaudhari — Software Engineer",
     description:
-      "Welcome to the portfolio of Shailesh Chaudhari — Full Stack Developer. Open to part-time and freelance (hourly or project) work.",
+      "Software Engineer at ContextQA. Chrome extensions, real-time systems, Next.js. Open to part-time & freelance.",
     images: ["/Images/shailesh.webp"],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,
   },
   keywords: [
     "Shailesh Chaudhari",
+    "Software Engineer",
     "Full Stack Developer",
-    "software engineer",
-    "freelance software engineer",
-    "part time software engineer",
-    "hourly software engineer",
-    "freelance developer",
-    "part-time developer",
-    "full stack developer",
-    "Next.js developer",
-    "React developer",
+    "Next.js Developer",
+    "React Developer",
+    "Node.js Developer",
+    "Chrome Extension Developer",
+    "TypeScript Developer",
+    "freelance developer India",
+    "part-time software engineer",
   ],
   icons: {
     icon: "/Images/shailesh.webp",

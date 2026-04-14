@@ -73,11 +73,11 @@ export default function HomeContent() {
             </div>
 
             <p className="text-text-secondary text-lg leading-relaxed">
-              I&apos;m a passionate Full Stack Developer specializing in
-              building dynamic and scalable web applications. Proficient in
-              modern technologies like Node.js, React, and more. Let&apos;s
-              collaborate to bring your ideas to life with high-quality code and
-              seamless user experiences!
+              Software Engineer at ContextQA, building developer tools and
+              Chrome extensions used in production. I&apos;ve shipped
+              full-stack features across 6+ projects — EdTech platforms,
+              AI-powered tools, real-time systems. TypeScript everywhere,
+              performance from the start.
             </p>
 
             <div className="flex flex-wrap gap-2">

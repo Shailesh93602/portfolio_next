@@ -3,9 +3,9 @@ import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Contact Shailesh Chaudhari | Full Stack Developer",
+  title: "Contact Shailesh Chaudhari",
   description:
-    "Get in touch with Shailesh Chaudhari, a Full Stack Developer specializing in modern web technologies. Available for project discussions, collaborations, and professional opportunities.",
+    "Get in touch for part-time or freelance web development work. I build in Next.js, Node.js, and TypeScript, and I'm available for remote projects. Based in Gujarat, India.",
   alternates: {
     canonical: `${SITE_URL}/contact`,
   },
@@ -36,9 +36,9 @@ export const metadata: Metadata = {
     "India Web Developer",
   ],
   openGraph: {
-    title: "Contact Shailesh Chaudhari | Full Stack Developer",
+    title: "Contact Shailesh Chaudhari",
     description:
-      "Connect with Shailesh Chaudhari for web development projects, collaborations, and professional opportunities. Let's bring your ideas to life!",
+      "Available for part-time and freelance work. Next.js, Node.js, TypeScript, real-time systems. Remote-friendly.",
     images: [
       {
         url: "/Images/shailesh.webp",
@@ -50,15 +50,12 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Contact Shailesh Chaudhari | Full Stack Developer",
+    title: "Contact Shailesh Chaudhari",
     description:
-      "Reach out to discuss your next web development project with a passionate Full Stack Developer. Let's create something amazing together!",
+      "Available for part-time and freelance Next.js / Node.js work. Remote, async-friendly.",
     images: ["/Images/shailesh.webp"],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,
-  },
-  verification: {
-    google: "your-google-verification-code",
   },
   icons: {
     icon: "/Images/shailesh.webp",

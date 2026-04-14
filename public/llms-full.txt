@@ -1,0 +1,171 @@
+# Shailesh Chaudhari — Full Portfolio Content
+
+> This file provides full structured content for AI assistants and LLM crawlers.
+> See /llms.txt for the summary version.
+
+---
+
+## Identity
+
+**Name:** Shailesh Chaudhari (also: Shaileshbhai Chaudhari)
+**Role:** Software Engineer
+**Location:** Gujarat, India
+**Email:** shailesh93602@gmail.com
+**Portfolio:** https://shaileshchaudhari.vercel.app
+**GitHub:** https://github.com/shailesh93602
+**LinkedIn:** https://www.linkedin.com/in/shaileshbhaichaudhari/
+**Twitter/X:** https://twitter.com/shaileshwork
+
+---
+
+## Professional Experience
+
+### Software Engineer — ContextQA (July 2025 – Present)
+**Company:** https://contextqa.com
+**Stack:** Next.js, TailwindCSS, Shadcn UI, Node.js, Express.js, PostgreSQL, MongoDB, Prisma, Chrome Extensions
+
+Delivered two production-ready Chrome extensions:
+
+**Vibe Testing:** AI-driven Chrome extension for automated web testing. Features real-time WebSocket log streaming, AI-generated bug reports with screenshots, integration with platforms like v0, Lovable, Replit. Backend: Python AI agent + Node.js + Socket.io.
+
+**AxeTos:** Comprehensive WCAG A/AA/AAA accessibility testing Chrome extension. Features component-level visualization, intelligent fix suggestions, automated script generation. Backend: Node.js, Express.js, axe-core, AWS S3.
+
+Also enhanced the ContextQA Portal backend using Node.js, Express.js, and Playwright — resolving critical bugs and implementing new features.
+
+---
+
+### Software Developer — eSparkBiz Technologies (August 2024 – July 2025)
+**Company:** https://www.esparkinfo.com/
+**Stack:** React.js, Node.js, Express.js, TailwindCSS, PostgreSQL, Supabase, OAuth, Stripe, Firebase
+
+Key projects:
+- **Brightmont:** Education scheduling platform with Python-based Cplex scheduling, AWS S3 storage, real-time calendar UI
+- **The ASL Shop:** American Sign Language e-learning platform with Supabase auth, Dictionary module, course/quiz features
+- **Proleven:** Corporate training platform bug fixes and email workflow improvements
+
+---
+
+### Software Developer Intern — eSparkBiz Technologies (January 2024 – August 2024)
+**Stack:** HTML, CSS, JavaScript, TypeScript, Node.js, Express.js, React.js, Next.js, NestJS, MySQL, PostgreSQL, TailwindCSS, Redux
+
+Owned authentication module on Garage Management System team project (role-based access control). Built practice e-commerce projects to solidify full-stack fundamentals.
+
+---
+
+## Education
+
+**Degree:** Bachelor of Engineering — Information Technology
+**Institution:** Government Engineering College Bhavnagar (GEC Bhavnagar)
+**Location:** Bhavnagar, Gujarat, India
+**Period:** 2020 – 2024
+**CGPA:** 7.99 / 10
+**Notable:** Achieved Institute Rank 1 on GeeksforGeeks during final year; Hackathon Finalist at New India Vibrant Hackathon 2023
+
+---
+
+## Projects
+
+### EduScale
+**Live:** https://eduscale.vercel.app/
+**GitHub:** https://github.com/Shailesh93602/devscale
+**Stack:** Next.js 15, React 19, TypeScript, Tailwind CSS, Prisma, PostgreSQL, Supabase, Socket.io, Redis, Node.js, Express.js
+
+Premium engineering learning platform with:
+- Real-time Coding Battle Zone: Redis pub/sub message broker, Bull queues, <200ms sync latency via Socket.io
+- Dynamic Career Roadmaps with personalized learning paths
+- Sub-second code execution engine
+- Community Forum and Placement preparation tracks
+- Gamified challenges and badges
+
+Architecture: Frontend (Next.js 15 + Server Components) → Backend (Node.js + Express + Prisma) → Infrastructure (Supabase Auth + Redis + PostgreSQL)
+
+---
+
+### DevTrack
+**Live:** https://daily-dev-track.vercel.app
+**GitHub:** https://github.com/Shailesh93602/devtrack
+**Stack:** Next.js, TypeScript, Prisma, PostgreSQL, Supabase, Tailwind CSS, Shadcn UI, Recharts
+
+Developer intelligence dashboard featuring:
+- Developer Scoring System (0–100 composite score)
+- Pattern Analysis detecting optimal productivity windows
+- Prescriptive Recommendations based on behavior data
+- Visual Analytics with interactive charts (<300ms dashboard latency)
+
+---
+
+### KhataGO
+**Live:** https://khatago.vercel.app/
+**GitHub:** https://github.com/Shailesh93602/khatago
+**Stack:** Next.js, TypeScript, Prisma, PostgreSQL, Supabase, Gemini AI, WhatsApp Cloud API, Redis, Bull Queues, i18n
+
+WhatsApp-first AI accounting platform for small businesses:
+- Natural Language WhatsApp Bot processing business transactions
+- AI Receipt Processing with OCR via Gemini AI
+- CA & Accountant Portal with role-based access
+- Dynamic i18n supporting 3+ languages
+- Event-driven architecture with Redis/Bull background tasks
+
+---
+
+### Vibe Testing (ContextQA — proprietary)
+**Stack:** Chrome Extension, Python AI Agent, Node.js, Socket.io, WebSockets, TypeScript
+
+AI-powered web testing extension:
+- Autonomous UI test generation and execution
+- Real-time log streaming via Socket.io
+- Broken link detection and WCAG 2.1 AA accessibility checks
+- Integration with AI platforms (v0, Lovable, Replit)
+- Chat-based bug-fix workflows
+
+---
+
+### AxeTos (ContextQA — proprietary)
+**Stack:** Chrome Extension, Node.js, Express.js, axe-core, AWS S3, TypeScript
+
+Professional WCAG accessibility testing suite:
+- Automated WCAG A/AA/AAA auditing
+- Component-level visualization of accessibility issues
+- Intelligent fix suggestions with code snippets
+- Automated remediation script generation
+- High-performance backend on Node.js/Express
+
+---
+
+## Skills
+
+**Frontend:** TypeScript, React.js, Next.js, Tailwind CSS, Framer Motion, Shadcn UI, Radix UI, Redux Toolkit, Zustand, HTML5, CSS3
+
+**Backend:** Node.js, Express.js, NestJS, REST APIs, GraphQL, WebSockets, Socket.io
+
+**Databases:** PostgreSQL, MongoDB, MySQL, Supabase, Firebase, Redis, Prisma ORM
+
+**Infrastructure:** Docker, AWS (S3), Vercel, CI/CD, GitHub Actions
+
+**Testing:** Playwright E2E, Jest, Chrome Extension APIs
+
+**Specialized:** WCAG Accessibility, OAuth, Stripe, WhatsApp Cloud API, Gemini AI, i18n, Chrome Extensions, Real-time Systems
+
+---
+
+## Achievements
+
+- **GeeksforGeeks Institute Rank 1** — 604+ problems solved. Profile: https://www.geeksforgeeks.org/user/thenameisshaileshbhai/
+- **HackerRank 5-Star** — Problem Solving, Python. Profile: https://www.hackerrank.com/profile/shailesh93602
+- **Hackathon Finalist** — New India Vibrant Hackathon 2023 (ITI Alumni Tracking System, React + PHP)
+- **LeetCode:** https://leetcode.com/u/Shaileshbhai/
+- **CodeChef:** https://www.codechef.com/users/shaileshbhai03
+
+---
+
+## Blog Topics Covered
+
+Web Development · Full Stack · Frontend (React, Next.js, Tailwind) · Backend (Node.js, NestJS, Express) · Authentication (Supabase, OAuth) · Payments (Stripe) · DSA & Problem Solving · Career & Software Engineering · DevOps concepts
+
+---
+
+## Availability
+
+Open to part-time, freelance (hourly or project-based) work.
+Contact: https://shaileshchaudhari.vercel.app/contact
+Hire page: https://shaileshchaudhari.vercel.app/hire

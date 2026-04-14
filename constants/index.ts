@@ -3,16 +3,16 @@ import { Achievement, Education, Experience } from "@/types";
 
 export const education: Education[] = [
   {
-    degree: "Bachelor of Engineering in Computer Engineering",
-    institution: "YOUR_COLLEGE_NAME",
-    location: "Gujarat, India",
-    period: "2020 - 2024",
-    score: "8.5",
+    degree: "Bachelor of Engineering — Information Technology",
+    institution: "Government Engineering College Bhavnagar",
+    location: "Bhavnagar, Gujarat, India",
+    period: "2020 – 2024",
+    score: "7.99",
     scoreLabel: "CGPA",
     highlights: [
-      "Relevant coursework: Data Structures, Algorithms, DBMS, Operating Systems, Computer Networks",
-      "Hackathon Finalist — New India Vibrant Hackathon 2023",
-      "Institute Rank 1 on GeeksforGeeks with 604+ problems solved",
+      "Coursework: Data Structures & Algorithms, DBMS, Operating Systems, Computer Networks, Software Engineering",
+      "Hackathon Finalist — New India Vibrant Hackathon 2023 (built ITI Alumni Tracking System)",
+      "Achieved Institute Rank 1 on GeeksforGeeks while in final year — 604+ problems solved",
     ],
   },
 ];
