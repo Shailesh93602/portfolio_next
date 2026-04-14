@@ -1,10 +1,7 @@
 import plugin from "tailwindcss/plugin";
 import type { PluginAPI } from "tailwindcss/types/config";
 
-const blogTypography = plugin(function ({
-  addComponents,
-  theme,
-}: PluginAPI) {
+const blogTypography = plugin(function ({ addComponents, theme }: PluginAPI) {
   addComponents({
     ".blog-content": {
       // Headings

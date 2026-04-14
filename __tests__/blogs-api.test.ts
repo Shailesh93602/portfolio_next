@@ -59,9 +59,7 @@ describe("Blog post filtering logic", () => {
   });
 
   it("returns empty array when search matches nothing", () => {
-    expect(
-      filterPosts(blogPosts, { search: "zzznomatchzzz" })
-    ).toHaveLength(0);
+    expect(filterPosts(blogPosts, { search: "zzznomatchzzz" })).toHaveLength(0);
   });
 
   it("every post has required public fields", () => {

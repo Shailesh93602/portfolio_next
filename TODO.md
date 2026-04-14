@@ -7,6 +7,7 @@
 ## 🤖 Claude's Tasks (automated — no action needed from you)
 
 ### Repo Cleanup
+
 - [x] 🤖 Create PLAN.md
 - [x] 🤖 Create TODO.md
 - [x] 🤖 Create MANUAL.md
@@ -16,19 +17,23 @@
 - [ ] 🤖 Remove duplicate `public/resume.pdf` (keep `Shailesh_Chaudhari_Resume.pdf`)
 
 ### Code Fixes
+
 - [ ] 🤖 Fix `GA_MEASUREMENT_ID` → `process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID` in `app/layout.tsx`
 - [ ] 🤖 Add null-check so GA script only loads when env var is set
 
 ### README
+
 - [ ] 🤖 Rewrite `README.md` — accurate stack (Next.js 16), correct setup instructions, remove broken links
 
 ### Education Section
+
 - [ ] ⏳ Add `Education` interface to `types/index.ts` (blocked on your college details — see MANUAL.md)
 - [ ] ⏳ Add education data to `constants/index.ts`
 - [ ] ⏳ Create `components/EducationSection/index.tsx`
 - [ ] ⏳ Wire `EducationSection` into `app/about/AboutContent.tsx`
 
 ### Tests
+
 - [ ] 🤖 Install `jest`, `@testing-library/react`, `@testing-library/jest-dom` and configure
 - [ ] 🤖 Write unit tests for `lib/utils.ts`
 - [ ] 🤖 Write unit tests for `app/api/blogs/route.ts`
@@ -79,9 +84,9 @@
 
 ## Blocked Tasks (waiting on input)
 
-| Task | Blocked on |
-|------|-----------|
+| Task                   | Blocked on                  |
+| ---------------------- | --------------------------- |
 | Education section code | Your college/degree details |
-| GA fix complete | Your GA4 Measurement ID |
-| Performance metrics | Lighthouse screenshots |
-| Deep blog post | Your writing |
+| GA fix complete        | Your GA4 Measurement ID     |
+| Performance metrics    | Lighthouse screenshots      |
+| Deep blog post         | Your writing                |

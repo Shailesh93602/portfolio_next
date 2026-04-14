@@ -74,10 +74,10 @@ export default function HomeContent() {
 
             <p className="text-text-secondary text-lg leading-relaxed">
               Software Engineer at ContextQA, building developer tools and
-              Chrome extensions used in production. I&apos;ve shipped
-              full-stack features across 6+ projects — EdTech platforms,
-              AI-powered tools, real-time systems. TypeScript everywhere,
-              performance from the start.
+              Chrome extensions used in production. I&apos;ve shipped full-stack
+              features across 6+ projects — EdTech platforms, AI-powered tools,
+              real-time systems. TypeScript everywhere, performance from the
+              start.
             </p>
 
             <div className="flex flex-wrap gap-2">

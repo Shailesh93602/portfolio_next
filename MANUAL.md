@@ -52,12 +52,14 @@ Note: `public/google5c16a36058a0e9e7.html` is already there as a backup verifica
 The full E2E suite is in `e2e/` covering navigation, SEO schemas, and llms.txt.
 
 To run locally against your dev server:
+
 ```bash
 npx playwright install --with-deps chromium   # first time only
 npm run test:e2e
 ```
 
 To run with the interactive UI:
+
 ```bash
 npm run test:e2e:ui
 ```
@@ -75,6 +77,7 @@ Your 17 existing posts are surface-level. One genuinely deep post outweighs all 
 **Title:** "Building Real-Time Coding Battles: Redis Pub/Sub + Socket.io Inside EduScale"
 
 Structure:
+
 1. Why real-time matters (the UX problem you were solving)
 2. Why Redis pub/sub over WebSocket-only or DB polling
 3. How you structured the Socket.io rooms (user rooms, battle rooms)
@@ -87,6 +90,7 @@ Structure:
 **Title:** "My First PR to Next.js: What I Learned Submitting to a Framework"
 
 This is better than silence because it shows you:
+
 - Read framework source code
 - Tried to contribute (initiative)
 - Got feedback from core team (exposure to engineering bar)
@@ -113,22 +117,22 @@ Then tell me the scores and I'll add them to the project cards.
 
 Free-tier Supabase/Postgres databases pause after 7 days of inactivity.
 
-| Project | URL | Action if down |
-|---------|-----|----------------|
-| EduScale | https://eduscale.vercel.app | Unpause DB in Supabase dashboard |
+| Project  | URL                                | Action if down                   |
+| -------- | ---------------------------------- | -------------------------------- |
+| EduScale | https://eduscale.vercel.app        | Unpause DB in Supabase dashboard |
 | DevTrack | https://daily-dev-track.vercel.app | Unpause DB in Supabase dashboard |
-| KhataGO | https://khatago.vercel.app | Unpause DB in Supabase dashboard |
+| KhataGO  | https://khatago.vercel.app         | Unpause DB in Supabase dashboard |
 
 ---
 
 ## Priority Order
 
-| Priority | Task | Time |
-|----------|------|------|
-| 🔴 Now | Fill in education details → update `constants/index.ts` | 5 min |
-| 🟠 Today | Set up Google Analytics (Section 2) | 30 min |
-| 🟠 Today | Verify all 3 live project URLs (Section 7) | 15 min |
-| 🟡 This week | Google Search Console verification (Section 3) | 15 min |
-| 🟡 This week | Run Playwright E2E tests locally (Section 4) | 30 min |
-| 🟢 This month | Write the deep technical blog post (Section 5) | 3–5 hrs |
-| 🟢 This month | Lighthouse screenshots (Section 6) | 1 hr |
+| Priority      | Task                                                    | Time    |
+| ------------- | ------------------------------------------------------- | ------- |
+| 🔴 Now        | Fill in education details → update `constants/index.ts` | 5 min   |
+| 🟠 Today      | Set up Google Analytics (Section 2)                     | 30 min  |
+| 🟠 Today      | Verify all 3 live project URLs (Section 7)              | 15 min  |
+| 🟡 This week  | Google Search Console verification (Section 3)          | 15 min  |
+| 🟡 This week  | Run Playwright E2E tests locally (Section 4)            | 30 min  |
+| 🟢 This month | Write the deep technical blog post (Section 5)          | 3–5 hrs |
+| 🟢 This month | Lighthouse screenshots (Section 6)                      | 1 hr    |

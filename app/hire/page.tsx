@@ -26,16 +26,24 @@ export default function HirePage() {
           <h1>Hire {BLOG_AUTHOR.name}</h1>
           <p>
             I&apos;m a Software Engineer who builds full-stack web applications,
-            Chrome extensions, and real-time systems. I write TypeScript,
-            ship fast, and don&apos;t disappear after the first PR.
+            Chrome extensions, and real-time systems. I write TypeScript, ship
+            fast, and don&apos;t disappear after the first PR.
           </p>
 
           <h2>What I work on</h2>
           <ul>
-            <li>Full-stack web apps — Next.js frontend, Node.js / Express backend</li>
-            <li>Chrome extensions (content scripts, service workers, backend APIs)</li>
-            <li>Real-time features — Socket.io, Redis pub/sub, event-driven queues</li>
-            <li>Performance work — Core Web Vitals, bundle analysis, edge caching</li>
+            <li>
+              Full-stack web apps — Next.js frontend, Node.js / Express backend
+            </li>
+            <li>
+              Chrome extensions (content scripts, service workers, backend APIs)
+            </li>
+            <li>
+              Real-time features — Socket.io, Redis pub/sub, event-driven queues
+            </li>
+            <li>
+              Performance work — Core Web Vitals, bundle analysis, edge caching
+            </li>
             <li>Database design — PostgreSQL, MongoDB, Prisma, Supabase</li>
             <li>API integrations — REST, third-party SDKs, WebSockets</li>
           </ul>
@@ -50,12 +58,12 @@ export default function HirePage() {
 
           <h2>Rates &amp; availability</h2>
           <p>
-            Open to project-based fixed-price work and hourly retainers. Part-time
-            availability alongside my full-time role. Contact me and we can figure
-            out what makes sense for your project.
+            Open to project-based fixed-price work and hourly retainers.
+            Part-time availability alongside my full-time role. Contact me and
+            we can figure out what makes sense for your project.
           </p>
 
-          <div className="flex gap-4 not-prose mt-8">
+          <div className="not-prose mt-8 flex gap-4">
             <Link href="/contact">
               <Button>Contact Me</Button>
             </Link>

@@ -41,7 +41,10 @@ const config = {
       { userAgent: "GPTBot", allow: ["/llms.txt", "/llms-full.txt"] },
       { userAgent: "Claude-Web", allow: ["/llms.txt", "/llms-full.txt"] },
       { userAgent: "PerplexityBot", allow: ["/llms.txt", "/llms-full.txt"] },
-      { userAgent: "Googlebot-Extended", allow: ["/llms.txt", "/llms-full.txt"] },
+      {
+        userAgent: "Googlebot-Extended",
+        allow: ["/llms.txt", "/llms-full.txt"],
+      },
     ],
     additionalSitemaps: [`${siteUrl}/sitemap.xml`],
   },

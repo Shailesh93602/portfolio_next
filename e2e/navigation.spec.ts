@@ -52,7 +52,13 @@ test.describe("Navigation", () => {
     await page.goto("/blogs");
     await expect(page).toHaveTitle(/Blog/i);
     // At least one article card should appear
-    await expect(page.locator("article, [data-testid='blog-card'], .blog-card, a[href^='/blog/']").first()).toBeVisible();
+    await expect(
+      page
+        .locator(
+          "article, [data-testid='blog-card'], .blog-card, a[href^='/blog/']"
+        )
+        .first()
+    ).toBeVisible();
   });
 
   test("contact page has a form", async ({ page }) => {

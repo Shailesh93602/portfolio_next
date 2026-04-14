@@ -178,10 +178,7 @@ export default function RootLayout({
                     "Real-time engineering learning platform with coding battles, Redis pub/sub, and <200ms sync latency",
                   url: "https://eduscale.vercel.app/",
                   codeRepository: "https://github.com/Shailesh93602/devscale",
-                  programmingLanguage: [
-                    "TypeScript",
-                    "JavaScript",
-                  ],
+                  programmingLanguage: ["TypeScript", "JavaScript"],
                   runtimePlatform: "Next.js",
                 },
                 {
@@ -256,8 +253,8 @@ export default function RootLayout({
                         className="font-medium underline underline-offset-4 hover:text-primary"
                       >
                         Vercel
-                      </a>{"."}
-
+                      </a>
+                      {"."}
                     </p>
                   </div>
                 </div>

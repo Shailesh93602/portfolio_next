@@ -37,7 +37,7 @@ try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     nextConfig = withBundleAnalyzer(baseConfig as any) as NextConfig;
   }
-  } catch {
+} catch {
   // If analyzer isn't installed, fall back to base config
   nextConfig = baseConfig;
 }

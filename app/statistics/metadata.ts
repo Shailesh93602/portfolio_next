@@ -51,8 +51,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Coding Stats — Shailesh Chaudhari",
-    description:
-      "GitHub heatmap, LeetCode progress, GFG Institute Rank 1.",
+    description: "GitHub heatmap, LeetCode progress, GFG Institute Rank 1.",
     images: ["/Images/shailesh.webp"],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,
