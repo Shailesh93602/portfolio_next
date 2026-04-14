@@ -449,3 +449,27 @@ export function ClockIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export function GraduationCapIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      aria-hidden="true"
+      {...props}
+    >
+      <path
+        d="M22 10v6M2 10l10-5 10 5-10 5-10-5z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M6 12v5c3.33 2 8.67 2 12 0v-5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}

@@ -30,3 +30,13 @@ export interface Hobby {
   description: string;
   icon: string;
 }
+
+export interface Education {
+  degree: string;
+  institution: string;
+  location: string;
+  period: string;
+  score?: string;
+  scoreLabel?: string;
+  highlights?: string[];
+}

@@ -1,5 +1,21 @@
 import { SOCIAL_LINKS } from "@/lib/constants";
-import { Achievement, Experience } from "@/types";
+import { Achievement, Education, Experience } from "@/types";
+
+export const education: Education[] = [
+  {
+    degree: "Bachelor of Engineering in Computer Engineering",
+    institution: "YOUR_COLLEGE_NAME",
+    location: "Gujarat, India",
+    period: "2020 - 2024",
+    score: "8.5",
+    scoreLabel: "CGPA",
+    highlights: [
+      "Relevant coursework: Data Structures, Algorithms, DBMS, Operating Systems, Computer Networks",
+      "Hackathon Finalist — New India Vibrant Hackathon 2023",
+      "Institute Rank 1 on GeeksforGeeks with 604+ problems solved",
+    ],
+  },
+];
 
 export const itemVariants = {
   hidden: { y: 20, opacity: 0 },

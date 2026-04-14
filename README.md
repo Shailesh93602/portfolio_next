@@ -1,88 +1,75 @@
-# Professional Portfolio Website Check
+# Shailesh Chaudhari — Portfolio
 
-My personal portfolio website built with modern web technologies to showcase my professional work, skills, and projects.
+Personal portfolio website built with Next.js 16 App Router, showcasing projects, experience, blog posts, and coding statistics.
 
-## 🚀 Features
+**Live:** https://shaileshchaudhari.vercel.app
 
-- Responsive, mobile-first design
-- Theme switching with dark/light modes
-- Interactive project showcase
-- Integrated analytics dashboard
-- Personal blog system
-- GitHub API integration
+---
 
-## 💡 Technologies Used
+## Tech Stack
 
-- Next.js 13+ with App Directory
-- TypeScript
-- Tailwind CSS
-- Framer Motion for animations
-- GitHub Actions for CI/CD
+- **Framework:** Next.js 16 (App Router, Server Components, SSG)
+- **Language:** TypeScript 5 (strict mode)
+- **Styling:** Tailwind CSS 3, Framer Motion
+- **UI:** Shadcn UI, Radix UI
+- **Data fetching:** React Query
+- **Analytics:** Vercel Analytics, Speed Insights
+- **Deployment:** Vercel
 
-## 🛠 Requirements
+## Features
 
-- Node.js 18+
-- Git
-- # GitHub personal access token (for API integration)
+- Responsive dark/light theme
+- Project showcase with architecture diagrams and live demos
+- Blog system with SSG, OpenGraph metadata, and structured data
+- Coding statistics dashboard (GitHub, LeetCode, GFG)
+- Contact form
+- Sitemap and robots.txt for SEO
 
 ## Getting Started
 
-First, run the development server:
+**Prerequisites:** Node.js 18+
 
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the portfolio.
+Open [http://localhost:3000](http://localhost:3000).
 
-## 📁 Project Structure
+## Environment Variables
 
-- `/app` - Core application routes and layouts
-- `/components` - Reusable UI components
-- `/lib` - Business logic and utility functions
-- `/config` - Configuration files
-- `/public` - Static assets
-- # `/content` - Blog posts and portfolio content
+Create a `.env.local` file:
 
-## 🧪 Testing
+```env
+# Google Analytics (optional — analytics won't load without this)
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+```
 
-First, install testing dependencies:
+## Project Structure
+
+```
+app/           # Routes and pages (App Router)
+components/    # Reusable UI components
+constants/     # Static data (projects, skills, experience)
+lib/           # Hooks, utilities, blog data
+types/         # TypeScript interfaces
+public/        # Static assets and images
+```
+
+## Scripts
 
 ```bash
-npm install --save-dev jest @testing-library/react @testing-library/jest-dom
+npm run dev        # Development server
+npm run build      # Production build
+npm run lint       # ESLint check
+npm run format     # Prettier format
 ```
 
-Then run:
+## Deployment
 
-```bash
-npm run test
-```
+Deployed on Vercel with automatic CI/CD on push to `main`.
 
-## 📦 Deployment
-
-This project is optimized for deployment on Vercel. To deploy, follow the [Next.js deployment guide](https://nextjs.org/docs/deployment), or set up automatic deployments with GitHub integration.
-
-## 🤝 Contributions
-
-Please read [CONTRIBUTING.md](docs/CONTRIBUTING.md) for details on the code of conduct and contribution process.
-
-## 📜 License
-
-This project is licensed under the MIT License - see the LICENSE.md file for details.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/shailesh93602/portfolio_next)

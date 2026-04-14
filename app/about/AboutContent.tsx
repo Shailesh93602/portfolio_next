@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { ChevronUpIcon, ChevronDownIcon } from "@/components/icons";
 import { itemVariants } from "@/constants";
 import { ExperienceSection } from "@/components/ExperienceSection";
+import { EducationSection } from "@/components/EducationSection";
 import AchievementsSection from "@/components/Achievements";
 import SkillsSection from "@/components/SkillsSection";
 import { HobbiesSection } from "@/components/HobbiesSection";
@@ -82,6 +83,8 @@ export default function AboutContent() {
               {showFullContent && (
                 <>
                   <ExperienceSection />
+
+                  <EducationSection />
 
                   <AchievementsSection />
                   <SkillsSection />
