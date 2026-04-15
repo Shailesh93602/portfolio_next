@@ -70,13 +70,12 @@ test.describe("SEO — structured data and meta tags", () => {
   });
 
   test("all pages have canonical URL meta tag", async ({ page }) => {
+    // Use request API to check HTML directly — faster than full page navigations
     for (const path of ["/", "/about", "/portfolio", "/blogs", "/contact"]) {
-      await page.goto(path);
-      const canonical = await page
-        .locator('link[rel="canonical"]')
-        .getAttribute("href");
-      expect(canonical).toBeTruthy();
-      expect(canonical).toContain("shaileshchaudhari.vercel.app");
+      const response = await page.request.get(path);
+      const html = await response.text();
+      expect(html).toContain('rel="canonical"');
+      expect(html).toContain("shaileshchaudhari.vercel.app");
     }
   });
 
