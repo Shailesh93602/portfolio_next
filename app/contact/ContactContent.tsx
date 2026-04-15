@@ -127,11 +127,20 @@ export const ContactContent: React.FC = () => {
     null
   );
 
-  const onSubmit: SubmitHandler<FormData> = async () => {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       setSubmitStatus(null);
 
-      // Send GA event
+      // Build mailto: URL with form data so the email client opens pre-filled
+      const phoneSegment = data.phoneNumber ? `\nPhone: ${data.phoneNumber}` : "";
+      const subject = encodeURIComponent(`[Portfolio Contact] ${data.subject}`);
+      const body = encodeURIComponent(
+        `Name: ${data.fullName}\nEmail: ${data.email}${phoneSegment}\n\n${data.message}`
+      );
+      const mailtoUrl = `mailto:${CONTACT_INFO.EMAIL}?subject=${subject}&body=${body}`;
+      window.location.href = mailtoUrl;
+
+      // Track GA event
       if (typeof window !== "undefined" && window.gtag) {
         window.gtag("event", "contact_form_submit", {
           event_category: "engagement",
@@ -140,24 +149,14 @@ export const ContactContent: React.FC = () => {
         });
       }
 
-      // Show success message immediately (before trying to open mail client)
       setSubmitStatus("success");
-
-      // Clear form after successful submission
       reset();
 
-      // Clear success message after 5 seconds
-      setTimeout(() => {
-        setSubmitStatus(null);
-      }, 5000);
+      setTimeout(() => setSubmitStatus(null), 5000);
     } catch (error) {
-      console.error("Error processing contact form:", error);
+      console.error("Error opening mail client:", error);
       setSubmitStatus("error");
-
-      // Clear error message after 5 seconds
-      setTimeout(() => {
-        setSubmitStatus(null);
-      }, 5000);
+      setTimeout(() => setSubmitStatus(null), 5000);
     }
   };
 
@@ -174,8 +173,8 @@ export const ContactContent: React.FC = () => {
           Contact <span className="text-primary">Me</span>
         </h1>
         <p className="text-text-secondary">
-          I&apos;m always open to discussing new projects, creative ideas, or
-          opportunities to be part of your visions.
+          Have a project in mind or just want to talk engineering? Send a
+          message and I&apos;ll get back to you.
         </p>
       </motion.section>
 
