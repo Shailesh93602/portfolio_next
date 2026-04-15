@@ -28,7 +28,7 @@ export default function AboutContent() {
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="flex flex-col items-center gap-16 lg:flex-row"
+        className="flex flex-col items-center gap-16 lg:flex-row lg:items-start"
       >
         <motion.div
           variants={itemVariants}
