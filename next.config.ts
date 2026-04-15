@@ -2,7 +2,8 @@ import { NextConfig } from "next";
 
 const baseConfig: NextConfig = {
   reactStrictMode: true,
-  productionBrowserSourceMaps: true,
+  productionBrowserSourceMaps: false,
+  poweredByHeader: false,
   images: {
     remotePatterns: [
       {
@@ -10,19 +11,10 @@ const baseConfig: NextConfig = {
         hostname: "**",
       },
     ],
+    formats: ["image/avif", "image/webp"],
   },
   typescript: {
-    // !! WARN !!
-    // Dangerously allow production builds to successfully complete even if
-    // your project has type errors.
-    // !! WARN !!
     ignoreBuildErrors: false,
-  },
-  // @ts-expect-error - 'eslint' might be missing from NextConfig type in this version
-  eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
-    ignoreDuringBuilds: false,
   },
 };
 
