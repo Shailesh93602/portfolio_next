@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
 "use client";
 
 import React, { useState } from "react";
@@ -14,7 +12,7 @@ import SkillsSection from "@/components/SkillsSection";
 import { HobbiesSection } from "@/components/HobbiesSection";
 
 export default function AboutContent() {
-  const [showFullContent, setShowFullContent] = useState<boolean>(false);
+  const [showFullContent, setShowFullContent] = useState<boolean>(true);
 
   const containerVariants = {
     hidden: { opacity: 0 },

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { fadeIn, staggerContainer } from "@/lib/animations";
 import { projects } from "@/constants/projects";
-import { PortfolioSkeleton } from "./PortfolioSkeleton";
 
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
@@ -21,12 +20,6 @@ const itemVariants = {
 export function PortfolioContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1200);
-    return () => clearTimeout(timer);
-  }, []);
 
   const allTags = useMemo(
     () =>
@@ -64,16 +57,11 @@ export function PortfolioContent() {
     setSearchQuery("");
   };
 
-  if (isLoading) {
-    return <PortfolioSkeleton />;
-  }
-
   return (
     <div className="container py-24">
       <motion.div
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
+        animate="visible"
         variants={fadeIn(0.2)}
         className="mb-16 text-center"
       >
@@ -88,8 +76,7 @@ export function PortfolioContent() {
 
       <motion.div
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
+        animate="visible"
         variants={staggerContainer(0.1)}
       >
         {/* Filter & Search Section */}
