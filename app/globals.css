@@ -154,3 +154,10 @@
 .profile-glow {
   filter: drop-shadow(0 0 15px hsl(var(--primary) / 0.5));
 }
+
+/* WCAG 2.4.7: visible focus indicator for keyboard navigation */
+:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
