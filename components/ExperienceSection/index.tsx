@@ -4,41 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import { experiences, itemVariants } from "@/constants";
 
 export function ExperienceSection() {
-  // Helper: convert description text into paragraphs and bullet items
-  const renderDescription = (text: string) => {
-    // Split by new lines and trim
-    const lines = text
-      .split(/\r?\n/)
-      .map((l) => l.trim())
-      .filter(Boolean);
-    // Lines that start with • are bullets
-    const bullets = lines.filter((l) => l.startsWith("•"));
-    const paras = lines.filter((l) => !l.startsWith("•"));
-
-    return (
-      <div className="text-text-secondary">
-        {paras.map((p, i) => (
-          <p
-            key={`p-${i}`}
-            className="mb-3 leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: p }}
-          />
-        ))}
-        {bullets.length > 0 && (
-          <ul className="ml-4 mt-3 list-inside list-disc space-y-2">
-            {bullets.map((b, i) => (
-              <li
-                key={`b-${i}`}
-                className="text-text-secondary text-sm leading-relaxed"
-              >
-                {b.replace(/^•\s*/, "")}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    );
-  };
+  // Render plain-text description as a paragraph (no HTML injection)
+  const renderDescription = (text: string) => (
+    <p className="text-text-secondary mb-3 leading-relaxed">{text}</p>
+  );
 
   // Helper to determine if experience is internship
   const isInternship = (title: string) =>

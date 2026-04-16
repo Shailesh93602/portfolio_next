@@ -69,21 +69,13 @@ export const experiences: Experience[] = [
       "Prisma",
       "Chrome Extensions",
     ],
-    description: `At <strong>ContextQA</strong>, I work as a proactive software engineer, delivering features quickly while ensuring high-quality, bug-free releases. I work with a modern stack including <strong>Next.js, TailwindCSS, Shadcn UI, Node.js, Express.js, PostgreSQL, MongoDB, Prisma, and Chrome Extensions</strong>.
-
-<strong>🔧 Accessibility Testing Extension (AxeTOS)</strong>
-Built a comprehensive Chrome extension and backend system that enables automated accessibility testing with intelligent fix suggestions, standards-based validation (WCAG A/AA/AAA), and detailed issue reports with proper locators.
-
-<strong>🧪 Web Testing Extension (Vibe Testing)</strong>
-Developed a versatile Chrome extension for testing websites, with seamless integration for platforms like V0, Lovable, and Replit. Features include real-time debugging with screenshots, configurable test parameters, AI-generated bug reports with detailed scenarios, and innovative chat-based bug-fix workflows.
-
-<strong>🏢 ContextQA Portal</strong>
-Enhanced backend infrastructure using Node.js, Express.js, and Playwright, resolving critical bugs and implementing new features to improve platform stability and performance.
-
-<strong>🏆 Key Achievements</strong>
-• Delivered 2 production-ready Chrome extensions with scalable backend systems and intuitive UIs
-• Full-stack development with emphasis on performance, scalability, and developer experience
-• Open to sharing more details about this role upon request`,
+    description:
+      "Shipping production features across two Chrome extensions and the core platform. Both extensions have accumulated 1,600–1,900 merged PRs respectively — fixing bugs, landing features, and reviewing code end-to-end in a production codebase.",
+    highlights: [
+      "AxeTOS (Accessibility Extension): Chrome extension + Node.js/Express backend for WCAG A/AA/AAA auditing with automated fix suggestions and detailed violation reports with precise DOM locators. ~1,600 merged PRs.",
+      "Vibe Testing (Web Testing Extension): Chrome extension for AI-powered UI testing targeting v0.dev/Lovable/Replit apps. Features real-time log streaming via WebSockets, screenshot capture, AI-generated bug scenarios, and chat-based fix workflows. ~1,900 merged PRs.",
+      "ContextQA Portal: Resolved critical Node.js/Express.js/Playwright backend bugs and shipped new features improving platform stability and test execution reliability.",
+    ],
   },
   {
     title: "Software Developer",
@@ -101,21 +93,14 @@ Enhanced backend infrastructure using Node.js, Express.js, and Playwright, resol
       "Stripe",
       "Firebase",
     ],
-    description: `As a <strong>Full Stack Developer</strong> at <strong>eSparkBiz Technologies</strong>, I managed multiple projects simultaneously, balancing client requirements with in-house development deadlines. I delivered impactful solutions across several platforms that showcased my expertise in both frontend and backend development.
-
-<strong>📚 Brightmont - Education Scheduling Platform</strong>
-Built comprehensive scheduling and data management features for institutes providing one-on-one teaching. Integrated external APIs (Teachworks) with Python-based scheduling services using Cplex, synchronized large datasets, implemented cloud storage workflows with S3, and developed real-time calendar UIs with advanced data manipulation capabilities.
-
-<strong>🤟 The ASL Shop - Sign Language E-Learning Platform</strong>
-Developed key modules for an American Sign Language e-learning platform. Built the Dictionary module with advanced search, filtering, and synchronization from external platforms (Coda), implemented complete Supabase authentication system, and contributed significantly to course and quiz features with intuitive user interfaces.
-
-<strong>🏢 Proleven - Corporate Learning Platform</strong>
-Improved reliability of an employee training platform by resolving critical bugs, enhancing email workflows, streamlining template and trigger systems, and implementing various performance optimizations.
-
-<strong>🏆 Key Achievements</strong>
-• Successfully delivered multiple client and in-house projects on time
-• Full-stack contributions spanning API integrations, data pipelines, authentication, and UI development
-• Strengthened platform reliability and user experience through critical bug fixes and performance improvements`,
+    description:
+      "Full-stack developer across three simultaneous client products in EdTech, e-commerce, and corporate training. Managed competing deadlines across different stacks and codebases.",
+    highlights: [
+      "Brightmont (EdTech scheduling): Integrated Teachworks scheduling API with Python/Cplex optimization service, synchronized large datasets, built real-time calendar UI with S3 file workflows.",
+      "The ASL Shop (Sign Language e-learning): Built Dictionary module with advanced search and Coda sync, implemented Supabase auth from scratch, contributed to course and quiz features.",
+      "Proleven (Corporate LMS): Resolved critical production bugs, improved email workflow reliability, streamlined notification trigger systems.",
+      "Delivered all three client engagements on schedule with no production incidents.",
+    ],
   },
   {
     title: "Software Developer Intern",
@@ -144,17 +129,12 @@ Improved reliability of an employee training platform by resolving critical bugs
       "IndexedDB",
       "Redux",
     ],
-    description: `During my <strong>Software Developer Internship</strong> at <strong>eSparkBiz Technologies</strong>, I embarked on an intensive learning journey starting with web fundamentals (<strong>MySQL, HTML, CSS, JavaScript</strong>) and quickly advanced to modern technologies including <strong>TypeScript, Node.js, Express.js with EJS, React.js, Next.js, Sequelize, TypeORM, NestJS, TailwindCSS, and Redux</strong>.
-
-<strong>🚗 Garage Management System - Full-Stack Team Project</strong>
-Contributed to a major team project built with Node.js, Express.js, and EJS. Owned the critical authentication module, implementing secure role-based access control and comprehensive user management features. Also contributed to frontend development, building responsive and intuitive UIs across core system modules with focus on user experience and design.
-
-<strong>🛍️ Practice Projects - Skill Development</strong>
-Developed multiple smaller projects, including an e-commerce platform, to strengthen understanding of scalable architecture, industry best practices, and real-world development patterns. This hands-on experience solidified my foundational skills and prepared me for professional software engineering challenges.
-
-<strong>📈 Key Learning Outcomes</strong>
-• Gained comprehensive hands-on experience across the full stack, from databases to modern frontend frameworks
-• Strengthened expertise in authentication systems, role-based access control, and responsive UI design
-• Built a solid foundation for professional software engineering through intensive learning and practical application`,
+    description:
+      "Intensive 8-month internship progressing from web fundamentals to production NestJS and Next.js. Owned entire modules, not just tickets.",
+    highlights: [
+      "Garage Management System: Owned the authentication module end-to-end — role-based access control, session management, and user admin UI in a Node.js/Express/EJS team project.",
+      "Advanced from HTML/CSS/MySQL to TypeScript, NestJS, Next.js, Sequelize, TypeORM, and Redux in under 6 months.",
+      "Built e-commerce and practice projects to solidify architecture understanding and prepare for client work.",
+    ],
   },
 ];
