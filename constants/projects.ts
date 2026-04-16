@@ -48,13 +48,18 @@ export const projects: Project[] = [
       "PostgreSQL",
       "Supabase",
       "Socket.io",
+      "@socket.io/redis-adapter",
+      "Redlock",
       "Redis",
+      "Bull Queues",
+      "Circuit Breaker",
+      "Prometheus",
       "Node.js",
     ],
     live: "https://eduscale.vercel.app/",
     github: "https://github.com/Shailesh93602/devscale",
     detailedDescription:
-      "A high-performance EdTech ecosystem architected for sub-second latency and absolute data integrity. Built using Next.js 15 and Supabase, it features a distributed real-time state engine for competitive coding and dynamic career mapping. The platform leverages PostgreSQL for complex relational queries and an event-driven architecture to handle real-time user interactions.",
+      "A production-grade EdTech platform built around a distributed real-time engine. The backend uses @socket.io/redis-adapter for horizontal Socket.io scaling across multiple Node.js instances, redlock (Redlock algorithm) for distributed locking to prevent race conditions in battle state writes, opossum for circuit-breaker protection on external services, prom-client exposing a Prometheus /metrics endpoint, and Bull queues for reliable background job processing. Frontend is Next.js 15 App Router with Redux Toolkit.",
     architecture: {
       layers: [
         {
@@ -70,24 +75,26 @@ export const projects: Project[] = [
         {
           name: "Backend",
           items: [
-            "Node.js",
-            "Express.js (TypeScript)",
-            "Prisma ORM",
-            "PostgreSQL",
+            "Node.js + Express.js (TypeScript)",
+            "Prisma ORM + PostgreSQL",
+            "Socket.io + @socket.io/redis-adapter",
+            "redlock (Distributed Lock Manager)",
+            "opossum (Circuit Breaker)",
+            "prom-client (Prometheus metrics)",
           ],
         },
         {
           name: "Infrastructure",
           items: [
+            "Redis Cluster (adapter + locks + cache)",
+            "Bull Queues (background jobs)",
             "Supabase Auth",
-            "Redis / Bull Queues",
-            "Socket.io (Real-time)",
             "Vercel / AWS",
           ],
         },
       ],
       description:
-        "A micro-structured monolithic architecture optimized for developer experience and real-time interactive learning.",
+        "Distributed real-time architecture: Socket.io rooms backed by Redis cluster adapter for multi-instance scaling. Redlock prevents duplicate battle-start race conditions. Circuit breaker wraps the code-execution service. Prometheus metrics on /metrics for observability.",
     },
     keyMetrics: [
       {
@@ -147,7 +154,7 @@ export const projects: Project[] = [
     solution:
       "A unified Engineering Learning Platform (SaaS) that seamlessly integrates structured curriculum with interactive coding tools and real-time social competition. EduScale provides a 'single source of truth' for the student's entire technical journey.",
     challengesSolved:
-      "The primary challenge was building the 'Battle Zone'—a distributed real-time state machine that synchronizes test execution results across thousands of concurrent users. I implemented a Redis-backed message broker with Bull queues to ensure reliable delivery of code execution logs and leaderboard updates with sub-200ms latency.",
+      "The hardest problem was preventing race conditions when two users simultaneously start the same battle. The fix: redlock (Redlock algorithm over Redis) acquires a distributed lock before any battle state write, preventing duplicate battle creation. Socket.io horizontal scaling uses @socket.io/redis-adapter so any Node.js instance can broadcast to any room. opossum circuit breaker wraps the remote code-execution service — when it trips, battles degrade gracefully instead of hanging. prom-client exposes active-battle count, queue depth, and p99 latency on /metrics.",
     showcases: [
       {
         title: "Unified User Dashboard",
@@ -320,7 +327,7 @@ export const projects: Project[] = [
     id: "vibe-testing",
     title: "Vibe Testing (ContextQA)",
     description:
-      "AI-Powered Web Testing Chrome Extension that automates UI testing using advanced AI agents and real-time execution engines.",
+      "AI-powered web testing Chrome extension built at ContextQA. ~1,900 merged PRs in production — real-time UI testing with AI-generated bug scenarios, screenshot capture, and chat-based fix workflows.",
     image: "/Images/vibe_testing/full_report.png",
     tags: [
       "Next.js",
@@ -373,7 +380,7 @@ export const projects: Project[] = [
     solution:
       "A high-performance Chrome extension that leverages AI agents to capture live browser state and perform complex UI tests. It provides detailed reports with prioritized bugs and actionable fix suggestions.",
     challengesSolved:
-      "Architecting a real-time, bi-directional communication bridge between the browser extension and a remote testing engine while ensuring sub-200ms latency for live log streaming and visual state updates.",
+      "Architecting a real-time, bi-directional communication bridge between the browser extension and a remote testing engine while ensuring sub-200ms latency for live log streaming and visual state updates. Shipped and maintained at production scale — ~1,900 merged PRs across features, bug fixes, and code reviews.",
     gallery: [
       "/Images/vibe_testing/full_report.png",
       "/Images/vibe_testing/live_execution_with_steps_and_screenshots.png",
@@ -386,7 +393,7 @@ export const projects: Project[] = [
     id: "axetos",
     title: "AxeTos (ContextQA)",
     description:
-      "Professional Accessibility Testing Suite (Chrome Extension + Node.js) for automated WCAG compliance and instant fixes.",
+      "WCAG A/AA/AAA accessibility testing Chrome extension built at ContextQA. ~1,600 merged PRs in production — automated auditing with precise DOM locators, violation categorization, and persistent script-injection fixes.",
     image: "/Images/portfolio1.png",
     tags: [
       "Node.js",
@@ -436,7 +443,74 @@ export const projects: Project[] = [
     solution:
       "Comprehensive auditing suite that runs detailed WCAG A/AA/AAA diagnostics. It features a unique remediation engine that applies persistent fixes via script injection, allowing for 'zero-code' accessibility fixes.",
     challengesSolved:
-      "Building a non-destructive DOM manipulation engine that could reliably apply accessibility fixes (like contrast adjustments and ARIA role remediation) across varied third-party frameworks without interfering with existing site logic.",
+      "Building a non-destructive DOM manipulation engine that reliably applies accessibility fixes (contrast adjustments, ARIA role remediation) across varied third-party frameworks without interfering with existing site logic. Maintained at production scale — ~1,600 merged PRs across features, bug fixes, and code reviews.",
+  },
+  {
+    id: "codesensei-search",
+    title: "CodeSenseiSearch",
+    description:
+      "AI-powered semantic code search engine. Index a codebase and query it in natural language — 'where is auth token refreshed?' returns ranked file+line results using vector embeddings.",
+    image: "/Images/portfolio1.png",
+    tags: [
+      "NestJS",
+      "TypeScript",
+      "Vector Embeddings",
+      "Semantic Search",
+      "PostgreSQL",
+      "pgvector",
+      "OpenAI Embeddings",
+      "REST API",
+    ],
+    github: "https://github.com/Shailesh93602/CodeSenseiSearch",
+    detailedDescription:
+      "A full NestJS backend that ingests source files, chunks them into meaningful segments (function-level, not line-level), generates vector embeddings, stores them in PostgreSQL with pgvector, and serves a REST API for semantic search. Phase 7 (full search pipeline) is complete. Natural language queries like 'where does the payment retry logic live?' return file paths and line ranges ranked by cosine similarity.",
+    architecture: {
+      layers: [
+        {
+          name: "Ingestion",
+          items: [
+            "File chunker (function/class-level segments)",
+            "OpenAI Embeddings API",
+            "PostgreSQL + pgvector",
+          ],
+        },
+        {
+          name: "Search API",
+          items: [
+            "NestJS REST API",
+            "Query embedding generation",
+            "Cosine similarity ranking",
+            "File + line range results",
+          ],
+        },
+        {
+          name: "Infrastructure",
+          items: ["PostgreSQL (pgvector extension)", "NestJS", "TypeScript"],
+        },
+      ],
+      description:
+        "Ingestion pipeline chunks source files at the function/class boundary (not line-by-line), embeds each chunk, and stores vectors in pgvector. Search queries are embedded at runtime and matched via cosine similarity — no keyword index required.",
+    },
+    features: [
+      "Natural language code search: 'where is auth handled?' returns ranked file+line results",
+      "Function-level chunking for meaningful search granularity (not noisy line-by-line)",
+      "pgvector cosine similarity ranking with configurable top-K results",
+      "NestJS REST API with Swagger documentation",
+      "Supports indexing any TypeScript/JavaScript codebase",
+      "Phase 7 complete: full ingestion → embedding → search pipeline working end-to-end",
+    ],
+    techStack: [
+      "Backend: NestJS, TypeScript, Express",
+      "AI: OpenAI Embeddings API, vector similarity search",
+      "Database: PostgreSQL with pgvector extension",
+      "API: REST with Swagger/OpenAPI documentation",
+    ],
+    problem:
+      "grep and file search break down on large codebases — you need to know the exact term to search for. New engineers and AI tools struggle to navigate unfamiliar codebases when the vocabulary is unknown.",
+    solution:
+      "Embed the entire codebase at function granularity. At query time, embed the natural language question and find the nearest code chunks by cosine similarity. No keyword matching required — semantic meaning drives results.",
+    challengesSolved:
+      "The key insight was chunking at function/class boundaries rather than fixed line counts. Fixed-size chunks split function bodies mid-logic, producing low-quality embeddings. Boundary-aware chunking keeps semantic units intact, which significantly improves search relevance. Phase 7 delivered a working end-to-end pipeline from raw source files to ranked search results.",
   },
   {
     id: "khatago",
@@ -457,7 +531,6 @@ export const projects: Project[] = [
       "Redis",
     ],
     live: "https://khatago.vercel.app/",
-    github: "https://github.com/Shailesh93602/khatago",
     detailedDescription:
       "KhataGO is a revolutionary WhatsApp-first SaaS billing platform designed for the Indian MSME market. It leverages Gemini AI to parse natural language messages and images of receipts directly from WhatsApp, automatically recording transactions into a cloud-based ledger.",
     architecture: {
@@ -501,7 +574,7 @@ export const projects: Project[] = [
     solution:
       "A 'zero-learning-curve' platform that works where the user already is: WhatsApp. By combining the simplicity of chat with the power of AI, KhataGO makes business accounting as easy as sending a message.",
     challengesSolved:
-      "The biggest challenge was building a resilient, low-latency messaging pipeline. I architected an event-driven system using Redis and Bull queues to handle Gemini AI calls and Tally XML generation as background tasks, ensuring the WhatsApp bot remains responsive while processing complex business data.",
+      "Meta's WhatsApp Cloud API sends duplicate webhook events. The deduplication layer hashes the incoming message ID and checks a Redis TTL window before processing — duplicate events are dropped in under 1ms. The Gemini AI OCR pipeline downloads the WhatsApp image URL, sends it to Gemini Vision, and maps the extracted JSON (merchant, amount, date, line items) to a ledger transaction. Tally XML export is non-trivial: Tally's voucher schema requires specific date formatting, ledger name lookups, and GST field structure — wrong XML silently fails to import. Bull queues decouple all three operations so the WhatsApp bot responds immediately while processing happens in the background.",
     userFlow: [
       {
         step: "Onboarding",
