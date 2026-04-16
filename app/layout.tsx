@@ -80,6 +80,12 @@ export default function RootLayout({
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://vitals.vercel-insights.com" />
         <link rel="dns-prefetch" href="https://va.vercel-scripts.com" />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="Shailesh Chaudhari — Blog"
+          href="/feed.xml"
+        />
         {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
           <>
             <Script

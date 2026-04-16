@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       tags: post.tags,
       images: [
         {
-          url: post.image,
+          url: `/api/og?title=${encodeURIComponent(post.title)}&type=blog`,
           width: 1200,
           height: 630,
           alt: post.title,
