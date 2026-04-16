@@ -24,11 +24,11 @@
 **Company:** https://contextqa.com
 **Stack:** Next.js, TailwindCSS, Shadcn UI, Node.js, Express.js, PostgreSQL, MongoDB, Prisma, Chrome Extensions
 
-Delivered two production-ready Chrome extensions:
+Shipped and maintained two production Chrome extensions with ~1,600–1,900 merged PRs each:
 
-**Vibe Testing:** AI-driven Chrome extension for automated web testing. Features real-time WebSocket log streaming, AI-generated bug reports with screenshots, integration with platforms like v0, Lovable, Replit. Backend: Python AI agent + Node.js + Socket.io.
+**Vibe Testing (~1,900 merged PRs):** AI-driven Chrome extension for automated web testing. Features real-time WebSocket log streaming, AI-generated bug reports with screenshots, integration with AI development platforms (v0, Lovable, Replit). Chat-based bug-fix workflows. Backend: Python AI agent + Node.js + Socket.io.
 
-**AxeTos:** Comprehensive WCAG A/AA/AAA accessibility testing Chrome extension. Features component-level visualization, intelligent fix suggestions, automated script generation. Backend: Node.js, Express.js, axe-core, AWS S3.
+**AxeTos (~1,600 merged PRs):** Comprehensive WCAG A/AA/AAA accessibility testing Chrome extension. Features component-level violation visualization with precise DOM locators, intelligent fix suggestions, automated script-injection remediation via AWS S3. Backend: Node.js, Express.js, axe-core.
 
 Also enhanced the ContextQA Portal backend using Node.js, Express.js, and Playwright — resolving critical bugs and implementing new features.
 
@@ -39,16 +39,16 @@ Also enhanced the ContextQA Portal backend using Node.js, Express.js, and Playwr
 **Stack:** React.js, Node.js, Express.js, TailwindCSS, PostgreSQL, Supabase, OAuth, Stripe, Firebase
 
 Key projects:
-- **Brightmont:** Education scheduling platform with Python-based Cplex scheduling, AWS S3 storage, real-time calendar UI
-- **The ASL Shop:** American Sign Language e-learning platform with Supabase auth, Dictionary module, course/quiz features
-- **Proleven:** Corporate training platform bug fixes and email workflow improvements
+- **Brightmont (EdTech):** Education scheduling platform integrating Teachworks API with Python/Cplex scheduling optimization, AWS S3 cloud storage, real-time calendar UI with advanced data manipulation
+- **The ASL Shop (E-learning):** American Sign Language platform — Dictionary module with Coda sync, Supabase auth from scratch, course and quiz features
+- **Proleven (Corporate LMS):** Critical production bug fixes, email workflow reliability improvements, notification trigger system refactoring
 
 ---
 
 ### Software Developer Intern — eSparkBiz Technologies (January 2024 – August 2024)
-**Stack:** HTML, CSS, JavaScript, TypeScript, Node.js, Express.js, React.js, Next.js, NestJS, MySQL, PostgreSQL, TailwindCSS, Redux
+**Stack:** HTML, CSS, JavaScript, TypeScript, Node.js, Express.js, React.js, Next.js, NestJS, MySQL, PostgreSQL, TailwindCSS, Redux, Sequelize, TypeORM
 
-Owned authentication module on Garage Management System team project (role-based access control). Built practice e-commerce projects to solidify full-stack fundamentals.
+Owned authentication module end-to-end on Garage Management System team project (role-based access control, session management, user admin UI). Progressed from web fundamentals to production NestJS and Next.js in under 6 months.
 
 ---
 
@@ -59,7 +59,7 @@ Owned authentication module on Garage Management System team project (role-based
 **Location:** Bhavnagar, Gujarat, India
 **Period:** 2020 – 2024
 **CGPA:** 7.99 / 10
-**Notable:** Achieved Institute Rank 1 on GeeksforGeeks during final year; Hackathon Finalist at New India Vibrant Hackathon 2023
+**Notable:** Institute Rank 1 on GeeksforGeeks (604+ problems solved); Hackathon Finalist at New India Vibrant Hackathon 2023
 
 ---
 
@@ -68,67 +68,88 @@ Owned authentication module on Garage Management System team project (role-based
 ### EduScale
 **Live:** https://eduscale.vercel.app/
 **GitHub:** https://github.com/Shailesh93602/devscale
-**Stack:** Next.js 15, React 19, TypeScript, Tailwind CSS, Prisma, PostgreSQL, Supabase, Socket.io, Redis, Node.js, Express.js
+**Stack:** Next.js 15, React 19, TypeScript, Tailwind CSS, Prisma, PostgreSQL, Supabase, Socket.io, @socket.io/redis-adapter, redlock, opossum, prom-client, Bull, Redis, Node.js, Express.js
 
-Premium engineering learning platform with:
-- Real-time Coding Battle Zone: Redis pub/sub message broker, Bull queues, <200ms sync latency via Socket.io
-- Dynamic Career Roadmaps with personalized learning paths
-- Sub-second code execution engine
-- Community Forum and Placement preparation tracks
-- Gamified challenges and badges
+Premium engineering learning platform with a production-grade distributed real-time engine:
 
-Architecture: Frontend (Next.js 15 + Server Components) → Backend (Node.js + Express + Prisma) → Infrastructure (Supabase Auth + Redis + PostgreSQL)
+**Architecture:**
+- `@socket.io/redis-adapter`: Socket.io cluster adapter for horizontal scaling across multiple Node.js instances. All instances share room state via Redis.
+- `redlock` (Redlock algorithm): Distributed lock manager preventing race conditions when two users simultaneously attempt to start the same battle. Lock is acquired before any battle state write.
+- `opossum`: Circuit breaker wrapping the remote code-execution service. When the breaker trips (threshold exceeded), battles degrade gracefully rather than hanging.
+- `prom-client`: Prometheus client exposing `/metrics` endpoint with active battle count, queue depth, and request latency histograms.
+- `bull` queues: Reliable background job processing for code execution, result fan-out, and leaderboard updates.
+- `winston`: Structured logging with correlation IDs across distributed operations.
+
+**Features:** Dynamic Career Roadmaps, Real-time Battle Zone (<200ms sync), multi-language code execution, Community Forum, Placement preparation tracks, gamification.
 
 ---
 
 ### DevTrack
 **Live:** https://daily-dev-track.vercel.app
 **GitHub:** https://github.com/Shailesh93602/devtrack
-**Stack:** Next.js, TypeScript, Prisma, PostgreSQL, Supabase, Tailwind CSS, Shadcn UI, Recharts
+**Stack:** Next.js, TypeScript, Prisma, PostgreSQL (Supabase), Tailwind CSS, Shadcn UI, Recharts
 
-Developer intelligence dashboard featuring:
-- Developer Scoring System (0–100 composite score)
-- Pattern Analysis detecting optimal productivity windows
-- Prescriptive Recommendations based on behavior data
-- Visual Analytics with interactive charts (<300ms dashboard latency)
+Developer intelligence dashboard:
+- Developer Scoring System (0–100 composite based on consistency, DSA depth, project productivity)
+- Pattern Analysis detecting strongest/weakest problem-solving areas
+- Prescriptive Recommendations engine suggesting high-yield daily tasks
+- Visual Analytics: interactive Recharts, activity heatmaps, difficulty distribution (<300ms latency via Promise.all parallelization)
 
 ---
 
 ### KhataGO
 **Live:** https://khatago.vercel.app/
-**GitHub:** https://github.com/Shailesh93602/khatago
-**Stack:** Next.js, TypeScript, Prisma, PostgreSQL, Supabase, Gemini AI, WhatsApp Cloud API, Redis, Bull Queues, i18n
+**Stack:** Next.js, TypeScript, Prisma, PostgreSQL (Supabase), Gemini AI, WhatsApp Cloud API, Redis, Bull Queues, i18next, Node.js, Express.js
+**Note:** Source code is private.
 
-WhatsApp-first AI accounting platform for small businesses:
-- Natural Language WhatsApp Bot processing business transactions
-- AI Receipt Processing with OCR via Gemini AI
-- CA & Accountant Portal with role-based access
-- Dynamic i18n supporting 3+ languages
-- Event-driven architecture with Redis/Bull background tasks
+WhatsApp-first AI accounting platform for Indian SMBs:
+
+**Technical depth:**
+- **WhatsApp webhook deduplication:** Meta sends duplicate events. Each incoming message ID is hashed and checked against a Redis TTL window before processing — duplicates dropped in <1ms.
+- **Gemini AI OCR pipeline:** WhatsApp image URL → download to buffer → Gemini Vision API → structured JSON (merchant, amount, date, line items) → ledger transaction. Error handling for low-confidence extractions.
+- **Tally XML export:** Generates TALLYMESSAGE XML vouchers for accountants. Non-trivial: Tally requires specific date format, ledger name lookup from master data, and precise GST field structure. Wrong XML silently fails to import.
+- **Bull queues:** All three operations (webhook processing, OCR, XML generation) are decoupled via Bull so the WhatsApp bot responds immediately (<500ms) while processing happens asynchronously.
+- **i18next:** Full UI in English, Hindi, and Gujarati.
+
+---
+
+### CodeSenseiSearch
+**GitHub:** https://github.com/Shailesh93602/CodeSenseiSearch
+**Stack:** NestJS, TypeScript, PostgreSQL, pgvector, OpenAI Embeddings API
+
+AI-powered semantic code search engine (Phase 7 complete — full pipeline working):
+
+**Architecture:**
+- **Ingestion:** Source files → function/class-level chunker (not fixed line counts) → OpenAI embeddings → pgvector storage
+- **Search:** Natural language query → embedding → cosine similarity ranking → ranked file+line results
+- **Key insight:** Chunking at function/class boundaries keeps semantic units intact. Fixed-size chunking splits logic mid-function, producing noisy embeddings.
+
+Natural language queries like "where is the payment retry logic?" return ranked file paths and line ranges without keyword matching.
 
 ---
 
 ### Vibe Testing (ContextQA — proprietary)
-**Stack:** Chrome Extension, Python AI Agent, Node.js, Socket.io, WebSockets, TypeScript
+**Stack:** Chrome Extension, Python AI Agent, Node.js, Socket.io, WebSockets, TypeScript, Manifest V3
+**PRs merged:** ~1,900
 
 AI-powered web testing extension:
-- Autonomous UI test generation and execution
+- Autonomous UI test generation and execution targeting AI-built apps (v0, Lovable, Replit)
 - Real-time log streaming via Socket.io
-- Broken link detection and WCAG 2.1 AA accessibility checks
-- Integration with AI platforms (v0, Lovable, Replit)
+- Screenshot capture at each test step
+- AI-generated bug reports with reproduction scenarios
 - Chat-based bug-fix workflows
 
 ---
 
 ### AxeTos (ContextQA — proprietary)
 **Stack:** Chrome Extension, Node.js, Express.js, axe-core, AWS S3, TypeScript
+**PRs merged:** ~1,600
 
 Professional WCAG accessibility testing suite:
-- Automated WCAG A/AA/AAA auditing
-- Component-level visualization of accessibility issues
+- Automated WCAG A/AA/AAA auditing with precise DOM locators
+- Component-level visualization of violations categorized by severity
 - Intelligent fix suggestions with code snippets
-- Automated remediation script generation
-- High-performance backend on Node.js/Express
+- Persistent remediation via script injection (stored on S3, injected via Chrome Scripting API)
 
 ---
 
@@ -136,7 +157,11 @@ Professional WCAG accessibility testing suite:
 
 **Frontend:** TypeScript, React.js, Next.js, Tailwind CSS, Framer Motion, Shadcn UI, Radix UI, Redux Toolkit, Zustand, HTML5, CSS3
 
-**Backend:** Node.js, Express.js, NestJS, REST APIs, GraphQL, WebSockets, Socket.io
+**Backend:** Node.js, Express.js, NestJS, REST APIs, WebSockets, Socket.io, @socket.io/redis-adapter
+
+**Distributed Systems:** Redlock (distributed locks), Circuit Breaker (opossum), Bull Queues, Prometheus (prom-client), Redis Cluster, Event-driven architecture
+
+**AI / Search:** Vector Embeddings, pgvector, OpenAI Embeddings API, Gemini AI, Semantic Search
 
 **Databases:** PostgreSQL, MongoDB, MySQL, Supabase, Firebase, Redis, Prisma ORM
 
@@ -144,7 +169,7 @@ Professional WCAG accessibility testing suite:
 
 **Testing:** Playwright E2E, Jest, Chrome Extension APIs
 
-**Specialized:** WCAG Accessibility, OAuth, Stripe, WhatsApp Cloud API, Gemini AI, i18n, Chrome Extensions, Real-time Systems
+**Specialized:** WCAG Accessibility (A/AA/AAA), WhatsApp Business API, Tally XML, OAuth, Stripe, i18n, Chrome Extensions
 
 ---
 
@@ -160,7 +185,7 @@ Professional WCAG accessibility testing suite:
 
 ## Blog Topics Covered
 
-Web Development · Full Stack · Frontend (React, Next.js, Tailwind) · Backend (Node.js, NestJS, Express) · Authentication (Supabase, OAuth) · Payments (Stripe) · DSA & Problem Solving · Career & Software Engineering · DevOps concepts
+Web Development · Full Stack · Frontend (React, Next.js, Tailwind) · Backend (Node.js, NestJS, Express) · Authentication (Supabase, OAuth) · Payments (Stripe) · DSA & Problem Solving · Real-time Systems · Distributed Systems · Career & Software Engineering
 
 ---
 

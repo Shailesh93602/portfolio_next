@@ -2,7 +2,7 @@
 
 > Software Engineer specializing in full-stack web development with Next.js, React, Node.js, and TypeScript.
 
-Shailesh Chaudhari is a Software Engineer based in Gujarat, India. He currently works at ContextQA building developer tools and Chrome extensions. Previously at eSparkBiz Technologies. BE in Information Technology from Government Engineering College Bhavnagar (2024, CGPA 7.99). Institute Rank 1 on GeeksforGeeks with 604+ problems solved.
+Shailesh Chaudhari is a Software Engineer based in Gujarat, India. He currently works at ContextQA building developer tools — Chrome extensions for automated web testing and accessibility auditing (~1,600–1,900 merged PRs each). Previously at eSparkBiz Technologies. BE in Information Technology from Government Engineering College Bhavnagar (2024, CGPA 7.99). Institute Rank 1 on GeeksforGeeks with 604+ problems solved.
 
 ## Pages
 
@@ -16,15 +16,16 @@ Shailesh Chaudhari is a Software Engineer based in Gujarat, India. He currently 
 
 ## Projects
 
-- [EduScale](https://eduscale.vercel.app/): Real-time engineering learning platform. Stack: Next.js 15, React 19, TypeScript, Redis, Socket.io, PostgreSQL, Supabase. Features: live coding battles with <200ms sync, AI-powered roadmaps, gamified challenges.
+- [EduScale](https://eduscale.vercel.app/): Real-time engineering learning platform. Backend uses @socket.io/redis-adapter (horizontal Socket.io scaling), redlock (distributed locks preventing race conditions), opossum (circuit breaker on external services), prom-client (Prometheus /metrics endpoint), Bull queues. Stack: Next.js 15, React 19, TypeScript, Node.js, Express, Prisma, PostgreSQL, Redis.
 - [DevTrack](https://daily-dev-track.vercel.app): Developer analytics dashboard tracking coding patterns and prescriptive recommendations. Stack: Next.js, TypeScript, Prisma, PostgreSQL, Recharts.
-- [KhataGO](https://khatago.vercel.app/): WhatsApp-first AI accounting platform for small businesses. Stack: Next.js, Gemini AI, WhatsApp Cloud API, PostgreSQL, Redis, i18n. Features: natural language bot, OCR receipt processing.
-- Vibe Testing (ContextQA): Chrome extension for AI-powered web testing with real-time log streaming. Stack: Chrome Extension, Python AI Agent, Node.js, Socket.io.
-- AxeTos (ContextQA): Chrome extension for WCAG A/AA/AAA accessibility testing with intelligent fix suggestions. Stack: Chrome Extension, Node.js, axe-core, AWS S3.
+- [KhataGO](https://khatago.vercel.app/): WhatsApp-first AI accounting platform for Indian SMBs. WhatsApp Business API webhook with Redis-based deduplication, Gemini AI OCR for receipt photos → structured transactions, Tally ERP XML export. Stack: Next.js, Gemini AI, WhatsApp Cloud API, PostgreSQL, Redis, Bull Queues, i18n. (Private repo)
+- [CodeSenseiSearch](https://github.com/Shailesh93602/CodeSenseiSearch): AI-powered semantic code search engine. NestJS backend with pgvector, function-level chunking, OpenAI embeddings, cosine similarity ranking. Natural language queries return ranked file+line results.
+- Vibe Testing (ContextQA): Chrome extension for AI-powered web testing with real-time log streaming. ~1,900 merged PRs. Stack: Chrome Extension, Python AI Agent, Node.js, Socket.io.
+- AxeTos (ContextQA): Chrome extension for WCAG A/AA/AAA accessibility testing with intelligent fix suggestions and persistent script-injection remediation. ~1,600 merged PRs. Stack: Chrome Extension, Node.js, axe-core, AWS S3.
 
 ## Skills
 
-TypeScript · React · Next.js · Node.js · Express.js · PostgreSQL · MongoDB · Redis · Prisma · Tailwind CSS · Socket.io · Chrome Extensions · Supabase · Docker · AWS · Playwright
+TypeScript · React · Next.js · Node.js · Express.js · NestJS · PostgreSQL · MongoDB · Redis · Prisma · Tailwind CSS · Socket.io · @socket.io/redis-adapter · Redlock · Circuit Breaker (opossum) · Prometheus (prom-client) · Bull Queues · Vector Embeddings · pgvector · Chrome Extensions · Supabase · Docker · AWS · Playwright · WCAG Accessibility
 
 ## Contact
 
