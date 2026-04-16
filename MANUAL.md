@@ -8,6 +8,22 @@ See PLAN.md for the strategic context behind each task.
 
 ---
 
+## What Was Automated in This Session
+
+- `dangerouslySetInnerHTML` removed from ExperienceSection — plain text + structured highlights
+- EduScale project card: real architecture (@socket.io/redis-adapter, redlock, opossum, prom-client, Bull)
+- CodeSenseiSearch project card added (NestJS + pgvector + embeddings)
+- KhataGO GitHub link removed (private repo); challengesSolved updated with specific technical detail
+- ContextQA cards: ~1,600 / ~1,900 merged PR counts added
+- llms.txt + llms-full.txt fully rewritten with accurate technical depth
+- robots.ts added (serves /robots.txt)
+- sitemap.ts verified correct
+- RSS feed: /feed.xml (RSS 2.0, all blog posts sorted by date)
+- Dynamic OG images: /api/og?title=...&type=blog (edge runtime, next/og)
+- Blog post metadata updated to use dynamic OG images
+
+---
+
 ## What Was Already Done (No Action Needed)
 
 - Education section wired into About page
@@ -32,6 +48,17 @@ See PLAN.md for the strategic context behind each task.
 ---
 
 ## Month 1: April 16 – May 16, 2026
+
+### 0. Add CodeSenseiSearch Screenshot — 15 min
+
+The CodeSenseiSearch project card is live on the portfolio but uses a placeholder image. Once you've run the project locally and have a browser open to the search UI or API response, take a screenshot:
+
+1. Run CodeSenseiSearch locally (`npm run start` or equivalent)
+2. Make a sample search query — screenshot the results
+3. Save as `public/Images/codesensei-search.png`
+4. Tell Claude to update `constants/projects.ts` → `id: "codesensei-search"` → `image: "/Images/codesensei-search.png"`
+
+---
 
 ### 1. Make KhataGO Repo Public — 30 min
 
