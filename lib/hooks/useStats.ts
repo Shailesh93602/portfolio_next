@@ -24,7 +24,6 @@ interface GeeksforGeeksStats {
 
 interface LeetCodeStats {
   totalSolved: number;
-  acceptanceRate: number;
   ranking: number;
 }
 
