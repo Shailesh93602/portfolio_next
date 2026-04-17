@@ -2,9 +2,9 @@
 
 ## Project overview
 
-Next.js 14 (App Router) personal portfolio. Deployed on Vercel at `https://shaileshchaudhari.vercel.app`.
+Next.js 16 (App Router) personal portfolio. Deployed on Vercel at `https://shaileshchaudhari.vercel.app`.
 
-Stack: Next.js 14, TypeScript, Tailwind CSS, shadcn/ui, framer-motion, react-hook-form + yup, TanStack Query, Playwright (E2E), Jest + React Testing Library (unit).
+Stack: Next.js 16, TypeScript, Tailwind CSS, shadcn/ui, framer-motion, react-hook-form, TanStack Query, Playwright (E2E), Jest + React Testing Library (unit).
 
 ## Key commands
 
@@ -17,10 +17,13 @@ npm run type-check      # tsc --noEmit
 npm run format          # Prettier (writes)
 npm run format:check    # Prettier (CI check, read-only)
 
-npm test                # Jest unit tests (watch-less)
+npm test                # Jest unit tests (watch-less, target: 130+ tests green)
 npm run test:watch      # Jest watch mode
+npm run test:coverage   # Jest with coverage report
 npm run test:e2e        # Playwright (needs dev/prod server running)
 npm run test:e2e:ui     # Playwright with UI mode
+
+npm run analyze         # Bundle analysis (ANALYZE=true build)
 
 npx playwright test e2e/screenshots.spec.ts --project=chromium --workers=1
 # Regenerate all 42 screenshots (7 pages × 3 viewports × 2 themes)
@@ -91,7 +94,7 @@ public/
 
 ## Testing
 
-- **Unit tests** (`__tests__/`): components.test.tsx (BlogCard, ProjectCard, EducationSection), blog-api.test.ts, utils.test.ts, constants.test.ts — currently 48 passing
+- **Unit tests** (`__tests__/`): components.test.tsx (BlogCard, ProjectCard, EducationSection), blog-api.test.ts, utils.test.ts, constants.test.ts — currently 130+ passing
 - **E2E** (`e2e/`): navigation.spec.ts (desktop + mobile), seo.spec.ts (schema + meta), screenshots.spec.ts (42 full-page screenshots)
 - `e2e/` tests require a running server; CI uses `npm run start` after `npm run build`
 

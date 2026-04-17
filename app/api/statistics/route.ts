@@ -57,7 +57,15 @@ export async function GET() {
       console.error("Error fetching LeetCode statistics:", error);
     }
 
-    return NextResponse.json({ github: githubStats, leetcode: leetcodeStats });
+    return NextResponse.json(
+      { github: githubStats, leetcode: leetcodeStats },
+      {
+        headers: {
+          // Cache at the edge for 1 h; serve stale for 2 h while revalidating
+          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=7200",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error in statistics API:", error);
     return NextResponse.json(
@@ -66,7 +74,12 @@ export async function GET() {
         leetcode: LEETCODE_FALLBACK,
         error: "Failed to fetch statistics, showing fallback data",
       },
-      { status: 200 }
+      {
+        status: 200,
+        headers: {
+          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+        },
+      }
     );
   }
 }
