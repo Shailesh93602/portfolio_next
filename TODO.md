@@ -88,13 +88,9 @@ Legend: ✅ Done 🔲 Pending 🚫 Blocked (needs manual step first)
 
 ### 3C — Test Suite Maintenance
 
-- 🔲 **Regenerate all 42 Playwright screenshots** [S]
-  - After Month 1 UI changes (project cards, experience section)
-  - Command: `npm run build && npm run start` then `npx playwright test e2e/screenshots.spec.ts --project=chromium --workers=1`
+- ✅ **Regenerate all 42 Playwright screenshots** — All 42 (7 pages × 3 viewports × 2 themes) regenerated after UI changes (experience section, project cards, reading progress bar).
 
-- 🔲 **Ensure all E2E tests green after Month 1 changes** [S]
-  - Run: `npm run test:e2e`
-  - Fix any failures from new project cards or experience section changes
+- ✅ **Ensure all E2E tests green after Month 1 changes** — 22/22 pass (navigation + SEO). Fixed pre-existing framer-motion re-animation bug in `AboutContent` (`containerVariants` moved to module scope).
 
 - ✅ **Add unit tests for new Month 2 components** — `__tests__/reading-progress.test.tsx` (3 tests: aria attrs, initial 0%, scroll update to 50%).
 
