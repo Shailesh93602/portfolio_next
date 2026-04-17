@@ -51,12 +51,21 @@ constants/
   projects.ts           # All project data (cards + detail screens)
   index.ts              # itemVariants and other shared animation config
 
+content/
+  blog/                 # 17 MDX files — YAML frontmatter + HTML body
+                        # Add new posts here, then add slug to BLOG_SLUGS in blog-data.ts
+
 lib/
-  blog-data.ts          # All 17+ blog post entries
+  blog-data.ts          # Thin index: BLOG_SLUGS, loadPost (gray-matter), helper exports
+  github-service.ts     # GitHub API calls + getLocalDate/daysBetween helpers
+  leetcode-service.ts   # LeetCode API calls + streak calculation
   constants.ts          # SOCIAL_LINKS, CONTACT_INFO, SITE_URL, META_DEFAULTS
   blog-constants.ts     # BLOG_AUTHOR, SITE_URL (for layout schema)
   animations.ts         # Shared framer-motion variants
   utils.ts              # cn() utility
+
+scripts/
+  migrate-blog.mjs      # One-time script: extracted blog posts from old blog-data.ts
 
 public/
   Images/               # Static images (shailesh.webp, project screenshots)
