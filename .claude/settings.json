@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -o /dev/null -w \"eduscale: %{http_code}\\\\n\" --max-time 15 \"https://eduscale.vercel.app\")",
+      "Bash(curl -s -o /dev/null -w \"devtrack: %{http_code}\\\\n\" --max-time 15 \"https://daily-dev-track.vercel.app\")",
+      "Bash(curl -s -o /dev/null -w \"khatago: %{http_code}\\\\n\" --max-time 15 \"https://khatago.vercel.app\")",
+      "Bash(curl -s -o /dev/null -w \"devtrack final: %{http_code}\\\\n\" -L --max-time 15 \"https://daily-dev-track.vercel.app\")",
+      "Bash(ls -la /Users/shaileshchaudhary/Desktop/Coding/portfolio_next/public/Images/screenshots/*.png)",
+      "Bash(awk '{print $6, $7, $8, $9}')",
+      "Bash(curl -s http://localhost:3000/portfolio)",
+      "Bash(pkill -f \"next start\")",
+      "Bash(npm run:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/portfolio)",
+      "Bash(node -e ':*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(xargs rm:*)",
+      "Bash(npx next:*)",
+      "Bash(xargs ls:*)",
+      "Bash(sort -k5 -rh)",
+      "Bash(rm -f gecSportify.png codechef2.png codechef.png ticTacToe.png toDoList.png masteryPrep.png debug_error_dark.png debug_error_light.png debug_1_landing.png debug_2_login_page.png debug_3_form_filled.png debug_failed_auth.png FINAL_ERROR_light.png FINAL_ERROR_dark.png eduscale_battle_light.png eduscale_battle_dark.png eduscale_challenges_dark.png eduscale_challenges_light.png eduscale_dashboard_dark.png eduscale_dashboard_light.png eduscale_landing_light.png eduscale_roadmap_light.png eduscale_roadmap_dark.png)",
+      "Bash(ls *.png *.webp)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('scripts:', list\\(d.get\\('scripts',{}\\).keys\\(\\)\\)\\); print\\('deps:', list\\(d.get\\('dependencies',{}\\).keys\\(\\)\\)[:15]\\)\")",
+      "Bash(npm test:*)",
+      "Bash(xargs kill:*)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(git reset:*)"
+    ]
+  }
+}
