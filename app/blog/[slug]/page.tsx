@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getPostBySlug, getRelatedPosts, blogPosts } from "@/lib/blog-data";
 import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
+import { ReadingProgressBar } from "@/components/ReadingProgressBar";
 
 const getPostData = (slug: string) => {
   const post = getPostBySlug(slug);
@@ -104,6 +105,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <>
+      <ReadingProgressBar />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
