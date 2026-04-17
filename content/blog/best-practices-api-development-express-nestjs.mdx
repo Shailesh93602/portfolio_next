@@ -1,0 +1,1313 @@
+---
+title: "Best Practices for API Development with Express and Nest.js"
+subtitle: "Build scalable, secure, and maintainable APIs with Express.js and Nest.js following industry standards and proven patterns"
+description: "Master API development with Express and Nest.js. Learn authentication, validation, error handling, testing, security, and performance optimization for production-ready REST APIs."
+image: "/Images/portfolio1.png"
+date: "2024-10-04"
+readTime: "16 min read"
+featured: true
+tags:
+  - "API Development"
+  - "Express.js"
+  - "Nest.js"
+  - "Node.js"
+  - "REST API"
+  - "Authentication"
+  - "Security"
+  - "Testing"
+  - "Performance"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "Shaileshbhai"
+  - "Shaileshbhai Chaudhari"
+  - "Shailesh"
+  - "API development"
+  - "Express.js best practices"
+  - "Nest.js best practices"
+  - "REST API"
+  - "Node.js API"
+  - "API authentication"
+  - "API security"
+  - "API testing"
+  - "API performance"
+  - "Express middleware"
+  - "Nest.js modules"
+  - "API documentation"
+  - "JWT authentication"
+---
+
+
+    <div class="tldr">
+      <strong>TL;DR:</strong> Complete guide to API development best practices with Express.js and Nest.js. Learn authentication, validation, error handling, testing, security, and performance optimization for scalable REST APIs.
+    </div>
+
+    <h2>Introduction to API Development</h2>
+    <p>Hello everyone! I'm <strong>Shailesh Chaudhari</strong>, a full-stack developer who has built and maintained numerous APIs for web applications. Today, I'll guide you through the best practices for API development using both <strong>Express.js</strong> and <strong>Nest.js</strong> frameworks.</p>
+
+    <p>Building robust, scalable, and maintainable APIs requires more than just writing code—it requires following established patterns, implementing proper security measures, and designing for performance and maintainability. Whether you're using the flexibility of Express.js or the structure of Nest.js, these best practices will help you create production-ready APIs.</p>
+
+    <h3>Why API Best Practices Matter</h3>
+    <ul>
+      <li><strong>Scalability:</strong> Handle increased load and complexity</li>
+      <li><strong>Security:</strong> Protect against common vulnerabilities</li>
+      <li><strong>Maintainability:</strong> Easy to modify and extend</li>
+      <li><strong>Reliability:</strong> Consistent error handling and responses</li>
+      <li><strong>Performance:</strong> Optimized for speed and efficiency</li>
+      <li><strong>Developer Experience:</strong> Easy to understand and work with</li>
+    </ul>
+
+    <h2>Project Structure and Organization</h2>
+
+    <h3>Express.js Project Structure</h3>
+    <pre><code>express-api/
+├── src/
+│   ├── controllers/
+│   │   ├── user.controller.js
+│   │   └── auth.controller.js
+│   ├── middleware/
+│   │   ├── auth.middleware.js
+│   │   ├── validation.middleware.js
+│   │   └── error.middleware.js
+│   ├── models/
+│   │   ├── user.model.js
+│   │   └── index.js
+│   ├── routes/
+│   │   ├── user.routes.js
+│   │   ├── auth.routes.js
+│   │   └── index.js
+│   ├── services/
+│   │   ├── user.service.js
+│   │   ├── auth.service.js
+│   │   └── email.service.js
+│   ├── utils/
+│   │   ├── logger.js
+│   │   ├── response.js
+│   │   └── validation.js
+│   ├── config/
+│   │   ├── database.js
+│   │   └── environment.js
+│   └── app.js
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   └── e2e/
+├── docs/
+├── package.json
+└── server.js</code></pre>
+
+    <h3>Nest.js Project Structure</h3>
+    <pre><code>nest-api/
+├── src/
+│   ├── modules/
+│   │   ├── users/
+│   │   │   ├── users.controller.ts
+│   │   │   ├── users.service.ts
+│   │   │   ├── users.module.ts
+│   │   │   ├── dto/
+│   │   │   └── entities/
+│   │   └── auth/
+│   ├── common/
+│   │   ├── decorators/
+│   │   ├── guards/
+│   │   ├── interceptors/
+│   │   └── filters/
+│   ├── config/
+│   ├── shared/
+│   └── main.ts
+├── test/
+├── docs/
+├── package.json
+└── tsconfig.json</code></pre>
+
+    <h2>Authentication and Authorization</h2>
+
+    <h3>JWT Authentication (Express.js)</h3>
+    <pre><code>// middleware/auth.middleware.js
+const jwt = require('jsonwebtoken')
+const User = require('../models/user.model')
+
+const authenticate = async (req, res, next) =&gt; {
+  try {
+    const token = req.header('Authorization')?.replace('Bearer ', '')
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'Access denied. No token provided.'
+      })
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    const user = await User.findById(decoded.userId)
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid token. User not found.'
+      })
+    }
+
+    req.user = user
+    next()
+  } catch (error) {
+    res.status(401).json({
+      success: false,
+      message: 'Invalid token.'
+    })
+  }
+}
+
+const authorize = (...roles) =&gt; {
+  return (req, res, next) =&gt; {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required.'
+      })
+    }
+
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Insufficient permissions.'
+      })
+    }
+
+    next()
+  }
+}
+
+module.exports = { authenticate, authorize }</code></pre>
+
+    <h3>JWT Authentication (Nest.js)</h3>
+    <pre><code>// common/guards/jwt-auth.guard.ts
+import {
+  Injectable,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common'
+import { AuthGuard } from '@nestjs/passport'
+
+@Injectable()
+export class JwtAuthGuard extends AuthGuard('jwt') {
+  canActivate(context: ExecutionContext) {
+    return super.canActivate(context)
+  }
+
+  handleRequest(err: any, user: any, info: any) {
+    if (err || !user) {
+      throw err || new UnauthorizedException('Invalid token')
+    }
+    return user
+  }
+}
+
+// common/guards/roles.guard.ts
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common'
+import { Reflector } from '@nestjs/core'
+import { ROLES_KEY } from '../decorators/roles.decorator'
+
+@Injectable()
+export class RolesGuard implements CanActivate {
+  constructor(private reflector: Reflector) {}
+
+  canActivate(context: ExecutionContext): boolean {
+    const requiredRoles = this.reflector.getAllAndOverride&lt;string[]&gt;(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()]
+    )
+
+    if (!requiredRoles) {
+      return true
+    }
+
+    const { user } = context.switchToHttp().getRequest()
+    return requiredRoles.some((role) =&gt; user.roles?.includes(role))
+  }
+}
+
+// common/decorators/roles.decorator.ts
+import { SetMetadata } from '@nestjs/common'
+import { ROLES_KEY } from './roles.decorator'
+
+export const ROLES_KEY = 'roles'
+export const Roles = (...roles: string[]) =&gt; SetMetadata(ROLES_KEY, roles)
+
+// Usage in controller
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Controller('users')
+export class UsersController {
+  @Roles('admin')
+  @Get()
+  findAll() {
+    // Only admins can access
+  }
+
+  @Roles('user', 'admin')
+  @Get('profile')
+  getProfile(@Req() req) {
+    return req.user
+  }
+}</code></pre>
+
+    <h3>Password Security</h3>
+    <pre><code>// utils/password.js
+const bcrypt = require('bcryptjs')
+
+class PasswordUtils {
+  static async hash(password) {
+    const saltRounds = 12
+    return await bcrypt.hash(password, saltRounds)
+  }
+
+  static async compare(password, hashedPassword) {
+    return await bcrypt.compare(password, hashedPassword)
+  }
+
+  static validate(password) {
+    const minLength = 8
+    const hasUpperCase = /[A-Z]/.test(password)
+    const hasLowerCase = /[a-z]/.test(password)
+    const hasNumbers = /\d/.test(password)
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|&lt;&gt;]/.test(password)
+
+    if (password.length &lt; minLength) {
+      return 'Password must be at least 8 characters long'
+    }
+
+    if (!hasUpperCase) {
+      return 'Password must contain at least one uppercase letter'
+    }
+
+    if (!hasLowerCase) {
+      return 'Password must contain at least one lowercase letter'
+    }
+
+    if (!hasNumbers) {
+      return 'Password must contain at least one number'
+    }
+
+    if (!hasSpecialChar) {
+      return 'Password must contain at least one special character'
+    }
+
+    return null // Valid password
+  }
+}
+
+module.exports = PasswordUtils</code></pre>
+
+    <h2>Input Validation and Sanitization</h2>
+
+    <h3>Express.js Validation</h3>
+    <pre><code>// middleware/validation.middleware.js
+const Joi = require('joi')
+
+const validate = (schema) =&gt; {
+  return (req, res, next) =&gt; {
+    const { error } = schema.validate(req.body, { abortEarly: false })
+
+    if (error) {
+      const errors = error.details.map(detail =&gt; ({
+        field: detail.path.join('.'),
+        message: detail.message
+      }))
+
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors
+      })
+    }
+
+    next()
+  }
+}
+
+// Validation schemas
+const userSchemas = {
+  createUser: Joi.object({
+    name: Joi.string().min(2).max(50).required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().min(8).required(),
+    role: Joi.string().valid('user', 'admin').default('user')
+  }),
+
+  updateUser: Joi.object({
+    name: Joi.string().min(2).max(50),
+    email: Joi.string().email(),
+    role: Joi.string().valid('user', 'admin')
+  }).min(1),
+
+  login: Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().required()
+  })
+}
+
+module.exports = { validate, userSchemas }</code></pre>
+
+    <h3>Nest.js Validation</h3>
+    <pre><code>// dto/create-user.dto.ts
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  MaxLength,
+  IsOptional,
+  IsIn
+} from 'class-validator'
+import { Transform } from 'class-transformer'
+
+export class CreateUserDto {
+  @IsString()
+  @MinLength(2)
+  @MaxLength(50)
+  name: string
+
+  @IsEmail()
+  @Transform(({ value }) =&gt; value?.toLowerCase())
+  email: string
+
+  @IsString()
+  @MinLength(8)
+  password: string
+
+  @IsOptional()
+  @IsIn(['user', 'admin'])
+  role?: string = 'user'
+}
+
+// dto/update-user.dto.ts
+import { PartialType } from '@nestjs/mapped-types'
+import { CreateUserDto } from './create-user.dto'
+
+export class UpdateUserDto extends PartialType(CreateUserDto) {}
+
+// dto/login.dto.ts
+import { IsEmail, IsString } from 'class-validator'
+
+export class LoginDto {
+  @IsEmail()
+  email: string
+
+  @IsString()
+  password: string
+}
+
+// In controller
+@Post()
+@UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+async create(@Body() createUserDto: CreateUserDto) {
+  return this.usersService.create(createUserDto)
+}</code></pre>
+
+    <h2>Error Handling</h2>
+
+    <h3>Express.js Error Handling</h3>
+    <pre><code>// middleware/error.middleware.js
+const logger = require('../utils/logger')
+
+const errorHandler = (err, req, res, next) =&gt; {
+  let error = { ...err }
+  error.message = err.message
+
+  // Log error
+  logger.error(err)
+
+  // Mongoose bad ObjectId
+  if (err.name === 'CastError') {
+    const message = 'Resource not found'
+    error = { message, statusCode: 404 }
+  }
+
+  // Mongoose duplicate key
+  if (err.code === 11000) {
+    const message = 'Duplicate field value entered'
+    error = { message, statusCode: 400 }
+  }
+
+  // Mongoose validation error
+  if (err.name === 'ValidationError') {
+    const message = Object.values(err.errors).map(val =&gt; val.message).join(', ')
+    error = { message, statusCode: 400 }
+  }
+
+  // JWT errors
+  if (err.name === 'JsonWebTokenError') {
+    const message = 'Invalid token'
+    error = { message, statusCode: 401 }
+  }
+
+  if (err.name === 'TokenExpiredError') {
+    const message = 'Token expired'
+    error = { message, statusCode: 401 }
+  }
+
+  res.status(error.statusCode || 500).json({
+    success: false,
+    message: error.message || 'Server Error',
+    ...(process.env.NODE_ENV === 'development' &amp;&amp; { stack: err.stack })
+  })
+}
+
+const asyncHandler = (fn) =&gt; (req, res, next) =&gt;
+  Promise.resolve(fn(req, res, next)).catch(next)
+
+module.exports = { errorHandler, asyncHandler }</code></pre>
+
+    <h3>Nest.js Error Handling</h3>
+    <pre><code>// common/filters/all-exceptions.filter.ts
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
+  Logger,
+} from '@nestjs/common'
+import { Request, Response } from 'express'
+
+@Catch()
+export class AllExceptionsFilter implements ExceptionFilter {
+  private readonly logger = new Logger(AllExceptionsFilter.name)
+
+  catch(exception: unknown, host: ArgumentsHost): void {
+    const ctx = host.switchToHttp()
+    const response = ctx.getResponse&lt;Response&gt;()
+    const request = ctx.getRequest&lt;Request&gt;()
+
+    let status = HttpStatus.INTERNAL_SERVER_ERROR
+    let message = 'Internal server error'
+    let error = 'Internal Server Error'
+
+    if (exception instanceof HttpException) {
+      status = exception.getStatus()
+      const exceptionResponse = exception.getResponse()
+
+      if (typeof exceptionResponse === 'string') {
+        message = exceptionResponse
+      } else if (typeof exceptionResponse === 'object' &amp;&amp; exceptionResponse !== null) {
+        const responseObj = exceptionResponse as any
+        message = responseObj.message || message
+        error = responseObj.error || error
+      }
+    } else if (exception instanceof Error) {
+      this.logger.error(
+        `Exception: \${exception.message}\`,
+        exception.stack,
+        'AllExceptionsFilter'
+      )
+    }
+
+    const errorResponse = {
+      statusCode: status,
+      message,
+      error,
+      timestamp: new Date().toISOString(),
+      path: request.url,
+      method: request.method,
+    }
+
+    // Add stack trace in development
+    if (process.env.NODE_ENV === 'development' &amp;&amp; exception instanceof Error) {
+      errorResponse['stack'] = exception.stack
+    }
+
+    response.status(status).json(errorResponse)
+  }
+}
+
+// Custom exceptions
+// common/exceptions/validation.exception.ts
+import { BadRequestException } from '@nestjs/common'
+
+export class ValidationException extends BadRequestException {
+  constructor(errors: any) {
+    super({
+      message: 'Validation failed',
+      errors,
+    })
+  }
+}
+
+// common/exceptions/not-found.exception.ts
+import { NotFoundException } from '@nestjs/common'
+
+export class NotFoundException extends NotFoundException {
+  constructor(resource: string) {
+    super(`\${resource} not found\`)
+  }
+}</code></pre>
+
+    <h2>Database Integration</h2>
+
+    <h3>MongoDB with Mongoose (Express.js)</h3>
+    <pre><code>// models/user.model.js
+const mongoose = require('mongoose')
+const bcrypt = require('bcryptjs')
+
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, 'Please add a name'],
+    trim: true,
+    maxlength: [50, 'Name cannot be more than 50 characters']
+  },
+  email: {
+    type: String,
+    required: [true, 'Please add an email'],
+    unique: true,
+    lowercase: true,
+    match: [
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+      'Please add a valid email'
+    ]
+  },
+  password: {
+    type: String,
+    required: [true, 'Please add a password'],
+    minlength: 8,
+    select: false // Don't include password in queries by default
+  },
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user'
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  }
+}, {
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+})
+
+// Index for better performance
+userSchema.index({ email: 1 })
+userSchema.index({ createdAt: -1 })
+
+// Hash password before saving
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next()
+
+  const salt = await bcrypt.genSalt(12)
+  this.password = await bcrypt.hash(this.password, salt)
+  next()
+})
+
+// Instance methods
+userSchema.methods.comparePassword = async function(candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password)
+}
+
+userSchema.methods.toJSON = function() {
+  const userObject = this.toObject()
+  delete userObject.password
+  return userObject
+}
+
+module.exports = mongoose.model('User', userSchema)</code></pre>
+
+    <h3>TypeORM with Nest.js</h3>
+    <pre><code>// entities/user.entity.ts
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  BeforeInsert,
+  BeforeUpdate,
+} from 'typeorm'
+import * as bcrypt from 'bcrypt'
+
+export enum UserRole {
+  USER = 'user',
+  ADMIN = 'admin',
+}
+
+@Entity('users')
+export class User {
+  @PrimaryGeneratedColumn('uuid')
+  id: string
+
+  @Column({ length: 50 })
+  name: string
+
+  @Column({ unique: true, length: 100 })
+  email: string
+
+  @Column()
+  password: string
+
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.USER,
+  })
+  role: UserRole
+
+  @Column({ default: true })
+  isActive: boolean
+
+  @CreateDateColumn()
+  createdAt: Date
+
+  @UpdateDateColumn()
+  updatedAt: Date
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword() {
+    if (this.password) {
+      const saltRounds = 12
+      this.password = await bcrypt.hash(this.password, saltRounds)
+    }
+  }
+
+  async comparePassword(candidatePassword: string): Promise&lt;boolean&gt; {
+    return bcrypt.compare(candidatePassword, this.password)
+  }
+}
+
+// users/users.service.ts
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
+import { User } from './user.entity'
+import { CreateUserDto } from './dto/create-user.dto'
+
+@Injectable()
+export class UsersService {
+  constructor(
+    @InjectRepository(User)
+    private usersRepository: Repository&lt;User&gt;,
+  ) {}
+
+  async create(createUserDto: CreateUserDto): Promise&lt;User&gt; {
+    const existingUser = await this.usersRepository.findOne({
+      where: { email: createUserDto.email }
+    })
+
+    if (existingUser) {
+      throw new ConflictException('User with this email already exists')
+    }
+
+    const user = this.usersRepository.create(createUserDto)
+    return this.usersRepository.save(user)
+  }
+
+  async findOne(id: string): Promise&lt;User&gt; {
+    const user = await this.usersRepository.findOne({ where: { id } })
+
+    if (!user) {
+      throw new NotFoundException('User not found')
+    }
+
+    return user
+  }
+
+  async findByEmail(email: string): Promise&lt;User | null&gt; {
+    return this.usersRepository.findOne({ where: { email } })
+  }
+}</code></pre>
+
+    <h2>API Response Standardization</h2>
+
+    <h3>Express.js Response Helper</h3>
+    <pre><code>// utils/response.js
+class ApiResponse {
+  static success(res, message = 'Success', data = null, statusCode = 200) {
+    const response = {
+      success: true,
+      message,
+      ...(data !== null &amp;&amp; { data }),
+      timestamp: new Date().toISOString()
+    }
+
+    return res.status(statusCode).json(response)
+  }
+
+  static error(res, message = 'Error', statusCode = 500, errors = null) {
+    const response = {
+      success: false,
+      message,
+      ...(errors &amp;&amp; { errors }),
+      timestamp: new Date().toISOString()
+    }
+
+    return res.status(statusCode).json(response)
+  }
+
+  static paginated(res, data, page, limit, total, message = 'Success') {
+    const totalPages = Math.ceil(total / limit)
+    const hasNext = page &lt; totalPages
+    const hasPrev = page &gt; 1
+
+    const response = {
+      success: true,
+      message,
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext,
+        hasPrev,
+        nextPage: hasNext ? page + 1 : null,
+        prevPage: hasPrev ? page - 1 : null
+      },
+      timestamp: new Date().toISOString()
+    }
+
+    return res.status(200).json(response)
+  }
+}
+
+module.exports = ApiResponse</code></pre>
+
+    <h3>Nest.js Response Interceptor</h3>
+    <pre><code>// common/interceptors/response.interceptor.ts
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common'
+import { Observable } from 'rxjs'
+import { map } from 'rxjs/operators'
+
+export interface Response&lt;T&gt; {
+  success: boolean
+  message: string
+  data: T
+  timestamp: string
+}
+
+@Injectable()
+export class ResponseInterceptor&lt;T&gt; implements NestInterceptor&lt;T, Response&lt;T&gt;&gt; {
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Observable&lt;Response&lt;T&gt;&gt; {
+    return next.handle().pipe(
+      map((data) =&gt; ({
+        success: true,
+        message: 'Success',
+        data,
+        timestamp: new Date().toISOString(),
+      })),
+    )
+  }
+}
+
+// common/decorators/api-response.decorator.ts
+import { applyDecorators } from '@nestjs/common'
+import { ApiOperation, ApiResponse as SwaggerApiResponse } from '@nestjs/swagger'
+
+export function ApiResponse(message: string, statusCode = 200) {
+  return applyDecorators(
+    ApiOperation({ summary: message }),
+    SwaggerApiResponse({
+      status: statusCode,
+      description: message,
+      schema: {
+        type: 'object',
+        properties: {
+          success: { type: 'boolean', example: true },
+          message: { type: 'string', example: message },
+          data: { type: 'object' },
+          timestamp: { type: 'string', format: 'date-time' },
+        },
+      },
+    }),
+  )
+}</code></pre>
+
+    <h2>Testing Best Practices</h2>
+
+    <h3>Express.js Testing</h3>
+    <pre><code>// tests/integration/auth.test.js
+const request = require('supertest')
+const mongoose = require('mongoose')
+const app = require('../src/app')
+const User = require('../src/models/user.model')
+
+describe('Auth Endpoints', () =&gt; {
+  beforeAll(async () =&gt; {
+    await mongoose.connect(process.env.TEST_DATABASE_URL)
+  })
+
+  afterAll(async () =&gt; {
+    await mongoose.connection.close()
+  })
+
+  beforeEach(async () =&gt; {
+    await User.deleteMany({})
+  })
+
+  describe('POST /api/auth/register', () =&gt; {
+    it('should register a new user', async () =&gt; {
+      const userData = {
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'password123'
+      }
+
+      const response = await request(app)
+        .post('/api/auth/register')
+        .send(userData)
+        .expect(201)
+
+      expect(response.body.success).toBe(true)
+      expect(response.body.data.user.email).toBe(userData.email)
+      expect(response.body.data.token).toBeDefined()
+    })
+
+    it('should not register user with invalid email', async () =&gt; {
+      const userData = {
+        name: 'Test User',
+        email: 'invalid-email',
+        password: 'password123'
+      }
+
+      const response = await request(app)
+        .post('/api/auth/register')
+        .send(userData)
+        .expect(400)
+
+      expect(response.body.success).toBe(false)
+      expect(response.body.errors).toBeDefined()
+    })
+  })
+
+  describe('POST /api/auth/login', () =&gt; {
+    it('should login with correct credentials', async () =&gt; {
+      // Create test user
+      const user = await User.create({
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'password123'
+      })
+
+      const loginData = {
+        email: 'test@example.com',
+        password: 'password123'
+      }
+
+      const response = await request(app)
+        .post('/api/auth/login')
+        .send(loginData)
+        .expect(200)
+
+      expect(response.body.success).toBe(true)
+      expect(response.body.data.token).toBeDefined()
+    })
+  })
+})</code></pre>
+
+    <h3>Nest.js Testing</h3>
+    <pre><code>// users/users.service.spec.ts
+import { Test, TestingModule } from '@nestjs/testing'
+import { getRepositoryToken } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
+import { UsersService } from './users.service'
+import { User } from './user.entity'
+
+describe('UsersService', () =&gt; {
+  let service: UsersService
+  let repository: Repository&lt;User&gt;
+
+  const mockUser = {
+    id: '1',
+    name: 'Test User',
+    email: 'test@example.com',
+    password: 'hashedpassword',
+    role: 'user',
+    isActive: true,
+  }
+
+  const mockRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+    find: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+  }
+
+  beforeEach(async () =&gt; {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        UsersService,
+        {
+          provide: getRepositoryToken(User),
+          useValue: mockRepository,
+        },
+      ],
+    }).compile()
+
+    service = module.get&lt;UsersService&gt;(UsersService)
+    repository = module.get&lt;Repository&lt;User&gt;&gt;(getRepositoryToken(User))
+  })
+
+  it('should be defined', () =&gt; {
+    expect(service).toBeDefined()
+  })
+
+  describe('create', () =&gt; {
+    it('should create a new user', async () =&gt; {
+      const createUserDto = {
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'password123',
+      }
+
+      mockRepository.create.mockReturnValue(mockUser)
+      mockRepository.save.mockReturnValue(mockUser)
+      mockRepository.findOne.mockReturnValue(null)
+
+      const result = await service.create(createUserDto)
+
+      expect(result).toEqual(mockUser)
+      expect(mockRepository.create).toHaveBeenCalledWith(createUserDto)
+      expect(mockRepository.save).toHaveBeenCalledWith(mockUser)
+    })
+
+    it('should throw error if user already exists', async () =&gt; {
+      const createUserDto = {
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'password123',
+      }
+
+      mockRepository.findOne.mockReturnValue(mockUser)
+
+      await expect(service.create(createUserDto)).rejects.toThrow(
+        'User with this email already exists'
+      )
+    })
+  })
+})</code></pre>
+
+    <h2>Security Best Practices</h2>
+
+    <h3>Rate Limiting</h3>
+    <pre><code>// Express.js rate limiting
+const rateLimit = require('express-rate-limit')
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 requests per windowMs
+  message: {
+    success: false,
+    message: 'Too many authentication attempts, please try again later.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+})
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: {
+    success: false,
+    message: 'Too many requests, please try again later.'
+  },
+})
+
+// Apply to routes
+app.use('/api/auth/', authLimiter)
+app.use('/api/', apiLimiter)</code></pre>
+
+    <h3>CORS Configuration</h3>
+    <pre><code>// Express.js CORS
+const cors = require('cors')
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, etc.)
+    if (!origin) return callback(null, true)
+
+    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || []
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200
+}
+
+app.use(cors(corsOptions))</code></pre>
+
+    <h3>Helmet for Security Headers</h3>
+    <pre><code>// Express.js security headers
+const helmet = require('helmet')
+
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  }
+}))</code></pre>
+
+    <h2>Performance Optimization</h2>
+
+    <h3>Caching Strategies</h3>
+    <pre><code>// Redis caching middleware (Express.js)
+const redis = require('redis')
+const client = redis.createClient()
+
+const cache = (duration) =&gt; {
+  return (req, res, next) =&gt; {
+    const key = `__\${req.originalUrl}__\`
+
+    client.get(key, (err, cachedData) =&gt; {
+      if (err) return next()
+
+      if (cachedData) {
+        return res.json(JSON.parse(cachedData))
+      }
+
+      const originalJson = res.json
+      res.json = (data) =&gt; {
+        client.setex(key, duration, JSON.stringify(data))
+        originalJson.call(res, data)
+      }
+
+      next()
+    })
+  }
+}
+
+// Usage
+app.get('/api/users', cache(300), getUsers) // Cache for 5 minutes</code></pre>
+
+    <h3>Database Query Optimization</h3>
+    <pre><code>// Optimized queries with indexes
+// In your model/schema
+userSchema.index({ email: 1, isActive: 1 })
+userSchema.index({ createdAt: -1 })
+
+// Efficient queries
+const getActiveUsers = async (page = 1, limit = 10) =&gt; {
+  const skip = (page - 1) * limit
+
+  const users = await User.find({ isActive: true })
+    .select('name email createdAt') // Only select needed fields
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean() // Return plain objects for better performance
+
+  const total = await User.countDocuments({ isActive: true })
+
+  return { users, total }
+}</code></pre>
+
+    <h2>API Documentation</h2>
+
+    <h3>Swagger with Express.js</h3>
+    <pre><code>// swagger.js
+const swaggerJsdoc = require('swagger-jsdoc')
+const swaggerUi = require('swagger-ui-express')
+
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'API Documentation',
+      version: '1.0.0',
+      description: 'API documentation for the application',
+    },
+    servers: [
+      {
+        url: 'http://localhost:3000',
+        description: 'Development server',
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
+  },
+  apis: ['./routes/*.js'], // Path to the API routes
+}
+
+const specs = swaggerJsdoc(options)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))</code></pre>
+
+    <h3>Swagger with Nest.js</h3>
+    <pre><code>// main.ts
+import { NestFactory } from '@nestjs/core'
+import { ValidationPipe } from '@nestjs/common'
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
+import { AppModule } from './app.module'
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule)
+
+  // Swagger setup
+  const config = new DocumentBuilder()
+    .setTitle('API Documentation')
+    .setDescription('API documentation for the application')
+    .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'JWT-auth'
+    )
+    .build()
+
+  const document = SwaggerModule.createDocument(app, config)
+  SwaggerModule.setup('api', app, document)
+
+  // Validation
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+  }))
+
+  await app.listen(3000)
+}
+bootstrap()</code></pre>
+
+    <h2>Deployment and Monitoring</h2>
+
+    <h3>Environment Configuration</h3>
+    <pre><code>// config/environment.js
+const dotenv = require('dotenv')
+const path = require('path')
+
+// Load environment variables
+const envFile = process.env.NODE_ENV === 'production'
+  ? '.env.production'
+  : '.env.development'
+
+dotenv.config({ path: path.resolve(__dirname, '..', envFile) })
+
+const config = {
+  port: process.env.PORT || 3000,
+  nodeEnv: process.env.NODE_ENV || 'development',
+  jwtSecret: process.env.JWT_SECRET,
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
+  database: {
+    url: process.env.DATABASE_URL,
+    options: {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      maxPoolSize: 10,
+    },
+  },
+  redis: {
+    url: process.env.REDIS_URL,
+  },
+  cors: {
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+    credentials: true,
+  },
+  rateLimit: {
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: process.env.NODE_ENV === 'production' ? 100 : 1000,
+  },
+}
+
+// Validate required environment variables
+const requiredEnvVars = ['JWT_SECRET', 'DATABASE_URL']
+requiredEnvVars.forEach(envVar =&gt; {
+  if (!process.env[envVar]) {
+    throw new Error(`Missing required environment variable: \${envVar}\`)
+  }
+})
+
+module.exports = config</code></pre>
+
+    <h3>Health Checks</h3>
+    <pre><code>// routes/health.routes.js
+const express = require('express')
+const mongoose = require('mongoose')
+const router = express.Router()
+
+router.get('/health', async (req, res) =&gt; {
+  const healthcheck = {
+    uptime: process.uptime(),
+    message: 'OK',
+    timestamp: Date.now(),
+    services: {}
+  }
+
+  try {
+    // Check database connection
+    await mongoose.connection.db.admin().ping()
+    healthcheck.services.database = 'OK'
+  } catch (error) {
+    healthcheck.services.database = 'ERROR'
+    healthcheck.message = 'Database connection failed'
+  }
+
+  // Check Redis if used
+  if (process.env.REDIS_URL) {
+    try {
+      const redis = require('redis')
+      const client = redis.createClient({ url: process.env.REDIS_URL })
+      await client.ping()
+      healthcheck.services.redis = 'OK'
+      await client.quit()
+    } catch (error) {
+      healthcheck.services.redis = 'ERROR'
+    }
+  }
+
+  const statusCode = healthcheck.message === 'OK' ? 200 : 503
+  res.status(statusCode).json(healthcheck)
+})
+
+module.exports = router</code></pre>
+
+    <h2>Conclusion: Building Production-Ready APIs</h2>
+
+    <p>Building robust, scalable APIs with Express.js and Nest.js requires attention to detail across multiple areas—from authentication and validation to error handling and performance optimization. The frameworks provide excellent foundations, but following best practices ensures your APIs are secure, maintainable, and performant.</p>
+
+    <p>Start with a solid project structure, implement proper authentication and authorization, validate all inputs, handle errors gracefully, and write comprehensive tests. As your API grows, focus on performance optimization, proper documentation, and monitoring.</p>
+
+    <p>Remember that API development is an iterative process. Start with the core functionality, implement security measures early, and continuously improve based on usage patterns and feedback. The patterns and practices outlined in this guide will help you build APIs that can scale with your application's needs.</p>
+
+    <p>Whether you choose the flexibility of Express.js or the structure of Nest.js, the key to success lies in consistency, security, and maintainability. Follow these best practices, and you'll be well-equipped to build production-ready APIs that serve your applications effectively.</p>
+
+    <blockquote>
+      <p><em>"APIs are the connective tissue of modern applications. Design them with care, security, and scalability in mind."</em> - Shailesh Chaudhari</p>
+    </blockquote>
+  

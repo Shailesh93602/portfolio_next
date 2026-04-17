@@ -1,0 +1,778 @@
+---
+title: "How to Implement OAuth in Your Web Application"
+subtitle: "Complete guide to implementing OAuth 2.0 authentication with popular providers like Google, GitHub, and Facebook"
+description: "Learn how to implement OAuth 2.0 authentication in your web applications. Build secure login flows, handle tokens, manage user sessions, and integrate with major OAuth providers like Google, GitHub, and Facebook."
+image: "/Images/portfolio1.png"
+date: "2024-10-04"
+readTime: "15 min read"
+featured: true
+tags:
+  - "OAuth"
+  - "Authentication"
+  - "Security"
+  - "Web Development"
+  - "API"
+  - "JWT"
+  - "Next.js"
+  - "Node.js"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "Shaileshbhai"
+  - "Shaileshbhai Chaudhari"
+  - "Shailesh"
+  - "OAuth implementation"
+  - "OAuth 2.0"
+  - "authentication"
+  - "social login"
+  - "Google OAuth"
+  - "GitHub OAuth"
+  - "Facebook OAuth"
+  - "JWT tokens"
+  - "web security"
+  - "authentication flow"
+  - "OAuth providers"
+---
+
+
+    <div class="tldr">
+      <strong>TL;DR:</strong> Complete guide to implementing OAuth 2.0 in web applications. Learn to integrate with Google, GitHub, and Facebook, handle authentication flows, manage tokens securely, and build production-ready auth systems.
+    </div>
+
+    <h2>Understanding OAuth 2.0</h2>
+    <p>Hello everyone! I'm <strong>Shailesh Chaudhari</strong>, a full-stack developer who has implemented authentication systems for various web applications. Today, I'll guide you through implementing <strong>OAuth 2.0</strong> authentication in your web applications.</p>
+
+    <p>OAuth 2.0 is the industry-standard protocol for authorization, allowing users to grant third-party applications access to their resources without sharing their credentials. It's commonly used for "Login with Google/Facebook/GitHub" functionality.</p>
+
+    <h3>OAuth 2.0 Roles</h3>
+    <ul>
+      <li><strong>Resource Owner:</strong> The user who owns the data</li>
+      <li><strong>Client:</strong> Your application requesting access</li>
+      <li><strong>Authorization Server:</strong> Issues access tokens (e.g., Google)</li>
+      <li><strong>Resource Server:</strong> Hosts the protected resources</li>
+    </ul>
+
+    <h2>OAuth 2.0 Flow Types</h2>
+
+    <h3>Authorization Code Flow (Most Secure)</h3>
+    <p>The authorization code flow is the most secure and recommended for web applications:</p>
+    <ol>
+      <li>User clicks "Login with Google"</li>
+      <li>App redirects to Google's authorization endpoint</li>
+      <li>User grants permission</li>
+      <li>Google redirects back with authorization code</li>
+      <li>App exchanges code for access token</li>
+      <li>App uses token to access user data</li>
+    </ol>
+
+    <h3>Implicit Flow (Legacy)</h3>
+    <p>Used for client-side applications, but less secure than authorization code flow.</p>
+
+    <h2>Backend Setup (Node.js/Express)</h2>
+
+    <h3>Installing Dependencies</h3>
+    <pre><code>npm install express passport passport-google-oauth20 passport-github2 passport-facebook express-session
+npm install --save-dev @types/passport @types/express-session</code></pre>
+
+    <h3>Passport Configuration</h3>
+    <pre><code>// lib/auth.ts
+import passport from 'passport'
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
+import { Strategy as GitHubStrategy } from 'passport-github2'
+import { Strategy as FacebookStrategy } from 'passport-facebook'
+
+// Serialize user for session
+passport.serializeUser((user: any, done) =&gt; {
+  done(null, user.id)
+})
+
+passport.deserializeUser(async (id: string, done) =&gt; {
+  try {
+    // Fetch user from database
+    const user = await User.findById(id)
+    done(null, user)
+  } catch (error) {
+    done(error, null)
+  }
+})
+
+// Google Strategy
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID!,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+  callbackURL: '/auth/google/callback'
+}, async (accessToken, refreshToken, profile, done) =&gt; {
+  try {
+    // Find or create user
+    let user = await User.findOne({ googleId: profile.id })
+
+    if (!user) {
+      user = await User.create({
+        googleId: profile.id,
+        email: profile.emails?.[0].value,
+        name: profile.displayName,
+        avatar: profile.photos?.[0].value,
+        provider: 'google'
+      })
+    }
+
+    done(null, user)
+  } catch (error) {
+    done(error, null)
+  }
+}))
+
+// GitHub Strategy
+passport.use(new GitHubStrategy({
+  clientID: process.env.GITHUB_CLIENT_ID!,
+  clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+  callbackURL: '/auth/github/callback'
+}, async (accessToken, refreshToken, profile, done) =&gt; {
+  try {
+    let user = await User.findOne({ githubId: profile.id })
+
+    if (!user) {
+      user = await User.create({
+        githubId: profile.id,
+        email: profile.emails?.[0].value,
+        name: profile.displayName,
+        avatar: profile.photos?.[0].value,
+        provider: 'github'
+      })
+    }
+
+    done(null, user)
+  } catch (error) {
+    done(error, null)
+  }
+}))
+
+// Facebook Strategy
+passport.use(new FacebookStrategy({
+  clientID: process.env.FACEBOOK_APP_ID!,
+  clientSecret: process.env.FACEBOOK_APP_SECRET!,
+  callbackURL: '/auth/facebook/callback',
+  profileFields: ['id', 'emails', 'name', 'picture']
+}, async (accessToken, refreshToken, profile, done) =&gt; {
+  try {
+    let user = await User.findOne({ facebookId: profile.id })
+
+    if (!user) {
+      user = await User.create({
+        facebookId: profile.id,
+        email: profile.emails?.[0].value,
+        name: profile.displayName,
+        avatar: profile.photos?.[0].value,
+        provider: 'facebook'
+      })
+    }
+
+    done(null, user)
+  } catch (error) {
+    done(error, null)
+  }
+}))
+
+export default passport</code></pre>
+
+    <h3>Express Server Setup</h3>
+    <pre><code>// server.ts
+import express from 'express'
+import session from 'express-session'
+import passport from './lib/auth'
+
+const app = express()
+
+// Session configuration
+app.use(session({
+  secret: process.env.SESSION_SECRET!,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}))
+
+// Passport middleware
+app.use(passport.initialize())
+app.use(passport.session())
+
+// Auth routes
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+)
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  (req, res) =&gt; {
+    res.redirect('/dashboard')
+  }
+)
+
+app.get('/auth/github',
+  passport.authenticate('github', { scope: ['user:email'] })
+)
+
+app.get('/auth/github/callback',
+  passport.authenticate('github', { failureRedirect: '/login' }),
+  (req, res) =&gt; {
+    res.redirect('/dashboard')
+  }
+)
+
+app.get('/auth/facebook',
+  passport.authenticate('facebook', { scope: ['email'] })
+)
+
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  (req, res) =&gt; {
+    res.redirect('/dashboard')
+  }
+)
+
+// Logout
+app.post('/auth/logout', (req, res) =&gt; {
+  req.logout((err) =&gt; {
+    if (err) {
+      return res.status(500).json({ error: 'Logout failed' })
+    }
+    res.redirect('/')
+  })
+})
+
+// Get current user
+app.get('/auth/user', (req, res) =&gt; {
+  if (req.user) {
+    res.json({ user: req.user })
+  } else {
+    res.status(401).json({ error: 'Not authenticated' })
+  }
+})
+
+const PORT = process.env.PORT || 3001
+app.listen(PORT, () =&gt; {
+  console.log(`Server running on port \${PORT}\`)
+})</code></pre>
+
+    <h2>Frontend Implementation (Next.js)</h2>
+
+    <h3>OAuth Login Component</h3>
+    <pre><code>// components/OAuthLogin.tsx
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+
+interface OAuthLoginProps {
+  onSuccess?: () =&gt; void
+  onError?: (error: string) =&gt; void
+}
+
+export default function OAuthLogin({ onSuccess, onError }: OAuthLoginProps) {
+  const [loading, setLoading] = useState&lt;string | null&gt;(null)
+  const router = useRouter()
+
+  const handleOAuthLogin = async (provider: string) =&gt; {
+    setLoading(provider)
+
+    try {
+      // For Next.js API routes
+      window.location.href = `/api/auth/\${provider}\`
+
+      // Alternative: Open popup for better UX
+      // const popup = window.open(
+      //   \`/api/auth/\${provider}\`,
+      //   'oauth-popup',
+      //   'width=500,height=600'
+      // )
+
+      // if (popup) {
+      //   const checkClosed = setInterval(() =&gt; {
+      //     if (popup.closed) {
+      //       clearInterval(checkClosed)
+      //       // Check authentication status
+      //       router.refresh()
+      //       onSuccess?.()
+      //     }
+      //   }, 1000)
+      // }
+    } catch (error) {
+      setLoading(null)
+      onError?.('Authentication failed')
+    }
+  }
+
+  return (
+    &lt;div className="space-y-4"&gt;
+      &lt;button
+        onClick={() =&gt; handleOAuthLogin('google')}
+        disabled={!!loading}
+        className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+      &gt;
+        {loading === 'google' ? (
+          &lt;div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 mr-2"&gt;&lt;/div&gt;
+        ) : (
+          &lt;svg className="w-5 h-5 mr-2" viewBox="0 0 24 24"&gt;
+            &lt;path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/&gt;
+            &lt;path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/&gt;
+            &lt;path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/&gt;
+            &lt;path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/&gt;
+          &lt;/svg&gt;
+        )}
+        Continue with Google
+      &lt;/button&gt;
+
+      &lt;button
+        onClick={() =&gt; handleOAuthLogin('github')}
+        disabled={!!loading}
+        className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+      &gt;
+        {loading === 'github' ? (
+          &lt;div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900 mr-2"&gt;&lt;/div&gt;
+        ) : (
+          &lt;svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"&gt;
+            &lt;path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/&gt;
+          &lt;/svg&gt;
+        )}
+        Continue with GitHub
+      &lt;/button&gt;
+
+      &lt;button
+        onClick={() =&gt; handleOAuthLogin('facebook')}
+        disabled={!!loading}
+        className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+      &gt;
+        {loading === 'facebook' ? (
+          &lt;div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"&gt;&lt;/div&gt;
+        ) : (
+          &lt;svg className="w-5 h-5 mr-2" fill="#1877F2" viewBox="0 0 24 24"&gt;
+            &lt;path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/&gt;
+          &lt;/svg&gt;
+        )}
+        Continue with Facebook
+      &lt;/button&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+
+    <h3>Next.js API Routes</h3>
+    <pre><code>// pages/api/auth/[...nextauth].ts (NextAuth.js alternative)
+import NextAuth from 'next-auth'
+import GoogleProvider from 'next-auth/providers/google'
+import GitHubProvider from 'next-auth/providers/github'
+import FacebookProvider from 'next-auth/providers/facebook'
+
+export default NextAuth({
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    }),
+    FacebookProvider({
+      clientId: process.env.FACEBOOK_APP_ID!,
+      clientSecret: process.env.FACEBOOK_APP_SECRET!,
+    }),
+  ],
+  callbacks: {
+    async jwt({ token, account, profile }) {
+      if (account) {
+        token.accessToken = account.access_token
+      }
+      return token
+    },
+    async session({ session, token }) {
+      session.accessToken = token.accessToken
+      return session
+    },
+  },
+  pages: {
+    signIn: '/auth/signin',
+    error: '/auth/error',
+  },
+})</code></pre>
+
+    <h2>JWT Token Management</h2>
+
+    <h3>Custom JWT Implementation</h3>
+    <pre><code>// lib/jwt.ts
+import jwt from 'jsonwebtoken'
+
+const JWT_SECRET = process.env.JWT_SECRET!
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!
+
+export interface JWTPayload {
+  userId: string
+  email: string
+  provider: string
+  iat?: number
+  exp?: number
+}
+
+export function generateAccessToken(payload: Omit&lt;JWTPayload, 'iat' | 'exp'&gt;): string {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '15m' })
+}
+
+export function generateRefreshToken(payload: Omit&lt;JWTPayload, 'iat' | 'exp'&gt;): string {
+  return jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: '7d' })
+}
+
+export function verifyAccessToken(token: string): JWTPayload | null {
+  try {
+    return jwt.verify(token, JWT_SECRET) as JWTPayload
+  } catch (error) {
+    return null
+  }
+}
+
+export function verifyRefreshToken(token: string): JWTPayload | null {
+  try {
+    return jwt.verify(token, JWT_REFRESH_SECRET) as JWTPayload
+  } catch (error) {
+    return null
+  }
+}
+
+// Refresh token rotation
+export async function refreshAccessToken(refreshToken: string) {
+  const payload = verifyRefreshToken(refreshToken)
+
+  if (!payload) {
+    throw new Error('Invalid refresh token')
+  }
+
+  // Generate new tokens
+  const newAccessToken = generateAccessToken({
+    userId: payload.userId,
+    email: payload.email,
+    provider: payload.provider,
+  })
+
+  const newRefreshToken = generateRefreshToken({
+    userId: payload.userId,
+    email: payload.email,
+    provider: payload.provider,
+  })
+
+  return {
+    accessToken: newAccessToken,
+    refreshToken: newRefreshToken,
+  }
+}</code></pre>
+
+    <h3>Token Storage and Management</h3>
+    <pre><code>// lib/auth-storage.ts
+export class AuthStorage {
+  private static ACCESS_TOKEN_KEY = 'access_token'
+  private static REFRESH_TOKEN_KEY = 'refresh_token'
+
+  static setTokens(accessToken: string, refreshToken: string) {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken)
+      localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken)
+    }
+  }
+
+  static getAccessToken(): string | null {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(this.ACCESS_TOKEN_KEY)
+    }
+    return null
+  }
+
+  static getRefreshToken(): string | null {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(this.REFRESH_TOKEN_KEY)
+    }
+    return null
+  }
+
+  static clearTokens() {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(this.ACCESS_TOKEN_KEY)
+      localStorage.removeItem(this.REFRESH_TOKEN_KEY)
+    }
+  }
+
+  static isAuthenticated(): boolean {
+    const token = this.getAccessToken()
+    if (!token) return false
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      return payload.exp * 1000 &gt; Date.now()
+    } catch {
+      return false
+    }
+  }
+}</code></pre>
+
+    <h2>Security Best Practices</h2>
+
+    <h3>State Parameter Protection</h3>
+    <pre><code>// Prevent CSRF attacks
+app.get('/auth/google', (req, res) =&gt; {
+  const state = crypto.randomBytes(32).toString('hex')
+  req.session.oauthState = state
+
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+    state: state
+  })(req, res)
+})
+
+app.get('/auth/google/callback', (req, res) =&gt; {
+  if (req.query.state !== req.session.oauthState) {
+    return res.status(403).json({ error: 'Invalid state parameter' })
+  }
+
+  passport.authenticate('google', { failureRedirect: '/login' })(req, res)
+})</code></pre>
+
+    <h3>PKCE for Public Clients</h3>
+    <pre><code>// Proof Key for Code Exchange
+function generateCodeVerifier() {
+  return crypto.randomBytes(32).toString('base64url')
+}
+
+function generateCodeChallenge(verifier: string) {
+  const hash = crypto.createHash('sha256').update(verifier).digest()
+  return hash.toString('base64url')
+}
+
+// Usage in authorization request
+const codeVerifier = generateCodeVerifier()
+const codeChallenge = generateCodeChallenge(codeVerifier)
+
+// Store codeVerifier in session
+req.session.codeVerifier = codeVerifier
+
+// Include in authorization URL
+const authUrl = `https://accounts.google.com/oauth/authorize?...\${codeChallenge}...\`</code></pre>
+
+    <h3>Secure Cookie Configuration</h3>
+    <pre><code>// Session configuration for production
+app.use(session({
+  secret: process.env.SESSION_SECRET!,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // HTTPS only
+    httpOnly: true, // Prevent XSS
+    sameSite: 'strict', // CSRF protection
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  },
+  store: new RedisStore({ // Use Redis in production
+    client: redisClient,
+    ttl: 24 * 60 * 60
+  })
+}))</code></pre>
+
+    <h2>OAuth Provider Setup</h2>
+
+    <h3>Google OAuth Setup</h3>
+    <ol>
+      <li>Go to <a href="https://console.developers.google.com" target="_blank">Google Cloud Console</a></li>
+      <li>Create a new project or select existing one</li>
+      <li>Enable Google+ API</li>
+      <li>Create OAuth 2.0 credentials</li>
+      <li>Add authorized redirect URIs</li>
+      <li>Configure consent screen</li>
+    </ol>
+
+    <h3>GitHub OAuth Setup</h3>
+    <ol>
+      <li>Go to GitHub Settings → Developer settings → OAuth Apps</li>
+      <li>Click "New OAuth App"</li>
+      <li>Fill in application details</li>
+      <li>Add authorization callback URL</li>
+      <li>Copy Client ID and Client Secret</li>
+    </ol>
+
+    <h3>Facebook OAuth Setup</h3>
+    <ol>
+      <li>Go to <a href="https://developers.facebook.com" target="_blank">Facebook Developers</a></li>
+      <li>Create a new app</li>
+      <li>Add Facebook Login product</li>
+      <li>Configure OAuth redirect URIs</li>
+      <li>Get App ID and App Secret</li>
+    </ol>
+
+    <h2>Handling OAuth Errors</h2>
+
+    <h3>Error Types and Solutions</h3>
+    <pre><code>// OAuth error handling middleware
+app.use('/auth', (error, req, res, next) =&gt; {
+  if (error.code === 'access_denied') {
+    return res.redirect('/login?error=access_denied')
+  }
+
+  if (error.code === 'invalid_request') {
+    return res.redirect('/login?error=invalid_request')
+  }
+
+  if (error.code === 'unauthorized_client') {
+    return res.redirect('/login?error=unauthorized_client')
+  }
+
+  // Log error and redirect to generic error page
+  console.error('OAuth error:', error)
+  res.redirect('/login?error=oauth_error')
+})</code></pre>
+
+    <h3>Frontend Error Handling</h3>
+    <pre><code>// components/AuthError.tsx
+'use client'
+
+import { useSearchParams } from 'next/navigation'
+
+const errorMessages = {
+  access_denied: 'Access was denied by the OAuth provider.',
+  invalid_request: 'Invalid authorization request.',
+  unauthorized_client: 'Unauthorized client application.',
+  oauth_error: 'An error occurred during authentication.',
+}
+
+export default function AuthError() {
+  const searchParams = useSearchParams()
+  const error = searchParams.get('error')
+
+  if (!error || !errorMessages[error as keyof typeof errorMessages]) {
+    return null
+  }
+
+  return (
+    &lt;div className="bg-red-50 border border-red-200 rounded-md p-4 mb-4"&gt;
+      &lt;div className="flex"&gt;
+        &lt;div className="ml-3"&gt;
+          &lt;h3 className="text-sm font-medium text-red-800"&gt;
+            Authentication Error
+          &lt;/h3&gt;
+          &lt;div className="mt-2 text-sm text-red-700"&gt;
+            {errorMessages[error as keyof typeof errorMessages]}
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+
+    <h2>Testing OAuth Implementation</h2>
+
+    <h3>Development Environment Setup</h3>
+    <pre><code># .env.local
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+FACEBOOK_APP_ID=your_facebook_app_id
+FACEBOOK_APP_SECRET=your_facebook_app_secret
+SESSION_SECRET=your_session_secret
+JWT_SECRET=your_jwt_secret
+JWT_REFRESH_SECRET=your_jwt_refresh_secret</code></pre>
+
+    <h3>Testing Different Scenarios</h3>
+    <ul>
+      <li><strong>Successful authentication:</strong> Complete OAuth flow</li>
+      <li><strong>User denies access:</strong> Handle access_denied error</li>
+      <li><strong>Invalid credentials:</strong> Test with wrong client secrets</li>
+      <li><strong>Token expiration:</strong> Test refresh token flow</li>
+      <li><strong>Network errors:</strong> Simulate connection issues</li>
+      <li><strong>State parameter mismatch:</strong> Test CSRF protection</li>
+    </ul>
+
+    <h2>Production Deployment</h2>
+
+    <h3>Environment Variables</h3>
+    <pre><code># Production environment variables
+NODE_ENV=production
+SESSION_SECRET=strong_random_secret_here
+JWT_SECRET=another_strong_secret
+JWT_REFRESH_SECRET=yet_another_secret
+
+# OAuth credentials (use production apps)
+GOOGLE_CLIENT_ID=prod_google_client_id
+GOOGLE_CLIENT_SECRET=prod_google_client_secret
+# ... other provider credentials</code></pre>
+
+    <h3>Security Checklist</h3>
+    <ul>
+      <li>✅ Use HTTPS in production</li>
+      <li>✅ Store secrets securely (not in code)</li>
+      <li>✅ Implement proper session management</li>
+      <li>✅ Use secure cookies</li>
+      <li>✅ Validate redirect URIs</li>
+      <li>✅ Implement rate limiting</li>
+      <li>✅ Log authentication events</li>
+      <li>✅ Regular security audits</li>
+    </ul>
+
+    <h2>Advanced OAuth Features</h2>
+
+    <h3>Scope Management</h3>
+    <pre><code>// Request specific permissions
+app.get('/auth/google/calendar',
+  passport.authenticate('google', {
+    scope: [
+      'https://www.googleapis.com/auth/calendar.readonly',
+      'https://www.googleapis.com/auth/userinfo.email'
+    ]
+  })
+)
+
+// Handle incremental authorization
+app.get('/auth/google/incremental', (req, res) =&gt; {
+  const scopes = req.query.scopes?.split(',') || ['profile', 'email']
+
+  passport.authenticate('google', {
+    scope: scopes,
+    accessType: 'offline', // For refresh tokens
+    prompt: 'consent' // Force consent screen
+  })(req, res)
+})</code></pre>
+
+    <h3>Multi-Provider Account Linking</h3>
+    <pre><code>// Link multiple OAuth accounts to one user
+app.post('/auth/link-provider', async (req, res) =&gt; {
+  const { provider, code } = req.body
+  const userId = req.user.id
+
+  try {
+    // Exchange code for token and get user info
+    const tokenData = await exchangeCodeForToken(provider, code)
+    const providerUser = await getProviderUserInfo(provider, tokenData.access_token)
+
+    // Link to existing user account
+    await User.findByIdAndUpdate(userId, {
+      $set: {
+        [\`\${provider}Id\`]: providerUser.id,
+        [\`\${provider}Profile\`]: providerUser
+      }
+    })
+
+    res.json({ success: true, linked: provider })
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to link account' })
+  }
+})</code></pre>
+
+    <h2>Conclusion: Building Secure OAuth Systems</h2>
+
+    <p>Implementing OAuth 2.0 authentication in your web application doesn't have to be complex. By following the patterns and best practices outlined in this guide, you can build secure, scalable authentication systems that integrate seamlessly with major OAuth providers.</p>
+
+    <p>Start with the fundamentals—choose the right OAuth flow for your application, implement proper security measures, and handle errors gracefully. As your application grows, you can add advanced features like account linking, incremental authorization, and custom scopes.</p>
+
+    <p>Remember that authentication is a critical security component of your application. Always prioritize security best practices, keep your dependencies updated, and regularly audit your implementation for vulnerabilities.</p>
+
+    <p>The key to successful OAuth implementation is understanding the protocol, implementing proper security measures, and providing a smooth user experience. With these foundations in place, you can confidently handle user authentication at any scale.</p>
+
+    <blockquote>
+      <p><em>"Authentication is not just about security—it's about building trust with your users."</em> - Shailesh Chaudhari</p>
+    </blockquote>
+  `,
+  }

@@ -1,0 +1,1001 @@
+---
+title: "Setting Up Authentication with Supabase and Next.js"
+subtitle: "Complete guide to implementing secure authentication in Next.js applications using Supabase Auth"
+description: "Learn how to integrate Supabase authentication with Next.js. Build secure login, signup, password reset, and social authentication features with step-by-step instructions and best practices."
+image: "/Images/portfolio1.png"
+date: "2024-10-04"
+readTime: "17 min read"
+featured: true
+tags:
+  - "Supabase"
+  - "Next.js"
+  - "Authentication"
+  - "React"
+  - "Backend as a Service"
+  - "JWT"
+  - "OAuth"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "Shaileshbhai"
+  - "Shaileshbhai Chaudhari"
+  - "Shailesh"
+  - "Supabase authentication"
+  - "Next.js auth"
+  - "Supabase Next.js"
+  - "React authentication"
+  - "Supabase setup"
+  - "Next.js authentication"
+  - "JWT authentication"
+  - "OAuth Supabase"
+  - "social login Next.js"
+  - "Supabase auth tutorial"
+---
+
+
+    <div class="tldr">
+      <strong>TL;DR:</strong> Complete guide to implementing authentication in Next.js with Supabase. Learn to set up user registration, login, password reset, social authentication, and secure route protection with middleware and session management.
+    </div>
+
+    <h2>Why Supabase for Authentication?</h2>
+    <p>Hello everyone! I'm <strong>Shailesh Chaudhari</strong>, a full-stack developer who has implemented authentication systems using various technologies. Today, I'll show you how to integrate <strong>Supabase</strong> authentication with <strong>Next.js</strong> to create a secure, scalable authentication system.</p>
+
+    <p>Supabase provides a complete backend-as-a-service solution with built-in authentication, database, and real-time capabilities. Its authentication system is particularly powerful, offering email/password auth, social logins, and advanced security features out of the box.</p>
+
+    <h2>Prerequisites and Setup</h2>
+
+    <h3>What You'll Need</h3>
+    <ul>
+      <li>Next.js application (App Router or Pages Router)</li>
+      <li>Supabase account and project</li>
+      <li>Basic knowledge of React and JavaScript</li>
+      <li>Node.js and npm installed</li>
+    </ul>
+
+    <h3>Creating a Supabase Project</h3>
+    <p>Let's start by setting up our Supabase project:</p>
+    <ol>
+      <li>Go to <a href="https://supabase.com" target="_blank">supabase.com</a> and create an account</li>
+      <li>Create a new project</li>
+      <li>Wait for the database to be set up (usually takes 2-3 minutes)</li>
+      <li>Navigate to Settings → API to get your project URL and anon key</li>
+    </ol>
+
+    <h3>Installing Dependencies</h3>
+    <pre><code>npm install @supabase/supabase-js @supabase/auth-helpers-nextjs @supabase/auth-helpers-react</code></pre>
+
+    <h2>Project Configuration</h2>
+
+    <h3>Environment Variables</h3>
+    <p>Create a <code>.env.local</code> file in your project root:</p>
+    <pre><code># Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key</code></pre>
+
+    <h3>Supabase Client Setup</h3>
+    <p>Create a <code>lib/supabase.ts</code> file:</p>
+    <pre><code>import { createClient } from '@supabase/supabase-js'
+import { Database } from '@/types/supabase'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+export const supabase = createClient&lt;Database&gt;(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  }
+})
+
+// Server-side client for API routes
+export const supabaseServer = createClient&lt;Database&gt;(
+  supabaseUrl,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
+)</code></pre>
+
+    <h3>TypeScript Types (Optional but Recommended)</h3>
+    <p>Generate types from your Supabase database:</p>
+    <pre><code>npx supabase gen types typescript --project-id your_project_id &gt; types/supabase.ts</code></pre>
+
+    <h2>Authentication Components</h2>
+
+    <h3>Auth Context Provider</h3>
+    <p>Create an authentication context for managing user state:</p>
+    <pre><code>// contexts/AuthContext.tsx
+'use client'
+
+import { createContext, useContext, useEffect, useState } from 'react'
+import { User, Session } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase'
+
+interface AuthContextType {
+  user: User | null
+  session: Session | null
+  loading: boolean
+  signUp: (email: string, password: string) =&gt; Promise&lt;any&gt;
+  signIn: (email: string, password: string) =&gt; Promise&lt;any&gt;
+  signOut: () =&gt; Promise&lt;any&gt;
+  resetPassword: (email: string) =&gt; Promise&lt;any&gt;
+}
+
+const AuthContext = createContext&lt;AuthContextType | undefined&gt;(undefined)
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState&lt;User | null&gt;(null)
+  const [session, setSession] = useState&lt;Session | null&gt;(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) =&gt; {
+      setSession(session)
+      setUser(session?.user ?? null)
+      setLoading(false)
+    })
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) =&gt; {
+      setSession(session)
+      setUser(session?.user ?? null)
+      setLoading(false)
+    })
+
+    return () =&gt; subscription.unsubscribe()
+  }, [])
+
+  const signUp = async (email: string, password: string) =&gt; {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    })
+    return { data, error }
+  }
+
+  const signIn = async (email: string, password: string) =&gt; {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+    return { data, error }
+  }
+
+  const signOut = async () =&gt; {
+    const { error } = await supabase.auth.signOut()
+    return { error }
+  }
+
+  const resetPassword = async (email: string) =&gt; {
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `\${window.location.origin}/reset-password\`,
+    })
+    return { data, error }
+  }
+
+  const value = {
+    user,
+    session,
+    loading,
+    signUp,
+    signIn,
+    signOut,
+    resetPassword,
+  }
+
+  return &lt;AuthContext.Provider value={value}&gt;{children}&lt;/AuthContext.Provider&gt;
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext)
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+  return context
+}</code></pre>
+
+    <h3>Login Form Component</h3>
+    <pre><code>// components/auth/LoginForm.tsx
+'use client'
+
+import { useState } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
+
+export default function LoginForm() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const { signIn } = useAuth()
+  const router = useRouter()
+
+  const handleSubmit = async (e: React.FormEvent) =&gt; {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+
+    try {
+      const { error } = await signIn(email, password)
+      if (error) {
+        setError(error.message)
+      } else {
+        router.push('/dashboard')
+      }
+    } catch (error) {
+      setError('An unexpected error occurred')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    &lt;form onSubmit={handleSubmit} className="space-y-4"&gt;
+      &lt;div&gt;
+        &lt;label htmlFor="email" className="block text-sm font-medium"&gt;
+          Email
+        &lt;/label&gt;
+        &lt;input
+          id="email"
+          type="email"
+          value={email}
+          onChange={(e) =&gt; setEmail(e.target.value)}
+          required
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+        /&gt;
+      &lt;/div&gt;
+
+      &lt;div&gt;
+        &lt;label htmlFor="password" className="block text-sm font-medium"&gt;
+          Password
+        &lt;/label&gt;
+        &lt;input
+          id="password"
+          type="password"
+          value={password}
+          onChange={(e) =&gt; setPassword(e.target.value)}
+          required
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+        /&gt;
+      &lt;/div&gt;
+
+      {error && (
+        &lt;div className="text-red-600 text-sm"&gt;{error}&lt;/div&gt;
+      )}
+
+      &lt;button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
+      &gt;
+        {loading ? 'Signing in...' : 'Sign In'}
+      &lt;/button&gt;
+    &lt;/form&gt;
+  )
+}</code></pre>
+
+    <h3>Sign Up Form Component</h3>
+    <pre><code>// components/auth/SignUpForm.tsx
+'use client'
+
+import { useState } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
+
+export default function SignUpForm() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
+  const { signUp } = useAuth()
+  const router = useRouter()
+
+  const handleSubmit = async (e: React.FormEvent) =&gt; {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    setMessage('')
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match')
+      setLoading(false)
+      return
+    }
+
+    try {
+      const { data, error } = await signUp(email, password)
+      if (error) {
+        setError(error.message)
+      } else if (data.user && !data.user.email_confirmed_at) {
+        setMessage('Check your email for the confirmation link')
+      } else {
+        router.push('/dashboard')
+      }
+    } catch (error) {
+      setError('An unexpected error occurred')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    &lt;form onSubmit={handleSubmit} className="space-y-4"&gt;
+      &lt;div&gt;
+        &lt;label htmlFor="email" className="block text-sm font-medium"&gt;
+          Email
+        &lt;/label&gt;
+        &lt;input
+          id="email"
+          type="email"
+          value={email}
+          onChange={(e) =&gt; setEmail(e.target.value)}
+          required
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+        /&gt;
+      &lt;/div&gt;
+
+      &lt;div&gt;
+        &lt;label htmlFor="password" className="block text-sm font-medium"&gt;
+          Password
+        &lt;/label&gt;
+        &lt;input
+          id="password"
+          type="password"
+          value={password}
+          onChange={(e) =&gt; setPassword(e.target.value)}
+          required
+          minLength={6}
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+        /&gt;
+      &lt;/div&gt;
+
+      &lt;div&gt;
+        &lt;label htmlFor="confirmPassword" className="block text-sm font-medium"&gt;
+          Confirm Password
+        &lt;/label&gt;
+        &lt;input
+          id="confirmPassword"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) =&gt; setConfirmPassword(e.target.value)}
+          required
+          minLength={6}
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+        /&gt;
+      &lt;/div&gt;
+
+      {error && (
+        &lt;div className="text-red-600 text-sm"&gt;{error}&lt;/div&gt;
+      )}
+
+      {message && (
+        &lt;div className="text-green-600 text-sm"&gt;{message}&lt;/div&gt;
+      )}
+
+      &lt;button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:opacity-50"
+      &gt;
+        {loading ? 'Creating account...' : 'Sign Up'}
+      &lt;/button&gt;
+    &lt;/form&gt;
+  )
+}</code></pre>
+
+    <h2>Social Authentication</h2>
+
+    <h3>Configuring Social Providers</h3>
+    <p>Set up social authentication in your Supabase dashboard:</p>
+    <ol>
+      <li>Go to Authentication → Providers</li>
+      <li>Enable providers (Google, GitHub, etc.)</li>
+      <li>Add your OAuth credentials</li>
+      <li>Configure redirect URLs</li>
+    </ol>
+
+    <h3>Social Login Component</h3>
+    <pre><code>// components/auth/SocialLogin.tsx
+'use client'
+
+import { supabase } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
+
+export default function SocialLogin() {
+  const router = useRouter()
+
+  const handleSocialLogin = async (provider: 'google' | 'github' | 'discord') =&gt; {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `\${window.location.origin}/auth/callback\`,
+        },
+      })
+
+      if (error) {
+        console.error('Error:', error.message)
+      }
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
+
+  return (
+    &lt;div className="space-y-3"&gt;
+      &lt;button
+        onClick={() =&gt; handleSocialLogin('google')}
+        className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+      &gt;
+        &lt;svg className="w-5 h-5 mr-2" viewBox="0 0 24 24"&gt;
+          &lt;path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/&gt;
+          &lt;path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/&gt;
+          &lt;path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/&gt;
+          &lt;path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/&gt;
+        &lt;/svg&gt;
+        Continue with Google
+      &lt;/button&gt;
+
+      &lt;button
+        onClick={() =&gt; handleSocialLogin('github')}
+        className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+      &gt;
+        &lt;svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"&gt;
+          &lt;path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/&gt;
+        &lt;/svg&gt;
+        Continue with GitHub
+      &lt;/button&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+
+    <h3>OAuth Callback Handler</h3>
+    <pre><code>// app/auth/callback/route.ts
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { NextRequest, NextResponse } from 'next/server'
+
+export async function GET(request: NextRequest) {
+  const { searchParams, origin } = new URL(request.url)
+  const code = searchParams.get('code')
+  // if "next" is in param, use it as the redirect URL
+  const next = searchParams.get('next') ?? '/dashboard'
+
+  if (code) {
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return request.cookies.get(name)?.value
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            request.cookies.set({
+              name,
+              value,
+              ...options,
+            })
+          },
+          remove(name: string, options: CookieOptions) {
+            request.cookies.set({
+              name,
+              value: '',
+              ...options,
+            })
+          },
+        },
+      }
+    )
+
+    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    if (!error) {
+      const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
+      const isLocalEnv = process.env.NODE_ENV === 'development'
+      if (isLocalEnv) {
+        // We can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
+        return NextResponse.redirect(`\${origin}\${next}\`)
+      } else if (forwardedHost) {
+        return NextResponse.redirect(`https://\${forwardedHost}\${next}\`)
+      } else {
+        return NextResponse.redirect(`\${origin}\${next}\`)
+      }
+    }
+  }
+
+  // return the user to an error page with instructions
+  return NextResponse.redirect(`\${origin}/auth/auth-code-error\`)
+}</code></pre>
+
+    <h2>Route Protection and Middleware</h2>
+
+    <h3>Next.js Middleware for Route Protection</h3>
+    <pre><code>// middleware.ts
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
+
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return request.cookies.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          request.cookies.set({
+            name,
+            value,
+            ...options,
+          })
+          response.cookies.set({
+            name,
+            value,
+            ...options,
+          })
+        },
+        remove(name: string, options: CookieOptions) {
+          request.cookies.set({
+            name,
+            value: '',
+            ...options,
+          })
+          response.cookies.set({
+            name,
+            value: '',
+            ...options,
+          })
+        },
+      },
+    }
+  )
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  // Protect dashboard routes
+  if (request.nextUrl.pathname.startsWith('/dashboard') && !user) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  // Redirect authenticated users away from auth pages
+  if (request.nextUrl.pathname.startsWith('/login') && user) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
+  return response
+}
+
+export const config = {
+  matcher: [
+    '/dashboard/:path*',
+    '/login',
+    '/signup',
+    '/auth/callback',
+  ],
+}</code></pre>
+
+    <h3>Protected Route Component</h3>
+    <pre><code>// components/auth/ProtectedRoute.tsx
+'use client'
+
+import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+
+interface ProtectedRouteProps {
+  children: React.ReactNode
+  redirectTo?: string
+}
+
+export default function ProtectedRoute({
+  children,
+  redirectTo = '/login'
+}: ProtectedRouteProps) {
+  const { user, loading } = useAuth()
+  const router = useRouter()
+
+  useEffect(() =&gt; {
+    if (!loading && !user) {
+      router.push(redirectTo)
+    }
+  }, [user, loading, router, redirectTo])
+
+  if (loading) {
+    return (
+      &lt;div className="flex items-center justify-center min-h-screen"&gt;
+        &lt;div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    )
+  }
+
+  if (!user) {
+    return null
+  }
+
+  return &lt;&gt;{children}&lt;/&gt;
+}</code></pre>
+
+    <h2>Password Reset and Email Verification</h2>
+
+    <h3>Password Reset Flow</h3>
+    <pre><code>// components/auth/ResetPasswordForm.tsx
+'use client'
+
+import { useState } from 'react'
+import { supabase } from '@/lib/supabase'
+
+export default function ResetPasswordForm() {
+  const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
+
+  const handleSubmit = async (e: React.FormEvent) =&gt; {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    setMessage('')
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `\${window.location.origin}/reset-password\`,
+      })
+
+      if (error) {
+        setError(error.message)
+      } else {
+        setMessage('Check your email for the password reset link')
+      }
+    } catch (error) {
+      setError('An unexpected error occurred')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    &lt;form onSubmit={handleSubmit} className="space-y-4"&gt;
+      &lt;div&gt;
+        &lt;label htmlFor="email" className="block text-sm font-medium"&gt;
+          Email
+        &lt;/label&gt;
+        &lt;input
+          id="email"
+          type="email"
+          value={email}
+          onChange={(e) =&gt; setEmail(e.target.value)}
+          required
+          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+        /&gt;
+      &lt;/div&gt;
+
+      {error && (
+        &lt;div className="text-red-600 text-sm"&gt;{error}&lt;/div&gt;
+      )}
+
+      {message && (
+        &lt;div className="text-green-600 text-sm"&gt;{message}&lt;/div&gt;
+      )}
+
+      &lt;button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
+      &gt;
+        {loading ? 'Sending...' : 'Send Reset Link'}
+      &lt;/button&gt;
+    &lt;/form&gt;
+  )
+}</code></pre>
+
+    <h3>Update Password Page</h3>
+    <pre><code>// app/reset-password/page.tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
+
+export default function ResetPasswordPage() {
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
+  const router = useRouter()
+
+  useEffect(() =&gt; {
+    // Check if we have a session (user clicked reset link)
+    supabase.auth.getSession().then(({ data: { session } }) =&gt; {
+      if (!session) {
+        router.push('/login')
+      }
+    })
+  }, [router])
+
+  const handleSubmit = async (e: React.FormEvent) =&gt; {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    setMessage('')
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match')
+      setLoading(false)
+      return
+    }
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: password
+      })
+
+      if (error) {
+        setError(error.message)
+      } else {
+        setMessage('Password updated successfully!')
+        setTimeout(() =&gt; {
+          router.push('/dashboard')
+        }, 2000)
+      }
+    } catch (error) {
+      setError('An unexpected error occurred')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    &lt;div className="max-w-md mx-auto mt-8"&gt;
+      &lt;h1 className="text-2xl font-bold mb-4"&gt;Reset Your Password&lt;/h1&gt;
+
+      &lt;form onSubmit={handleSubmit} className="space-y-4"&gt;
+        &lt;div&gt;
+          &lt;label htmlFor="password" className="block text-sm font-medium"&gt;
+            New Password
+          &lt;/label&gt;
+          &lt;input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) =&gt; setPassword(e.target.value)}
+            required
+            minLength={6}
+            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+          /&gt;
+        &lt;/div&gt;
+
+        &lt;div&gt;
+          &lt;label htmlFor="confirmPassword" className="block text-sm font-medium"&gt;
+            Confirm New Password
+          &lt;/label&gt;
+          &lt;input
+            id="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) =&gt; setConfirmPassword(e.target.value)}
+            required
+            minLength={6}
+            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+          /&gt;
+        &lt;/div&gt;
+
+        {error && (
+          &lt;div className="text-red-600 text-sm"&gt;{error}&lt;/div&gt;
+        )}
+
+        {message && (
+          &lt;div className="text-green-600 text-sm"&gt;{message}&lt;/div&gt;
+        )}
+
+        &lt;button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
+        &gt;
+          {loading ? 'Updating...' : 'Update Password'}
+        &lt;/button&gt;
+      &lt;/form&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+
+    <h2>Security Best Practices</h2>
+
+    <h3>Row Level Security (RLS)</h3>
+    <p>Enable RLS in Supabase to secure your database:</p>
+    <pre><code>-- Enable RLS on users table
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+
+-- Create policy for users to see only their own data
+CREATE POLICY "Users can view own data" ON users
+  FOR SELECT USING (auth.uid() = id);
+
+-- Create policy for users to update own data
+CREATE POLICY "Users can update own data" ON users
+  FOR UPDATE USING (auth.uid() = id);</code></pre>
+
+    <h3>Environment Variables Security</h3>
+    <pre><code>// .env.local (never commit this file)
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+// .env.example (commit this file)
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key</code></pre>
+
+    <h3>Input Validation and Sanitization</h3>
+    <pre><code>// Use a validation library like Zod
+import { z } from 'zod'
+
+const signUpSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  confirmPassword: z.string(),
+}).refine((data) =&gt; data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+})
+
+export async function signUpUser(data: unknown) {
+  const validatedData = signUpSchema.parse(data)
+  // Proceed with signup...
+}</code></pre>
+
+    <h2>Testing Authentication</h2>
+
+    <h3>Unit Tests for Auth Components</h3>
+    <pre><code>// __tests__/auth/LoginForm.test.tsx
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import LoginForm from '@/components/auth/LoginForm'
+import { AuthProvider } from '@/contexts/AuthContext'
+
+// Mock the auth context
+const mockSignIn = jest.fn()
+jest.mock('@/contexts/AuthContext', () =&gt; ({
+  useAuth: () =&gt; ({
+    signIn: mockSignIn,
+  }),
+}))
+
+describe('LoginForm', () =&gt; {
+  it('renders login form', () =&gt; {
+    render(
+      &lt;AuthProvider&gt;
+        &lt;LoginForm /&gt;
+      &lt;/AuthProvider&gt;
+    )
+
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument()
+  })
+
+  it('submits form with valid data', async () =&gt; {
+    mockSignIn.mockResolvedValue({ error: null })
+
+    render(
+      &lt;AuthProvider&gt;
+        &lt;LoginForm /&gt;
+      &lt;/AuthProvider&gt;
+    )
+
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: 'test@example.com' },
+    })
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: 'password123' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
+
+    await waitFor(() =&gt; {
+      expect(mockSignIn).toHaveBeenCalledWith('test@example.com', 'password123')
+    })
+  })
+})</code></pre>
+
+    <h3>E2E Testing with Playwright</h3>
+    <pre><code>// e2e/auth.spec.ts
+import { test, expect } from '@playwright/test'
+
+test.describe('Authentication', () =&gt; {
+  test('user can sign up', async ({ page }) =&gt; {
+    await page.goto('/signup')
+
+    await page.fill('[data-testid="email-input"]', 'test@example.com')
+    await page.fill('[data-testid="password-input"]', 'password123')
+    await page.fill('[data-testid="confirm-password-input"]', 'password123')
+
+    await page.click('[data-testid="signup-button"]')
+
+    await expect(page).toHaveURL('/dashboard')
+  })
+
+  test('user can sign in', async ({ page }) =&gt; {
+    await page.goto('/login')
+
+    await page.fill('[data-testid="email-input"]', 'test@example.com')
+    await page.fill('[data-testid="password-input"]', 'password123')
+
+    await page.click('[data-testid="signin-button"]')
+
+    await expect(page).toHaveURL('/dashboard')
+  })
+})</code></pre>
+
+    <h2>Deployment Considerations</h2>
+
+    <h3>Environment Configuration</h3>
+    <pre><code>// vercel.json for Vercel deployment
+{
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "@supabase-url",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase-anon-key",
+    "SUPABASE_SERVICE_ROLE_KEY": "@supabase-service-role-key"
+  }
+}</code></pre>
+
+    <h3>CORS Configuration</h3>
+    <p>Configure CORS in Supabase dashboard:</p>
+    <ul>
+      <li>Go to Settings → API</li>
+      <li>Add your production domain to "Site URL"</li>
+      <li>Add redirect URLs for OAuth providers</li>
+    </ul>
+
+    <h2>Common Issues and Solutions</h2>
+
+    <h3>Session Not Persisting</h3>
+    <pre><code>// Solution: Ensure cookies are properly configured
+const supabase = createClient(url, key, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+  }
+})</code></pre>
+
+    <h3>OAuth Redirect Issues</h3>
+    <pre><code>// Solution: Configure correct redirect URLs
+// In Supabase dashboard and OAuth provider settings
+const redirectTo = process.env.NODE_ENV === 'production'
+  ? 'https://yourdomain.com/auth/callback'
+  : 'http://localhost:3000/auth/callback'</code></pre>
+
+    <h3>Email Confirmation Not Working</h3>
+    <pre><code>// Solution: Configure SMTP settings in Supabase
+// Go to Authentication → Email Templates
+// Set up your SMTP provider or use Supabase's built-in email</code></pre>
+
+    <h2>Conclusion: Building Secure Authentication</h2>
+
+    <p>Implementing authentication with Supabase and Next.js provides a robust, scalable solution for securing your web applications. The combination of Supabase's powerful backend features and Next.js's excellent developer experience makes it easy to build secure authentication flows.</p>
+
+    <p>From basic email/password authentication to advanced features like social logins, password reset, and route protection, Supabase handles the heavy lifting while you focus on building great user experiences.</p>
+
+    <p>Remember to always follow security best practices, validate user input, implement proper authorization, and test your authentication flows thoroughly. With these foundations in place, you can build applications that users can trust with their data.</p>
+
+    <p>The authentication system you've built will scale with your application, providing a solid foundation for user management and security. Keep exploring Supabase's features and integrating them into your applications for even more powerful functionality.</p>
+
+    <blockquote>
+      <p><em>"Security is not a product, but a process. Building authentication is just the beginning of securing your users' trust."</em> - Shailesh Chaudhari</p>
+    </blockquote>
+  

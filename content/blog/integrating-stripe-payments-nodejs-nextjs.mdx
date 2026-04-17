@@ -1,0 +1,893 @@
+---
+title: "Integrating Stripe Payments in a Node.js/Next.js App"
+subtitle: "Complete guide to implementing secure payment processing with Stripe API, webhooks, and subscription management"
+description: "Learn how to integrate Stripe payments into your Node.js/Next.js application. Build secure payment forms, handle webhooks, manage subscriptions, and implement proper error handling for production-ready payment processing."
+image: "/Images/portfolio1.png"
+date: "2024-10-04"
+readTime: "16 min read"
+featured: true
+tags:
+  - "Stripe"
+  - "Payments"
+  - "Next.js"
+  - "Node.js"
+  - "API Integration"
+  - "Webhooks"
+  - "Subscriptions"
+  - "E-commerce"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "Shaileshbhai"
+  - "Shaileshbhai Chaudhari"
+  - "Shailesh"
+  - "Stripe payments"
+  - "Next.js Stripe"
+  - "Node.js payments"
+  - "Stripe integration"
+  - "payment processing"
+  - "Stripe webhooks"
+  - "Stripe subscriptions"
+  - "payment gateway"
+  - "e-commerce payments"
+  - "Stripe API tutorial"
+---
+
+
+    <div class="tldr">
+      <strong>TL;DR:</strong> Complete guide to integrating Stripe payments in Node.js/Next.js applications. Learn to create payment intents, handle webhooks, manage subscriptions, implement proper security, and build production-ready payment flows.
+    </div>
+
+    <h2>Why Choose Stripe for Payment Processing?</h2>
+    <p>Hello everyone! I'm <strong>Shailesh Chaudhari</strong>, a full-stack developer who has implemented payment systems for various e-commerce and SaaS applications. Today, I'll guide you through integrating <strong>Stripe</strong> payments into your <strong>Node.js/Next.js</strong> application.</p>
+
+    <p>Stripe has become the gold standard for payment processing, offering a developer-friendly API, excellent documentation, and robust security features. Whether you're building a simple e-commerce site or a complex subscription-based SaaS platform, Stripe provides the tools you need to handle payments securely and efficiently.</p>
+
+    <h2>Prerequisites and Setup</h2>
+
+    <h3>What You'll Need</h3>
+    <ul>
+      <li>Node.js application (Express.js or Next.js API routes)</li>
+      <li>Next.js frontend for payment forms</li>
+      <li>Stripe account (test and live mode)</li>
+      <li>Basic knowledge of React and Node.js</li>
+    </ul>
+
+    <h3>Stripe Account Setup</h3>
+    <p>Let's get your Stripe account ready:</p>
+    <ol>
+      <li>Sign up at <a href="https://stripe.com" target="_blank">stripe.com</a></li>
+      <li>Complete account verification</li>
+      <li>Get your API keys from the dashboard</li>
+      <li>Enable test mode for development</li>
+      <li>Set up webhook endpoints</li>
+    </ol>
+
+    <h3>Installing Dependencies</h3>
+    <pre><code>npm install stripe @stripe/stripe-js @stripe/react-stripe-js
+npm install --save-dev @types/stripe</code></pre>
+
+    <h2>Backend Setup (Node.js/Express)</h2>
+
+    <h3>Stripe Configuration</h3>
+    <pre><code>// lib/stripe.ts
+import Stripe from 'stripe'
+
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('STRIPE_SECRET_KEY is required')
+}
+
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: '2023-10-16',
+  typescript: true,
+})
+
+// Webhook secret for signature verification
+export const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET</code></pre>
+
+    <h3>Environment Variables</h3>
+    <pre><code># .env.local
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...</code></pre>
+
+    <h2>Payment Intents API (Recommended)</h2>
+
+    <h3>Creating Payment Intent</h3>
+    <pre><code>// pages/api/create-payment-intent.ts (Next.js API route)
+import { NextApiRequest, NextApiResponse } from 'next'
+import { stripe } from '@/lib/stripe'
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST')
+    res.status(405).end('Method Not Allowed')
+    return
+  }
+
+  try {
+    const { amount, currency = 'usd', metadata } = req.body
+
+    // Validate amount
+    if (!amount || amount &lt;= 0) {
+      return res.status(400).json({ error: 'Invalid amount' })
+    }
+
+    // Create a PaymentIntent with the order amount and currency
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(amount * 100), // Convert to cents
+      currency,
+      metadata: {
+        ...metadata,
+        integration_check: 'accept_a_payment',
+      },
+      // Enable automatic payment methods for the Payment Element
+      automatic_payment_methods: {
+        enabled: true,
+      },
+    })
+
+    res.status(200).json({
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+    })
+  } catch (error: any) {
+    console.error('Payment intent creation failed:', error)
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    })
+  }
+}</code></pre>
+
+    <h3>Confirming Payment</h3>
+    <pre><code>// pages/api/confirm-payment.ts
+import { NextApiRequest, NextApiResponse } from 'next'
+import { stripe } from '@/lib/stripe'
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST')
+    res.status(405).end('Method Not Allowed')
+    return
+  }
+
+  try {
+    const { paymentIntentId } = req.body
+
+    if (!paymentIntentId) {
+      return res.status(400).json({ error: 'Payment intent ID is required' })
+    }
+
+    // Retrieve the payment intent
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId)
+
+    if (paymentIntent.status === 'succeeded') {
+      // Payment was successful
+      // Update your database, send confirmation email, etc.
+      res.status(200).json({
+        success: true,
+        paymentIntent,
+      })
+    } else {
+      res.status(400).json({
+        error: 'Payment not completed',
+        status: paymentIntent.status,
+      })
+    }
+  } catch (error: any) {
+    console.error('Payment confirmation failed:', error)
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    })
+  }
+}</code></pre>
+
+    <h2>Frontend Payment Form (React/Next.js)</h2>
+
+    <h3>Stripe Provider Setup</h3>
+    <pre><code>// components/StripeProvider.tsx
+'use client'
+
+import { ReactNode } from 'react'
+import { Elements } from '@stripe/react-stripe-js'
+import { loadStripe } from '@stripe/stripe-js'
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+
+interface StripeProviderProps {
+  children: ReactNode
+}
+
+export function StripeProvider({ children }: StripeProviderProps) {
+  const options = {
+    // passing the client secret obtained from the server
+    clientSecret: process.env.NEXT_PUBLIC_STRIPE_CLIENT_SECRET,
+  }
+
+  return (
+    &lt;Elements stripe={stripePromise} options={options}&gt;
+      {children}
+    &lt;/Elements&gt;
+  )
+}</code></pre>
+
+    <h3>Payment Form Component</h3>
+    <pre><code>// components/PaymentForm.tsx
+'use client'
+
+import { useState } from 'react'
+import {
+  PaymentElement,
+  useStripe,
+  useElements,
+} from '@stripe/react-stripe-js'
+
+interface PaymentFormProps {
+  amount: number
+  onSuccess: (paymentIntent: any) =&gt; void
+  onError: (error: string) =&gt; void
+}
+
+export default function PaymentForm({
+  amount,
+  onSuccess,
+  onError
+}: PaymentFormProps) {
+  const stripe = useStripe()
+  const elements = useElements()
+
+  const [isLoading, setIsLoading] = useState(false)
+  const [message, setMessage] = useState&lt;string&gt;('')
+
+  const handleSubmit = async (event: React.FormEvent) =&gt; {
+    event.preventDefault()
+
+    if (!stripe || !elements) {
+      return
+    }
+
+    setIsLoading(true)
+    setMessage('')
+
+    try {
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `\${window.location.origin}/payment/success\`,
+        },
+        redirect: 'if_required',
+      })
+
+      if (error) {
+        setMessage(error.message || 'An error occurred')
+        onError(error.message || 'Payment failed')
+      } else if (paymentIntent &amp;&amp; paymentIntent.status === 'succeeded') {
+        setMessage('Payment succeeded!')
+        onSuccess(paymentIntent)
+      }
+    } catch (error: any) {
+      setMessage('An unexpected error occurred')
+      onError('Payment processing failed')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const paymentElementOptions = {
+    layout: 'tabs' as const,
+  }
+
+  return (
+    &lt;form onSubmit={handleSubmit} className="space-y-4"&gt;
+      &lt;PaymentElement options={paymentElementOptions} /&gt;
+
+      {message &amp;&amp; (
+        &lt;div className={`p-4 rounded-md \${message.includes('succeeded') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}\`}&gt;
+          {message}
+        &lt;/div&gt;
+      )}
+
+      &lt;button
+        type="submit"
+        disabled={!stripe || !elements || isLoading}
+        className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+      &gt;
+        {isLoading ? 'Processing...' : `Pay $\${amount.toFixed(2)}\`}
+      &lt;/button&gt;
+    &lt;/form&gt;
+  )
+}</code></pre>
+
+    <h3>Checkout Page</h3>
+    <pre><code>// app/checkout/page.tsx
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { StripeProvider } from '@/components/StripeProvider'
+import PaymentForm from '@/components/PaymentForm'
+
+export default function CheckoutPage() {
+  const [clientSecret, setClientSecret] = useState&lt;string&gt;('')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState&lt;string&gt;('')
+  const router = useRouter()
+
+  // Get amount from URL params or cart
+  const amount = 29.99 // Replace with dynamic amount
+
+  useEffect(() =&gt; {
+    // Create PaymentIntent as soon as the page loads
+    createPaymentIntent()
+  }, [])
+
+  const createPaymentIntent = async () =&gt; {
+    try {
+      const response = await fetch('/api/create-payment-intent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount,
+          currency: 'usd',
+          metadata: {
+            orderId: 'order_' + Date.now(),
+          },
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create payment intent')
+      }
+
+      setClientSecret(data.clientSecret)
+    } catch (error: any) {
+      setError(error.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handlePaymentSuccess = (paymentIntent: any) =&gt; {
+    // Redirect to success page or update UI
+    router.push('/payment/success?payment_intent=' + paymentIntent.id)
+  }
+
+  const handlePaymentError = (errorMessage: string) =&gt; {
+    setError(errorMessage)
+  }
+
+  if (loading) {
+    return (
+      &lt;div className="flex items-center justify-center min-h-screen"&gt;
+        &lt;div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    )
+  }
+
+  if (error) {
+    return (
+      &lt;div className="max-w-md mx-auto mt-8 p-6 bg-red-50 border border-red-200 rounded-md"&gt;
+        &lt;h2 className="text-red-800 font-semibold"&gt;Payment Error&lt;/h2&gt;
+        &lt;p className="text-red-600 mt-2"&gt;{error}&lt;/p&gt;
+        &lt;button
+          onClick={() =&gt; window.location.reload()}
+          className="mt-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+        &gt;
+          Try Again
+        &lt;/button&gt;
+      &lt;/div&gt;
+    )
+  }
+
+  return (
+    &lt;div className="max-w-md mx-auto mt-8 p-6 bg-white border border-gray-200 rounded-lg shadow-md"&gt;
+      &lt;h1 className="text-2xl font-bold mb-6"&gt;Complete Your Payment&lt;/h1&gt;
+
+      &lt;div className="mb-6"&gt;
+        &lt;h2 className="text-lg font-semibold"&gt;Order Summary&lt;/h2&gt;
+        &lt;p className="text-gray-600"&gt;Total: $\${amount.toFixed(2)}&lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;StripeProvider&gt;
+        &lt;PaymentForm
+          amount={amount}
+          onSuccess={handlePaymentSuccess}
+          onError={handlePaymentError}
+        /&gt;
+      &lt;/StripeProvider&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+
+    <h2>Webhook Handling</h2>
+
+    <h3>Setting Up Webhooks</h3>
+    <p>Webhooks allow Stripe to notify your application about payment events:</p>
+    <pre><code>// pages/api/webhooks/stripe.ts
+import { NextApiRequest, NextApiResponse } from 'next'
+import { buffer } from 'micro'
+import Stripe from 'stripe'
+import { stripe, webhookSecret } from '@/lib/stripe'
+
+// Disable body parsing for webhook
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
+
+const relevantEvents = new Set([
+  'payment_intent.succeeded',
+  'payment_intent.payment_failed',
+  'checkout.session.completed',
+  'invoice.payment_succeeded',
+  'invoice.payment_failed',
+])
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST')
+    res.status(405).end('Method Not Allowed')
+    return
+  }
+
+  try {
+    const buf = await buffer(req)
+    const sig = req.headers['stripe-signature'] as string
+
+    if (!sig) {
+      return res.status(400).json({ error: 'No signature provided' })
+    }
+
+    let event: Stripe.Event
+
+    try {
+      event = stripe.webhooks.constructEvent(buf, sig, webhookSecret)
+    } catch (err: any) {
+      console.error(`Webhook signature verification failed: \${err.message}\`)
+      return res.status(400).json({ error: 'Invalid signature' })
+    }
+
+    // Handle the event
+    if (relevantEvents.has(event.type)) {
+      try {
+        switch (event.type) {
+          case 'payment_intent.succeeded':
+            const paymentIntent = event.data.object as Stripe.PaymentIntent
+            await handlePaymentIntentSucceeded(paymentIntent)
+            break
+
+          case 'payment_intent.payment_failed':
+            const failedPaymentIntent = event.data.object as Stripe.PaymentIntent
+            await handlePaymentIntentFailed(failedPaymentIntent)
+            break
+
+          case 'checkout.session.completed':
+            const session = event.data.object as Stripe.Checkout.Session
+            await handleCheckoutSessionCompleted(session)
+            break
+
+          case 'invoice.payment_succeeded':
+            const invoice = event.data.object as Stripe.Invoice
+            await handleInvoicePaymentSucceeded(invoice)
+            break
+
+          case 'invoice.payment_failed':
+            const failedInvoice = event.data.object as Stripe.Invoice
+            await handleInvoicePaymentFailed(failedInvoice)
+            break
+
+          default:
+            console.log(`Unhandled event type: \${event.type}\`)
+        }
+      } catch (error) {
+        console.error(`Error handling event \${event.type}:\`, error)
+        return res.status(500).json({ error: 'Webhook handler failed' })
+      }
+    }
+
+    res.status(200).json({ received: true })
+  } catch (error: any) {
+    console.error('Webhook error:', error)
+    res.status(500).json({
+      error: 'Webhook processing failed',
+      message: error.message
+    })
+  }
+}
+
+// Event handlers
+async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
+  console.log('Payment succeeded:', paymentIntent.id)
+
+  // Update order status in database
+  // Send confirmation email
+  // Update inventory
+  // Trigger any post-payment actions
+}
+
+async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
+  console.log('Payment failed:', paymentIntent.id)
+
+  // Log failure reason
+  // Notify customer
+  // Update order status
+}
+
+async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
+  console.log('Checkout completed:', session.id)
+
+  // Fulfill the order
+  // Update database
+  // Send confirmation
+}
+
+async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
+  console.log('Invoice payment succeeded:', invoice.id)
+
+  // Update subscription status
+  // Grant access to paid features
+}
+
+async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
+  console.log('Invoice payment failed:', invoice.id)
+
+  // Handle failed subscription payment
+  // Send payment reminder
+  // Potentially suspend access
+}</code></pre>
+
+    <h3>Testing Webhooks Locally</h3>
+    <p>Use Stripe CLI for local webhook testing:</p>
+    <pre><code># Install Stripe CLI
+# Login to your account
+stripe login
+
+# Forward webhooks to your local server
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+
+# Trigger test events
+stripe trigger payment_intent.succeeded</code></pre>
+
+    <h2>Subscription Management</h2>
+
+    <h3>Creating Subscription Plans</h3>
+    <pre><code>// pages/api/create-subscription.ts
+import { NextApiRequest, NextApiResponse } from 'next'
+import { stripe } from '@/lib/stripe'
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST')
+    res.status(405).end('Method Not Allowed')
+    return
+  }
+
+  try {
+    const { priceId, customerId } = req.body
+
+    if (!priceId || !customerId) {
+      return res.status(400).json({
+        error: 'Price ID and Customer ID are required'
+      })
+    }
+
+    // Create subscription
+    const subscription = await stripe.subscriptions.create({
+      customer: customerId,
+      items: [{
+        price: priceId,
+      }],
+      payment_behavior: 'default_incomplete',
+      expand: ['latest_invoice.payment_intent'],
+    })
+
+    res.status(200).json({
+      subscriptionId: subscription.id,
+      clientSecret: subscription.latest_invoice.payment_intent.client_secret,
+    })
+  } catch (error: any) {
+    console.error('Subscription creation failed:', error)
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    })
+  }
+}</code></pre>
+
+    <h3>Managing Customer Portal</h3>
+    <pre><code>// pages/api/create-portal-session.ts
+import { NextApiRequest, NextApiResponse } from 'next'
+import { stripe } from '@/lib/stripe'
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST')
+    res.status(405).end('Method Not Allowed')
+    return
+  }
+
+  try {
+    const { customerId } = req.body
+
+    if (!customerId) {
+      return res.status(400).json({ error: 'Customer ID is required' })
+    }
+
+    // Create customer portal session
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customerId,
+      return_url: `\${process.env.NEXT_PUBLIC_DOMAIN}/account\`,
+    })
+
+    res.status(200).json({
+      url: session.url,
+    })
+  } catch (error: any) {
+    console.error('Portal session creation failed:', error)
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    })
+  }
+}</code></pre>
+
+    <h2>Security Best Practices</h2>
+
+    <h3>PCI Compliance</h3>
+    <ul>
+      <li><strong>Never store card details:</strong> Use Stripe Elements or Payment Intents</li>
+      <li><strong>Use HTTPS:</strong> Always encrypt data in transit</li>
+      <li><strong>Validate webhooks:</strong> Verify Stripe signatures</li>
+      <li><strong>Secure API keys:</strong> Never expose secret keys to frontend</li>
+    </ul>
+
+    <h3>Input Validation</h3>
+    <pre><code>// Validate payment data
+import { z } from 'zod'
+
+const paymentSchema = z.object({
+  amount: z.number().positive('Amount must be positive'),
+  currency: z.string().length(3, 'Currency must be 3 characters'),
+  metadata: z.record(z.string()).optional(),
+})
+
+export async function createPaymentIntent(data: unknown) {
+  const validatedData = paymentSchema.parse(data)
+
+  // Proceed with payment creation...
+}</code></pre>
+
+    <h3>Rate Limiting</h3>
+    <pre><code>// Implement rate limiting for payment endpoints
+import rateLimit from 'express-rate-limit'
+
+const paymentLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // limit each IP to 10 requests per windowMs
+  message: 'Too many payment attempts, please try again later',
+  standardHeaders: true,
+  legacyHeaders: false,
+})
+
+app.use('/api/create-payment-intent', paymentLimiter)</code></pre>
+
+    <h2>Error Handling and User Experience</h2>
+
+    <h3>Payment Error Messages</h3>
+    <pre><code>// utils/payment-errors.ts
+export function getPaymentErrorMessage(error: any): string {
+  switch (error.type) {
+    case 'card_error':
+      switch (error.code) {
+        case 'card_declined':
+          return 'Your card was declined. Please try a different card.'
+        case 'expired_card':
+          return 'Your card has expired. Please use a different card.'
+        case 'incorrect_cvc':
+          return 'The CVC number is incorrect. Please check and try again.'
+        case 'processing_error':
+          return 'An error occurred while processing your card. Please try again.'
+        case 'incorrect_number':
+          return 'The card number is incorrect. Please check and try again.'
+        default:
+          return error.message || 'Card error occurred.'
+      }
+    case 'validation_error':
+      return 'Invalid payment information provided.'
+    case 'api_connection_error':
+      return 'Network error. Please check your connection and try again.'
+    case 'api_error':
+      return 'Payment service temporarily unavailable. Please try again later.'
+    case 'authentication_error':
+      return 'Authentication failed. Please refresh and try again.'
+    default:
+      return 'An unexpected error occurred. Please try again.'
+  }
+}</code></pre>
+
+    <h3>Loading States and UX</h3>
+    <pre><code>// components/PaymentStatus.tsx
+interface PaymentStatusProps {
+  status: 'idle' | 'processing' | 'success' | 'error'
+  message?: string
+}
+
+export default function PaymentStatus({ status, message }: PaymentStatusProps) {
+  const getStatusConfig = () =&gt; {
+    switch (status) {
+      case 'processing':
+        return {
+          icon: '⏳',
+          text: 'Processing payment...',
+          className: 'text-blue-600 bg-blue-50 border-blue-200'
+        }
+      case 'success':
+        return {
+          icon: '✅',
+          text: 'Payment successful!',
+          className: 'text-green-600 bg-green-50 border-green-200'
+        }
+      case 'error':
+        return {
+          icon: '❌',
+          text: message || 'Payment failed',
+          className: 'text-red-600 bg-red-50 border-red-200'
+        }
+      default:
+        return null
+    }
+  }
+
+  const config = getStatusConfig()
+
+  if (!config) return null
+
+  return (
+    &lt;div className={`p-4 border rounded-md \${config.className}\`}&gt;
+      &lt;div className="flex items-center space-x-2"&gt;
+        &lt;span className="text-lg"&gt;{config.icon}&lt;/span&gt;
+        &lt;span&gt;{config.text}&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+
+    <h2>Testing and Monitoring</h2>
+
+    <h3>Stripe Test Mode</h3>
+    <p>Use Stripe's test cards for development:</p>
+    <pre><code>// Test card numbers
+4242424242424242 // Succeeds
+4000000000000002 // Declined
+4000000000009995 // Insufficient funds
+4000000000000127 // Incorrect CVC
+
+// Test bank details for bank transfers
+// Use any valid routing and account number</code></pre>
+
+    <h3>Payment Analytics</h3>
+    <pre><code>// lib/analytics.ts
+export function trackPaymentEvent(event: string, data: any) {
+  // Send to analytics service (Google Analytics, Mixpanel, etc.)
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', event, {
+      event_category: 'payment',
+      ...data,
+    })
+  }
+
+  // Log to your backend for monitoring
+  fetch('/api/analytics/payment', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ event, data }),
+  }).catch(console.error)
+}
+
+// Usage
+trackPaymentEvent('payment_started', { amount: 29.99 })
+trackPaymentEvent('payment_completed', {
+  amount: 29.99,
+  paymentIntentId: 'pi_xxx'
+})</code></pre>
+
+    <h2>Deployment and Production</h2>
+
+    <h3>Environment Configuration</h3>
+    <pre><code>// config/stripe.ts
+export const stripeConfig = {
+  publishableKey: process.env.NODE_ENV === 'production'
+    ? process.env.STRIPE_LIVE_PUBLISHABLE_KEY
+    : process.env.STRIPE_TEST_PUBLISHABLE_KEY,
+
+  secretKey: process.env.NODE_ENV === 'production'
+    ? process.env.STRIPE_LIVE_SECRET_KEY
+    : process.env.STRIPE_TEST_SECRET_KEY,
+
+  webhookSecret: process.env.NODE_ENV === 'production'
+    ? process.env.STRIPE_LIVE_WEBHOOK_SECRET
+    : process.env.STRIPE_TEST_WEBHOOK_SECRET,
+}</code></pre>
+
+    <h3>Production Checklist</h3>
+    <ul>
+      <li>✅ Switch to live API keys</li>
+      <li>✅ Update webhook endpoints</li>
+      <li>✅ Configure proper CORS settings</li>
+      <li>✅ Set up proper error monitoring</li>
+      <li>✅ Implement rate limiting</li>
+      <li>✅ Test with real payment methods</li>
+      <li>✅ Set up proper logging</li>
+      <li>✅ Configure SSL certificates</li>
+    </ul>
+
+    <h2>Common Issues and Solutions</h2>
+
+    <h3>Payment Declines</h3>
+    <pre><code>// Handle different decline reasons
+const handleDecline = (error: StripeError) =&gt; {
+  switch (error.decline_code) {
+    case 'insufficient_funds':
+      return 'Insufficient funds. Please use a different card.'
+    case 'lost_card':
+      return 'This card has been reported lost. Please contact your bank.'
+    case 'stolen_card':
+      return 'This card has been reported stolen. Please contact your bank.'
+    default:
+      return 'Your card was declined. Please try a different card or contact your bank.'
+  }
+}</code></pre>
+
+    <h3>Webhook Signature Verification</h3>
+    <pre><code>// Ensure webhook secret is properly configured
+if (!webhookSecret) {
+  console.error('STRIPE_WEBHOOK_SECRET is not configured')
+  return res.status(500).json({ error: 'Server configuration error' })
+}
+
+// Handle webhook idempotency
+const processedEvents = new Set()
+
+if (processedEvents.has(event.id)) {
+  return res.status(200).json({ received: true })
+}
+
+processedEvents.add(event.id)
+// Process event...</code></pre>
+
+    <h2>Conclusion: Building Production-Ready Payment Systems</h2>
+
+    <p>Integrating Stripe payments into your Node.js/Next.js application doesn't have to be complex. By following the patterns and best practices outlined in this guide, you can build secure, scalable payment systems that handle everything from simple one-time payments to complex subscription models.</p>
+
+    <p>Remember that payment processing involves handling sensitive financial data, so always prioritize security, proper error handling, and compliance with PCI standards. Stripe provides excellent tools and documentation to help you build robust payment integrations.</p>
+
+    <p>Start with the fundamentals—Payment Intents for security, proper webhook handling for reliability, and comprehensive error handling for user experience. As your application grows, you can add advanced features like subscriptions, customer portals, and detailed analytics.</p>
+
+    <p>The key to successful payment integration is thorough testing, proper monitoring, and staying updated with Stripe's latest features and security recommendations. With these foundations in place, you can confidently handle payments at any scale.</p>
+
+    <blockquote>
+      <p><em>"Payments are the lifeblood of digital commerce. Handle them with care, security, and user-centric design."</em> - Shailesh Chaudhari</p>
+    </blockquote>
+  

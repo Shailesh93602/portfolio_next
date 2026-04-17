@@ -23,13 +23,7 @@ Legend: ✅ Done  🔲 Pending  🚫 Blocked (needs manual step first)
 
 ### 1C — Blog Infrastructure
 
-- 🔲 **Migrate `lib/blog-data.ts` → MDX files** [L]
-  - Install: `@next/mdx`, `@mdx-js/react`, `remark-gfm`, `rehype-pretty-code`
-  - Create `/content/blog/` directory
-  - Script: `scripts/migrate-blog.ts` reads each post from `blog-data.ts` and writes `content/blog/<slug>.mdx`
-  - Update `app/blog/[slug]/page.tsx` to read MDX
-  - Keep `lib/blog-data.ts` as thin index (slug, title, date, description) for listing pages
-  - Sync `data/blog-manifest.json`
+- ✅ **Migrate `lib/blog-data.ts` → MDX files** — `scripts/migrate-blog.mjs` extracted all 17 posts into `content/blog/<slug>.mdx` (YAML frontmatter + HTML body). `lib/blog-data.ts` reduced from 10,078 → 135 lines (thin index using `gray-matter` + `fs.readFileSync`). All helper functions preserved (`getFeaturedPosts`, `getAllTags`, `getRelatedPosts`, `getPostsByTag`). 66 tests still green.
 
 - ✅ **Add dynamic OpenGraph images** — `app/api/og/route.tsx` (edge runtime, `next/og` ImageResponse). Blog post metadata updated to use `/api/og?title=<encoded>`.
 
