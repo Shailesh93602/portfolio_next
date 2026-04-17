@@ -128,6 +128,42 @@ Natural language queries like "where is the payment retry logic?" return ranked 
 
 ---
 
+### redis-battle-demo
+**GitHub:** https://github.com/Shailesh93602/redis-battle-demo
+**Stack:** Node.js, Express.js, Socket.io, @socket.io/redis-adapter, Redlock, Redis, Docker Compose
+
+Standalone proof-of-concept extracting the core distributed real-time engine from EduScale into a runnable demo:
+
+**Architecture:**
+- Two Redis clients: `pubClient` and `subClient` — separate clients required by `@socket.io/redis-adapter` for pub/sub isolation
+- `@socket.io/redis-adapter`: All Socket.io room state synchronized through Redis; multiple server instances share a single socket namespace
+- `Redlock` (retryCount:0): Distributed mutex on `battles:tick:lock` prevents two server instances from simultaneously emitting `server_tick`. Non-blocking — if lock is held, the tryTick silently skips rather than queuing
+- `docker-compose.yml`: Single-command startup for Redis + demo server
+- `public/index.html`: Browser UI showing live tick events and which server instance won the lock
+
+Demonstrates the core concurrency problem in real-time multiplayer: without the distributed lock, two horizontally-scaled instances both emit the tick → clients receive duplicate events.
+
+---
+
+### CareerGlyph (WIP)
+**Stack:** NestJS, TypeScript, Prisma, PostgreSQL, Swagger/OpenAPI
+
+Developer identity platform — portable profile showing skills, projects, and endorsements. NestJS monorepo under `apps/backend/`:
+
+**Prisma schema:**
+- `Developer`: id, username (unique), name, bio, avatarUrl, isPublic, skills, projects, endorsementsGiven
+- `Skill`: id, name, category (SkillCategory enum: FRONTEND/BACKEND/DATABASE/DEVOPS/OTHER), level (SkillLevel enum: BEGINNER/INTERMEDIATE/ADVANCED/EXPERT), endorsements
+- `Project`: id, title, description, techStack (String[]), liveUrl, githubUrl, featured
+- `Endorsement`: id, skill, giver — `@@unique([skillId, giverId])` prevents duplicate endorsements
+- Cascading deletes on Skill/Project/Endorsement when Developer is deleted
+
+**API:**
+- `GET /profile/:username`: Returns developer with skills+endorsementCounts+projects. Throws 404 for unknown usernames and private profiles (isPublic=false). Swagger-annotated with `@ApiOperation`, `@ApiParam`, `@ApiResponse`.
+- `@Global() DatabaseModule` exports `PrismaService` — single shared connection pool across all modules
+- Seed file: sample developer, 3 skills (TypeScript/ADVANCED, React/ADVANCED, NestJS/INTERMEDIATE), 2 projects, 1 endorsement
+
+---
+
 ### Vibe Testing (ContextQA — proprietary)
 **Stack:** Chrome Extension, Python AI Agent, Node.js, Socket.io, WebSockets, TypeScript, Manifest V3
 **PRs merged:** ~1,900

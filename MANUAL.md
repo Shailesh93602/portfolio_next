@@ -15,12 +15,21 @@ See PLAN.md for the strategic context behind each task.
 - CodeSenseiSearch project card added (NestJS + pgvector + embeddings)
 - KhataGO GitHub link removed (private repo); challengesSolved updated with specific technical detail
 - ContextQA cards: ~1,600 / ~1,900 merged PR counts added
-- llms.txt + llms-full.txt fully rewritten with accurate technical depth
+- llms.txt + llms-full.txt fully rewritten with accurate technical depth; redis-battle-demo and CareerGlyph sections added
 - robots.ts added (serves /robots.txt)
 - sitemap.ts verified correct
 - RSS feed: /feed.xml (RSS 2.0, all blog posts sorted by date)
 - Dynamic OG images: /api/og?title=...&type=blog (edge runtime, next/og)
 - Blog post metadata updated to use dynamic OG images
+- Blog MDX migration: 17 `.mdx` files under `content/blog/`, `lib/blog-data.ts` reduced to 135-line thin index
+- Blog search by URL query (`?q=` and `?tag=`), reading progress bar, Lighthouse CI workflow
+- redis-battle-demo scaffolded at `~/Desktop/Coding/redis-battle-demo`
+- CareerGlyph backend scaffolded at `~/Desktop/Coding/careerglyph` (Prisma schema, PrismaService, GET /profile/:username)
+- Bundle analysis: yup (195 kB) removed, replaced with react-hook-form built-in rules
+- `npm run analyze` script added to package.json
+- Route-level error boundary (app/error.tsx) and global error boundary (app/global-error.tsx) added
+- framer-motion containerVariants moved to module scope in AboutContent.tsx (fixes re-animation bug)
+- All 42 Playwright screenshots regenerated; 22/22 E2E tests passing
 
 ---
 
@@ -200,7 +209,22 @@ After writing, Claude can add it to `lib/blog-data.ts`.
 
 ## Month 3: June 16 – July 16, 2026
 
-### 8. Apply to Skydo — Highest probability this month
+### 8. Update Resume PDF — 30 min
+
+The portfolio links to `/Shailesh_Chaudhari_Resume.pdf`. If you've updated experience descriptions (EduScale architecture, ContextQA PR counts, KhataGO tech stack) or skills since the last version, the PDF is now stale.
+
+Steps:
+1. Open your current resume in Google Docs / Overleaf / whatever you use
+2. Update to match what's in the portfolio: `@socket.io/redis-adapter`, `redlock`, `opossum`, ContextQA ~1,900 / ~1,600 merged PRs, KhataGO (WhatsApp Business API, Gemini AI OCR, Tally XML)
+3. Export as PDF — **filename must stay exactly `Shailesh_Chaudhari_Resume.pdf`** (all existing hire-page links point to it)
+4. Replace `public/Shailesh_Chaudhari_Resume.pdf` with the new file
+5. `git add public/Shailesh_Chaudhari_Resume.pdf && git commit -m "docs: update resume PDF"` then push
+
+**Filename must not change** — the hire page hardlinks to `/Shailesh_Chaudhari_Resume.pdf`.
+
+---
+
+### 9. Apply to Skydo — Highest probability this month
 
 Skydo is fintech, full-stack, India-based, and values third-party API integration depth. KhataGO (once public with a good README) is a direct match for what they're looking for.
 
@@ -219,7 +243,7 @@ Application materials:
 
 ---
 
-### 9. LinkedIn Profile Update — 2 hrs
+### 10. LinkedIn Profile Update — 2 hrs
 
 Current LinkedIn likely doesn't reflect the EduScale architecture depth or KhataGO's real technical stack. Recruiters check LinkedIn before GitHub.
 
@@ -234,7 +258,7 @@ Specific updates needed:
 
 ---
 
-### 10. Apply to Vercel — After OSS contribution is merged
+### 11. Apply to Vercel — After OSS contribution is merged
 
 Do not apply to Vercel without at least one merged OSS PR. Their hiring bar explicitly filters for engineers who ship in shared codebases.
 
@@ -251,7 +275,7 @@ Topics: `ANALYZE=true npm run build` findings, AVIF vs WebP measured savings, IS
 
 ---
 
-### 11. Apply to Supabase — After Postgres depth is demonstrated
+### 12. Apply to Supabase — After Postgres depth is demonstrated
 
 Before applying:
 
@@ -263,7 +287,7 @@ Supabase specifically looks for: Postgres RLS, indexes, query explain plans, OSS
 
 ---
 
-### 12. Apply to Stripe — Stretch goal (requires correctness post)
+### 13. Apply to Stripe — Stretch goal (requires correctness post)
 
 Stripe rejects on the first sign of sloppy thinking about correctness. Before applying:
 
@@ -284,6 +308,7 @@ Stripe rejects on the first sign of sloppy thinking about correctness. Before ap
 | Month 2            | Get one OSS PR merged            | Ongoing | Required for Vercel; improves all profiles             |
 | Month 2            | Write Postgres/RBAC post         | 4 hrs   | Required for Supabase                                  |
 | Month 2            | Write KhataGO fintech post       | 4 hrs   | Required for Skydo/Stripe                              |
+| Month 3            | Update resume PDF                | 30 min  | Portfolio and resume must match the new tech depth     |
 | Month 3            | Apply to Skydo                   | 2 hrs   | Highest probability conversion this month              |
 | Month 3            | Update LinkedIn                  | 2 hrs   | Recruiters check before GitHub                         |
 | Month 3            | Write Vercel/performance post    | 3 hrs   | Required before Vercel application                     |

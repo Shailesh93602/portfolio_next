@@ -20,12 +20,14 @@ Shailesh Chaudhari is a Software Engineer based in Gujarat, India. He currently 
 - [DevTrack](https://daily-dev-track.vercel.app): Developer analytics dashboard tracking coding patterns and prescriptive recommendations. Stack: Next.js, TypeScript, Prisma, PostgreSQL, Recharts.
 - [KhataGO](https://khatago.vercel.app/): WhatsApp-first AI accounting platform for Indian SMBs. WhatsApp Business API webhook with Redis-based deduplication, Gemini AI OCR for receipt photos → structured transactions, Tally ERP XML export. Stack: Next.js, Gemini AI, WhatsApp Cloud API, PostgreSQL, Redis, Bull Queues, i18n. (Private repo)
 - [CodeSenseiSearch](https://github.com/Shailesh93602/CodeSenseiSearch): AI-powered semantic code search engine. NestJS backend with pgvector, function-level chunking, OpenAI embeddings, cosine similarity ranking. Natural language queries return ranked file+line results.
+- redis-battle-demo: Standalone proof-of-concept for the EduScale distributed real-time engine. Express + Socket.io + @socket.io/redis-adapter (pub/sub clients) + Redlock (retryCount:0, distributed tick mutex). Docker Compose starts Redis. Live demo UI shows server tick events across horizontally-scaled instances.
+- CareerGlyph (WIP): Developer identity platform. NestJS monorepo backend, Prisma + PostgreSQL schema (Developer, Skill with SkillCategory/SkillLevel enums, Project, Endorsement). GET /profile/:username endpoint with 404 for unknown/private profiles. Swagger-annotated API.
 - Vibe Testing (ContextQA): Chrome extension for AI-powered web testing with real-time log streaming. ~1,900 merged PRs. Stack: Chrome Extension, Python AI Agent, Node.js, Socket.io.
 - AxeTos (ContextQA): Chrome extension for WCAG A/AA/AAA accessibility testing with intelligent fix suggestions and persistent script-injection remediation. ~1,600 merged PRs. Stack: Chrome Extension, Node.js, axe-core, AWS S3.
 
 ## Skills
 
-TypeScript · React · Next.js · Node.js · Express.js · NestJS · PostgreSQL · MongoDB · Redis · Prisma · Tailwind CSS · Socket.io · @socket.io/redis-adapter · Redlock · Circuit Breaker (opossum) · Prometheus (prom-client) · Bull Queues · Vector Embeddings · pgvector · Chrome Extensions · Supabase · Docker · AWS · Playwright · WCAG Accessibility
+TypeScript · React · Next.js · Node.js · Express.js · NestJS · PostgreSQL · MongoDB · Redis · Prisma · Tailwind CSS · Socket.io · @socket.io/redis-adapter · Redlock · Circuit Breaker (opossum) · Prometheus (prom-client) · Bull Queues · Vector Embeddings · pgvector · Chrome Extensions · Supabase · Docker · AWS · Playwright · WCAG Accessibility · NestJS Monorepo · Swagger/OpenAPI
 
 ## Contact
 

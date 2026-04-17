@@ -18,6 +18,13 @@ const baseConfig: NextConfig = {
   },
 };
 
+// Bundle analysis findings (run: npm run analyze)
+// Top offenders (client bundle, 2026-04-17):
+//   recharts + lodash  394 kB  — already lazy-loaded (ssr:false dynamic import)
+//   lucide-react       359 kB  — named imports only, tree-shaken as well as possible
+//   Next.js internals  217 kB  — framework overhead, not optimizable
+//   yup (removed)      195 kB  — eliminated; replaced with react-hook-form built-in rules
+//
 // Optionally wrap with bundle analyzer when ANALYZE=true
 let nextConfig: NextConfig = baseConfig;
 try {
