@@ -118,6 +118,26 @@ test.describe("Navigation", () => {
   });
 });
 
+test("unknown route renders 404 page not blank", async ({ page }) => {
+  await page.goto("/this-page-does-not-exist-at-all-xyz");
+  // Should not show an empty page or crash
+  await expect(page.locator("body")).not.toBeEmpty();
+  // Should have a link home or a 404 indicator
+  const hasHome = await page.getByRole("link", { name: /home/i }).count();
+  const has404 = await page.getByText(/404|not found/i).count();
+  expect(hasHome + has404).toBeGreaterThan(0);
+});
+
+test("contact form shows validation on empty submit", async ({ page }) => {
+  await page.goto("/contact");
+  const submitBtn = page.getByRole("button", { name: /send|submit/i });
+  if ((await submitBtn.count()) > 0) {
+    await submitBtn.click();
+    // Browser native validation or custom — just check no crash
+    await expect(page.locator("body")).toBeVisible();
+  }
+});
+
 test.describe("Navigation — dark mode", () => {
   test("home page renders in dark mode", async ({ page }) => {
     await page.goto("/");

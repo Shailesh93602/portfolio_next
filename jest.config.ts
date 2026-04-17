@@ -11,6 +11,16 @@ const config: Config = {
     "^@/(.*)$": "<rootDir>/$1",
   },
   testMatch: ["**/__tests__/**/*.test.ts?(x)"],
+  collectCoverageFrom: [
+    "lib/**/*.ts",
+    "app/api/**/*.ts",
+    "components/**/*.tsx",
+    "!**/*.d.ts",
+    "!**/node_modules/**",
+  ],
+  coverageThreshold: {
+    global: { branches: 60, functions: 70, lines: 70, statements: 70 },
+  },
 };
 
 export default createJestConfig(config);
