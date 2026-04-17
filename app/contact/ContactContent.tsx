@@ -14,9 +14,12 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { SOCIAL_LINKS, CONTACT_INFO } from "@/lib/constants";
-import { useForm, UseFormRegister, SubmitHandler } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+import {
+  useForm,
+  UseFormRegister,
+  RegisterOptions,
+  SubmitHandler,
+} from "react-hook-form";
 
 declare global {
   interface Window {
@@ -24,7 +27,6 @@ declare global {
   }
 }
 
-// Define the form data type.
 type FormData = {
   fullName: string;
   email: string;
@@ -33,76 +35,41 @@ type FormData = {
   message: string;
 };
 
-// Build the schema and cast it as a yup.ObjectSchema<FormData>
-const schema = yup.object({
-  fullName: yup.string().required("Full name is required"),
-  email: yup
-    .string()
-    .email("Invalid email format")
-    .required("Email is required"),
-  phoneNumber: yup
-    .string()
-    .transform((value, originalValue) => {
-      // Convert empty strings or null values to undefined.
-      return originalValue === "" || originalValue == null ? undefined : value;
-    })
-    .optional()
-    .test(
-      "is-valid-phone",
-      "Please enter a valid 10-digit phone number",
-      (value) => {
-        if (!value) return true; // If not provided, skip validation.
-        // Check if value is composed only of digits and has exactly 10 characters.
-        return /^\d{10}$/.test(value);
-      }
-    ),
-  subject: yup.string().required("Subject is required"),
-  message: yup
-    .string()
-    .required("Message is required")
-    .min(10, "Message must be at least 10 characters"),
-}) as yup.ObjectSchema<FormData>;
-
-// Define props for the reusable InputField component.
 interface InputFieldProps {
   label: string;
   name: keyof FormData;
   type: string;
-  required?: boolean;
+  rules?: RegisterOptions<FormData, keyof FormData>;
   error?: string;
   register: UseFormRegister<FormData>;
 }
 
-// Reusable InputField component.
 const InputField: React.FC<InputFieldProps> = ({
   label,
   name,
   type,
-  required = false,
+  rules,
   error,
   register,
-}) => {
-  return (
-    <div className="mb-4">
-      <label
-        htmlFor={name}
-        className="text-text-primary mb-2 block text-sm font-medium"
-      >
-        {label}
-      </label>
-      <input
-        id={name}
-        type={type}
-        {...register(name)}
-        required={required}
-        className={`bg-dark text-text-primary w-full rounded-md border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary ${
-          error ? "border-red-500" : "border-gray-700"
-        }`}
-      />
-      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
-    </div>
-  );
-};
+}) => (
+  <div className="mb-4">
+    <label
+      htmlFor={name}
+      className="text-text-primary mb-2 block text-sm font-medium"
+    >
+      {label}
+    </label>
+    <input
+      id={name}
+      type={type}
+      {...register(name, rules)}
+      className={`bg-dark text-text-primary w-full rounded-md border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary ${
+        error ? "border-red-500" : "border-gray-700"
+      }`}
+    />
+    {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+  </div>
+);
 
 export const ContactContent: React.FC = () => {
   const {
@@ -111,7 +78,6 @@ export const ContactContent: React.FC = () => {
     reset,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
-    resolver: yupResolver(schema),
     mode: "onBlur",
     reValidateMode: "onChange",
     defaultValues: {
@@ -270,7 +236,7 @@ export const ContactContent: React.FC = () => {
                 label="Full Name *"
                 name="fullName"
                 type="text"
-                required={true}
+                rules={{ required: "Full name is required" }}
                 error={errors.fullName?.message}
                 register={register}
               />
@@ -278,7 +244,13 @@ export const ContactContent: React.FC = () => {
                 label="Email Address *"
                 name="email"
                 type="email"
-                required={true}
+                rules={{
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Invalid email format",
+                  },
+                }}
                 error={errors.email?.message}
                 register={register}
               />
@@ -288,6 +260,12 @@ export const ContactContent: React.FC = () => {
                 label="Phone Number"
                 name="phoneNumber"
                 type="tel"
+                rules={{
+                  pattern: {
+                    value: /^\d{10}$/,
+                    message: "Please enter a valid 10-digit phone number",
+                  },
+                }}
                 error={errors.phoneNumber?.message}
                 register={register}
               />
@@ -295,7 +273,7 @@ export const ContactContent: React.FC = () => {
                 label="Subject *"
                 name="subject"
                 type="text"
-                required={true}
+                rules={{ required: "Subject is required" }}
                 error={errors.subject?.message}
                 register={register}
               />
@@ -309,8 +287,13 @@ export const ContactContent: React.FC = () => {
               </label>
               <Textarea
                 id="message"
-                {...register("message")}
-                required
+                {...register("message", {
+                  required: "Message is required",
+                  minLength: {
+                    value: 10,
+                    message: "Message must be at least 10 characters",
+                  },
+                })}
                 className={`min-h-[150px] ${
                   errors.message ? "border-red-500" : ""
                 }`}
