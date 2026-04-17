@@ -6,8 +6,6 @@ import { motion } from "framer-motion";
 import { BlogCard } from "@/components/blog/blog-card";
 import { BlogFilters } from "@/components/blog/blog-filters";
 import { Pagination } from "@/components/ui/pagination";
-import { blogPosts, getAllTags } from "@/lib/blog-data";
-
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -29,7 +27,14 @@ const pageTransition = {
 
 const ITEMS_PER_PAGE = 12;
 
-export default function BlogsContent() {
+import type { BlogPost } from "@/lib/blog-data";
+
+interface Props {
+  posts: BlogPost[];
+  allTags: string[];
+}
+
+export default function BlogsContent({ posts, allTags }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -53,10 +58,7 @@ export default function BlogsContent() {
     return () => clearTimeout(timer);
   }, [searchQuery, selectedTag, router]);
 
-  // Get unique tags from all blog posts
-  const allTags = getAllTags();
-
-  const filteredPosts = blogPosts.filter((post) => {
+  const filteredPosts = posts.filter((post) => {
     const matchesSearch =
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.description.toLowerCase().includes(searchQuery.toLowerCase());

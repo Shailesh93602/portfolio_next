@@ -1,6 +1,7 @@
 export { metadata } from "./metadata";
 import HomeContent from "./HomeContent";
 import { SITE_URL } from "@/lib/blog-constants";
+import { getFeaturedPosts } from "@/lib/blog-data";
 
 const faqSchema = {
   "@context": "https://schema.org",
@@ -81,7 +82,7 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <HomeContent />
+      <HomeContent featuredPosts={getFeaturedPosts()} />
     </>
   );
 }

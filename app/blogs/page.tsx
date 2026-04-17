@@ -2,7 +2,7 @@ export { metadata } from "./metadata";
 import { Suspense } from "react";
 import BlogsContent from "./BlogsContent";
 import { SITE_URL, BLOG_AUTHOR } from "@/lib/blog-constants";
-import { blogPosts } from "@/lib/blog-posts";
+import { blogPosts, getAllTags } from "@/lib/blog-data";
 
 const blogListSchema = {
   "@context": "https://schema.org",
@@ -37,6 +37,9 @@ const blogListSchema = {
 };
 
 export default function BlogPage() {
+  const allTags = getAllTags();
+  const posts = [...blogPosts];
+
   return (
     <>
       <script
@@ -44,7 +47,7 @@ export default function BlogPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(blogListSchema) }}
       />
       <Suspense fallback={null}>
-        <BlogsContent />
+        <BlogsContent posts={posts} allTags={allTags} />
       </Suspense>
     </>
   );

@@ -18,8 +18,6 @@ import SocialLink from "./components/SocialLink";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SOCIAL_LINKS } from "@/lib/constants";
-import { getFeaturedPosts } from "@/lib/blog-data";
-
 const jobTitles: string[] = [
   "Full Stack Developer",
   "Software Engineer",
@@ -40,7 +38,11 @@ const skills = [
   "PostgreSQL",
 ];
 
-export default function HomeContent() {
+interface Props {
+  featuredPosts: { slug: string; title: string; description: string; image: string; readTime: string; tags: string[]; date: string }[];
+}
+
+export default function HomeContent({ featuredPosts }: Props) {
   const [jobTitleIndex, setJobTitleIndex] = useState<number>(0);
 
   useEffect(() => {
@@ -201,7 +203,7 @@ export default function HomeContent() {
         </motion.div>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {getFeaturedPosts()
+          {featuredPosts
             .slice(0, 3)
             .map((post, index) => (
               <motion.div
