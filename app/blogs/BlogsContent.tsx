@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { BlogCard } from "@/components/blog/blog-card";
 import { BlogFilters } from "@/components/blog/blog-filters";
@@ -29,9 +30,28 @@ const pageTransition = {
 const ITEMS_PER_PAGE = 12;
 
 export default function BlogsContent() {
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [selectedTag, setSelectedTag] = React.useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [searchQuery, setSearchQuery] = React.useState(
+    searchParams.get("q") ?? ""
+  );
+  const [selectedTag, setSelectedTag] = React.useState(
+    searchParams.get("tag") ?? ""
+  );
   const [currentPage, setCurrentPage] = React.useState(1);
+
+  // Sync search state → URL (debounced 300ms)
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      const params = new URLSearchParams();
+      if (searchQuery) params.set("q", searchQuery);
+      if (selectedTag) params.set("tag", selectedTag);
+      const qs = params.toString();
+      router.replace(qs ? `/blogs?${qs}` : "/blogs", { scroll: false });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery, selectedTag, router]);
 
   // Get unique tags from all blog posts
   const allTags = getAllTags();

@@ -1,4 +1,5 @@
 export { metadata } from "./metadata";
+import { Suspense } from "react";
 import BlogsContent from "./BlogsContent";
 import { SITE_URL, BLOG_AUTHOR } from "@/lib/blog-constants";
 import { blogPosts } from "@/lib/blog-posts";
@@ -42,7 +43,9 @@ export default function BlogPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(blogListSchema) }}
       />
-      <BlogsContent />
+      <Suspense fallback={null}>
+        <BlogsContent />
+      </Suspense>
     </>
   );
 }
