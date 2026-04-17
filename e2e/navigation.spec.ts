@@ -58,12 +58,13 @@ test.describe("Navigation", () => {
   test("about page collapses content on Show Less click", async ({ page }) => {
     await page.goto("/about");
     const showLessBtn = page.getByRole("button", { name: /show less/i });
+    await showLessBtn.waitFor({ state: "visible" });
     await showLessBtn.scrollIntoViewIfNeeded();
-    await showLessBtn.click({ force: true });
-    // After collapse the button becomes "Show More"
+    await showLessBtn.click();
+    // After collapse the button becomes "Show More" — wait for framer-motion state update
     await expect(
       page.getByRole("button", { name: /show more/i })
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
   });
 
   test("portfolio page lists projects", async ({ page }) => {

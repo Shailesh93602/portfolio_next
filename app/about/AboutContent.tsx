@@ -11,16 +11,16 @@ import AchievementsSection from "@/components/Achievements";
 import SkillsSection from "@/components/SkillsSection";
 import { HobbiesSection } from "@/components/HobbiesSection";
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 },
+  },
+};
+
 export default function AboutContent() {
   const [showFullContent, setShowFullContent] = useState<boolean>(true);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 },
-    },
-  };
 
   return (
     <div className="container mx-auto px-4 py-24">
