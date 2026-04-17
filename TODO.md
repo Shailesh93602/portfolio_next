@@ -3,7 +3,7 @@
 All tasks here can be done with code, terminal commands, or file edits.
 See PLAN.md for strategic context. See MANUAL.md for tasks requiring credentials or writing.
 
-Legend: ✅ Done  🔲 Pending  🚫 Blocked (needs manual step first)
+Legend: ✅ Done 🔲 Pending 🚫 Blocked (needs manual step first)
 
 ---
 
@@ -29,7 +29,7 @@ Legend: ✅ Done  🔲 Pending  🚫 Blocked (needs manual step first)
 
 - ✅ **Add RSS feed** — `app/feed.xml/route.ts` (RSS 2.0, sorted by date, XML-escaped, 1-hour cache). Linked from `<head>` in layout.
 
-### 1D — EduScale README *(run in the EduScale repo — needs repo access)*
+### 1D — EduScale README _(run in the EduScale repo — needs repo access)_
 
 - 🚫 **Add ASCII architecture diagram** — Blocked until EduScale repo is reviewed locally
 - 🚫 **Document distributed lock usage** — Same blocker
@@ -37,7 +37,7 @@ Legend: ✅ Done  🔲 Pending  🚫 Blocked (needs manual step first)
 - 🚫 **Document Prometheus /metrics** — Same blocker
 - 🚫 **Add working "Running locally" section** — Same blocker
 
-### 1E — KhataGO README *(blocked: repo is private — see MANUAL.md §1)*
+### 1E — KhataGO README _(blocked: repo is private — see MANUAL.md §1)_
 
 - 🚫 **Document WhatsApp webhook flow** — Blocked until repo is public
 - 🚫 **Document Gemini OCR pipeline** — Blocked
@@ -121,16 +121,16 @@ Legend: ✅ Done  🔲 Pending  🚫 Blocked (needs manual step first)
 
 ## Quick Reference: File Locations
 
-| What to change | File |
-|---|---|
-| Project card content | `constants/projects.ts` |
-| Experience / Education | `constants/index.ts` |
-| Blog post list | `lib/blog-data.ts` + `data/blog-manifest.json` |
-| Social links, email, site URL | `lib/constants.ts` |
-| About page bio text | `app/about/AboutContent.tsx` |
-| Navigation links | `components/navbar/index.tsx` |
-| AI crawler context | `public/llms.txt`, `public/llms-full.txt` |
-| Resume PDF | `public/Shailesh_Chaudhari_Resume.pdf` |
-| Page metadata | `app/<page>/metadata.ts` |
-| OG image design | `app/api/og/route.tsx` |
-| RSS feed | `app/feed.xml/route.ts` |
+| What to change                | File                                           |
+| ----------------------------- | ---------------------------------------------- |
+| Project card content          | `constants/projects.ts`                        |
+| Experience / Education        | `constants/index.ts`                           |
+| Blog post list                | `lib/blog-data.ts` + `data/blog-manifest.json` |
+| Social links, email, site URL | `lib/constants.ts`                             |
+| About page bio text           | `app/about/AboutContent.tsx`                   |
+| Navigation links              | `components/navbar/index.tsx`                  |
+| AI crawler context            | `public/llms.txt`, `public/llms-full.txt`      |
+| Resume PDF                    | `public/Shailesh_Chaudhari_Resume.pdf`         |
+| Page metadata                 | `app/<page>/metadata.ts`                       |
+| OG image design               | `app/api/og/route.tsx`                         |
+| RSS feed                      | `app/feed.xml/route.ts`                        |

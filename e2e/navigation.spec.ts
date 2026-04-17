@@ -18,7 +18,10 @@ test.describe("Navigation", () => {
     ).toBeVisible();
   });
 
-  test("navbar links are present and functional", async ({ page, isMobile }) => {
+  test("navbar links are present and functional", async ({
+    page,
+    isMobile,
+  }) => {
     await page.goto("/");
 
     if (isMobile) {

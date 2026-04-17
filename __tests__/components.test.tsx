@@ -19,7 +19,14 @@ jest.mock("framer-motion", () => ({
 }));
 
 // Mock next/image — strip Next.js-specific props (fill, priority) before passing to <img>
-const NEXT_IMAGE_ONLY_PROPS = new Set(["fill", "priority", "sizes", "quality", "placeholder", "blurDataURL"]);
+const NEXT_IMAGE_ONLY_PROPS = new Set([
+  "fill",
+  "priority",
+  "sizes",
+  "quality",
+  "placeholder",
+  "blurDataURL",
+]);
 jest.mock("next/image", () => ({
   __esModule: true,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -140,7 +147,11 @@ describe("ProjectCard", () => {
   it("shows Show More button when onShowDetails is provided", async () => {
     const onShowDetails = jest.fn();
     render(
-      <ProjectCard {...defaultProps} onShowDetails={onShowDetails} showDetails={false} />
+      <ProjectCard
+        {...defaultProps}
+        onShowDetails={onShowDetails}
+        showDetails={false}
+      />
     );
     const btn = screen.getByRole("button", { name: /show more/i });
     expect(btn).toBeInTheDocument();
@@ -156,7 +167,9 @@ describe("ProjectCard", () => {
         showDetails={true}
       />
     );
-    expect(screen.getByRole("button", { name: /show less/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /show less/i })
+    ).toBeInTheDocument();
   });
 });
 
@@ -172,9 +185,7 @@ describe("EducationSection", () => {
 
   it("renders the degree name", () => {
     render(<EducationSection />);
-    expect(
-      screen.getByText(/Bachelor of Engineering/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Bachelor of Engineering/i)).toBeInTheDocument();
   });
 
   it("renders the institution name", () => {

@@ -107,7 +107,11 @@ async function fetchGitHubContributionPeriod(
   const data = await response.json();
 
   if (!data.data?.user) {
-    console.error("GitHub API returned null user data for period:", { from, to, data });
+    console.error("GitHub API returned null user data for period:", {
+      from,
+      to,
+      data,
+    });
     return null;
   }
 
@@ -147,7 +151,10 @@ export async function getGitHubContributions(
       let currentStartDate = new Date(startDate);
       while (currentStartDate.getTime() < now.getTime()) {
         const currentEndDate = new Date(
-          Math.min(currentStartDate.getTime() + oneYearInMs - 1000, now.getTime())
+          Math.min(
+            currentStartDate.getTime() + oneYearInMs - 1000,
+            now.getTime()
+          )
         );
         const periodData = await fetchGitHubContributionPeriod(
           username,
@@ -157,16 +164,22 @@ export async function getGitHubContributions(
         if (periodData) {
           contributionData.totalContributions += periodData.totalContributions;
           contributionData.weeks.push(...periodData.weeks);
-          contributionData.totalCommitContributions += periodData.totalCommitContributions;
-          contributionData.totalPullRequestContributions += periodData.totalPullRequestContributions;
-          contributionData.totalIssueContributions += periodData.totalIssueContributions;
-          contributionData.totalRepositoryContributions += periodData.totalRepositoryContributions;
+          contributionData.totalCommitContributions +=
+            periodData.totalCommitContributions;
+          contributionData.totalPullRequestContributions +=
+            periodData.totalPullRequestContributions;
+          contributionData.totalIssueContributions +=
+            periodData.totalIssueContributions;
+          contributionData.totalRepositoryContributions +=
+            periodData.totalRepositoryContributions;
         }
         currentStartDate = new Date(currentEndDate.getTime() + 1000);
       }
     } else {
       const singlePeriodData = await fetchGitHubContributionPeriod(
-        username, startDate, endDate
+        username,
+        startDate,
+        endDate
       );
       if (singlePeriodData) {
         contributionData = singlePeriodData;
@@ -207,17 +220,23 @@ export async function getGitHubContributions(
       while (contributionsByDate[checkDate] > 0) {
         currentStreak.count++;
         currentStreak.startDate = checkDate;
-        checkDate = getLocalDate(new Date(new Date(checkDate).getTime() - 86400000));
+        checkDate = getLocalDate(
+          new Date(new Date(checkDate).getTime() - 86400000)
+        );
       }
     } else if (contributionsByDate[yesterday] > 0) {
       currentStreak.count = 1;
       currentStreak.startDate = yesterday;
       currentStreak.endDate = yesterday;
-      let checkDate = getLocalDate(new Date(new Date(yesterday).getTime() - 86400000));
+      let checkDate = getLocalDate(
+        new Date(new Date(yesterday).getTime() - 86400000)
+      );
       while (contributionsByDate[checkDate] > 0) {
         currentStreak.count++;
         currentStreak.startDate = checkDate;
-        checkDate = getLocalDate(new Date(new Date(checkDate).getTime() - 86400000));
+        checkDate = getLocalDate(
+          new Date(new Date(checkDate).getTime() - 86400000)
+        );
       }
     }
 
@@ -255,10 +274,16 @@ export async function getGitHubContributions(
     }
 
     if (currentStreak.count > 0) {
-      currentStreak.count = daysBetween(currentStreak.startDate, currentStreak.endDate);
+      currentStreak.count = daysBetween(
+        currentStreak.startDate,
+        currentStreak.endDate
+      );
     }
     if (longestStreak.count > 0) {
-      longestStreak.count = daysBetween(longestStreak.startDate, longestStreak.endDate);
+      longestStreak.count = daysBetween(
+        longestStreak.startDate,
+        longestStreak.endDate
+      );
     }
 
     return {
@@ -303,7 +328,9 @@ export async function fetchGithubStats(username: string) {
 
   const [userResponse, reposResponse] = await Promise.all([
     axios.get(`https://api.github.com/users/${username}`, { headers }),
-    axios.get(`https://api.github.com/users/${username}/repos?per_page=100`, { headers }),
+    axios.get(`https://api.github.com/users/${username}/repos?per_page=100`, {
+      headers,
+    }),
   ]);
 
   const languages: Record<string, number> = {};

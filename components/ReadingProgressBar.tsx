@@ -29,7 +29,10 @@ export function ReadingProgressBar() {
     >
       <div
         className="h-full bg-gradient-to-r from-[hsl(var(--hero-gradient-from))] to-[hsl(var(--hero-gradient-to))] transition-none"
-        style={{ transform: `scaleX(${progress / 100})`, transformOrigin: "left" }}
+        style={{
+          transform: `scaleX(${progress / 100})`,
+          transformOrigin: "left",
+        }}
       />
     </div>
   );

@@ -6,19 +6,33 @@ import { fetchLeetCodeStats } from "@/lib/leetcode-service";
 const EMPTY_STREAK = { count: 0, startDate: "", endDate: "" };
 
 const GITHUB_FALLBACK = {
-  repositories: 0 as number, contributions: 0, stars: 0 as number,
-  forks: 0 as number, followers: 0,
+  repositories: 0 as number,
+  contributions: 0,
+  stars: 0 as number,
+  forks: 0 as number,
+  followers: 0,
   languages: [] as { name: string; percentage: number; color: string }[],
-  currentStreak: EMPTY_STREAK, longestStreak: EMPTY_STREAK,
-  totalCommits: 0, totalPRs: 0, totalIssues: 0, totalRepos: 0,
+  currentStreak: EMPTY_STREAK,
+  longestStreak: EMPTY_STREAK,
+  totalCommits: 0,
+  totalPRs: 0,
+  totalIssues: 0,
+  totalRepos: 0,
   contributionDays: [] as { date: string; contributionCount: number }[],
 };
 
 const LEETCODE_FALLBACK = {
-  totalSolved: 0, easySolved: 0, mediumSolved: 0, hardSolved: 0,
-  ranking: 0, contributionPoint: 0, reputation: 0,
-  currentStreak: EMPTY_STREAK, longestStreak: EMPTY_STREAK,
-  activeYears: [] as number[], totalActiveDays: 0,
+  totalSolved: 0,
+  easySolved: 0,
+  mediumSolved: 0,
+  hardSolved: 0,
+  ranking: 0,
+  contributionPoint: 0,
+  reputation: 0,
+  currentStreak: EMPTY_STREAK,
+  longestStreak: EMPTY_STREAK,
+  activeYears: [] as number[],
+  totalActiveDays: 0,
   submissionCalendar: {} as Record<string, number>,
 };
 

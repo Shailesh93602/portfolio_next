@@ -28,7 +28,8 @@ async function disableAnimations(page: import("@playwright/test").Page) {
   await page.evaluate(() => {
     document.querySelectorAll<HTMLElement>("[style]").forEach((el) => {
       if (el.style.opacity === "0") el.style.opacity = "1";
-      if (el.style.transform?.includes("translateY")) el.style.transform = "none";
+      if (el.style.transform?.includes("translateY"))
+        el.style.transform = "none";
     });
   });
 }

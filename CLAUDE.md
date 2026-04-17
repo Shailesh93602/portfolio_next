@@ -79,11 +79,11 @@ public/
 
 ## Environment variables
 
-| Variable | Required | Purpose |
-|---|---|---|
-| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Optional | Google Analytics (skipped if unset) |
-| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Optional | Google Search Console meta tag |
-| `GITHUB_TOKEN` | Optional | GitHub API rate limit (statistics page) |
+| Variable                               | Required | Purpose                                 |
+| -------------------------------------- | -------- | --------------------------------------- |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID`        | Optional | Google Analytics (skipped if unset)     |
+| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Optional | Google Search Console meta tag          |
+| `GITHUB_TOKEN`                         | Optional | GitHub API rate limit (statistics page) |
 
 ## Theming
 

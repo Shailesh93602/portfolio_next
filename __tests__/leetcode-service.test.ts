@@ -11,7 +11,9 @@ describe("LeetCode streak helpers (via github-service exports)", () => {
     it("returns a YYYY-MM-DD string for any UNIX timestamp (seconds)", () => {
       const timestamps = [1704067200, 1704063600, 1609459200, 1672531200];
       timestamps.forEach((ts) => {
-        expect(getLocalDate(new Date(ts * 1000))).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        expect(getLocalDate(new Date(ts * 1000))).toMatch(
+          /^\d{4}-\d{2}-\d{2}$/
+        );
       });
     });
 

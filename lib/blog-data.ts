@@ -63,7 +63,7 @@ export const BLOG_SLUGS: string[] = [
   "implementing-oauth-web-application",
   "tailwindcss-nextjs-faster-ui-development",
   "getting-started-shadcn-ui-modern-react-applications",
-  "best-practices-api-development-express-nestjs"
+  "best-practices-api-development-express-nestjs",
 ];
 
 function loadPost(slug: string): BlogPost | null {

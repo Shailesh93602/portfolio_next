@@ -65,6 +65,7 @@ The CodeSenseiSearch project card is live on the portfolio but uses a placeholde
 The KhataGO GitHub link on your portfolio currently 404s. Every recruiter who clicks it sees a dead link. This is the fastest credibility fix available.
 
 Steps:
+
 1. Go to `https://github.com/Shailesh93602/khatago`
 2. Settings → Danger Zone → Change visibility → Public
 3. Before making it public, verify there are no secrets committed (`.env` files, API keys in history). Run: `git log --all --full-history -- .env` and `git grep -i "api_key\|secret\|password"` in the repo
@@ -79,6 +80,7 @@ Steps:
 The GA script is already in the codebase waiting for a Measurement ID. You just need to create the property.
 
 Steps:
+
 1. Go to `https://analytics.google.com`
 2. Create Account → Property → Data Stream → Web → `https://shaileshchaudhari.vercel.app`
 3. Copy the Measurement ID (`G-XXXXXXXXXX`)
@@ -94,11 +96,11 @@ Steps:
 
 Free-tier Supabase pauses after 7 days of inactivity. Check before any recruiter visit.
 
-| Project | URL | Fix if down |
-|---|---|---|
-| EduScale | `https://eduscale.vercel.app` | Supabase dashboard → Restore project |
+| Project  | URL                                  | Fix if down                          |
+| -------- | ------------------------------------ | ------------------------------------ |
+| EduScale | `https://eduscale.vercel.app`        | Supabase dashboard → Restore project |
 | DevTrack | `https://daily-dev-track.vercel.app` | Supabase dashboard → Restore project |
-| KhataGO | `https://khatago.vercel.app` | Supabase dashboard → Restore project |
+| KhataGO  | `https://khatago.vercel.app`         | Supabase dashboard → Restore project |
 
 Do this before applying to any company. Set a calendar reminder to check every 2 weeks.
 
@@ -111,6 +113,7 @@ This single post does more for your Supabase/Vercel profile than everything else
 **Proposed title**: "Building Real-Time Coding Battles: Redis Cluster + Distributed Locks at Sub-200ms"
 
 Structure that works:
+
 1. The problem (why polling was wrong, what "real-time" actually means in a competitive coding context)
 2. The socket architecture (Socket.io rooms, reconnect logic, why you need the Redis adapter for horizontal scaling)
 3. The race condition (two users simultaneously starting the same battle — what breaks without a lock)
@@ -147,6 +150,7 @@ The "0 OSS merged PRs" gap is visible on your GitHub profile. One merged PR to a
    - Higher bar for code changes
 
 Process that works:
+
 1. Run the project locally (this alone eliminates most contributors)
 2. Find a failing test, a missing type, or a documentation gap
 3. Fix it with the smallest possible change
@@ -163,6 +167,7 @@ Process that works:
 This addresses the "no Postgres depth" gap that matters for Supabase.
 
 Structure:
+
 1. The requirement (students, teachers, admins — different permissions per feature per plan tier)
 2. The schema: `Role`, `Permission`, `Feature`, `RolePermission` join table
 3. Why not just `if (user.role === 'admin')` in code (it doesn't scale, it breaks at edge cases)
@@ -181,6 +186,7 @@ After writing, Claude can add it to `lib/blog-data.ts` and wire it in.
 This addresses the "no fintech depth" gap that matters for Skydo and Stripe.
 
 Structure:
+
 1. The webhook problem (Meta sends the same event multiple times — why and how often)
 2. Your deduplication implementation (the message ID hash, the Redis TTL window)
 3. The OCR pipeline (image → Gemini → structured JSON → ledger entry — what can go wrong at each step)
@@ -199,12 +205,14 @@ After writing, Claude can add it to `lib/blog-data.ts`.
 Skydo is fintech, full-stack, India-based, and values third-party API integration depth. KhataGO (once public with a good README) is a direct match for what they're looking for.
 
 Preparation before applying:
+
 - KhataGO GitHub must be public (Task 1)
 - KhataGO README must document webhook + OCR + Tally (TODO.md §1E)
 - KhataGO fintech post must be published (Task 7)
 - All three live project URLs must be working (Task 3)
 
 Application materials:
+
 - Lead with KhataGO (WhatsApp Business API, Gemini AI OCR, Tally XML) — this is exactly what Skydo does
 - Mention EduScale architecture depth (Redis cluster adapter, distributed locks)
 - Reference the fintech post as evidence of your thinking
@@ -216,6 +224,7 @@ Application materials:
 Current LinkedIn likely doesn't reflect the EduScale architecture depth or KhataGO's real technical stack. Recruiters check LinkedIn before GitHub.
 
 Specific updates needed:
+
 1. ContextQA role description: add "~1,900 merged PRs on Vibe Testing Chrome extension" and "~1,600 merged PRs on AxeTos accessibility extension"
 2. EduScale description: add `@socket.io/redis-adapter`, `redlock`, `opossum`, `prom-client`, `bull`
 3. KhataGO description: add WhatsApp Business API, Gemini AI OCR, Tally ERP XML export
@@ -230,6 +239,7 @@ Specific updates needed:
 Do not apply to Vercel without at least one merged OSS PR. Their hiring bar explicitly filters for engineers who ship in shared codebases.
 
 Before applying:
+
 - OSS PR must be merged (Task 5)
 - EduScale architecture post must be published (Task 4)
 - Vercel/performance post (see below) must be published
@@ -244,6 +254,7 @@ Topics: `ANALYZE=true npm run build` findings, AVIF vs WebP measured savings, IS
 ### 11. Apply to Supabase — After Postgres depth is demonstrated
 
 Before applying:
+
 - Postgres/RBAC post must be published (Task 6)
 - EduScale architecture post must be published (Task 4)
 - LinkedIn skills updated to include Postgres-specific depth
@@ -255,6 +266,7 @@ Supabase specifically looks for: Postgres RLS, indexes, query explain plans, OSS
 ### 12. Apply to Stripe — Stretch goal (requires correctness post)
 
 Stripe rejects on the first sign of sloppy thinking about correctness. Before applying:
+
 - Remove `dangerouslySetInnerHTML` from `components/ExperienceSection/index.tsx` (Claude can do this — it's a sanitization issue, not a manual task, but you need to approve the DOMPurify approach)
 - KhataGO fintech correctness post must be published (Task 7)
 - Be ready to talk about idempotency, webhook deduplication, and what happens when a payment fails halfway through
@@ -263,18 +275,18 @@ Stripe rejects on the first sign of sloppy thinking about correctness. Before ap
 
 ## Priority Order (Consolidated)
 
-| When | Task | Time | Why |
-|---|---|---|---|
-| Week 1 (Apr 16-22) | Make KhataGO public | 30 min | Fixes the dead GitHub link immediately |
-| Week 1 | Verify 3 live URLs | 15 min | Don't let recruiters hit paused DBs |
-| Week 1 | Google Analytics setup | 30 min | Shows you instrument your own products |
-| Month 1 | Write EduScale architecture post | 6 hrs | Highest ROI task in the entire plan |
-| Month 2 | Get one OSS PR merged | Ongoing | Required for Vercel; improves all profiles |
-| Month 2 | Write Postgres/RBAC post | 4 hrs | Required for Supabase |
-| Month 2 | Write KhataGO fintech post | 4 hrs | Required for Skydo/Stripe |
-| Month 3 | Apply to Skydo | 2 hrs | Highest probability conversion this month |
-| Month 3 | Update LinkedIn | 2 hrs | Recruiters check before GitHub |
-| Month 3 | Write Vercel/performance post | 3 hrs | Required before Vercel application |
-| Month 3 | Apply to Vercel | 2 hrs | After OSS PR is merged |
-| Month 3 | Apply to Supabase | 2 hrs | After Postgres post is published |
-| Stretch | Apply to Stripe | 2 hrs | After correctness post + `dangerouslySetInnerHTML` fix |
+| When               | Task                             | Time    | Why                                                    |
+| ------------------ | -------------------------------- | ------- | ------------------------------------------------------ |
+| Week 1 (Apr 16-22) | Make KhataGO public              | 30 min  | Fixes the dead GitHub link immediately                 |
+| Week 1             | Verify 3 live URLs               | 15 min  | Don't let recruiters hit paused DBs                    |
+| Week 1             | Google Analytics setup           | 30 min  | Shows you instrument your own products                 |
+| Month 1            | Write EduScale architecture post | 6 hrs   | Highest ROI task in the entire plan                    |
+| Month 2            | Get one OSS PR merged            | Ongoing | Required for Vercel; improves all profiles             |
+| Month 2            | Write Postgres/RBAC post         | 4 hrs   | Required for Supabase                                  |
+| Month 2            | Write KhataGO fintech post       | 4 hrs   | Required for Skydo/Stripe                              |
+| Month 3            | Apply to Skydo                   | 2 hrs   | Highest probability conversion this month              |
+| Month 3            | Update LinkedIn                  | 2 hrs   | Recruiters check before GitHub                         |
+| Month 3            | Write Vercel/performance post    | 3 hrs   | Required before Vercel application                     |
+| Month 3            | Apply to Vercel                  | 2 hrs   | After OSS PR is merged                                 |
+| Month 3            | Apply to Supabase                | 2 hrs   | After Postgres post is published                       |
+| Stretch            | Apply to Stripe                  | 2 hrs   | After correctness post + `dangerouslySetInnerHTML` fix |

@@ -31,7 +31,6 @@ seoKeywords:
   - "Supabase auth tutorial"
 ---
 
-
     <div class="tldr">
       <strong>TL;DR:</strong> Complete guide to implementing authentication in Next.js with Supabase. Learn to set up user registration, login, password reset, social authentication, and secure route protection with middleware and session management.
     </div>
@@ -68,6 +67,7 @@ seoKeywords:
     <h3>Environment Variables</h3>
     <p>Create a <code>.env.local</code> file in your project root:</p>
     <pre><code># Supabase Configuration
+
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key</code></pre>
@@ -75,7 +75,8 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key</code></pre>
     <h3>Supabase Client Setup</h3>
     <p>Create a <code>lib/supabase.ts</code> file:</p>
     <pre><code>import { createClient } from '@supabase/supabase-js'
-import { Database } from '@/types/supabase'
+
+import { Database } from "@/types/supabase";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -90,14 +91,14 @@ export const supabase = createClient&lt;Database&gt;(supabaseUrl, supabaseAnonKe
 
 // Server-side client for API routes
 export const supabaseServer = createClient&lt;Database&gt;(
-  supabaseUrl,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }
+supabaseUrl,
+process.env.SUPABASE_SERVICE_ROLE_KEY!,
+{
+auth: {
+autoRefreshToken: false,
+persistSession: false
+}
+}
 )</code></pre>
 
     <h3>TypeScript Types (Optional but Recommended)</h3>
@@ -109,20 +110,21 @@ export const supabaseServer = createClient&lt;Database&gt;(
     <h3>Auth Context Provider</h3>
     <p>Create an authentication context for managing user state:</p>
     <pre><code>// contexts/AuthContext.tsx
+
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
-import { User, Session } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
+import { createContext, useContext, useEffect, useState } from "react";
+import { User, Session } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
 
 interface AuthContextType {
-  user: User | null
-  session: Session | null
-  loading: boolean
-  signUp: (email: string, password: string) =&gt; Promise&lt;any&gt;
-  signIn: (email: string, password: string) =&gt; Promise&lt;any&gt;
-  signOut: () =&gt; Promise&lt;any&gt;
-  resetPassword: (email: string) =&gt; Promise&lt;any&gt;
+user: User | null
+session: Session | null
+loading: boolean
+signUp: (email: string, password: string) =&gt; Promise&lt;any&gt;
+signIn: (email: string, password: string) =&gt; Promise&lt;any&gt;
+signOut: () =&gt; Promise&lt;any&gt;
+resetPassword: (email: string) =&gt; Promise&lt;any&gt;
 }
 
 const AuthContext = createContext&lt;AuthContextType | undefined&gt;(undefined)
@@ -132,13 +134,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState&lt;Session | null&gt;(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) =&gt; {
-      setSession(session)
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
+useEffect(() => {
+// Get initial session
+supabase.auth.getSession().then(({ data: { session } }) =&gt; {
+setSession(session)
+setUser(session?.user ?? null)
+setLoading(false)
+})
 
     // Listen for auth changes
     const {
@@ -150,47 +152,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })
 
     return () =&gt; subscription.unsubscribe()
-  }, [])
 
-  const signUp = async (email: string, password: string) =&gt; {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    })
-    return { data, error }
-  }
+}, [])
 
-  const signIn = async (email: string, password: string) =&gt; {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-    return { data, error }
-  }
+const signUp = async (email: string, password: string) =&gt; {
+const { data, error } = await supabase.auth.signUp({
+email,
+password,
+})
+return { data, error }
+}
 
-  const signOut = async () =&gt; {
-    const { error } = await supabase.auth.signOut()
-    return { error }
-  }
+const signIn = async (email: string, password: string) =&gt; {
+const { data, error } = await supabase.auth.signInWithPassword({
+email,
+password,
+})
+return { data, error }
+}
 
-  const resetPassword = async (email: string) =&gt; {
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `\${window.location.origin}/reset-password\`,
-    })
-    return { data, error }
-  }
+const signOut = async () =&gt; {
+const { error } = await supabase.auth.signOut()
+return { error }
+}
 
-  const value = {
-    user,
-    session,
-    loading,
-    signUp,
-    signIn,
-    signOut,
-    resetPassword,
-  }
+const resetPassword = async (email: string) =&gt; {
+const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+redirectTo: `\${window.location.origin}/reset-password\`,
+})
+return { data, error }
+}
 
-  return &lt;AuthContext.Provider value={value}&gt;{children}&lt;/AuthContext.Provider&gt;
+const value = {
+user,
+session,
+loading,
+signUp,
+signIn,
+signOut,
+resetPassword,
+}
+
+return &lt;AuthContext.Provider value={value}&gt;{children}&lt;/AuthContext.Provider&gt;
 }
 
 export function useAuth() {
@@ -203,11 +206,12 @@ export function useAuth() {
 
     <h3>Login Form Component</h3>
     <pre><code>// components/auth/LoginForm.tsx
+
 'use client'
 
-import { useState } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
-import { useRouter } from 'next/navigation'
+import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
   const [email, setEmail] = useState('')
@@ -217,10 +221,10 @@ export default function LoginForm() {
   const { signIn } = useAuth()
   const router = useRouter()
 
-  const handleSubmit = async (e: React.FormEvent) =&gt; {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+const handleSubmit = async (e: React.FormEvent) =&gt; {
+e.preventDefault()
+setLoading(true)
+setError('')
 
     try {
       const { error } = await signIn(email, password)
@@ -234,23 +238,24 @@ export default function LoginForm() {
     } finally {
       setLoading(false)
     }
-  }
 
-  return (
-    &lt;form onSubmit={handleSubmit} className="space-y-4"&gt;
-      &lt;div&gt;
-        &lt;label htmlFor="email" className="block text-sm font-medium"&gt;
-          Email
-        &lt;/label&gt;
-        &lt;input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) =&gt; setEmail(e.target.value)}
-          required
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-        /&gt;
-      &lt;/div&gt;
+}
+
+return (
+&lt;form onSubmit={handleSubmit} className="space-y-4"&gt;
+&lt;div&gt;
+&lt;label htmlFor="email" className="block text-sm font-medium"&gt;
+Email
+&lt;/label&gt;
+&lt;input
+id="email"
+type="email"
+value={email}
+onChange={(e) =&gt; setEmail(e.target.value)}
+required
+className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+/&gt;
+&lt;/div&gt;
 
       &lt;div&gt;
         &lt;label htmlFor="password" className="block text-sm font-medium"&gt;
@@ -278,16 +283,18 @@ export default function LoginForm() {
         {loading ? 'Signing in...' : 'Sign In'}
       &lt;/button&gt;
     &lt;/form&gt;
-  )
+
+)
 }</code></pre>
 
     <h3>Sign Up Form Component</h3>
     <pre><code>// components/auth/SignUpForm.tsx
+
 'use client'
 
-import { useState } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
-import { useRouter } from 'next/navigation'
+import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function SignUpForm() {
   const [email, setEmail] = useState('')
@@ -299,11 +306,11 @@ export default function SignUpForm() {
   const { signUp } = useAuth()
   const router = useRouter()
 
-  const handleSubmit = async (e: React.FormEvent) =&gt; {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-    setMessage('')
+const handleSubmit = async (e: React.FormEvent) =&gt; {
+e.preventDefault()
+setLoading(true)
+setError('')
+setMessage('')
 
     if (password !== confirmPassword) {
       setError('Passwords do not match')
@@ -325,23 +332,24 @@ export default function SignUpForm() {
     } finally {
       setLoading(false)
     }
-  }
 
-  return (
-    &lt;form onSubmit={handleSubmit} className="space-y-4"&gt;
-      &lt;div&gt;
-        &lt;label htmlFor="email" className="block text-sm font-medium"&gt;
-          Email
-        &lt;/label&gt;
-        &lt;input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) =&gt; setEmail(e.target.value)}
-          required
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-        /&gt;
-      &lt;/div&gt;
+}
+
+return (
+&lt;form onSubmit={handleSubmit} className="space-y-4"&gt;
+&lt;div&gt;
+&lt;label htmlFor="email" className="block text-sm font-medium"&gt;
+Email
+&lt;/label&gt;
+&lt;input
+id="email"
+type="email"
+value={email}
+onChange={(e) =&gt; setEmail(e.target.value)}
+required
+className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+/&gt;
+&lt;/div&gt;
 
       &lt;div&gt;
         &lt;label htmlFor="password" className="block text-sm font-medium"&gt;
@@ -389,7 +397,8 @@ export default function SignUpForm() {
         {loading ? 'Creating account...' : 'Sign Up'}
       &lt;/button&gt;
     &lt;/form&gt;
-  )
+
+)
 }</code></pre>
 
     <h2>Social Authentication</h2>
@@ -405,22 +414,23 @@ export default function SignUpForm() {
 
     <h3>Social Login Component</h3>
     <pre><code>// components/auth/SocialLogin.tsx
+
 'use client'
 
-import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 export default function SocialLogin() {
   const router = useRouter()
 
-  const handleSocialLogin = async (provider: 'google' | 'github' | 'discord') =&gt; {
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: `\${window.location.origin}/auth/callback\`,
-        },
-      })
+const handleSocialLogin = async (provider: 'google' | 'github' | 'discord') =&gt; {
+try {
+const { data, error } = await supabase.auth.signInWithOAuth({
+provider,
+options: {
+redirectTo: `\${window.location.origin}/auth/callback\`,
+},
+})
 
       if (error) {
         console.error('Error:', error.message)
@@ -428,22 +438,23 @@ export default function SocialLogin() {
     } catch (error) {
       console.error('Error:', error)
     }
-  }
 
-  return (
-    &lt;div className="space-y-3"&gt;
-      &lt;button
-        onClick={() =&gt; handleSocialLogin('google')}
-        className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-      &gt;
-        &lt;svg className="w-5 h-5 mr-2" viewBox="0 0 24 24"&gt;
-          &lt;path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/&gt;
-          &lt;path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/&gt;
-          &lt;path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/&gt;
-          &lt;path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/&gt;
-        &lt;/svg&gt;
-        Continue with Google
-      &lt;/button&gt;
+}
+
+return (
+&lt;div className="space-y-3"&gt;
+&lt;button
+onClick={() =&gt; handleSocialLogin('google')}
+className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+&gt;
+&lt;svg className="w-5 h-5 mr-2" viewBox="0 0 24 24"&gt;
+&lt;path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/&gt;
+&lt;path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/&gt;
+&lt;path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/&gt;
+&lt;path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/&gt;
+&lt;/svg&gt;
+Continue with Google
+&lt;/button&gt;
 
       &lt;button
         onClick={() =&gt; handleSocialLogin('github')}
@@ -455,11 +466,13 @@ export default function SocialLogin() {
         Continue with GitHub
       &lt;/button&gt;
     &lt;/div&gt;
-  )
+
+)
 }</code></pre>
 
     <h3>OAuth Callback Handler</h3>
     <pre><code>// app/auth/callback/route.ts
+
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -469,32 +482,32 @@ export async function GET(request: NextRequest) {
   // if "next" is in param, use it as the redirect URL
   const next = searchParams.get('next') ?? '/dashboard'
 
-  if (code) {
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return request.cookies.get(name)?.value
-          },
-          set(name: string, value: string, options: CookieOptions) {
-            request.cookies.set({
-              name,
-              value,
-              ...options,
-            })
-          },
-          remove(name: string, options: CookieOptions) {
-            request.cookies.set({
-              name,
-              value: '',
-              ...options,
-            })
-          },
-        },
-      }
-    )
+if (code) {
+const supabase = createServerClient(
+process.env.NEXT_PUBLIC_SUPABASE_URL!,
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+{
+cookies: {
+get(name: string) {
+return request.cookies.get(name)?.value
+},
+set(name: string, value: string, options: CookieOptions) {
+request.cookies.set({
+name,
+value,
+...options,
+})
+},
+remove(name: string, options: CookieOptions) {
+request.cookies.set({
+name,
+value: '',
+...options,
+})
+},
+},
+}
+)
 
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
@@ -509,16 +522,18 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(`\${origin}\${next}\`)
       }
     }
-  }
 
-  // return the user to an error page with instructions
-  return NextResponse.redirect(`\${origin}/auth/auth-code-error\`)
+}
+
+// return the user to an error page with instructions
+return NextResponse.redirect(`\${origin}/auth/auth-code-error\`)
 }</code></pre>
 
     <h2>Route Protection and Middleware</h2>
 
     <h3>Next.js Middleware for Route Protection</h3>
     <pre><code>// middleware.ts
+
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -529,57 +544,57 @@ export async function middleware(request: NextRequest) {
     },
   })
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value,
-            ...options,
-          })
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          })
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
-        },
-      },
-    }
-  )
+const supabase = createServerClient(
+process.env.NEXT_PUBLIC_SUPABASE_URL!,
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+{
+cookies: {
+get(name: string) {
+return request.cookies.get(name)?.value
+},
+set(name: string, value: string, options: CookieOptions) {
+request.cookies.set({
+name,
+value,
+...options,
+})
+response.cookies.set({
+name,
+value,
+...options,
+})
+},
+remove(name: string, options: CookieOptions) {
+request.cookies.set({
+name,
+value: '',
+...options,
+})
+response.cookies.set({
+name,
+value: '',
+...options,
+})
+},
+},
+}
+)
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+const {
+data: { user },
+} = await supabase.auth.getUser()
 
-  // Protect dashboard routes
-  if (request.nextUrl.pathname.startsWith('/dashboard') && !user) {
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
+// Protect dashboard routes
+if (request.nextUrl.pathname.startsWith('/dashboard') && !user) {
+return NextResponse.redirect(new URL('/login', request.url))
+}
 
-  // Redirect authenticated users away from auth pages
-  if (request.nextUrl.pathname.startsWith('/login') && user) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
+// Redirect authenticated users away from auth pages
+if (request.nextUrl.pathname.startsWith('/login') && user) {
+return NextResponse.redirect(new URL('/dashboard', request.url))
+}
 
-  return response
+return response
 }
 
 export const config = {
@@ -593,15 +608,16 @@ export const config = {
 
     <h3>Protected Route Component</h3>
     <pre><code>// components/auth/ProtectedRoute.tsx
+
 'use client'
 
-import { useAuth } from '@/contexts/AuthContext'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface ProtectedRouteProps {
-  children: React.ReactNode
-  redirectTo?: string
+children: React.ReactNode
+redirectTo?: string
 }
 
 export default function ProtectedRoute({
@@ -611,35 +627,36 @@ export default function ProtectedRoute({
   const { user, loading } = useAuth()
   const router = useRouter()
 
-  useEffect(() =&gt; {
-    if (!loading && !user) {
-      router.push(redirectTo)
-    }
-  }, [user, loading, router, redirectTo])
+useEffect(() =&gt; {
+if (!loading && !user) {
+router.push(redirectTo)
+}
+}, [user, loading, router, redirectTo])
 
-  if (loading) {
-    return (
-      &lt;div className="flex items-center justify-center min-h-screen"&gt;
-        &lt;div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"&gt;&lt;/div&gt;
-      &lt;/div&gt;
-    )
-  }
+if (loading) {
+return (
+&lt;div className="flex items-center justify-center min-h-screen"&gt;
+&lt;div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"&gt;&lt;/div&gt;
+&lt;/div&gt;
+)
+}
 
-  if (!user) {
-    return null
-  }
+if (!user) {
+return null
+}
 
-  return &lt;&gt;{children}&lt;/&gt;
+return &lt;&gt;{children}&lt;/&gt;
 }</code></pre>
 
     <h2>Password Reset and Email Verification</h2>
 
     <h3>Password Reset Flow</h3>
     <pre><code>// components/auth/ResetPasswordForm.tsx
+
 'use client'
 
-import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export default function ResetPasswordForm() {
   const [email, setEmail] = useState('')
@@ -647,11 +664,11 @@ export default function ResetPasswordForm() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
-  const handleSubmit = async (e: React.FormEvent) =&gt; {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-    setMessage('')
+const handleSubmit = async (e: React.FormEvent) =&gt; {
+e.preventDefault()
+setLoading(true)
+setError('')
+setMessage('')
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -668,23 +685,24 @@ export default function ResetPasswordForm() {
     } finally {
       setLoading(false)
     }
-  }
 
-  return (
-    &lt;form onSubmit={handleSubmit} className="space-y-4"&gt;
-      &lt;div&gt;
-        &lt;label htmlFor="email" className="block text-sm font-medium"&gt;
-          Email
-        &lt;/label&gt;
-        &lt;input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) =&gt; setEmail(e.target.value)}
-          required
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-        /&gt;
-      &lt;/div&gt;
+}
+
+return (
+&lt;form onSubmit={handleSubmit} className="space-y-4"&gt;
+&lt;div&gt;
+&lt;label htmlFor="email" className="block text-sm font-medium"&gt;
+Email
+&lt;/label&gt;
+&lt;input
+id="email"
+type="email"
+value={email}
+onChange={(e) =&gt; setEmail(e.target.value)}
+required
+className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+/&gt;
+&lt;/div&gt;
 
       {error && (
         &lt;div className="text-red-600 text-sm"&gt;{error}&lt;/div&gt;
@@ -702,16 +720,18 @@ export default function ResetPasswordForm() {
         {loading ? 'Sending...' : 'Send Reset Link'}
       &lt;/button&gt;
     &lt;/form&gt;
-  )
+
+)
 }</code></pre>
 
     <h3>Update Password Page</h3>
     <pre><code>// app/reset-password/page.tsx
+
 'use client'
 
-import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState('')
@@ -721,20 +741,20 @@ export default function ResetPasswordPage() {
   const [message, setMessage] = useState('')
   const router = useRouter()
 
-  useEffect(() =&gt; {
-    // Check if we have a session (user clicked reset link)
-    supabase.auth.getSession().then(({ data: { session } }) =&gt; {
-      if (!session) {
-        router.push('/login')
-      }
-    })
-  }, [router])
+useEffect(() =&gt; {
+// Check if we have a session (user clicked reset link)
+supabase.auth.getSession().then(({ data: { session } }) =&gt; {
+if (!session) {
+router.push('/login')
+}
+})
+}, [router])
 
-  const handleSubmit = async (e: React.FormEvent) =&gt; {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-    setMessage('')
+const handleSubmit = async (e: React.FormEvent) =&gt; {
+e.preventDefault()
+setLoading(true)
+setError('')
+setMessage('')
 
     if (password !== confirmPassword) {
       setError('Passwords do not match')
@@ -760,11 +780,12 @@ export default function ResetPasswordPage() {
     } finally {
       setLoading(false)
     }
-  }
 
-  return (
-    &lt;div className="max-w-md mx-auto mt-8"&gt;
-      &lt;h1 className="text-2xl font-bold mb-4"&gt;Reset Your Password&lt;/h1&gt;
+}
+
+return (
+&lt;div className="max-w-md mx-auto mt-8"&gt;
+&lt;h1 className="text-2xl font-bold mb-4"&gt;Reset Your Password&lt;/h1&gt;
 
       &lt;form onSubmit={handleSubmit} className="space-y-4"&gt;
         &lt;div&gt;
@@ -814,7 +835,8 @@ export default function ResetPasswordPage() {
         &lt;/button&gt;
       &lt;/form&gt;
     &lt;/div&gt;
-  )
+
+)
 }</code></pre>
 
     <h2>Security Best Practices</h2>
@@ -822,18 +844,20 @@ export default function ResetPasswordPage() {
     <h3>Row Level Security (RLS)</h3>
     <p>Enable RLS in Supabase to secure your database:</p>
     <pre><code>-- Enable RLS on users table
+
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
 -- Create policy for users to see only their own data
 CREATE POLICY "Users can view own data" ON users
-  FOR SELECT USING (auth.uid() = id);
+FOR SELECT USING (auth.uid() = id);
 
 -- Create policy for users to update own data
 CREATE POLICY "Users can update own data" ON users
-  FOR UPDATE USING (auth.uid() = id);</code></pre>
+FOR UPDATE USING (auth.uid() = id);</code></pre>
 
     <h3>Environment Variables Security</h3>
     <pre><code>// .env.local (never commit this file)
+
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
@@ -845,15 +869,16 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key</code></pre>
 
     <h3>Input Validation and Sanitization</h3>
     <pre><code>// Use a validation library like Zod
-import { z } from 'zod'
+
+import { z } from "zod";
 
 const signUpSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string(),
+email: z.string().email('Invalid email address'),
+password: z.string().min(6, 'Password must be at least 6 characters'),
+confirmPassword: z.string(),
 }).refine((data) =&gt; data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
+message: "Passwords don't match",
+path: ["confirmPassword"],
 })
 
 export async function signUpUser(data: unknown) {
@@ -865,33 +890,35 @@ export async function signUpUser(data: unknown) {
 
     <h3>Unit Tests for Auth Components</h3>
     <pre><code>// __tests__/auth/LoginForm.test.tsx
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import LoginForm from '@/components/auth/LoginForm'
-import { AuthProvider } from '@/contexts/AuthContext'
+
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import LoginForm from "@/components/auth/LoginForm";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 // Mock the auth context
 const mockSignIn = jest.fn()
 jest.mock('@/contexts/AuthContext', () =&gt; ({
-  useAuth: () =&gt; ({
-    signIn: mockSignIn,
-  }),
+useAuth: () =&gt; ({
+signIn: mockSignIn,
+}),
 }))
 
 describe('LoginForm', () =&gt; {
-  it('renders login form', () =&gt; {
-    render(
-      &lt;AuthProvider&gt;
-        &lt;LoginForm /&gt;
-      &lt;/AuthProvider&gt;
-    )
+it('renders login form', () =&gt; {
+render(
+&lt;AuthProvider&gt;
+&lt;LoginForm /&gt;
+&lt;/AuthProvider&gt;
+)
 
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument()
-  })
 
-  it('submits form with valid data', async () =&gt; {
-    mockSignIn.mockResolvedValue({ error: null })
+})
+
+it('submits form with valid data', async () =&gt; {
+mockSignIn.mockResolvedValue({ error: null })
 
     render(
       &lt;AuthProvider&gt;
@@ -910,16 +937,18 @@ describe('LoginForm', () =&gt; {
     await waitFor(() =&gt; {
       expect(mockSignIn).toHaveBeenCalledWith('test@example.com', 'password123')
     })
-  })
+
+})
 })</code></pre>
 
     <h3>E2E Testing with Playwright</h3>
     <pre><code>// e2e/auth.spec.ts
-import { test, expect } from '@playwright/test'
+
+import { test, expect } from "@playwright/test";
 
 test.describe('Authentication', () =&gt; {
-  test('user can sign up', async ({ page }) =&gt; {
-    await page.goto('/signup')
+test('user can sign up', async ({ page }) =&gt; {
+await page.goto('/signup')
 
     await page.fill('[data-testid="email-input"]', 'test@example.com')
     await page.fill('[data-testid="password-input"]', 'password123')
@@ -928,10 +957,11 @@ test.describe('Authentication', () =&gt; {
     await page.click('[data-testid="signup-button"]')
 
     await expect(page).toHaveURL('/dashboard')
-  })
 
-  test('user can sign in', async ({ page }) =&gt; {
-    await page.goto('/login')
+})
+
+test('user can sign in', async ({ page }) =&gt; {
+await page.goto('/login')
 
     await page.fill('[data-testid="email-input"]', 'test@example.com')
     await page.fill('[data-testid="password-input"]', 'password123')
@@ -939,19 +969,21 @@ test.describe('Authentication', () =&gt; {
     await page.click('[data-testid="signin-button"]')
 
     await expect(page).toHaveURL('/dashboard')
-  })
+
+})
 })</code></pre>
 
     <h2>Deployment Considerations</h2>
 
     <h3>Environment Configuration</h3>
     <pre><code>// vercel.json for Vercel deployment
+
 {
-  "env": {
-    "NEXT_PUBLIC_SUPABASE_URL": "@supabase-url",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase-anon-key",
-    "SUPABASE_SERVICE_ROLE_KEY": "@supabase-service-role-key"
-  }
+"env": {
+"NEXT_PUBLIC_SUPABASE_URL": "@supabase-url",
+"NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase-anon-key",
+"SUPABASE_SERVICE_ROLE_KEY": "@supabase-service-role-key"
+}
 }</code></pre>
 
     <h3>CORS Configuration</h3>
@@ -966,22 +998,25 @@ test.describe('Authentication', () =&gt; {
 
     <h3>Session Not Persisting</h3>
     <pre><code>// Solution: Ensure cookies are properly configured
+
 const supabase = createClient(url, key, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  }
+auth: {
+persistSession: true,
+autoRefreshToken: true,
+}
 })</code></pre>
 
     <h3>OAuth Redirect Issues</h3>
     <pre><code>// Solution: Configure correct redirect URLs
+
 // In Supabase dashboard and OAuth provider settings
 const redirectTo = process.env.NODE_ENV === 'production'
-  ? 'https://yourdomain.com/auth/callback'
-  : 'http://localhost:3000/auth/callback'</code></pre>
+? 'https://yourdomain.com/auth/callback'
+: 'http://localhost:3000/auth/callback'</code></pre>
 
     <h3>Email Confirmation Not Working</h3>
     <pre><code>// Solution: Configure SMTP settings in Supabase
+
 // Go to Authentication → Email Templates
 // Set up your SMTP provider or use Supabase's built-in email</code></pre>
 
@@ -998,4 +1033,3 @@ const redirectTo = process.env.NODE_ENV === 'production'
     <blockquote>
       <p><em>"Security is not a product, but a process. Building authentication is just the beginning of securing your users' trust."</em> - Shailesh Chaudhari</p>
     </blockquote>
-  

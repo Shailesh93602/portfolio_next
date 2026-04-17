@@ -32,7 +32,6 @@ seoKeywords:
   - "Stripe API tutorial"
 ---
 
-
     <div class="tldr">
       <strong>TL;DR:</strong> Complete guide to integrating Stripe payments in Node.js/Next.js applications. Learn to create payment intents, handle webhooks, manage subscriptions, implement proper security, and build production-ready payment flows.
     </div>
@@ -64,39 +63,43 @@ seoKeywords:
 
     <h3>Installing Dependencies</h3>
     <pre><code>npm install stripe @stripe/stripe-js @stripe/react-stripe-js
+
 npm install --save-dev @types/stripe</code></pre>
 
     <h2>Backend Setup (Node.js/Express)</h2>
 
     <h3>Stripe Configuration</h3>
     <pre><code>// lib/stripe.ts
-import Stripe from 'stripe'
+
+import Stripe from "stripe";
 
 if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is required')
+throw new Error('STRIPE_SECRET_KEY is required')
 }
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2023-10-16',
+  apiVersion: "2023-10-16",
   typescript: true,
-})
+});
 
 // Webhook secret for signature verification
 export const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET</code></pre>
 
     <h3>Environment Variables</h3>
     <pre><code># .env.local
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...</code></pre>
+
+STRIPE*SECRET_KEY=sk_test*...
+STRIPE*PUBLISHABLE_KEY=pk_test*...
+STRIPE*WEBHOOK_SECRET=whsec*...
+NEXT*PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test*...</code></pre>
 
     <h2>Payment Intents API (Recommended)</h2>
 
     <h3>Creating Payment Intent</h3>
     <pre><code>// pages/api/create-payment-intent.ts (Next.js API route)
-import { NextApiRequest, NextApiResponse } from 'next'
-import { stripe } from '@/lib/stripe'
+
+import { NextApiRequest, NextApiResponse } from "next";
+import { stripe } from "@/lib/stripe";
 
 export default async function handler(
   req: NextApiRequest,
@@ -108,8 +111,8 @@ export default async function handler(
     return
   }
 
-  try {
-    const { amount, currency = 'usd', metadata } = req.body
+try {
+const { amount, currency = 'usd', metadata } = req.body
 
     // Validate amount
     if (!amount || amount &lt;= 0) {
@@ -134,19 +137,21 @@ export default async function handler(
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
     })
-  } catch (error: any) {
-    console.error('Payment intent creation failed:', error)
-    res.status(500).json({
-      error: 'Internal server error',
-      message: error.message
-    })
-  }
+
+} catch (error: any) {
+console.error('Payment intent creation failed:', error)
+res.status(500).json({
+error: 'Internal server error',
+message: error.message
+})
+}
 }</code></pre>
 
     <h3>Confirming Payment</h3>
     <pre><code>// pages/api/confirm-payment.ts
-import { NextApiRequest, NextApiResponse } from 'next'
-import { stripe } from '@/lib/stripe'
+
+import { NextApiRequest, NextApiResponse } from "next";
+import { stripe } from "@/lib/stripe";
 
 export default async function handler(
   req: NextApiRequest,
@@ -158,8 +163,8 @@ export default async function handler(
     return
   }
 
-  try {
-    const { paymentIntentId } = req.body
+try {
+const { paymentIntentId } = req.body
 
     if (!paymentIntentId) {
       return res.status(400).json({ error: 'Payment intent ID is required' })
@@ -181,29 +186,31 @@ export default async function handler(
         status: paymentIntent.status,
       })
     }
-  } catch (error: any) {
-    console.error('Payment confirmation failed:', error)
-    res.status(500).json({
-      error: 'Internal server error',
-      message: error.message
-    })
-  }
+
+} catch (error: any) {
+console.error('Payment confirmation failed:', error)
+res.status(500).json({
+error: 'Internal server error',
+message: error.message
+})
+}
 }</code></pre>
 
     <h2>Frontend Payment Form (React/Next.js)</h2>
 
     <h3>Stripe Provider Setup</h3>
     <pre><code>// components/StripeProvider.tsx
+
 'use client'
 
-import { ReactNode } from 'react'
-import { Elements } from '@stripe/react-stripe-js'
-import { loadStripe } from '@stripe/stripe-js'
+import { ReactNode } from "react";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
 interface StripeProviderProps {
-  children: ReactNode
+children: ReactNode
 }
 
 export function StripeProvider({ children }: StripeProviderProps) {
@@ -212,28 +219,29 @@ export function StripeProvider({ children }: StripeProviderProps) {
     clientSecret: process.env.NEXT_PUBLIC_STRIPE_CLIENT_SECRET,
   }
 
-  return (
-    &lt;Elements stripe={stripePromise} options={options}&gt;
-      {children}
-    &lt;/Elements&gt;
-  )
+return (
+&lt;Elements stripe={stripePromise} options={options}&gt;
+{children}
+&lt;/Elements&gt;
+)
 }</code></pre>
 
     <h3>Payment Form Component</h3>
     <pre><code>// components/PaymentForm.tsx
+
 'use client'
 
-import { useState } from 'react'
+import { useState } from "react";
 import {
   PaymentElement,
   useStripe,
   useElements,
-} from '@stripe/react-stripe-js'
+} from "@stripe/react-stripe-js";
 
 interface PaymentFormProps {
-  amount: number
-  onSuccess: (paymentIntent: any) =&gt; void
-  onError: (error: string) =&gt; void
+amount: number
+onSuccess: (paymentIntent: any) =&gt; void
+onError: (error: string) =&gt; void
 }
 
 export default function PaymentForm({
@@ -244,11 +252,11 @@ export default function PaymentForm({
   const stripe = useStripe()
   const elements = useElements()
 
-  const [isLoading, setIsLoading] = useState(false)
-  const [message, setMessage] = useState&lt;string&gt;('')
+const [isLoading, setIsLoading] = useState(false)
+const [message, setMessage] = useState&lt;string&gt;('')
 
-  const handleSubmit = async (event: React.FormEvent) =&gt; {
-    event.preventDefault()
+const handleSubmit = async (event: React.FormEvent) =&gt; {
+event.preventDefault()
 
     if (!stripe || !elements) {
       return
@@ -279,15 +287,16 @@ export default function PaymentForm({
     } finally {
       setIsLoading(false)
     }
-  }
 
-  const paymentElementOptions = {
-    layout: 'tabs' as const,
-  }
+}
 
-  return (
-    &lt;form onSubmit={handleSubmit} className="space-y-4"&gt;
-      &lt;PaymentElement options={paymentElementOptions} /&gt;
+const paymentElementOptions = {
+layout: 'tabs' as const,
+}
+
+return (
+&lt;form onSubmit={handleSubmit} className="space-y-4"&gt;
+&lt;PaymentElement options={paymentElementOptions} /&gt;
 
       {message &amp;&amp; (
         &lt;div className={`p-4 rounded-md \${message.includes('succeeded') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}\`}&gt;
@@ -303,17 +312,19 @@ export default function PaymentForm({
         {isLoading ? 'Processing...' : `Pay $\${amount.toFixed(2)}\`}
       &lt;/button&gt;
     &lt;/form&gt;
-  )
+
+)
 }</code></pre>
 
     <h3>Checkout Page</h3>
     <pre><code>// app/checkout/page.tsx
+
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { StripeProvider } from '@/components/StripeProvider'
-import PaymentForm from '@/components/PaymentForm'
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { StripeProvider } from "@/components/StripeProvider";
+import PaymentForm from "@/components/PaymentForm";
 
 export default function CheckoutPage() {
   const [clientSecret, setClientSecret] = useState&lt;string&gt;('')
@@ -321,29 +332,29 @@ export default function CheckoutPage() {
   const [error, setError] = useState&lt;string&gt;('')
   const router = useRouter()
 
-  // Get amount from URL params or cart
-  const amount = 29.99 // Replace with dynamic amount
+// Get amount from URL params or cart
+const amount = 29.99 // Replace with dynamic amount
 
-  useEffect(() =&gt; {
-    // Create PaymentIntent as soon as the page loads
-    createPaymentIntent()
-  }, [])
+useEffect(() =&gt; {
+// Create PaymentIntent as soon as the page loads
+createPaymentIntent()
+}, [])
 
-  const createPaymentIntent = async () =&gt; {
-    try {
-      const response = await fetch('/api/create-payment-intent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount,
-          currency: 'usd',
-          metadata: {
-            orderId: 'order_' + Date.now(),
-          },
-        }),
-      })
+const createPaymentIntent = async () =&gt; {
+try {
+const response = await fetch('/api/create-payment-intent', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+},
+body: JSON.stringify({
+amount,
+currency: 'usd',
+metadata: {
+orderId: 'order\_' + Date.now(),
+},
+}),
+})
 
       const data = await response.json()
 
@@ -357,43 +368,44 @@ export default function CheckoutPage() {
     } finally {
       setLoading(false)
     }
-  }
 
-  const handlePaymentSuccess = (paymentIntent: any) =&gt; {
-    // Redirect to success page or update UI
-    router.push('/payment/success?payment_intent=' + paymentIntent.id)
-  }
+}
 
-  const handlePaymentError = (errorMessage: string) =&gt; {
-    setError(errorMessage)
-  }
+const handlePaymentSuccess = (paymentIntent: any) =&gt; {
+// Redirect to success page or update UI
+router.push('/payment/success?payment_intent=' + paymentIntent.id)
+}
 
-  if (loading) {
-    return (
-      &lt;div className="flex items-center justify-center min-h-screen"&gt;
-        &lt;div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"&gt;&lt;/div&gt;
-      &lt;/div&gt;
-    )
-  }
+const handlePaymentError = (errorMessage: string) =&gt; {
+setError(errorMessage)
+}
 
-  if (error) {
-    return (
-      &lt;div className="max-w-md mx-auto mt-8 p-6 bg-red-50 border border-red-200 rounded-md"&gt;
-        &lt;h2 className="text-red-800 font-semibold"&gt;Payment Error&lt;/h2&gt;
-        &lt;p className="text-red-600 mt-2"&gt;{error}&lt;/p&gt;
-        &lt;button
-          onClick={() =&gt; window.location.reload()}
-          className="mt-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
-        &gt;
-          Try Again
-        &lt;/button&gt;
-      &lt;/div&gt;
-    )
-  }
+if (loading) {
+return (
+&lt;div className="flex items-center justify-center min-h-screen"&gt;
+&lt;div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"&gt;&lt;/div&gt;
+&lt;/div&gt;
+)
+}
 
-  return (
-    &lt;div className="max-w-md mx-auto mt-8 p-6 bg-white border border-gray-200 rounded-lg shadow-md"&gt;
-      &lt;h1 className="text-2xl font-bold mb-6"&gt;Complete Your Payment&lt;/h1&gt;
+if (error) {
+return (
+&lt;div className="max-w-md mx-auto mt-8 p-6 bg-red-50 border border-red-200 rounded-md"&gt;
+&lt;h2 className="text-red-800 font-semibold"&gt;Payment Error&lt;/h2&gt;
+&lt;p className="text-red-600 mt-2"&gt;{error}&lt;/p&gt;
+&lt;button
+onClick={() =&gt; window.location.reload()}
+className="mt-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+&gt;
+Try Again
+&lt;/button&gt;
+&lt;/div&gt;
+)
+}
+
+return (
+&lt;div className="max-w-md mx-auto mt-8 p-6 bg-white border border-gray-200 rounded-lg shadow-md"&gt;
+&lt;h1 className="text-2xl font-bold mb-6"&gt;Complete Your Payment&lt;/h1&gt;
 
       &lt;div className="mb-6"&gt;
         &lt;h2 className="text-lg font-semibold"&gt;Order Summary&lt;/h2&gt;
@@ -408,7 +420,8 @@ export default function CheckoutPage() {
         /&gt;
       &lt;/StripeProvider&gt;
     &lt;/div&gt;
-  )
+
+)
 }</code></pre>
 
     <h2>Webhook Handling</h2>
@@ -416,24 +429,25 @@ export default function CheckoutPage() {
     <h3>Setting Up Webhooks</h3>
     <p>Webhooks allow Stripe to notify your application about payment events:</p>
     <pre><code>// pages/api/webhooks/stripe.ts
-import { NextApiRequest, NextApiResponse } from 'next'
-import { buffer } from 'micro'
-import Stripe from 'stripe'
-import { stripe, webhookSecret } from '@/lib/stripe'
+
+import { NextApiRequest, NextApiResponse } from "next";
+import { buffer } from "micro";
+import Stripe from "stripe";
+import { stripe, webhookSecret } from "@/lib/stripe";
 
 // Disable body parsing for webhook
 export const config = {
-  api: {
-    bodyParser: false,
-  },
+api: {
+bodyParser: false,
+},
 }
 
 const relevantEvents = new Set([
-  'payment_intent.succeeded',
-  'payment_intent.payment_failed',
-  'checkout.session.completed',
-  'invoice.payment_succeeded',
-  'invoice.payment_failed',
+'payment_intent.succeeded',
+'payment_intent.payment_failed',
+'checkout.session.completed',
+'invoice.payment_succeeded',
+'invoice.payment_failed',
 ])
 
 export default async function handler(
@@ -446,9 +460,9 @@ export default async function handler(
     return
   }
 
-  try {
-    const buf = await buffer(req)
-    const sig = req.headers['stripe-signature'] as string
+try {
+const buf = await buffer(req)
+const sig = req.headers['stripe-signature'] as string
 
     if (!sig) {
       return res.status(400).json({ error: 'No signature provided' })
@@ -502,74 +516,80 @@ export default async function handler(
     }
 
     res.status(200).json({ received: true })
-  } catch (error: any) {
-    console.error('Webhook error:', error)
-    res.status(500).json({
-      error: 'Webhook processing failed',
-      message: error.message
-    })
-  }
+
+} catch (error: any) {
+console.error('Webhook error:', error)
+res.status(500).json({
+error: 'Webhook processing failed',
+message: error.message
+})
+}
 }
 
 // Event handlers
 async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
-  console.log('Payment succeeded:', paymentIntent.id)
+console.log('Payment succeeded:', paymentIntent.id)
 
-  // Update order status in database
-  // Send confirmation email
-  // Update inventory
-  // Trigger any post-payment actions
+// Update order status in database
+// Send confirmation email
+// Update inventory
+// Trigger any post-payment actions
 }
 
 async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
-  console.log('Payment failed:', paymentIntent.id)
+console.log('Payment failed:', paymentIntent.id)
 
-  // Log failure reason
-  // Notify customer
-  // Update order status
+// Log failure reason
+// Notify customer
+// Update order status
 }
 
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
-  console.log('Checkout completed:', session.id)
+console.log('Checkout completed:', session.id)
 
-  // Fulfill the order
-  // Update database
-  // Send confirmation
+// Fulfill the order
+// Update database
+// Send confirmation
 }
 
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
-  console.log('Invoice payment succeeded:', invoice.id)
+console.log('Invoice payment succeeded:', invoice.id)
 
-  // Update subscription status
-  // Grant access to paid features
+// Update subscription status
+// Grant access to paid features
 }
 
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
-  console.log('Invoice payment failed:', invoice.id)
+console.log('Invoice payment failed:', invoice.id)
 
-  // Handle failed subscription payment
-  // Send payment reminder
-  // Potentially suspend access
+// Handle failed subscription payment
+// Send payment reminder
+// Potentially suspend access
 }</code></pre>
 
     <h3>Testing Webhooks Locally</h3>
     <p>Use Stripe CLI for local webhook testing:</p>
     <pre><code># Install Stripe CLI
+
 # Login to your account
+
 stripe login
 
 # Forward webhooks to your local server
+
 stripe listen --forward-to localhost:3000/api/webhooks/stripe
 
 # Trigger test events
+
 stripe trigger payment_intent.succeeded</code></pre>
 
     <h2>Subscription Management</h2>
 
     <h3>Creating Subscription Plans</h3>
     <pre><code>// pages/api/create-subscription.ts
-import { NextApiRequest, NextApiResponse } from 'next'
-import { stripe } from '@/lib/stripe'
+
+import { NextApiRequest, NextApiResponse } from "next";
+import { stripe } from "@/lib/stripe";
 
 export default async function handler(
   req: NextApiRequest,
@@ -581,8 +601,8 @@ export default async function handler(
     return
   }
 
-  try {
-    const { priceId, customerId } = req.body
+try {
+const { priceId, customerId } = req.body
 
     if (!priceId || !customerId) {
       return res.status(400).json({
@@ -604,19 +624,21 @@ export default async function handler(
       subscriptionId: subscription.id,
       clientSecret: subscription.latest_invoice.payment_intent.client_secret,
     })
-  } catch (error: any) {
-    console.error('Subscription creation failed:', error)
-    res.status(500).json({
-      error: 'Internal server error',
-      message: error.message
-    })
-  }
+
+} catch (error: any) {
+console.error('Subscription creation failed:', error)
+res.status(500).json({
+error: 'Internal server error',
+message: error.message
+})
+}
 }</code></pre>
 
     <h3>Managing Customer Portal</h3>
     <pre><code>// pages/api/create-portal-session.ts
-import { NextApiRequest, NextApiResponse } from 'next'
-import { stripe } from '@/lib/stripe'
+
+import { NextApiRequest, NextApiResponse } from "next";
+import { stripe } from "@/lib/stripe";
 
 export default async function handler(
   req: NextApiRequest,
@@ -628,8 +650,8 @@ export default async function handler(
     return
   }
 
-  try {
-    const { customerId } = req.body
+try {
+const { customerId } = req.body
 
     if (!customerId) {
       return res.status(400).json({ error: 'Customer ID is required' })
@@ -644,13 +666,14 @@ export default async function handler(
     res.status(200).json({
       url: session.url,
     })
-  } catch (error: any) {
-    console.error('Portal session creation failed:', error)
-    res.status(500).json({
-      error: 'Internal server error',
-      message: error.message
-    })
-  }
+
+} catch (error: any) {
+console.error('Portal session creation failed:', error)
+res.status(500).json({
+error: 'Internal server error',
+message: error.message
+})
+}
 }</code></pre>
 
     <h2>Security Best Practices</h2>
@@ -665,30 +688,32 @@ export default async function handler(
 
     <h3>Input Validation</h3>
     <pre><code>// Validate payment data
-import { z } from 'zod'
+
+import { z } from "zod";
 
 const paymentSchema = z.object({
-  amount: z.number().positive('Amount must be positive'),
-  currency: z.string().length(3, 'Currency must be 3 characters'),
-  metadata: z.record(z.string()).optional(),
+amount: z.number().positive('Amount must be positive'),
+currency: z.string().length(3, 'Currency must be 3 characters'),
+metadata: z.record(z.string()).optional(),
 })
 
 export async function createPaymentIntent(data: unknown) {
   const validatedData = paymentSchema.parse(data)
 
-  // Proceed with payment creation...
+// Proceed with payment creation...
 }</code></pre>
 
     <h3>Rate Limiting</h3>
     <pre><code>// Implement rate limiting for payment endpoints
-import rateLimit from 'express-rate-limit'
+
+import rateLimit from "express-rate-limit";
 
 const paymentLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // limit each IP to 10 requests per windowMs
-  message: 'Too many payment attempts, please try again later',
-  standardHeaders: true,
-  legacyHeaders: false,
+windowMs: 15 _ 60 _ 1000, // 15 minutes
+max: 10, // limit each IP to 10 requests per windowMs
+message: 'Too many payment attempts, please try again later',
+standardHeaders: true,
+legacyHeaders: false,
 })
 
 app.use('/api/create-payment-intent', paymentLimiter)</code></pre>
@@ -697,6 +722,7 @@ app.use('/api/create-payment-intent', paymentLimiter)</code></pre>
 
     <h3>Payment Error Messages</h3>
     <pre><code>// utils/payment-errors.ts
+
 export function getPaymentErrorMessage(error: any): string {
   switch (error.type) {
     case 'card_error':
@@ -729,9 +755,10 @@ export function getPaymentErrorMessage(error: any): string {
 
     <h3>Loading States and UX</h3>
     <pre><code>// components/PaymentStatus.tsx
+
 interface PaymentStatusProps {
-  status: 'idle' | 'processing' | 'success' | 'error'
-  message?: string
+status: 'idle' | 'processing' | 'success' | 'error'
+message?: string
 }
 
 export default function PaymentStatus({ status, message }: PaymentStatusProps) {
@@ -760,18 +787,18 @@ export default function PaymentStatus({ status, message }: PaymentStatusProps) {
     }
   }
 
-  const config = getStatusConfig()
+const config = getStatusConfig()
 
-  if (!config) return null
+if (!config) return null
 
-  return (
-    &lt;div className={`p-4 border rounded-md \${config.className}\`}&gt;
-      &lt;div className="flex items-center space-x-2"&gt;
-        &lt;span className="text-lg"&gt;{config.icon}&lt;/span&gt;
-        &lt;span&gt;{config.text}&lt;/span&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-  )
+return (
+&lt;div className={`p-4 border rounded-md \${config.className}\`}&gt;
+&lt;div className="flex items-center space-x-2"&gt;
+&lt;span className="text-lg"&gt;{config.icon}&lt;/span&gt;
+&lt;span&gt;{config.text}&lt;/span&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+)
 }</code></pre>
 
     <h2>Testing and Monitoring</h2>
@@ -779,6 +806,7 @@ export default function PaymentStatus({ status, message }: PaymentStatusProps) {
     <h3>Stripe Test Mode</h3>
     <p>Use Stripe's test cards for development:</p>
     <pre><code>// Test card numbers
+
 4242424242424242 // Succeeds
 4000000000000002 // Declined
 4000000000009995 // Insufficient funds
@@ -789,6 +817,7 @@ export default function PaymentStatus({ status, message }: PaymentStatusProps) {
 
     <h3>Payment Analytics</h3>
     <pre><code>// lib/analytics.ts
+
 export function trackPaymentEvent(event: string, data: any) {
   // Send to analytics service (Google Analytics, Mixpanel, etc.)
   if (typeof window !== 'undefined' && window.gtag) {
@@ -798,37 +827,38 @@ export function trackPaymentEvent(event: string, data: any) {
     })
   }
 
-  // Log to your backend for monitoring
-  fetch('/api/analytics/payment', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ event, data }),
-  }).catch(console.error)
+// Log to your backend for monitoring
+fetch('/api/analytics/payment', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ event, data }),
+}).catch(console.error)
 }
 
 // Usage
 trackPaymentEvent('payment_started', { amount: 29.99 })
 trackPaymentEvent('payment_completed', {
-  amount: 29.99,
-  paymentIntentId: 'pi_xxx'
+amount: 29.99,
+paymentIntentId: 'pi_xxx'
 })</code></pre>
 
     <h2>Deployment and Production</h2>
 
     <h3>Environment Configuration</h3>
     <pre><code>// config/stripe.ts
+
 export const stripeConfig = {
   publishableKey: process.env.NODE_ENV === 'production'
     ? process.env.STRIPE_LIVE_PUBLISHABLE_KEY
     : process.env.STRIPE_TEST_PUBLISHABLE_KEY,
 
-  secretKey: process.env.NODE_ENV === 'production'
-    ? process.env.STRIPE_LIVE_SECRET_KEY
-    : process.env.STRIPE_TEST_SECRET_KEY,
+secretKey: process.env.NODE_ENV === 'production'
+? process.env.STRIPE_LIVE_SECRET_KEY
+: process.env.STRIPE_TEST_SECRET_KEY,
 
-  webhookSecret: process.env.NODE_ENV === 'production'
-    ? process.env.STRIPE_LIVE_WEBHOOK_SECRET
-    : process.env.STRIPE_TEST_WEBHOOK_SECRET,
+webhookSecret: process.env.NODE_ENV === 'production'
+? process.env.STRIPE_LIVE_WEBHOOK_SECRET
+: process.env.STRIPE_TEST_WEBHOOK_SECRET,
 }</code></pre>
 
     <h3>Production Checklist</h3>
@@ -847,31 +877,33 @@ export const stripeConfig = {
 
     <h3>Payment Declines</h3>
     <pre><code>// Handle different decline reasons
+
 const handleDecline = (error: StripeError) =&gt; {
-  switch (error.decline_code) {
-    case 'insufficient_funds':
-      return 'Insufficient funds. Please use a different card.'
-    case 'lost_card':
-      return 'This card has been reported lost. Please contact your bank.'
-    case 'stolen_card':
-      return 'This card has been reported stolen. Please contact your bank.'
-    default:
-      return 'Your card was declined. Please try a different card or contact your bank.'
-  }
+switch (error.decline_code) {
+case 'insufficient_funds':
+return 'Insufficient funds. Please use a different card.'
+case 'lost_card':
+return 'This card has been reported lost. Please contact your bank.'
+case 'stolen_card':
+return 'This card has been reported stolen. Please contact your bank.'
+default:
+return 'Your card was declined. Please try a different card or contact your bank.'
+}
 }</code></pre>
 
     <h3>Webhook Signature Verification</h3>
     <pre><code>// Ensure webhook secret is properly configured
+
 if (!webhookSecret) {
-  console.error('STRIPE_WEBHOOK_SECRET is not configured')
-  return res.status(500).json({ error: 'Server configuration error' })
+console.error('STRIPE_WEBHOOK_SECRET is not configured')
+return res.status(500).json({ error: 'Server configuration error' })
 }
 
 // Handle webhook idempotency
 const processedEvents = new Set()
 
 if (processedEvents.has(event.id)) {
-  return res.status(200).json({ received: true })
+return res.status(200).json({ received: true })
 }
 
 processedEvents.add(event.id)
@@ -890,4 +922,3 @@ processedEvents.add(event.id)
     <blockquote>
       <p><em>"Payments are the lifeblood of digital commerce. Handle them with care, security, and user-centric design."</em> - Shailesh Chaudhari</p>
     </blockquote>
-  

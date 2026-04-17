@@ -98,7 +98,9 @@ export const ContactContent: React.FC = () => {
       setSubmitStatus(null);
 
       // Build mailto: URL with form data so the email client opens pre-filled
-      const phoneSegment = data.phoneNumber ? `\nPhone: ${data.phoneNumber}` : "";
+      const phoneSegment = data.phoneNumber
+        ? `\nPhone: ${data.phoneNumber}`
+        : "";
       const subject = encodeURIComponent(`[Portfolio Contact] ${data.subject}`);
       const body = encodeURIComponent(
         `Name: ${data.fullName}\nEmail: ${data.email}${phoneSegment}\n\n${data.message}`

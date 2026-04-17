@@ -32,10 +32,19 @@ for (let i = arrayBodyStart; i < src.length; i++) {
   const ch = src[i];
   const prev = i > 0 ? src[i - 1] : "";
   if (!inTL) {
-    if (ch === "`") { inTL = true; continue; }
-    if (ch === "[" || ch === "{") { depth++; continue; }
+    if (ch === "`") {
+      inTL = true;
+      continue;
+    }
+    if (ch === "[" || ch === "{") {
+      depth++;
+      continue;
+    }
     if (ch === "]" || ch === "}") {
-      if (depth === 0) { arrayEnd = i; break; }
+      if (depth === 0) {
+        arrayEnd = i;
+        break;
+      }
       depth--;
     }
   } else {
@@ -61,11 +70,17 @@ function splitIntoPostChunks(body) {
       const ch = body[j];
       const pv = j > 0 ? body[j - 1] : "";
       if (!inL) {
-        if (ch === "`") { inL = true; continue; }
+        if (ch === "`") {
+          inL = true;
+          continue;
+        }
         if (ch === "{") d++;
         else if (ch === "}") {
           d--;
-          if (d === 0) { end = j + 1; break; }
+          if (d === 0) {
+            end = j + 1;
+            break;
+          }
         }
       } else {
         if (ch === "`" && pv !== "\\") inL = false;
@@ -114,10 +129,16 @@ function getContent(chunk) {
       else if (ch === "}") exprDepth--;
       out += ch;
     } else {
-      if (ch === "$" && nx === "{") { exprDepth++; out += ch; }
-      else if (ch === "`" && pv !== "\\") break; // end of template literal
-      else if (ch === "\\" && nx === "`") { out += "`"; i += 2; continue; }
-      else out += ch;
+      if (ch === "$" && nx === "{") {
+        exprDepth++;
+        out += ch;
+      } else if (ch === "`" && pv !== "\\")
+        break; // end of template literal
+      else if (ch === "\\" && nx === "`") {
+        out += "`";
+        i += 2;
+        continue;
+      } else out += ch;
     }
     i++;
   }
@@ -126,7 +147,10 @@ function getContent(chunk) {
 
 function getArray(chunk, field) {
   // Careful: seoKeywords array can span many lines; match lazily up to first unindented ]
-  const re = new RegExp(`${field}:\\s*\\[([\\s\\S]*?)\\](?:\\s*,|\\s*\\n\\s{0,4}[a-z])`, "");
+  const re = new RegExp(
+    `${field}:\\s*\\[([\\s\\S]*?)\\](?:\\s*,|\\s*\\n\\s{0,4}[a-z])`,
+    ""
+  );
   const m = chunk.match(re);
   if (!m) return [];
   return [...m[1].matchAll(/["']([^"']+)["']/g)].map((x) => x[1]);
@@ -135,7 +159,10 @@ function getArray(chunk, field) {
 const posts = [];
 for (const chunk of postChunks) {
   const slug = getStr(chunk, "slug");
-  if (!slug) { console.warn("Chunk with no slug, skipping"); continue; }
+  if (!slug) {
+    console.warn("Chunk with no slug, skipping");
+    continue;
+  }
   posts.push({
     slug,
     title: getStr(chunk, "title"),
@@ -157,7 +184,8 @@ const esc = (s) => String(s ?? "").replace(/"/g, '\\"');
 
 for (const post of posts) {
   const tagsYaml = post.tags.map((t) => `  - "${esc(t)}"`).join("\n") || "  []";
-  const kwYaml = post.seoKeywords.map((k) => `  - "${esc(k)}"`).join("\n") || "  []";
+  const kwYaml =
+    post.seoKeywords.map((k) => `  - "${esc(k)}"`).join("\n") || "  []";
   const lines = [
     "---",
     `title: "${esc(post.title)}"`,
@@ -176,11 +204,17 @@ for (const post of posts) {
     post.content,
   ];
   writeFileSync(join(outDir, `${post.slug}.mdx`), lines.join("\n"), "utf8");
-  console.log(`  ${post.slug}.mdx  (${Math.round(post.content.length/1024)}kB)`);
+  console.log(
+    `  ${post.slug}.mdx  (${Math.round(post.content.length / 1024)}kB)`
+  );
 }
 
 // ─── 5. Write thin blog-data.ts ───────────────────────────────────────────────
-const slugList = JSON.stringify(posts.map((p) => p.slug), null, 2);
+const slugList = JSON.stringify(
+  posts.map((p) => p.slug),
+  null,
+  2
+);
 const thin = `// Centralized blog data source \u2014 metadata only.
 // Content lives in content/blog/<slug>.mdx (HTML body after frontmatter).
 // To add a post: create the MDX file, add its slug to BLOG_SLUGS below.
@@ -282,5 +316,7 @@ export const getRelatedPosts = (slug: string, limit = 3): BlogPost[] => {
 };
 `;
 writeFileSync(srcPath, thin, "utf8");
-console.log(`\nRewritten lib/blog-data.ts (${Math.round(thin.length/1024)}kB thin index)`);
+console.log(
+  `\nRewritten lib/blog-data.ts (${Math.round(thin.length / 1024)}kB thin index)`
+);
 console.log("Next: npm install gray-matter && npm run type-check");

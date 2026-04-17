@@ -30,7 +30,6 @@ seoKeywords:
   - "Next.js best practices SEO"
 ---
 
-
       <div class="tldr">
         <strong>TL;DR:</strong> Comprehensive guide to optimizing Next.js applications for search engines. Master SSR, SSG, metadata management, structured data, performance optimization, and advanced SEO techniques to improve search rankings and user experience.
       </div>
@@ -63,28 +62,29 @@ seoKeywords:
       <h3>Client-Side Rendering (CSR) vs Hybrid Approaches</h3>
       <p>Understanding when to use each rendering strategy is crucial for optimal SEO:</p>
       <pre><code>// pages/dashboard.js - Client-side (when user auth required)
-import { useEffect, useState } from 'react';
+
+import { useEffect, useState } from "react";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    // Fetch user data on client-side
-    fetchUserData();
-  }, []);
+useEffect(() => {
+// Fetch user data on client-side
+fetchUserData();
+}, []);
 
-  return &lt;div&gt;{user ? &lt;UserDashboard user={user} /&gt; : &lt;Loading /&gt;}&lt;/div&gt;;
+return &lt;div&gt;{user ? &lt;UserDashboard user={user} /&gt; : &lt;Loading /&gt;}&lt;/div&gt;;
 }
 
 // pages/blog/[slug].js - Server-side (for SEO)
 export async function getServerSideProps({ params }) {
-  const post = await getPostBySlug(params.slug);
+const post = await getPostBySlug(params.slug);
 
-  return {
-    props: { post },
-    // Revalidate every 60 seconds for fresh content
-    revalidate: 60
-  };
+return {
+props: { post },
+// Revalidate every 60 seconds for fresh content
+revalidate: 60
+};
 }</code></pre>
 
       <h2>Mastering Metadata Management</h2>
@@ -92,73 +92,75 @@ export async function getServerSideProps({ params }) {
       <h3>Dynamic Metadata with generateMetadata</h3>
       <p>Next.js 13+ introduced the generateMetadata function for dynamic SEO metadata:</p>
       <pre><code>// app/blog/[slug]/page.js
+
 export async function generateMetadata({ params }) {
   const post = await getPostBySlug(params.slug);
 
-  if (!post) {
-    return {
-      title: 'Post Not Found',
-      description: 'The requested blog post could not be found.'
-    };
-  }
+if (!post) {
+return {
+title: 'Post Not Found',
+description: 'The requested blog post could not be found.'
+};
+}
 
-  const metadata = {
-    title: `\${post.title} | Shailesh Chaudhari\`,
-    description: post.description,
-    keywords: post.seoKeywords,
-    authors: [{ name: 'Shailesh Chaudhari' }],
-    creator: 'Shailesh Chaudhari',
-    publisher: 'Shailesh Chaudhari',
-    formatDetection: {
-      email: false,
-      address: false,
-      telephone: false,
-    },
-  };
+const metadata = {
+title: `\${post.title} | Shailesh Chaudhari\`,
+description: post.description,
+keywords: post.seoKeywords,
+authors: [{ name: 'Shailesh Chaudhari' }],
+creator: 'Shailesh Chaudhari',
+publisher: 'Shailesh Chaudhari',
+formatDetection: {
+email: false,
+address: false,
+telephone: false,
+},
+};
 
-  // Open Graph metadata for social sharing
-  metadata.openGraph = {
-    title: post.title,
-    description: post.description,
-    url: `https://yourdomain.com/blog/\${post.slug}\`,
-    siteName: 'Shailesh Chaudhari Portfolio',
-    images: [
-      {
-        url: post.image,
-        width: 1200,
-        height: 630,
-        alt: post.title,
-      },
-    ],
-    locale: 'en_US',
-    type: 'article',
-    publishedTime: post.date,
-    modifiedTime: post.lastModified,
-    authors: ['Shailesh Chaudhari'],
-    tags: post.tags,
-  };
+// Open Graph metadata for social sharing
+metadata.openGraph = {
+title: post.title,
+description: post.description,
+url: `https://yourdomain.com/blog/\${post.slug}\`,
+siteName: 'Shailesh Chaudhari Portfolio',
+images: [
+{
+url: post.image,
+width: 1200,
+height: 630,
+alt: post.title,
+},
+],
+locale: 'en_US',
+type: 'article',
+publishedTime: post.date,
+modifiedTime: post.lastModified,
+authors: ['Shailesh Chaudhari'],
+tags: post.tags,
+};
 
-  // Twitter Card metadata
-  metadata.twitter = {
-    card: 'summary_large_image',
-    title: post.title,
-    description: post.description,
-    images: [post.image],
-    creator: '@shaileshwork',
-  };
+// Twitter Card metadata
+metadata.twitter = {
+card: 'summary_large_image',
+title: post.title,
+description: post.description,
+images: [post.image],
+creator: '@shaileshwork',
+};
 
-  // Canonical URL to prevent duplicate content
-  metadata.alternates = {
-    canonical: `https://yourdomain.com/blog/\${post.slug}\`,
-  };
+// Canonical URL to prevent duplicate content
+metadata.alternates = {
+canonical: `https://yourdomain.com/blog/\${post.slug}\`,
+};
 
-  return metadata;
+return metadata;
 }</code></pre>
 
       <h3>Structured Data (JSON-LD)</h3>
       <p>Implement structured data for rich search results and enhanced SERP features:</p>
       <pre><code>// components/StructuredData.js
-import Head from 'next/head';
+
+import Head from "next/head";
 
 export function StructuredData({ type, data }) {
   const getStructuredData = () => {
@@ -231,22 +233,23 @@ export function StructuredData({ type, data }) {
       default:
         return null;
     }
-  };
 
-  const structuredData = getStructuredData();
+};
 
-  if (!structuredData) return null;
+const structuredData = getStructuredData();
 
-  return (
-    &lt;Head&gt;
-      &lt;script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
+if (!structuredData) return null;
+
+return (
+&lt;Head&gt;
+&lt;script
+type="application/ld+json"
+dangerouslySetInnerHTML={{
           __html: JSON.stringify(structuredData),
         }}
-      /&gt;
-    &lt;/Head&gt;
-  );
+/&gt;
+&lt;/Head&gt;
+);
 }</code></pre>
 
       <h2>Performance Optimization for SEO</h2>
@@ -256,7 +259,8 @@ export function StructuredData({ type, data }) {
 
       <h4>Largest Contentful Paint (LCP)</h4>
       <pre><code>// Optimize LCP with priority loading
-import Image from 'next/image';
+
+import Image from "next/image";
 
 export default function HeroSection() {
   return (
@@ -277,30 +281,32 @@ export default function HeroSection() {
 
       <h4>First Input Delay (FID) & Interaction to Next Paint (INP)</h4>
       <pre><code>// Optimize interactivity with React best practices
-import { useCallback, useMemo } from 'react';
+
+import { useCallback, useMemo } from "react";
 
 export default function InteractiveComponent() {
   const [count, setCount] = useState(0);
 
-  // Memoize expensive calculations
-  const expensiveValue = useMemo(() => {
-    return heavyCalculation(count);
-  }, [count]);
+// Memoize expensive calculations
+const expensiveValue = useMemo(() => {
+return heavyCalculation(count);
+}, [count]);
 
-  // Use useCallback for event handlers
-  const handleClick = useCallback(() => {
-    setCount(prev =&gt; prev + 1);
-  }, []);
+// Use useCallback for event handlers
+const handleClick = useCallback(() => {
+setCount(prev =&gt; prev + 1);
+}, []);
 
-  return (
-    &lt;button onClick={handleClick}&gt;
-      Count: {expensiveValue}
-    &lt;/button&gt;
-  );
+return (
+&lt;button onClick={handleClick}&gt;
+Count: {expensiveValue}
+&lt;/button&gt;
+);
 }</code></pre>
 
       <h4>Cumulative Layout Shift (CLS)</h4>
       <pre><code>// Prevent layout shift with proper sizing
+
 export default function ResponsiveImage() {
   return (
     &lt;div className="image-container" style={{ aspectRatio: '16/9' }}&gt;
@@ -318,7 +324,8 @@ export default function ResponsiveImage() {
       <h3>Image Optimization</h3>
       <p>Next.js provides powerful image optimization out of the box:</p>
       <pre><code>// Automatic image optimization
-import Image from 'next/image';
+
+import Image from "next/image";
 
 export default function OptimizedImage() {
   return (
@@ -337,13 +344,14 @@ export default function OptimizedImage() {
 
       <h3>Font Optimization</h3>
       <pre><code>// Optimize fonts for better performance
+
 // app/layout.js
 import { Inter } from 'next/font/google';
 
 const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap', // Prevents layout shift
-  preload: true,
+subsets: ['latin'],
+display: 'swap', // Prevents layout shift
+preload: true,
 });
 
 export default function RootLayout({ children }) {
@@ -358,44 +366,46 @@ export default function RootLayout({ children }) {
 
       <h3>Dynamic Sitemap Generation</h3>
       <pre><code>// app/sitemap.js
+
 export default async function sitemap() {
   const posts = await getAllBlogPosts();
   const projects = await getAllProjects();
 
-  const blogEntries = posts.map((post) =&gt; ({
-    url: `https://yourdomain.com/blog/\${post.slug}\`,
-    lastModified: new Date(post.lastModified || post.date),
-    changeFrequency: 'weekly',
-    priority: 0.8,
-  }));
+const blogEntries = posts.map((post) =&gt; ({
+url: `https://yourdomain.com/blog/\${post.slug}\`,
+lastModified: new Date(post.lastModified || post.date),
+changeFrequency: 'weekly',
+priority: 0.8,
+}));
 
-  const projectEntries = projects.map((project) =&gt; ({
-    url: `https://yourdomain.com/portfolio/\${project.slug}\`,
-    lastModified: new Date(project.updatedAt),
-    changeFrequency: 'monthly',
-    priority: 0.7,
-  }));
+const projectEntries = projects.map((project) =&gt; ({
+url: `https://yourdomain.com/portfolio/\${project.slug}\`,
+lastModified: new Date(project.updatedAt),
+changeFrequency: 'monthly',
+priority: 0.7,
+}));
 
-  return [
-    {
-      url: 'https://yourdomain.com',
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 1,
-    },
-    {
-      url: 'https://yourdomain.com/about',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.9,
-    },
-    ...blogEntries,
-    ...projectEntries,
-  ];
+return [
+{
+url: 'https://yourdomain.com',
+lastModified: new Date(),
+changeFrequency: 'daily',
+priority: 1,
+},
+{
+url: 'https://yourdomain.com/about',
+lastModified: new Date(),
+changeFrequency: 'monthly',
+priority: 0.9,
+},
+...blogEntries,
+...projectEntries,
+];
 }</code></pre>
 
       <h3>Robots.txt Optimization</h3>
       <pre><code>// app/robots.js
+
 export default function robots() {
   return {
     rules: {
@@ -409,31 +419,33 @@ export default function robots() {
 
       <h3>Internationalization (i18n) for Global SEO</h3>
       <pre><code>// next.config.js
+
 module.exports = {
-  i18n: {
-    locales: ['en', 'es', 'fr'],
-    defaultLocale: 'en',
-    localeDetection: true,
-  },
+i18n: {
+locales: ['en', 'es', 'fr'],
+defaultLocale: 'en',
+localeDetection: true,
+},
 };
 
 // app/[locale]/layout.js
 export async function generateMetadata({ params }) {
-  const locale = params.locale;
+const locale = params.locale;
 
-  return {
-    title: locale === 'es' ? 'Mi Portafolio' : 'My Portfolio',
-    description: locale === 'es'
-      ? 'Desarrollador full-stack especializado en tecnologías web modernas'
-      : 'Full-stack developer specializing in modern web technologies',
-  };
+return {
+title: locale === 'es' ? 'Mi Portafolio' : 'My Portfolio',
+description: locale === 'es'
+? 'Desarrollador full-stack especializado en tecnologías web modernas'
+: 'Full-stack developer specializing in modern web technologies',
+};
 }</code></pre>
 
       <h2>Monitoring and Analytics</h2>
 
       <h3>SEO Performance Tracking</h3>
       <pre><code>// lib/analytics.js
-import { GoogleAnalytics } from '@next/third-parties/google';
+
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 export function Analytics() {
   return &lt;GoogleAnalytics gaId="GA_MEASUREMENT_ID" /&gt;;
@@ -441,48 +453,50 @@ export function Analytics() {
 
 // Track custom SEO events
 export function trackSEOEvent(action, category, label) {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', action, {
-      event_category: category,
-      event_label: label,
-    });
-  }
+if (typeof window !== 'undefined' && window.gtag) {
+window.gtag('event', action, {
+event_category: category,
+event_label: label,
+});
+}
 }
 
 // Monitor Core Web Vitals
 export function reportWebVitals(metric) {
-  // Send to analytics service
-  console.log(metric);
+// Send to analytics service
+console.log(metric);
 
-  trackSEOEvent(
-    metric.name,
-    'Web Vitals',
-    `\${metric.name}: \${Math.round(metric.value * 100) / 100}\`
-  );
+trackSEOEvent(
+metric.name,
+'Web Vitals',
+`\${metric.name}: \${Math.round(metric.value * 100) / 100}\`
+);
 }</code></pre>
 
       <h3>Search Console Integration</h3>
       <pre><code>// app/sitemap.xml/route.js
-import { getServerSideSitemap } from 'next-sitemap';
+
+import { getServerSideSitemap } from "next-sitemap";
 
 export async function GET(request) {
   // Generate dynamic sitemap entries
   const posts = await getAllBlogPosts();
 
-  return getServerSideSitemap(
-    posts.map((post) =&gt; ({
-      loc: `https://yourdomain.com/blog/\${post.slug}\`,
-      lastmod: post.lastModified,
-      changefreq: 'weekly',
-      priority: 0.8,
-    }))
-  );
+return getServerSideSitemap(
+posts.map((post) =&gt; ({
+loc: `https://yourdomain.com/blog/\${post.slug}\`,
+lastmod: post.lastModified,
+changefreq: 'weekly',
+priority: 0.8,
+}))
+);
 }</code></pre>
 
       <h2>Common SEO Pitfalls and Solutions</h2>
 
       <h3>Duplicate Content Issues</h3>
       <pre><code>// Prevent duplicate content with canonical URLs
+
 export async function generateMetadata({ params }) {
   return {
     alternates: {
@@ -493,20 +507,21 @@ export async function generateMetadata({ params }) {
 
 // Handle pagination properly
 export async function generateMetadata({ params }) {
-  const page = params.page || 1;
+const page = params.page || 1;
 
-  return {
-    title: `Blog Posts - Page \${page}\`,
-    ...(page &gt; 1 && {
-      alternates: {
-        canonical: 'https://yourdomain.com/blog',
-      },
-    }),
-  };
+return {
+title: `Blog Posts - Page \${page}\`,
+...(page &gt; 1 && {
+alternates: {
+canonical: 'https://yourdomain.com/blog',
+},
+}),
+};
 }</code></pre>
 
       <h3>Mobile-First Indexing</h3>
       <pre><code>// Ensure mobile responsiveness
+
 export default function Layout({ children }) {
   return (
     &lt;div className="min-h-screen"&gt;
@@ -518,13 +533,13 @@ export default function Layout({ children }) {
 
 // Mobile-specific meta tags
 export async function generateMetadata() {
-  return {
-    other: {
-      'mobile-web-app-capable': 'yes',
-      'apple-mobile-web-app-capable': 'yes',
-      'apple-mobile-web-app-status-bar-style': 'default',
-    },
-  };
+return {
+other: {
+'mobile-web-app-capable': 'yes',
+'apple-mobile-web-app-capable': 'yes',
+'apple-mobile-web-app-status-bar-style': 'default',
+},
+};
 }</code></pre>
 
       <h2>Testing and Validation</h2>
@@ -541,33 +556,34 @@ export async function generateMetadata() {
 
       <h3>Automated SEO Testing</h3>
       <pre><code>// scripts/seo-check.js
+
 const { lighthouse } = require('lighthouse');
 const chrome = require('chrome-aws-lambda');
 
 async function runSEOChecks(url) {
-  const runnerResult = await lighthouse(url, {
-    logLevel: 'info',
-    output: 'json',
-    onlyCategories: ['seo', 'performance'],
-  });
+const runnerResult = await lighthouse(url, {
+logLevel: 'info',
+output: 'json',
+onlyCategories: ['seo', 'performance'],
+});
 
-  const { seo, performance } = runnerResult.lhr.categories;
+const { seo, performance } = runnerResult.lhr.categories;
 
-  console.log('SEO Score:', seo.score * 100);
-  console.log('Performance Score:', performance.score * 100);
+console.log('SEO Score:', seo.score _ 100);
+console.log('Performance Score:', performance.score _ 100);
 
-  // Check for common SEO issues
-  const audits = runnerResult.lhr.audits;
+// Check for common SEO issues
+const audits = runnerResult.lhr.audits;
 
-  if (audits['meta-description'].score === 0) {
-    console.warn('Missing meta description');
-  }
+if (audits['meta-description'].score === 0) {
+console.warn('Missing meta description');
+}
 
-  if (audits['link-text'].score === 0) {
-    console.warn('Missing descriptive link text');
-  }
+if (audits['link-text'].score === 0) {
+console.warn('Missing descriptive link text');
+}
 
-  return runnerResult.lhr;
+return runnerResult.lhr;
 }</code></pre>
 
       <h2>Conclusion: Mastering Next.js SEO</h2>
@@ -585,4 +601,3 @@ async function runSEOChecks(url) {
       <blockquote>
         <p><em>"SEO is not about tricking Google. It's about creating the best possible user experience."</em> - Shailesh Chaudhari</p>
       </blockquote>
-    

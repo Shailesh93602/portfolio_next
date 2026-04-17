@@ -39,7 +39,15 @@ const skills = [
 ];
 
 interface Props {
-  featuredPosts: { slug: string; title: string; description: string; image: string; readTime: string; tags: string[]; date: string }[];
+  featuredPosts: {
+    slug: string;
+    title: string;
+    description: string;
+    image: string;
+    readTime: string;
+    tags: string[];
+    date: string;
+  }[];
 }
 
 export default function HomeContent({ featuredPosts }: Props) {
@@ -203,43 +211,41 @@ export default function HomeContent({ featuredPosts }: Props) {
         </motion.div>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {featuredPosts
-            .slice(0, 3)
-            .map((post, index) => (
-              <motion.div
-                key={post.slug}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group"
-              >
-                <Link href={`/blog/${post.slug}`} className="block">
-                  <div className="rounded-xl border border-border bg-card p-6 transition-all duration-300 hover:border-primary/50 hover:shadow-lg group-hover:scale-105">
-                    <div className="mb-3 flex items-center gap-2">
-                      <Badge variant="secondary" className="text-xs">
-                        Featured
-                      </Badge>
-                      <span className="text-sm text-muted-foreground">
-                        {post.readTime}
-                      </span>
-                    </div>
-                    <h3 className="text-text-primary mb-3 line-clamp-2 text-xl font-semibold transition-colors group-hover:text-primary">
-                      {post.title}
-                    </h3>
-                    <p className="text-text-secondary mb-4 line-clamp-3 text-sm">
-                      {post.description}
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      {post.tags.slice(0, 3).map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
+          {featuredPosts.slice(0, 3).map((post, index) => (
+            <motion.div
+              key={post.slug}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="group"
+            >
+              <Link href={`/blog/${post.slug}`} className="block">
+                <div className="rounded-xl border border-border bg-card p-6 transition-all duration-300 hover:border-primary/50 hover:shadow-lg group-hover:scale-105">
+                  <div className="mb-3 flex items-center gap-2">
+                    <Badge variant="secondary" className="text-xs">
+                      Featured
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">
+                      {post.readTime}
+                    </span>
                   </div>
-                </Link>
-              </motion.div>
-            ))}
+                  <h3 className="text-text-primary mb-3 line-clamp-2 text-xl font-semibold transition-colors group-hover:text-primary">
+                    {post.title}
+                  </h3>
+                  <p className="text-text-secondary mb-4 line-clamp-3 text-sm">
+                    {post.description}
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {post.tags.slice(0, 3).map((tag) => (
+                      <Badge key={tag} variant="outline" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
         </div>
 
         <motion.div

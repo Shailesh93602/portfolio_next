@@ -44,11 +44,23 @@ export default function Navbar() {
   const isActive = (path: string): boolean => pathname === path;
 
   return (
-    <nav aria-label="Main navigation" className="fixed top-0 z-[100] w-full border-b border-border/40 bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60">
+    <nav
+      aria-label="Main navigation"
+      className="fixed top-0 z-[100] w-full border-b border-border/40 bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60"
+    >
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
-          <Link href="/" aria-label="Shailesh Chaudhari — home" className="flex items-center space-x-2">
-            <span className="text-gradient text-xl font-bold" aria-hidden="true">SC</span>
+          <Link
+            href="/"
+            aria-label="Shailesh Chaudhari — home"
+            className="flex items-center space-x-2"
+          >
+            <span
+              className="text-gradient text-xl font-bold"
+              aria-hidden="true"
+            >
+              SC
+            </span>
           </Link>
           <div className="hidden items-center space-x-6 md:flex">
             {navigation.map((item) => (

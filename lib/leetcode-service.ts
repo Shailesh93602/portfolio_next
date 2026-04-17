@@ -29,17 +29,25 @@ const leetcodeQuery = `
   }
 `;
 
-function calculateCurrentStreak(submissionCalendar: Record<string, number>): Streak {
+function calculateCurrentStreak(
+  submissionCalendar: Record<string, number>
+): Streak {
   if (!submissionCalendar || Object.keys(submissionCalendar).length === 0) {
     return { count: 0, startDate: getLocalDate(), endDate: getLocalDate() };
   }
 
   const submissionDates = Object.keys(submissionCalendar)
-    .map((ts) => ({ timestamp: parseInt(ts), dateStr: getLocalDate(new Date(parseInt(ts) * 1000)) }))
+    .map((ts) => ({
+      timestamp: parseInt(ts),
+      dateStr: getLocalDate(new Date(parseInt(ts) * 1000)),
+    }))
     .sort((a, b) => b.timestamp - a.timestamp);
 
   const submissionsByDate = submissionDates.reduce<Record<string, boolean>>(
-    (acc, { dateStr }) => { acc[dateStr] = true; return acc; },
+    (acc, { dateStr }) => {
+      acc[dateStr] = true;
+      return acc;
+    },
     {}
   );
 
@@ -61,15 +69,25 @@ function calculateCurrentStreak(submissionCalendar: Record<string, number>): Str
   let i = 0;
 
   if (submissionsByDate[today]) {
-    lastActiveDate = today; currentStreak = 1; streakStart = today; streakEnd = today; i++;
+    lastActiveDate = today;
+    currentStreak = 1;
+    streakStart = today;
+    streakEnd = today;
+    i++;
   } else if (submissionsByDate[yesterday]) {
-    lastActiveDate = yesterday; currentStreak = 1; streakStart = yesterday; streakEnd = yesterday; i++;
+    lastActiveDate = yesterday;
+    currentStreak = 1;
+    streakStart = yesterday;
+    streakEnd = yesterday;
+    i++;
   } else {
     return { count: 0, startDate: getLocalDate(), endDate: getLocalDate() };
   }
 
   while (i < uniqueDates.length) {
-    const expected = getLocalDate(new Date(new Date(lastActiveDate).getTime() - 86400000));
+    const expected = getLocalDate(
+      new Date(new Date(lastActiveDate).getTime() - 86400000)
+    );
     if (uniqueDates[i] === expected) {
       currentStreak++;
       streakStart = uniqueDates[i];
@@ -81,16 +99,25 @@ function calculateCurrentStreak(submissionCalendar: Record<string, number>): Str
   }
 
   const actual = daysBetween(streakStart, streakEnd);
-  return { count: actual > 0 ? actual : currentStreak, startDate: streakStart, endDate: streakEnd };
+  return {
+    count: actual > 0 ? actual : currentStreak,
+    startDate: streakStart,
+    endDate: streakEnd,
+  };
 }
 
-function calculateLongestStreak(submissionCalendar: Record<string, number>): Streak {
+function calculateLongestStreak(
+  submissionCalendar: Record<string, number>
+): Streak {
   if (!submissionCalendar || Object.keys(submissionCalendar).length === 0) {
     return { count: 0, startDate: getLocalDate(), endDate: getLocalDate() };
   }
 
   const submissionDates = Object.keys(submissionCalendar)
-    .map((ts) => ({ timestamp: parseInt(ts), dateStr: getLocalDate(new Date(parseInt(ts) * 1000)) }))
+    .map((ts) => ({
+      timestamp: parseInt(ts),
+      dateStr: getLocalDate(new Date(parseInt(ts) * 1000)),
+    }))
     .sort((a, b) => a.timestamp - b.timestamp);
 
   if (submissionDates.length === 0) {
@@ -98,7 +125,10 @@ function calculateLongestStreak(submissionCalendar: Record<string, number>): Str
   }
 
   const submissionsByDate = submissionDates.reduce<Record<string, boolean>>(
-    (acc, { dateStr }) => { acc[dateStr] = true; return acc; },
+    (acc, { dateStr }) => {
+      acc[dateStr] = true;
+      return acc;
+    },
     {}
   );
   const uniqueDates = Object.keys(submissionsByDate).sort();
@@ -111,7 +141,8 @@ function calculateLongestStreak(submissionCalendar: Record<string, number>): Str
 
   for (let i = 1; i < uniqueDates.length; i++) {
     const diffDays = Math.round(
-      (new Date(uniqueDates[i]).getTime() - new Date(uniqueDates[i - 1]).getTime()) /
+      (new Date(uniqueDates[i]).getTime() -
+        new Date(uniqueDates[i - 1]).getTime()) /
         (1000 * 60 * 60 * 24)
     );
     if (diffDays === 1) {
@@ -128,7 +159,11 @@ function calculateLongestStreak(submissionCalendar: Record<string, number>): Str
   }
 
   const actual = daysBetween(longestStart, longestEnd);
-  return { count: actual > 0 ? actual : longest, startDate: longestStart, endDate: longestEnd };
+  return {
+    count: actual > 0 ? actual : longest,
+    startDate: longestStart,
+    endDate: longestEnd,
+  };
 }
 
 interface LeetCodeYearData {
@@ -141,16 +176,28 @@ interface LeetCodeYearData {
       dccBadges?: { name: string; level: number; timestamp: number }[];
     } | null;
     submitStats: {
-      acSubmissionNum: { difficulty: string; count: number; submissions: number }[];
-      totalSubmissionNum: { difficulty: string; count: number; submissions: number }[];
+      acSubmissionNum: {
+        difficulty: string;
+        count: number;
+        submissions: number;
+      }[];
+      totalSubmissionNum: {
+        difficulty: string;
+        count: number;
+        submissions: number;
+      }[];
     };
     contributions: { points: number };
     profile: { reputation: number; ranking: number };
   } | null;
   allQuestionsCount: { difficulty: string; count: number }[];
   recentSubmissionList: {
-    title: string; titleSlug: string; timestamp: number;
-    statusDisplay: string; lang: string; __typename: string;
+    title: string;
+    titleSlug: string;
+    timestamp: number;
+    statusDisplay: string;
+    lang: string;
+    __typename: string;
   }[];
 }
 
@@ -188,7 +235,10 @@ export async function fetchLeetCodeStats(username: string) {
   try {
     const currentYear = new Date().getFullYear();
     const startYear = 2022;
-    const years = Array.from({ length: currentYear - startYear + 1 }, (_, i) => startYear + i);
+    const years = Array.from(
+      { length: currentYear - startYear + 1 },
+      (_, i) => startYear + i
+    );
 
     const yearsData = await Promise.all(
       years.map(async (year) => {
@@ -199,12 +249,18 @@ export async function fetchLeetCodeStats(username: string) {
             { headers: BROWSER_HEADERS, timeout: 10000 }
           );
           if (res.data.errors) {
-            console.error(`LeetCode API errors for year ${year}:`, res.data.errors);
+            console.error(
+              `LeetCode API errors for year ${year}:`,
+              res.data.errors
+            );
             return null;
           }
           return res.data.data as LeetCodeYearData;
         } catch (error) {
-          console.error(`Error fetching LeetCode data for year ${year}:`, error);
+          console.error(
+            `Error fetching LeetCode data for year ${year}:`,
+            error
+          );
           return null;
         }
       })

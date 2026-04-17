@@ -243,7 +243,9 @@ export default function RootLayout({
               <header className="bg-nav-bg/80 supports-[backdrop-filter]:bg-nav-bg/60 sticky top-0 z-50 w-full border-b backdrop-blur">
                 <Navbar />
               </header>
-              <main id="main-content" className="mt-10 flex-1">{children}</main>
+              <main id="main-content" className="mt-10 flex-1">
+                {children}
+              </main>
               <footer className="bg-nav-bg/80 supports-[backdrop-filter]:bg-nav-bg/60 border-t backdrop-blur">
                 <div className="container flex flex-col items-center justify-between gap-4 py-10 md:h-24 md:flex-row md:py-0">
                   <div className="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-2 md:px-0">

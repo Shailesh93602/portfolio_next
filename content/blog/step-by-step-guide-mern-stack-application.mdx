@@ -30,7 +30,6 @@ seoKeywords:
   - "JavaScript full stack"
 ---
 
-
       <div class="tldr">
         <strong>TL;DR:</strong> Complete step-by-step guide to building a MERN stack application from scratch. Learn to create a full-stack web app with MongoDB, Express.js, React, and Node.js, including authentication, CRUD operations, and deployment strategies.
       </div>
@@ -63,6 +62,7 @@ seoKeywords:
       <h3>Development Environment Setup</h3>
       <p>Let's start by setting up our development environment:</p>
       <pre><code>// Install Node.js dependencies globally
+
 npm install -g nodemon
 npm install -g create-react-app
 
@@ -75,86 +75,89 @@ mkdir backend frontend</code></pre>
 
       <h3>1. Initialize the Backend Project</h3>
       <pre><code>cd backend
+
 npm init -y
 npm install express mongoose cors dotenv bcryptjs jsonwebtoken express-validator helmet morgan</code></pre>
 
       <h3>2. Create the Server Structure</h3>
       <p>Let's create a well-organized backend structure:</p>
       <pre><code>backend/
+
 ├── controllers/
-│   ├── authController.js
-│   └── taskController.js
+│ ├── authController.js
+│ └── taskController.js
 ├── models/
-│   ├── User.js
-│   └── Task.js
+│ ├── User.js
+│ └── Task.js
 ├── middleware/
-│   ├── auth.js
-│   └── errorHandler.js
+│ ├── auth.js
+│ └── errorHandler.js
 ├── routes/
-│   ├── auth.js
-│   └── tasks.js
+│ ├── auth.js
+│ └── tasks.js
 ├── config/
-│   └── database.js
+│ └── database.js
 ├── utils/
-│   └── jwt.js
+│ └── jwt.js
 └── server.js</code></pre>
 
       <h3>3. Database Models</h3>
       <p>Create the User model first:</p>
       <pre><code>// models/User.js
+
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: [true, 'Username is required'],
-    unique: true,
-    trim: true,
-    minlength: [3, 'Username must be at least 3 characters']
-  },
-  email: {
-    type: String,
-    required: [true, 'Email is required'],
-    unique: true,
-    lowercase: true,
-    validate: {
-      validator: function(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-      },
-      message: 'Please provide a valid email'
-    }
-  },
-  password: {
-    type: String,
-    required: [true, 'Password is required'],
-    minlength: [6, 'Password must be at least 6 characters'],
-    select: false
-  },
-  avatar: {
-    type: String,
-    default: ''
-  },
-  role: {
-    type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
-  }
+username: {
+type: String,
+required: [true, 'Username is required'],
+unique: true,
+trim: true,
+minlength: [3, 'Username must be at least 3 characters']
+},
+email: {
+type: String,
+required: [true, 'Email is required'],
+unique: true,
+lowercase: true,
+validate: {
+validator: function(email) {
+return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+},
+message: 'Please provide a valid email'
+}
+},
+password: {
+type: String,
+required: [true, 'Password is required'],
+minlength: [6, 'Password must be at least 6 characters'],
+select: false
+},
+avatar: {
+type: String,
+default: ''
+},
+role: {
+type: String,
+enum: ['user', 'admin'],
+default: 'user'
+}
 }, {
-  timestamps: true
+timestamps: true
 });
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
+if (!this.isModified('password')) return next();
 
-  this.password = await bcrypt.hash(this.password, 12);
-  next();
+this.password = await bcrypt.hash(this.password, 12);
+next();
 });
 
 // Compare password method
 userSchema.methods.comparePassword = async function(candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
+return await bcrypt.compare(candidatePassword, this.password);
 };
 
 module.exports = mongoose.model('User', userSchema);</code></pre>
@@ -163,10 +166,12 @@ module.exports = mongoose.model('User', userSchema);</code></pre>
 
       <h3>1. Initialize the Frontend Project</h3>
       <pre><code>cd ../frontend
+
 npx create-react-app . --template redux-typescript</code></pre>
 
       <h3>2. Install Tailwind CSS</h3>
       <pre><code// Install Tailwind CSS via npm
+
 npm install -D tailwindcss postcss autoprefixer
 
 // Initialize Tailwind CSS
@@ -174,15 +179,16 @@ npx tailwindcss init -p</code></pre>
 
       <h3>3. Configure Tailwind CSS</h3>
       <pre><code// tailwind.config.js
-/** @type {import('tailwindcss').Config} */
+
+/** @type {import('tailwindcss').Config} \*/
 module.exports = {
-  content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
+content: [
+"./src/**/\*.{js,jsx,ts,tsx}",
+],
+theme: {
+extend: {},
+},
+plugins: [],
 }
 
 // src/index.css
@@ -192,49 +198,51 @@ module.exports = {
 
       <h3>4. Folder Structure</h3>
       <pre><code>src/
+
 ├── app/
-│   ├── store.ts
-│   └── rootReducer.ts
+│ ├── store.ts
+│ └── rootReducer.ts
 ├── features/
-│   ├── auth/
-│   │   ├── authSlice.ts
-│   │   └── authAPI.ts
-│   ├── tasks/
-│   │   ├── taskSlice.ts
-│   │   └── taskAPI.ts
+│ ├── auth/
+│ │ ├── authSlice.ts
+│ │ └── authAPI.ts
+│ ├── tasks/
+│ │ ├── taskSlice.ts
+│ │ └── taskAPI.ts
 ├── components/
-│   ├── Layout.tsx
-│   ├── Navbar.tsx
-│   └── Footer.tsx
+│ ├── Layout.tsx
+│ ├── Navbar.tsx
+│ └── Footer.tsx
 ├── pages/
-│   ├── index.tsx
-│   ├── about.tsx
-│   ├── contact.tsx
-│   └── 404.tsx
+│ ├── index.tsx
+│ ├── about.tsx
+│ ├── contact.tsx
+│ └── 404.tsx
 ├── styles/
-│   ├── globals.css
-│   └── tailwind.css
+│ ├── globals.css
+│ └── tailwind.css
 └── utils/
-    └── api.ts</code></pre>
+└── api.ts</code></pre>
 
       <h3>5. Sample Component with Tailwind CSS</h3>
       <pre><code>// components/Button.tsx
-import React from 'react';
+
+import React from "react";
 
 interface ButtonProps {
-  onClick: () => void;
-  children: React.ReactNode;
+onClick: () => void;
+children: React.ReactNode;
 }
 
 const Button: React.FC&lt;ButtonProps&gt; = ({ onClick, children }) => {
-  return (
-    &lt;button
-      onClick={onClick}
-      className="px-4 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700"
-    &gt;
-      {children}
-    &lt;/button&gt;
-  );
+return (
+&lt;button
+onClick={onClick}
+className="px-4 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700"
+&gt;
+{children}
+&lt;/button&gt;
+);
 };
 
 export default Button;
@@ -244,12 +252,12 @@ import React from 'react';
 import Button from '../components/Button';
 
 const HomePage: React.FC = () => {
-  return (
-    &lt;div className="flex flex-col items-center justify-center min-h-screen"&gt;
-      &lt;h1 className="text-4xl font-bold mb-4"&gt;Welcome to My MERN Stack App&lt;/h1&gt;
-      &lt;Button onClick={() =&gt; alert('Button Clicked!')}&gt;Get Started&lt;/Button&gt;
-    &lt;/div&gt;
-  );
+return (
+&lt;div className="flex flex-col items-center justify-center min-h-screen"&gt;
+&lt;h1 className="text-4xl font-bold mb-4"&gt;Welcome to My MERN Stack App&lt;/h1&gt;
+&lt;Button onClick={() =&gt; alert('Button Clicked!')}&gt;Get Started&lt;/Button&gt;
+&lt;/div&gt;
+);
 };
 
 export default HomePage;</code></pre>
@@ -258,7 +266,8 @@ export default HomePage;</code></pre>
 
       <h3>1. API Integration with Redux Toolkit Query</h3>
       <pre><code// features/api.ts
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
   reducerPath: 'api',
@@ -291,22 +300,23 @@ export const store = configureStore({
     getDefaultMiddleware().concat(api.middleware),
 });
 
-// pages/_app.tsx
+// pages/\_app.tsx
 import { Provider } from 'react-redux';
 import { store } from '../app/store';
 
 function MyApp({ Component, pageProps }) {
-  return (
-    &lt;Provider store={store}&gt;
-      &lt;Component {...pageProps} /&gt;
-    &lt;/Provider&gt;
-  );
+return (
+&lt;Provider store={store}&gt;
+&lt;Component {...pageProps} /&gt;
+&lt;/Provider&gt;
+);
 }
 
 export default MyApp;</code></pre>
 
       <h3>2. Environment Variables</h3>
       <pre><code// .env
+
 DATABASE_URL=mongodb://localhost:27017/mydatabase
 JWT_SECRET=mysecretkey
 NODE_ENV=development
@@ -318,12 +328,13 @@ NODE_ENV=production</code></pre>
 
       <h3>3. Deployment Configuration</h3>
       <pre><code// server.js
-import express from 'express';
-import mongoose from 'mongoose';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import authRoutes from './routes/auth';
-import taskRoutes from './routes/tasks';
+
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import dotenv from "dotenv";
+import authRoutes from "./routes/auth";
+import taskRoutes from "./routes/tasks";
 
 dotenv.config();
 
@@ -331,8 +342,8 @@ const app = express();
 
 // Connect to MongoDB
 mongoose.connect(process.env.DATABASE_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+useNewUrlParser: true,
+useUnifiedTopology: true,
 })
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.log(err));
@@ -347,23 +358,23 @@ app.use('/api/tasks', taskRoutes);
 
 // Error handling
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
+console.error(err.stack);
+res.status(500).send('Something broke!');
 });
 
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port \${PORT}\`);
+console.log(`Server is running on port \${PORT}\`);
 });
 
 // package.json scripts
 "scripts": {
-  "dev": "nodemon server.js",
-  "start": "node server.js",
-  "build": "webpack --config webpack.config.js",
-  "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-  "test": "jest --watchAll"
+"dev": "nodemon server.js",
+"start": "node server.js",
+"build": "webpack --config webpack.config.js",
+"lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+"test": "jest --watchAll"
 }</code></pre>
 
       <h2>Conclusion: Your MERN Stack Journey Begins</h2>
@@ -381,4 +392,3 @@ app.listen(PORT, () => {
       <blockquote>
         <p><em>"The best way to learn is by doing. Start small, think big, and never stop building."</em></p>
       </blockquote>
-    
