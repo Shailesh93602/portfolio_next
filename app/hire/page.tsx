@@ -25,12 +25,15 @@ export default function HirePage() {
         <div className="prose prose-invert mx-auto max-w-3xl">
           <h1>Hire {BLOG_AUTHOR.name}</h1>
           <p>
-            Software Engineer currently at ContextQA, where I&apos;ve shipped
-            Chrome extensions with ~1,900 and ~1,600 merged PRs — automated
-            testing and WCAG accessibility tooling. I build distributed systems
-            (Redis cluster adapters, Redlock, circuit breakers), AI pipelines
-            (Gemini OCR, vector search, webhook deduplication), and full-stack
-            web apps. TypeScript everywhere, correctness first.
+            Software Engineer at ContextQA, working on the backend of our core
+            QA-automation product (test execution engine, VNC streaming,
+            Playwright / WebdriverIO / LambdaTest orchestration). First 2-3
+            months at ContextQA I shipped 2 Chrome extensions (Vibe Testing,
+            AxeTos). Previously ~2 years at EsparkBiz shipping full-stack client
+            projects end-to-end. Side projects explore distributed systems
+            (Redlock, Socket.io Redis adapter), AI pipelines (Gemini
+            function-calling + OCR), and webhook idempotency patterns.
+            TypeScript everywhere, correctness first.
           </p>
 
           <h2>What I work on</h2>

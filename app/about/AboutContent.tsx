@@ -65,14 +65,17 @@ export default function AboutContent() {
                 className="text-text-secondary text-lg leading-relaxed"
               >
                 I&apos;m a Software Engineer from Bhavnagar, Gujarat. At
-                ContextQA I&apos;ve shipped Chrome extensions with ~1,900 and
-                ~1,600 merged PRs — automated testing and WCAG accessibility
-                tooling. Before that I spent a year at eSparkBiz building
-                EdTech, e-commerce, and corporate training platforms. On the
-                side I work on distributed systems: Redis cluster adapters,
-                distributed locks with Redlock, circuit breakers with opossum,
-                and AI pipelines for OCR, vector search, and webhook
-                deduplication. I reach for correctness over convenience.
+                ContextQA I work on the backend of our core QA-automation
+                product — test execution engine, VNC streaming, and
+                browser-automation orchestration (Playwright / WebdriverIO /
+                LambdaTest). The first 2-3 months I shipped 2 Chrome
+                extensions (Vibe Testing, AxeTos) before moving to the core
+                product. Before ContextQA, I spent ~2 years at eSparkBiz
+                building EdTech, e-commerce, and corporate training platforms
+                end-to-end. On the side I explore distributed systems (Redlock,
+                Socket.io Redis adapter, Prometheus metrics), AI pipelines
+                (Gemini function-calling, OCR), and webhook idempotency
+                patterns. I reach for correctness over convenience.
               </motion.p>
             </div>
 

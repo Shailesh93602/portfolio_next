@@ -1,34 +1,47 @@
 # Shailesh Chaudhari — Portfolio
 
-> Software Engineer specializing in full-stack web development with Next.js, React, Node.js, and TypeScript.
+> Software Engineer (~2.5 years) with a backend focus. Current role: backend of ContextQA's core QA-automation product (test execution engine, VNC streaming, Playwright/WebdriverIO/LambdaTest orchestration).
 
-Shailesh Chaudhari is a Software Engineer based in Gujarat, India. He currently works at ContextQA building developer tools — Chrome extensions for automated web testing and accessibility auditing (~1,600–1,900 merged PRs each). Previously at eSparkBiz Technologies. BE in Information Technology from Government Engineering College Bhavnagar (2024, CGPA 7.99). Institute Rank 1 on GeeksforGeeks with 604+ problems solved.
+Shailesh Chaudhari is a Software Engineer based in Gujarat, India. BE in Information Technology from Government Engineering College Bhavnagar (2024, CGPA 7.99). Institute Rank 1 on GeeksforGeeks with 604+ problems solved.
+
+Professional timeline:
+- Jan 2024 – Aug 2024: Software Developer Intern at EsparkBiz Technologies (full-stack learning — Node.js, React, Next.js, TypeScript, Tailwind; dummy projects; real-time patterns).
+- Aug 2024 – Jul 2025: Software Engineer at EsparkBiz Technologies (3 client projects end-to-end — full-stack UI, backend APIs, client communication and requirements).
+- Jul 2025 – present: Software Engineer at ContextQA. First 2-3 months: shipped 2 Chrome extensions (Vibe Testing for AI-powered web testing, AxeTos for WCAG accessibility). Since then: backend of the core QA-automation product (test execution engine, VNC streaming, browser-automation orchestration via Playwright / WebdriverIO / LambdaTest).
 
 ## Pages
 
-- [Home](https://shaileshchaudhari.vercel.app/): Introduction, featured blog posts, availability for hire
-- [About](https://shaileshchaudhari.vercel.app/about): Professional experience, education, skills, achievements
-- [Portfolio](https://shaileshchaudhari.vercel.app/portfolio): Project showcase with architecture details and live demos
+- [Home](https://shaileshchaudhari.vercel.app/): Introduction, side projects, featured blog posts, availability
+- [About](https://shaileshchaudhari.vercel.app/about): Work history, education, skills, achievements
+- [Portfolio](https://shaileshchaudhari.vercel.app/portfolio): 9 side projects with architecture details and live demos
 - [Blog](https://shaileshchaudhari.vercel.app/blogs): Technical articles on web development and software engineering
 - [Statistics](https://shaileshchaudhari.vercel.app/statistics): GitHub contributions, LeetCode stats, competitive programming metrics
-- [Contact](https://shaileshchaudhari.vercel.app/contact): Contact form, available for part-time and freelance work
-- [Hire](https://shaileshchaudhari.vercel.app/hire): Services, rates, and engagement details
+- [Contact](https://shaileshchaudhari.vercel.app/contact): Contact form + direct email
+- [Hire](https://shaileshchaudhari.vercel.app/hire): Services and engagement details
 
-## Projects
+## Side projects (shipped)
 
-- [EduScale](https://eduscale.vercel.app/): Real-time engineering learning platform. Backend uses @socket.io/redis-adapter (horizontal Socket.io scaling), redlock (distributed locks preventing race conditions), opossum (circuit breaker on external services), prom-client (Prometheus /metrics endpoint), Bull queues. Stack: Next.js 15, React 19, TypeScript, Node.js, Express, Prisma, PostgreSQL, Redis.
-- [DevTrack](https://daily-dev-track.vercel.app): Developer analytics dashboard with Supabase Realtime — activity feed subscribes to postgres_changes on daily_logs table, showing a live pulsing indicator and updating across tabs without polling. Stack: Next.js, TypeScript, Prisma, PostgreSQL, Supabase Realtime, Recharts.
-- [KhataGO](https://khatago.vercel.app/): WhatsApp-first AI accounting platform for Indian SMBs. WhatsApp Business API webhook with Redis-based deduplication, Gemini AI OCR for receipt photos → structured transactions, Tally ERP XML export. Stack: Next.js, Gemini AI, WhatsApp Cloud API, PostgreSQL, Redis, Bull Queues, i18n. (Private repo)
-- [CodeSenseiSearch](https://github.com/Shailesh93602/CodeSenseiSearch): AI-powered semantic code search engine. NestJS backend with pgvector, function-level chunking, OpenAI embeddings, cosine similarity ranking. Natural language queries return ranked file+line results.
-- [redis-battle-demo](https://github.com/Shailesh93602/redis-battle-demo): Standalone proof-of-concept for the EduScale distributed real-time engine. Express + Socket.io + @socket.io/redis-adapter (pub/sub clients) + Redlock (retryCount:0, distributed tick mutex). 48 tests. Docker Compose starts Redis. Live demo UI shows server tick events across horizontally-scaled instances.
-- [CareerGlyph](https://github.com/Shailesh93602/careerglyph): Developer identity platform replacing static resumes. NestJS monorepo backend (71 tests: JWT auth, skills/projects/endorsements with compound unique key upsert, rate-limited auth). Next.js 14 frontend with public profile viewer at /[username], TanStack Query optimistic endorsements, login/register pages.
-- [stripe-payments-demo](https://github.com/Shailesh93602/stripe-payments-demo): Production-grade Stripe integration. Webhook handler with HMAC-SHA256 signature verification + Redis SETNX idempotency (24h TTL, exactly-once delivery). Payment intent creation with caller-supplied idempotency key. Exponential backoff retry with jitter — 4xx errors bypass retry. 29 tests.
-- Vibe Testing (ContextQA): Chrome extension for AI-powered web testing with real-time log streaming. ~1,900 merged PRs. Stack: Chrome Extension, Python AI Agent, Node.js, Socket.io.
-- AxeTos (ContextQA): Chrome extension for WCAG A/AA/AAA accessibility testing with intelligent fix suggestions and persistent script-injection remediation. ~1,600 merged PRs. Stack: Chrome Extension, Node.js, axe-core, AWS S3.
+Live:
+
+- [EduScale](https://eduscale.vercel.app/): Real-time engineering learning platform with 1v1 coding battles. Backend uses @socket.io/redis-adapter (horizontal Socket.io scaling), redlock (distributed locks preventing duplicate battle starts), opossum (circuit breaker around code execution), prom-client (Prometheus /metrics), Bull queues. Stack: Next.js 15, React 19, TypeScript, Node.js, Express, Prisma, PostgreSQL, Redis, Supabase Auth.
+- [DevTrack](https://daily-dev-track.vercel.app): Developer productivity dashboard. Supabase Realtime postgres_changes subscription on daily_logs for live activity feed + sub-second multi-tab sync. Stack: Next.js, TypeScript, Prisma, PostgreSQL, Supabase Realtime, Recharts.
+- [KhataGO](https://khatago.vercel.app/): WhatsApp-first AI accounting for Indian SMBs. WhatsApp Business webhook with Redis deduplication, Gemini AI function-calling for receipt OCR → structured transactions + receivables management. Stack: Next.js, Gemini AI SDK, WhatsApp Cloud API, PostgreSQL (Prisma), Redis, i18n (en/hi/gu).
+
+Open-source / demo:
+
+- [stripe-payments-demo](https://github.com/Shailesh93602/stripe-payments-demo): Stripe integration demo. Webhook HMAC-SHA256 verification + Redis SETNX idempotency (24h TTL covering Stripe's retry window, exactly-once processing) + caller-supplied idempotency keys on payment intent creation + exponential-backoff retry with jitter that skips 4xx. 29 tests including concurrent-duplicate simulation.
+- [redis-battle-demo](https://github.com/Shailesh93602/redis-battle-demo): Standalone proof-of-concept for EduScale's distributed real-time engine. Express + Socket.io + @socket.io/redis-adapter (pub/sub clients) + Redlock (retryCount:0, distributed tick mutex). 48 tests. Docker Compose starts Redis. UI shows server tick events across horizontally-scaled instances.
+- [CareerGlyph](https://github.com/Shailesh93602/careerglyph): Developer identity platform replacing static resumes. NestJS monorepo backend (71 tests: JWT auth, skills/projects/endorsements with compound unique key upsert, rate-limited auth). Next.js 14 frontend with public profile viewer at /[username], TanStack Query optimistic endorsements.
+- [CodeSenseiSearch](https://github.com/Shailesh93602/CodeSenseiSearch): AI-powered semantic code search. NestJS backend with pgvector, function-level chunking, OpenAI embeddings, cosine-similarity ranking. Natural-language queries return ranked file+line results.
+
+ContextQA Chrome extensions (shipped in first 2-3 months at ContextQA, 2025):
+
+- Vibe Testing: Chrome extension for AI-powered web testing with real-time log streaming. Stack: Chrome Extension, Python AI Agent, Node.js, Socket.io.
+- AxeTos: Chrome extension for WCAG A/AA/AAA accessibility testing with intelligent fix suggestions. Stack: Chrome Extension, Node.js, axe-core, AWS S3.
 
 ## Skills
 
-TypeScript · React · Next.js · Node.js · Express.js · NestJS · PostgreSQL · MongoDB · Redis · Prisma · Tailwind CSS · Socket.io · @socket.io/redis-adapter · Redlock · Circuit Breaker (opossum) · Prometheus (prom-client) · Bull Queues · Vector Embeddings · pgvector · Chrome Extensions · Supabase · Supabase Realtime · Stripe API · Webhook Idempotency · Docker · AWS · Playwright · WCAG Accessibility · NestJS Monorepo · Swagger/OpenAPI
+TypeScript · React · Next.js · Node.js · Express.js · NestJS · PostgreSQL · MongoDB · Redis · Prisma · Tailwind CSS · Socket.io · @socket.io/redis-adapter · Redlock · Circuit Breaker (opossum) · Prometheus (prom-client) · Bull Queues · Vector Embeddings · pgvector · Chrome Extensions · Supabase · Supabase Realtime · Stripe API · Webhook Idempotency · Playwright · WebdriverIO · LambdaTest · Docker · AWS · Swagger/OpenAPI
 
 ## Contact
 

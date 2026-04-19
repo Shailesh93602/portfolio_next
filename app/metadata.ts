@@ -4,7 +4,7 @@ import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 export const metadata: Metadata = {
   title: "Shailesh Chaudhari — Software Engineer",
   description:
-    "Software Engineer at ContextQA — Chrome extensions with ~1,900 and ~1,600 merged PRs. Builds distributed systems (Redis cluster, Redlock, circuit breakers) and AI pipelines (Gemini OCR, vector search). Open to part-time and freelance work.",
+    "Software Engineer at ContextQA working on the backend of our core QA-automation product (test execution, VNC, Playwright/WebdriverIO/LambdaTest). Side projects: distributed systems (Redlock, Socket.io Redis adapter), AI pipelines (Gemini function-calling, OCR), webhook idempotency patterns. Open to part-time and freelance work.",
   metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: `${SITE_URL}/`,
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Shailesh Chaudhari — Software Engineer",
     description:
-      "Software Engineer at ContextQA. Chrome extensions with ~1,900 merged PRs. Distributed systems, AI pipelines, full-stack web apps. Open to part-time and freelance work.",
+      "Software Engineer at ContextQA (backend of core QA-automation product). Side projects explore distributed systems, AI pipelines, webhook idempotency. Open to part-time and freelance work.",
     url: SITE_URL,
     siteName: META_DEFAULTS.siteName,
     images: [

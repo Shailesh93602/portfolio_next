@@ -69,16 +69,20 @@ describe("Header", () => {
 describe("KeyMetrics", () => {
   const mockMetrics = [
     {
-      label: "PRs Merged",
-      value: "1,900+",
-      description: "Pull requests merged at ContextQA",
+      label: "Test Suite",
+      value: "247",
+      description: "Passing Jest tests across the portfolio repo",
     },
     {
       label: "Projects",
-      value: "10+",
-      description: "Side projects and open source",
+      value: "9",
+      description: "Side projects shipped and live",
     },
-    { label: "Stars", value: "50+", description: "GitHub stars across repos" },
+    {
+      label: "Coverage",
+      value: "70%+",
+      description: "Line coverage across the portfolio repo",
+    },
   ];
 
   it("returns null when no metrics provided", () => {
@@ -88,22 +92,22 @@ describe("KeyMetrics", () => {
 
   it("renders all metric values", () => {
     render(<KeyMetrics metrics={mockMetrics} />);
-    expect(screen.getByText("1,900+")).toBeInTheDocument();
-    expect(screen.getByText("10+")).toBeInTheDocument();
-    expect(screen.getByText("50+")).toBeInTheDocument();
+    expect(screen.getByText("247")).toBeInTheDocument();
+    expect(screen.getByText("9")).toBeInTheDocument();
+    expect(screen.getByText("70%+")).toBeInTheDocument();
   });
 
   it("renders all metric labels", () => {
     render(<KeyMetrics metrics={mockMetrics} />);
-    expect(screen.getByText("PRs Merged")).toBeInTheDocument();
+    expect(screen.getByText("Test Suite")).toBeInTheDocument();
     expect(screen.getByText("Projects")).toBeInTheDocument();
-    expect(screen.getByText("Stars")).toBeInTheDocument();
+    expect(screen.getByText("Coverage")).toBeInTheDocument();
   });
 
   it("renders metric descriptions", () => {
     render(<KeyMetrics metrics={mockMetrics} />);
     expect(
-      screen.getByText(/Pull requests merged at ContextQA/)
+      screen.getByText(/Passing Jest tests across the portfolio repo/)
     ).toBeInTheDocument();
   });
 

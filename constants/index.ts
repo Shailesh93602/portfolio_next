@@ -70,11 +70,11 @@ export const experiences: Experience[] = [
       "Chrome Extensions",
     ],
     description:
-      "Shipping production features across two Chrome extensions and the core platform. Both extensions have accumulated 1,600–1,900 merged PRs respectively — fixing bugs, landing features, and reviewing code end-to-end in a production codebase.",
+      "First 2-3 months: shipped 2 Chrome extensions (Vibe Testing + AxeTos). Since then: working on the backend of ContextQA's core QA-automation platform — test execution engine, VNC streaming, and browser-automation orchestration across Playwright, WebdriverIO, and LambdaTest.",
     highlights: [
-      "AxeTOS (Accessibility Extension): Chrome extension + Node.js/Express backend for WCAG A/AA/AAA auditing with automated fix suggestions and detailed violation reports with precise DOM locators. ~1,600 merged PRs.",
-      "Vibe Testing (Web Testing Extension): Chrome extension for AI-powered UI testing targeting v0.dev/Lovable/Replit apps. Features real-time log streaming via WebSockets, screenshot capture, AI-generated bug scenarios, and chat-based fix workflows. ~1,900 merged PRs.",
-      "ContextQA Portal: Resolved critical Node.js/Express.js/Playwright backend bugs and shipped new features improving platform stability and test execution reliability.",
+      "Core platform backend: Node.js + Express services orchestrating test runs across Playwright / WebdriverIO / LambdaTest, VNC streaming for live browser-session debugging, and the APIs that drive run history, assertions, and artifacts.",
+      "AxeTos (Accessibility Extension — shipped in first 2-3 months): Chrome extension + Node.js/Express backend for WCAG A/AA/AAA auditing with automated fix suggestions and precise DOM locators.",
+      "Vibe Testing (Web Testing Extension — shipped in first 2-3 months): Chrome extension for AI-powered UI testing targeting v0.dev / Lovable / Replit apps. Real-time log streaming via WebSockets, screenshot capture, AI-generated bug scenarios, chat-based fix workflows.",
     ],
   },
   {

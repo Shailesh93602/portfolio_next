@@ -328,7 +328,7 @@ export const projects: Project[] = [
     id: "vibe-testing",
     title: "Vibe Testing (ContextQA)",
     description:
-      "AI-powered web testing Chrome extension built at ContextQA. ~1,900 merged PRs in production — real-time UI testing with AI-generated bug scenarios, screenshot capture, and chat-based fix workflows.",
+      "AI-powered web testing Chrome extension built at ContextQA (shipped during my first 2-3 months on the team) — real-time UI testing with AI-generated bug scenarios, screenshot capture, and chat-based fix workflows.",
     image: "/Images/vibe_testing/full_report.png",
     tags: [
       "Next.js",
@@ -381,7 +381,7 @@ export const projects: Project[] = [
     solution:
       "A high-performance Chrome extension that leverages AI agents to capture live browser state and perform complex UI tests. It provides detailed reports with prioritized bugs and actionable fix suggestions.",
     challengesSolved:
-      "Architecting a real-time, bi-directional communication bridge between the browser extension and a remote testing engine while ensuring sub-200ms latency for live log streaming and visual state updates. Shipped and maintained at production scale — ~1,900 merged PRs across features, bug fixes, and code reviews.",
+      "Architecting a real-time, bi-directional communication bridge between the browser extension and a remote testing engine while ensuring sub-200ms latency for live log streaming and visual state updates. Shipped in production during my first 2-3 months at ContextQA.",
     gallery: [
       "/Images/vibe_testing/full_report.png",
       "/Images/vibe_testing/live_execution_with_steps_and_screenshots.png",
@@ -394,7 +394,7 @@ export const projects: Project[] = [
     id: "axetos",
     title: "AxeTos (ContextQA)",
     description:
-      "WCAG A/AA/AAA accessibility testing Chrome extension built at ContextQA. ~1,600 merged PRs in production — automated auditing with precise DOM locators, violation categorization, and persistent script-injection fixes.",
+      "WCAG A/AA/AAA accessibility testing Chrome extension built at ContextQA (shipped during my first 2-3 months on the team) — automated auditing with precise DOM locators, violation categorization, and persistent script-injection fixes.",
     image: "/Images/portfolio1.png",
     tags: [
       "Node.js",
@@ -444,7 +444,7 @@ export const projects: Project[] = [
     solution:
       "Comprehensive auditing suite that runs detailed WCAG A/AA/AAA diagnostics. It features a unique remediation engine that applies persistent fixes via script injection, allowing for 'zero-code' accessibility fixes.",
     challengesSolved:
-      "Building a non-destructive DOM manipulation engine that reliably applies accessibility fixes (contrast adjustments, ARIA role remediation) across varied third-party frameworks without interfering with existing site logic. Maintained at production scale — ~1,600 merged PRs across features, bug fixes, and code reviews.",
+      "Building a non-destructive DOM manipulation engine that reliably applies accessibility fixes (contrast adjustments, ARIA role remediation) across varied third-party frameworks without interfering with existing site logic. Shipped in production during my first 2-3 months at ContextQA.",
   },
   {
     id: "codesensei-search",

@@ -20,17 +20,21 @@
 
 ## Professional Experience
 
-### Software Engineer — ContextQA (July 2025 – Present)
+### Software Engineer — ContextQA (July 10, 2025 – Present)
 **Company:** https://contextqa.com
-**Stack:** Next.js, TailwindCSS, Shadcn UI, Node.js, Express.js, PostgreSQL, MongoDB, Prisma, Chrome Extensions
+**Stack:** Node.js, Express.js, PostgreSQL, MongoDB, Prisma, Playwright, WebdriverIO, LambdaTest, VNC, Socket.io, Chrome Extensions
 
-Shipped and maintained two production Chrome extensions with ~1,600–1,900 merged PRs each:
+**Current role:** backend of ContextQA's core QA-automation product. Work covers:
+- Test execution engine (orchestrating Playwright + WebdriverIO runs across environments)
+- VNC streaming (live browser-session viewing for debugging automated tests)
+- LambdaTest integration for multi-cloud browser coverage
+- API for managing test runs, assertions, artifacts, and run history
 
-**Vibe Testing (~1,900 merged PRs):** AI-driven Chrome extension for automated web testing. Features real-time WebSocket log streaming, AI-generated bug reports with screenshots, integration with AI development platforms (v0, Lovable, Replit). Chat-based bug-fix workflows. Backend: Python AI agent + Node.js + Socket.io.
+**First 2-3 months at ContextQA (shipped):** two production Chrome extensions, now maintained by the team:
 
-**AxeTos (~1,600 merged PRs):** Comprehensive WCAG A/AA/AAA accessibility testing Chrome extension. Features component-level violation visualization with precise DOM locators, intelligent fix suggestions, automated script-injection remediation via AWS S3. Backend: Node.js, Express.js, axe-core.
+**Vibe Testing:** AI-driven Chrome extension for automated web testing. Features real-time WebSocket log streaming, AI-generated bug reports with screenshots, integration with AI development platforms (v0, Lovable, Replit). Chat-based bug-fix workflows. Backend: Python AI agent + Node.js + Socket.io.
 
-Also enhanced the ContextQA Portal backend using Node.js, Express.js, and Playwright — resolving critical bugs and implementing new features.
+**AxeTos:** Comprehensive WCAG A/AA/AAA accessibility testing Chrome extension. Features component-level violation visualization with precise DOM locators, intelligent fix suggestions, automated script-injection remediation via AWS S3. Backend: Node.js, Express.js, axe-core.
 
 ---
 
@@ -166,7 +170,7 @@ Developer identity platform — portable profile showing skills, projects, and e
 
 ### Vibe Testing (ContextQA — proprietary)
 **Stack:** Chrome Extension, Python AI Agent, Node.js, Socket.io, WebSockets, TypeScript, Manifest V3
-**PRs merged:** ~1,900
+**Role:** shipped during first 2-3 months at ContextQA (2025)
 
 AI-powered web testing extension:
 - Autonomous UI test generation and execution targeting AI-built apps (v0, Lovable, Replit)
@@ -179,7 +183,7 @@ AI-powered web testing extension:
 
 ### AxeTos (ContextQA — proprietary)
 **Stack:** Chrome Extension, Node.js, Express.js, axe-core, AWS S3, TypeScript
-**PRs merged:** ~1,600
+**Role:** shipped during first 2-3 months at ContextQA (2025)
 
 Professional WCAG accessibility testing suite:
 - Automated WCAG A/AA/AAA auditing with precise DOM locators

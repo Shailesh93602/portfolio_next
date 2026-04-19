@@ -12,7 +12,7 @@ const faqSchema = {
       name: "Who is Shailesh Chaudhari?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Shailesh Chaudhari is a Software Engineer from Gujarat, India. He works at ContextQA building Chrome extensions with ~1,900 and ~1,600 merged PRs. He specializes in distributed systems (Redis cluster adapters, distributed locks, circuit breakers), AI pipelines (Gemini OCR, vector search), and full-stack web development with TypeScript, React, Next.js, and Node.js.",
+        text: "Shailesh Chaudhari is a Software Engineer from Gujarat, India. At ContextQA he works on the backend of the core QA-automation product — test execution engine, VNC streaming, and browser-automation orchestration across Playwright, WebdriverIO, and LambdaTest. During his first 2-3 months at ContextQA he shipped two Chrome extensions (Vibe Testing, AxeTos). Previously ~2 years at EsparkBiz shipping full-stack client projects. Side projects explore distributed systems (Redlock, Socket.io Redis adapter, Prometheus), AI pipelines (Gemini function-calling, OCR), and webhook idempotency patterns.",
       },
     },
     {
