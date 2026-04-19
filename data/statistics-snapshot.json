@@ -1,0 +1,55 @@
+{
+  "_comment": "Last-known-good statistics snapshot. Used as the SSR/initial render payload when the live /api/statistics call is slow or fails. Refresh this file periodically (or via a cron job) to keep numbers current. Values here are intentional lower bounds — the live API overrides them once it resolves.",
+  "_lastUpdated": "2026-04-19",
+  "github": {
+    "repositories": 42,
+    "contributions": 2100,
+    "stars": 18,
+    "forks": 9,
+    "followers": 24,
+    "languages": [
+      { "name": "TypeScript", "percentage": 58, "color": "#3178c6" },
+      { "name": "JavaScript", "percentage": 22, "color": "#f1e05a" },
+      { "name": "CSS", "percentage": 9, "color": "#563d7c" },
+      { "name": "HTML", "percentage": 7, "color": "#e34c26" },
+      { "name": "Python", "percentage": 4, "color": "#3572A5" }
+    ],
+    "currentStreak": {
+      "count": 14,
+      "startDate": "2026-04-06",
+      "endDate": "2026-04-19"
+    },
+    "longestStreak": {
+      "count": 87,
+      "startDate": "2025-06-12",
+      "endDate": "2025-09-06"
+    },
+    "totalCommits": 1850,
+    "totalPRs": 142,
+    "totalIssues": 31,
+    "totalRepos": 42,
+    "contributionDays": []
+  },
+  "leetcode": {
+    "totalSolved": 720,
+    "easySolved": 260,
+    "mediumSolved": 380,
+    "hardSolved": 80,
+    "ranking": 48000,
+    "contributionPoint": 312,
+    "reputation": 18,
+    "currentStreak": {
+      "count": 21,
+      "startDate": "2026-03-30",
+      "endDate": "2026-04-19"
+    },
+    "longestStreak": {
+      "count": 64,
+      "startDate": "2025-04-01",
+      "endDate": "2025-06-03"
+    },
+    "activeYears": [2022, 2023, 2024, 2025, 2026],
+    "totalActiveDays": 540,
+    "submissionCalendar": {}
+  }
+}

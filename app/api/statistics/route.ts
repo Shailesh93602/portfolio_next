@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { SOCIAL_LINKS } from "@/config/constants";
 import { fetchGithubStats } from "@/lib/github-service";
 import { fetchLeetCodeStats } from "@/lib/leetcode-service";
+import { getStatisticsSnapshot } from "@/lib/statistics-snapshot";
 
 const EMPTY_STREAK = { count: 0, startDate: "", endDate: "" };
 
@@ -36,22 +37,54 @@ const LEETCODE_FALLBACK = {
   submissionCalendar: {} as Record<string, number>,
 };
 
+// Cap external API calls at 10s so the statistics page never hangs forever.
+// On timeout we fall through to the committed snapshot (last-known-good).
+const UPSTREAM_TIMEOUT_MS = 10_000;
+
+function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(
+      () => reject(new Error(`${label} timed out after ${ms}ms`)),
+      ms
+    );
+    p.then(
+      (v) => {
+        clearTimeout(timer);
+        resolve(v);
+      },
+      (e) => {
+        clearTimeout(timer);
+        reject(e);
+      }
+    );
+  });
+}
+
 export async function GET() {
   try {
     const githubUsername = SOCIAL_LINKS.GITHUB.split("/").pop() ?? "";
     const leetcodeUsername = SOCIAL_LINKS.LEETCODE.split("/").pop() ?? "";
 
-    let githubStats = GITHUB_FALLBACK;
-    let leetcodeStats = LEETCODE_FALLBACK;
+    const snapshot = getStatisticsSnapshot();
+    let githubStats = snapshot.github ?? GITHUB_FALLBACK;
+    let leetcodeStats = snapshot.leetcode ?? LEETCODE_FALLBACK;
 
     try {
-      githubStats = await fetchGithubStats(githubUsername);
+      githubStats = await withTimeout(
+        fetchGithubStats(githubUsername),
+        UPSTREAM_TIMEOUT_MS,
+        "GitHub stats fetch"
+      );
     } catch (error) {
       console.error("Error fetching GitHub statistics:", error);
     }
 
     try {
-      const result = await fetchLeetCodeStats(leetcodeUsername);
+      const result = await withTimeout(
+        fetchLeetCodeStats(leetcodeUsername),
+        UPSTREAM_TIMEOUT_MS,
+        "LeetCode stats fetch"
+      );
       if (result) leetcodeStats = result;
     } catch (error) {
       console.error("Error fetching LeetCode statistics:", error);
@@ -68,10 +101,11 @@ export async function GET() {
     );
   } catch (error) {
     console.error("Error in statistics API:", error);
+    const snapshot = getStatisticsSnapshot();
     return NextResponse.json(
       {
-        github: GITHUB_FALLBACK,
-        leetcode: LEETCODE_FALLBACK,
+        github: snapshot.github ?? GITHUB_FALLBACK,
+        leetcode: snapshot.leetcode ?? LEETCODE_FALLBACK,
         error: "Failed to fetch statistics, showing fallback data",
       },
       {

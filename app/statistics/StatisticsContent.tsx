@@ -78,23 +78,41 @@ const PlatformSection = ({
   </div>
 );
 
-export function StatisticsContent() {
+// Loose shape — StatisticsContent only reads fields it needs, and all are
+// defensively ?? guarded. Keeping this as `unknown`-adjacent avoids coupling
+// the client component to the full server snapshot type.
+interface InitialStatsPayload {
+  github?: unknown;
+  leetcode?: unknown;
+}
+
+export function StatisticsContent({
+  initialData,
+}: {
+  initialData?: InitialStatsPayload;
+} = {}) {
   const [showTimeoutMessage, setShowTimeoutMessage] = React.useState(false);
 
-  const {
-    data: stats,
-    isLoading,
-    error,
-  } = useQuery({
+  const { data: stats, error } = useQuery({
     queryKey: ["stats"],
     queryFn: async () => {
       const response = await axios.get("/api/statistics");
       return response.data;
     },
+    // When initialData is supplied (from the server snapshot), the query is
+    // NOT in a loading state — the UI can render real numbers immediately in
+    // the SSR HTML. The client still refetches in the background after
+    // staleTime elapses.
+    initialData: initialData as unknown as undefined,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 2,
     retryDelay: 1000,
   });
+
+  // We have a snapshot available from the server when initialData is provided,
+  // so don't show a loading spinner — recruiters (and crawlers) should see
+  // real stats in the initial HTML, not "Loading...".
+  const isLoading = !stats && !initialData;
 
   // Show timeout message after 10 seconds
   React.useEffect(() => {

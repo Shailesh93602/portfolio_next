@@ -1,6 +1,7 @@
 export { metadata } from "./metadata";
 import { StatisticsContent } from "./StatisticsContent";
 import { SITE_URL } from "@/lib/blog-constants";
+import { getStatisticsSnapshot } from "@/lib/statistics-snapshot";
 
 const statisticsSchema = {
   "@context": "https://schema.org",
@@ -26,13 +27,17 @@ const statisticsSchema = {
 };
 
 export default function Statistics() {
+  // Load committed last-known-good numbers at build time so the SSR HTML
+  // includes real contribution counts instead of a loading spinner. The
+  // client-side useQuery will still fetch fresh data and override on hydration.
+  const snapshot = getStatisticsSnapshot();
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(statisticsSchema) }}
       />
-      <StatisticsContent />
+      <StatisticsContent initialData={snapshot} />
     </>
   );
 }

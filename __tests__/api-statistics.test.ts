@@ -13,6 +13,42 @@ jest.mock("@/lib/github-service", () => ({
 jest.mock("@/lib/leetcode-service", () => ({
   fetchLeetCodeStats: jest.fn(),
 }));
+// When upstream fetches fail, the route falls through to the committed
+// last-known-good snapshot. Mock it to a deterministic all-zeros payload
+// so these tests remain stable regardless of the real snapshot file's values.
+jest.mock("@/lib/statistics-snapshot", () => ({
+  getStatisticsSnapshot: () => ({
+    github: {
+      repositories: 0,
+      contributions: 0,
+      stars: 0,
+      forks: 0,
+      followers: 0,
+      languages: [],
+      currentStreak: { count: 0, startDate: "", endDate: "" },
+      longestStreak: { count: 0, startDate: "", endDate: "" },
+      totalCommits: 0,
+      totalPRs: 0,
+      totalIssues: 0,
+      totalRepos: 0,
+      contributionDays: [],
+    },
+    leetcode: {
+      totalSolved: 0,
+      easySolved: 0,
+      mediumSolved: 0,
+      hardSolved: 0,
+      ranking: 0,
+      contributionPoint: 0,
+      reputation: 0,
+      currentStreak: { count: 0, startDate: "", endDate: "" },
+      longestStreak: { count: 0, startDate: "", endDate: "" },
+      activeYears: [],
+      totalActiveDays: 0,
+      submissionCalendar: {},
+    },
+  }),
+}));
 
 import { GET } from "@/app/api/statistics/route";
 import { fetchGithubStats } from "@/lib/github-service";
