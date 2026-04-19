@@ -16,7 +16,7 @@ Priority levels mirror the recruiter review (P0 = this week, P1 = this month, P2
 | --- | -------- | ------------------------------------------------- | ------ | --------------------------------------------------- |
 | 1   | P0       | Write 3-sentence hero positioning statement       | 30 min | TODO 1J (hero rewrite)                              |
 | 2   | P0       | Verify 3 live project URLs + screenshot each      | 15 min | OG fallbacks + don't let Supabase pause mid-review  |
-| 3   | P0       | Add 6 GitHub secrets for Supabase keep-alive cron | 10 min | Activates TODO 1E (workflow already committed)      |
+| 3   | P0       | Add `CRON_SECRET` env var + redeploy 3 Vercel projects (replaces GitHub secrets approach) | 15 min | Activates per-project Vercel cron keep-alive (private, DB-native, works for KhataGO Postgres)   |
 | 4   | P0       | Deploy redis-battle-demo (Render or Fly)          | 1 hr   | Makes distributed-lock demo publicly visible        |
 | 5   | P0       | Deploy stripe-payments-demo (decide Vercel vs Render) | 1 hr   | Unblocks TODO 2C (Stripe deep case-study page)  |
 | 6   | P0       | Verify GEMINI_API_KEY on EduScale Vercel project  | 5 min  | Validates TODO 1B (AI chat fix already shipped)     |
@@ -65,20 +65,27 @@ Do this check every 2 weeks until Task 3 lands (then it's automated).
 | redis-battle-demo    | add URL once deployed (Task 4)       | Render/Fly restart                   |
 | stripe-payments-demo | add URL once deployed (Task 5)       | Render/Fly or Vercel                 |
 
-### 3. Add 6 GitHub Secrets for Supabase Keep-Alive Workflow — 10 min
+### 3. Activate Per-Project Vercel Cron Keep-Alive — 15 min
 
-Workflow is committed and waiting on these secrets. URL: `https://github.com/Shailesh93602/portfolio_next/settings/secrets/actions`
+**Approach change:** GitHub Actions workflow removed. Keep-alive now runs as a Vercel Cron inside each of the 3 projects (KhataGO, DevTrack, EduScale Frontend). Private, DB-native, works for KhataGO's Postgres-only setup.
 
-Add all 6:
+**Steps:**
 
-- `EDUSCALE_SUPABASE_URL`
-- `EDUSCALE_SUPABASE_ANON_KEY`
-- `DEVTRACK_SUPABASE_URL`
-- `DEVTRACK_SUPABASE_ANON_KEY`
-- `KHATAGO_SUPABASE_URL`
-- `KHATAGO_SUPABASE_ANON_KEY`
+1. Generate a shared cron secret: `openssl rand -hex 32`
+2. Add `CRON_SECRET` env var to each of these 3 Vercel projects (Settings → Environment Variables → Production):
+   - KhataGO
+   - DevTrack
+   - EduScale Frontend
+3. Trigger a redeploy on each (push any commit or "Redeploy" from Vercel UI)
+4. Verify on Vercel dashboard → Project → Cron Jobs: `/api/cron/keepalive` should appear, schedule `0 9 * * *`
+5. Optional manual test: `curl -H "Authorization: Bearer $CRON_SECRET" https://<project>.vercel.app/api/cron/keepalive` — expect `{"ok":true,...}`
 
-Values live in each project's Supabase dashboard → Project Settings → API.
+**Then clean up (optional):** delete the 6 now-unused GitHub repo secrets (`EDUSCALE_SUPABASE_URL`, `EDUSCALE_SUPABASE_ANON_KEY`, `DEVTRACK_*`, `KHATAGO_*`) at <https://github.com/Shailesh93602/portfolio_next/settings/secrets/actions>
+
+**Why this replaces GitHub Actions:**
+- Private (not visible in public Actions log)
+- Actually touches the DB (Prisma `SELECT NOW()` / Supabase `auth.getSession()`) — critical for KhataGO which only has `DATABASE_URL`, no Supabase REST surface
+- Each project owns its own keep-alive, no cross-repo secret copying
 
 ### 4. Deploy redis-battle-demo — 1 hr (Render or Fly — NOT Vercel)
 
