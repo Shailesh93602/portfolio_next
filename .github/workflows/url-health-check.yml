@@ -1,0 +1,52 @@
+# URL Health Check
+#
+# Runs the existing scripts/check-live-urls.mjs daily against every live
+# project URL. If any URL returns non-2xx or times out, the job fails and
+# GitHub emails me so I can investigate (usually a Supabase project that
+# auto-paused, a Vercel deploy that regressed, or a DNS hiccup).
+#
+# Complements the per-project Vercel cron keep-alive: the keep-alive
+# prevents Supabase from pausing in the first place; this workflow
+# surfaces cases where it didn't (cron failure, Vercel down, etc).
+
+name: URL Health Check
+
+on:
+  schedule:
+    # Daily at 10:00 UTC — one hour after the Vercel keep-alive crons
+    # (0 9 * * *) so if a project is going to wake up, it already has.
+    - cron: "0 10 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check live project URLs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Ping every live URL
+        run: node scripts/check-live-urls.mjs
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "### URL Health Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "All live URLs returned 2xx." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "One or more URLs failed — see job logs." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Common causes:" >> $GITHUB_STEP_SUMMARY
+            echo "- Supabase free-tier auto-paused (check keepalive cron output on Vercel)" >> $GITHUB_STEP_SUMMARY
+            echo "- Vercel deploy regression (check project deployment logs)" >> $GITHUB_STEP_SUMMARY
+            echo "- DNS / upstream outage (transient — re-run workflow)" >> $GITHUB_STEP_SUMMARY
+          fi

@@ -517,7 +517,7 @@ export const projects: Project[] = [
     id: "khatago",
     title: "KhataGO",
     description:
-      "WhatsApp-first AI Accounting & Billing platform for small businesses, featuring real-time transaction recording via chat and automated i18n support.",
+      "WhatsApp-first accounting platform. Webhook → Gemini function-calling → idempotent ledger write. Handles transactions, receivables, and reconciliation entirely through WhatsApp chat + receipt photos.",
     image: "/Images/khatago/landing.png",
     isShowcase: true,
     tags: [
@@ -527,36 +527,76 @@ export const projects: Project[] = [
       "PostgreSQL",
       "Supabase",
       "Gemini AI",
+      "Function-calling",
       "i18n",
       "Node.js",
       "Redis",
+      "Webhook Idempotency",
     ],
     live: "https://khatago.vercel.app/",
     github: "https://github.com/Shailesh93602/khatago",
     detailedDescription:
-      "KhataGO is a revolutionary WhatsApp-first SaaS billing platform designed for the Indian MSME market. It leverages Gemini AI to parse natural language messages and images of receipts directly from WhatsApp, automatically recording transactions into a cloud-based ledger.",
+      "KhataGO is a WhatsApp-first bookkeeping platform for Indian MSMEs. The backend is a reconciliation pipeline: Meta webhooks arrive with at-least-once delivery, a Redis-backed idempotency guard drops duplicates, Gemini 2.0 Flash with function-calling parses both text ('Sold 500 to Ram') and receipt images (OCR → structured JSON with merchant/amount/date/line items) into 8 tool calls — create_transaction, create_receivable, record_payment_received, get_party_ledger, send_payment_reminder, and others — each mapped to a Prisma write. Results flow back to the user over WhatsApp; a CA portal exports Tally-ready XML vouchers for month-end close.",
     architecture: {
       layers: [
         {
-          name: "Interface",
+          name: "Ingress",
           items: [
-            "WhatsApp Cloud API",
-            "Next.js (Web Dashboard)",
-            "Tailwind CSS",
+            "WhatsApp Cloud API webhook (Meta)",
+            "HMAC verify + x-hub-signature check",
+            "Redis-backed dedup (message-id hash, TTL window)",
           ],
         },
         {
-          name: "Intelligence",
-          items: ["Google Gemini AI", "Node.js (Webhooks)"],
+          name: "AI / Reconciliation",
+          items: [
+            "Gemini 2.0 Flash with function-calling (8 tools)",
+            "Receipt-image pipeline: download → Vision → structured JSON",
+            "Tool executor maps function calls to Prisma writes",
+            "Chat history windowed to last 10 turns per user",
+          ],
         },
         {
-          name: "Data & Ops",
-          items: ["Prisma ORM", "PostgreSQL (Supabase)", "Redis / Bull Queues"],
+          name: "Ledger",
+          items: [
+            "Prisma ORM + PostgreSQL (Supabase-hosted)",
+            "Transactions, Receivables, Payments, Party ledgers",
+            "Compound unique keys prevent double-entries",
+            "Tally XML export (voucher schema, GST fields)",
+          ],
+        },
+        {
+          name: "Interface",
+          items: [
+            "Next.js (App Router) web dashboard",
+            "WhatsApp text + media in 3 languages (en/hi/gu)",
+            "Daily reminder cron (Vercel scheduled)",
+          ],
         },
       ],
       description:
-        "An event-driven, WhatsApp-first architecture designed for simplicity and scalability in small business accounting.",
+        "A reconciliation pipeline dressed up as a WhatsApp bot: events in, idempotency-guarded tool-calls transform them into ledger writes, export back to accountants' formats. The interesting engineering is upstream of the UI — dedup, function-calling determinism, double-entry prevention.",
     },
+    keyMetrics: [
+      {
+        label: "Ingress dedup",
+        value: "< 1ms",
+        description:
+          "Redis-backed message-id hash lookup drops duplicate Meta webhooks before any LLM call",
+      },
+      {
+        label: "Tool calls",
+        value: "8",
+        description:
+          "Gemini function-calling surface: transactions, receivables, payments, ledgers, reminders",
+      },
+      {
+        label: "Languages",
+        value: "3",
+        description:
+          "Full i18n across English, Hindi, and Gujarati for both UI and bot responses",
+      },
+    ],
     features: [
       "Natural Language WhatsApp Bot: Record sales, purchases, and expenses like you talk.",
       "AI Receipt Processing: Send bill photos to WhatsApp - the AI extracts and records all details.",
