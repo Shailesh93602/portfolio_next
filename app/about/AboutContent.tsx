@@ -64,13 +64,15 @@ export default function AboutContent() {
                 variants={itemVariants}
                 className="text-text-secondary text-lg leading-relaxed"
               >
-                I&apos;m a Software Engineer from Bhavnagar, Gujarat. Right now
-                I&apos;m at ContextQA building developer tools — Chrome
-                extensions for automated web testing and accessibility auditing.
-                Before that I spent a year at eSparkBiz shipping features for
-                EdTech, e-commerce, and corporate training platforms. I like
-                working on systems where correctness matters: real-time sync,
-                auth flows, data pipelines.
+                I&apos;m a Software Engineer from Bhavnagar, Gujarat. At
+                ContextQA I&apos;ve shipped Chrome extensions with ~1,900 and
+                ~1,600 merged PRs — automated testing and WCAG accessibility
+                tooling. Before that I spent a year at eSparkBiz building
+                EdTech, e-commerce, and corporate training platforms. On the
+                side I work on distributed systems: Redis cluster adapters,
+                distributed locks with Redlock, circuit breakers with opossum,
+                and AI pipelines for OCR, vector search, and webhook
+                deduplication. I reach for correctness over convenience.
               </motion.p>
             </div>
 

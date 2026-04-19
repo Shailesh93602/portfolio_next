@@ -12,7 +12,7 @@ const faqSchema = {
       name: "Who is Shailesh Chaudhari?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Shailesh Chaudhari is a Software Engineer from Gujarat, India, specializing in full-stack web development. He currently works at ContextQA building developer tools and Chrome extensions using Next.js, React, Node.js, and TypeScript.",
+        text: "Shailesh Chaudhari is a Software Engineer from Gujarat, India. He works at ContextQA building Chrome extensions with ~1,900 and ~1,600 merged PRs. He specializes in distributed systems (Redis cluster adapters, distributed locks, circuit breakers), AI pipelines (Gemini OCR, vector search), and full-stack web development with TypeScript, React, Next.js, and Node.js.",
       },
     },
     {

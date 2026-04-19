@@ -25,27 +25,40 @@ export default function HirePage() {
         <div className="prose prose-invert mx-auto max-w-3xl">
           <h1>Hire {BLOG_AUTHOR.name}</h1>
           <p>
-            I&apos;m a Software Engineer who builds full-stack web applications,
-            Chrome extensions, and real-time systems. I write TypeScript, ship
-            fast, and don&apos;t disappear after the first PR.
+            Software Engineer currently at ContextQA, where I&apos;ve shipped
+            Chrome extensions with ~1,900 and ~1,600 merged PRs — automated
+            testing and WCAG accessibility tooling. I build distributed systems
+            (Redis cluster adapters, Redlock, circuit breakers), AI pipelines
+            (Gemini OCR, vector search, webhook deduplication), and full-stack
+            web apps. TypeScript everywhere, correctness first.
           </p>
 
           <h2>What I work on</h2>
           <ul>
             <li>
-              Full-stack web apps — Next.js frontend, Node.js / Express backend
+              Full-stack web apps — Next.js + Node.js / NestJS, Prisma,
+              PostgreSQL
             </li>
             <li>
-              Chrome extensions (content scripts, service workers, backend APIs)
+              Chrome extensions — content scripts, service workers, DevTools
+              panels, backend APIs
             </li>
             <li>
-              Real-time features — Socket.io, Redis pub/sub, event-driven queues
+              Real-time systems — Socket.io with Redis adapter for horizontal
+              scaling, distributed locks
             </li>
             <li>
-              Performance work — Core Web Vitals, bundle analysis, edge caching
+              AI integrations — Gemini AI, pgvector semantic search, OCR
+              pipelines, webhook deduplication
             </li>
-            <li>Database design — PostgreSQL, MongoDB, Prisma, Supabase</li>
-            <li>API integrations — REST, third-party SDKs, WebSockets</li>
+            <li>
+              Performance — Core Web Vitals, bundle analysis, ISR vs edge
+              caching, AVIF optimization
+            </li>
+            <li>
+              Database design — PostgreSQL (RBAC, RLS), MongoDB, Prisma,
+              Supabase
+            </li>
           </ul>
 
           <h2>How I work</h2>

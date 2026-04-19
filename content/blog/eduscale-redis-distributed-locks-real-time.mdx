@@ -1,0 +1,185 @@
+---
+title: "Building Real-Time Coding Battles: Redis Cluster + Distributed Locks at Sub-200ms"
+subtitle: "How EduScale uses @socket.io/redis-adapter, Redlock, and opossum to coordinate competitive coding sessions across multiple server instances"
+description: "A deep technical walkthrough of EduScale's real-time architecture: why we chose the Redis adapter over raw pub/sub, the race condition that would have corrupted battle state without distributed locks, and what opossum saved us from."
+image: "/Images/portfolio1.png"
+date: "2026-05-01"
+readTime: "14 min read"
+featured: true
+tags:
+  - "Redis"
+  - "Socket.io"
+  - "Distributed Systems"
+  - "Node.js"
+  - "Real-Time"
+  - "Architecture"
+  - "Circuit Breaker"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "Redis distributed lock"
+  - "Redlock Node.js"
+  - "socket.io redis adapter"
+  - "opossum circuit breaker"
+  - "real-time architecture"
+  - "distributed systems Node.js"
+  - "EduScale architecture"
+---
+
+    <div class="tldr">
+      <strong>TL;DR:</strong> EduScale runs competitive coding battles across multiple Node.js instances. This post explains why naive Socket.io breaks under horizontal scaling, how <code>@socket.io/redis-adapter</code> fixes cross-instance message delivery, why two users simultaneously joining the same battle without a distributed lock causes corrupted state, and what <code>opossum</code> does when the external judge service is slow.
+    </div>
+
+    <h2>The Problem: Why Polling Was Wrong</h2>
+
+    <!-- TODO: Describe the initial naive approach — HTTP polling every N seconds.
+    What was the latency? What did it feel like to players? What load did it put on the server?
+    Be specific: e.g., "We started with 2-second polling. At 50 concurrent battles that's 50 req/s
+    of pure overhead. Players felt the lag on attack confirmations." -->
+
+    <p>[FILL IN: Describe why you moved from polling to WebSockets. What was the breaking point?]</p>
+
+    <h2>The Socket Architecture</h2>
+
+    <h3>Socket.io Rooms</h3>
+
+    <!-- TODO: Explain how rooms map to battles. Each battle = one room. Players join via join_room event.
+    What does the room state object look like? What events flow through the room? -->
+
+    <p>[FILL IN: room structure, join_room handler, the room_update broadcast]</p>
+
+    <h3>Why @socket.io/redis-adapter</h3>
+
+    <!-- TODO: The key insight: Socket.io rooms only work within a single process.
+    When you scale to 2+ instances, a player on instance A and a player on instance B
+    are in the same "room" logically, but Socket.io doesn't know that.
+    The Redis adapter fixes this by using Redis pub/sub to relay events across instances.
+
+    Describe: the two Redis clients (pub and sub), why they must be SEPARATE connections
+    (Redis doesn't allow a subscribed connection to send commands), the adapter config. -->
+
+    <pre><code>
+
+// TODO: Paste the actual adapter setup code from src/server.js
+const pubClient = createClient({ url: REDIS_URL });
+const subClient = pubClient.duplicate();
+io.adapter(createAdapter(pubClient, subClient));
+</code></pre>
+
+    <h3>Reconnect Logic</h3>
+
+    <!-- TODO: What happens when a player disconnects mid-battle?
+    Do you restore their room membership? How long do you wait before removing them from the battle? -->
+
+    <p>[FILL IN: reconnect window, how you restore room state]</p>
+
+    <h2>The Race Condition</h2>
+
+    <!-- TODO: THIS IS THE MOST IMPORTANT SECTION.
+    Describe the exact scenario: two players click "Start Battle" at the same millisecond.
+    Both instances read the battle state as PENDING. Both write ACTIVE. Result: two separate
+    battles start for what should be one shared session. OR: both players get assigned as "host"
+    and the game has two hosts trying to set the first challenge.
+
+    Be specific about what actually corrupted — scores? player count? challenge assignment?
+    How did you discover this was happening? (race conditions are usually invisible until load) -->
+
+    <p>[FILL IN: the exact race condition scenario and what it corrupted]</p>
+
+    <h2>The Redlock Solution</h2>
+
+    <!-- TODO: Explain the algorithm at a high level (why it's more than just SET NX EX).
+    Then show your specific config and explain each parameter. -->
+
+    <pre><code>
+
+// TODO: Paste the actual Redlock instantiation
+const redlock = new Redlock([redisClient], {
+retryCount: 0, // TODO: explain WHY 0 — don't want to queue, want to skip
+retryDelay: 200,
+driftFactor: 0.01,
+});
+</code></pre>
+
+    <!-- TODO: Show the tryTick() function — the pattern where you:
+    1. Try to acquire the lock
+    2. If acquired: do the work, then release in finally{}
+    3. If lock throws (another instance holds it): skip silently
+
+    Explain WHY retryCount:0 — in a real-time game, a tick that fires 200ms late is worse
+    than a tick that doesn't fire. Skipping is the right behavior. -->
+
+    <pre><code>
+
+// TODO: Paste the tryTick() function
+</code></pre>
+
+    <h3>Why Not Just SET NX EX?</h3>
+
+    <!-- TODO: The standard Redis distributed lock uses SET key value NX EX ttl.
+    Redlock's advantage: it works correctly even when Redis has clock drift or a node fails.
+    The fencing token approach prevents a lock holder that ran too long from corrupting state
+    even after the TTL expires and another holder has taken over.
+
+    Did you actually need this? Or was single-node Redis fine and Redlock was belt-and-suspenders? -->
+
+    <p>[FILL IN: why Redlock vs raw SET NX — and be honest if it was precautionary]</p>
+
+    <h2>The Circuit Breaker</h2>
+
+    <!-- TODO: What external service does opossum wrap?
+    Options: the code judge (HackerEarth/Judge0/custom), a problem fetch endpoint, etc.
+
+    Describe: the specific failure mode (what happens when the judge is slow/down?),
+    the opossum config (timeout, errorThresholdPercentage, resetTimeout),
+    what the fallback does (return cached problem? skip judge and allow all answers? surface an error?) -->
+
+    <pre><code>
+
+// TODO: Paste the opossum configuration
+const breaker = new CircuitBreaker(callJudgeService, {
+timeout: 3000,
+errorThresholdPercentage: 50,
+resetTimeout: 30000,
+});
+breaker.fallback(() => {/* TODO: what does your fallback do? */});
+</code></pre>
+
+    <!-- TODO: Did the circuit breaker ever trip in testing or production?
+    What did users experience when it did? This is the most credible part of the story. -->
+
+    <p>[FILL IN: whether the breaker ever actually tripped, what users saw]</p>
+
+    <h2>What Broke in Production</h2>
+
+    <!-- TODO: THIS SECTION IS CRITICAL FOR CREDIBILITY. Don't skip it.
+    Real engineers make mistakes. Describing a specific production incident shows systems thinking.
+
+    Options:
+    - The Redis adapter connection dropping and cross-instance events silently not delivering
+    - A Redlock TTL that was too short causing double-tick corruptions at high load
+    - The opossum fallback that returned stale data and caused scoring inconsistencies
+    - Socket.io version incompatibility with the adapter version
+
+    Be honest. Describe what happened, how you noticed it, how you fixed it. -->
+
+    <p>[FILL IN: one specific thing that broke and how you diagnosed + fixed it]</p>
+
+    <h2>What I'd Do Differently</h2>
+
+    <!-- TODO: Genuine architectural reflection. Options:
+    - Redis Streams instead of pub/sub for durability (events aren't lost if a subscriber is down)
+    - Turning the battle state into an event log instead of mutable shared state
+    - Separating the tick service into its own process with a different scaling strategy
+    - Using a managed Redis cluster vs single instance -->
+
+    <p>[FILL IN: 2-3 specific architectural choices you'd reconsider and why]</p>
+
+    <h2>Takeaways</h2>
+
+    <ul>
+      <li><strong>Socket.io rooms don't scale horizontally without the Redis adapter.</strong> This is obvious in retrospect but not obvious the first time you add a second server instance.</li>
+      <li><strong>Distributed locks require careful TTL design.</strong> Too short and you get double-fire. Too long and a crashed lock holder blocks progress for the full TTL.</li>
+      <li><strong>retryCount:0 is the right choice for game ticks.</strong> A delayed tick is worse than a skipped tick in a real-time game context.</li>
+      <li><strong>Circuit breakers need realistic fallbacks.</strong> A fallback that surfaces an error is better than a fallback that silently returns wrong data.</li>
+      <li>[FILL IN: your own takeaway from what actually broke]</li>
+    </ul>

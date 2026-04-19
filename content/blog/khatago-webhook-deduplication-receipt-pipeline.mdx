@@ -1,0 +1,196 @@
+---
+title: "Why WhatsApp Webhooks Need Deduplication: Building KhataGO's Receipt Pipeline"
+subtitle: "Meta sends the same webhook event multiple times. Here's how KhataGO uses message ID hashing and Redis TTL windows to make the OCR-to-ledger pipeline idempotent end to end."
+description: "A technical walkthrough of KhataGO's receipt processing pipeline: webhook deduplication with Redis, Gemini AI OCR extraction, Tally XML generation, and the idempotency patterns that prevent double-posted ledger entries at every layer."
+image: "/Images/portfolio1.png"
+date: "2026-06-15"
+readTime: "12 min read"
+featured: true
+tags:
+  - "Webhooks"
+  - "Redis"
+  - "AI"
+  - "Node.js"
+  - "Architecture"
+  - "Fintech"
+  - "Idempotency"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "WhatsApp webhook deduplication"
+  - "Gemini AI OCR"
+  - "Tally XML"
+  - "webhook idempotency"
+  - "receipt processing pipeline"
+  - "KhataGO"
+  - "WhatsApp Business API"
+---
+
+    <div class="tldr">
+      <strong>TL;DR:</strong> Meta's WhatsApp Business API sends duplicate webhook events — it's documented behavior, not a bug. KhataGO deduplicates using message ID hashing + Redis TTL. The OCR pipeline (image → Gemini → JSON → ledger entry) has its own idempotency at every layer. This post explains why each layer needs its own deduplication, not just the first.
+    </div>
+
+    <h2>The Webhook Problem</h2>
+
+    <!-- TODO: Meta explicitly documents that the same message event can be delivered
+    multiple times. Describe the specific scenario:
+    - User sends a receipt photo on WhatsApp
+    - Meta delivers the webhook once, your server acknowledges with 200
+    - Meta delivers the same webhook again (retry logic, or just duplicates)
+    - Without deduplication: same receipt is OCR'd twice, same ledger entry posted twice
+
+    How often does this actually happen? (Meta says within a few seconds of the first delivery)
+    What's the business impact of a duplicate ledger entry in accounting software?
+    This is the key: in fintech, duplicates aren't a nuisance — they corrupt books. -->
+
+    <p>[FILL IN: how often Meta sends duplicates and the specific business impact on KhataGO's users]</p>
+
+    <h2>The Deduplication Implementation</h2>
+
+    <!-- TODO: Show the actual deduplication logic. The pattern:
+    1. Extract message_id from the webhook payload (Meta provides this)
+    2. Hash it (SHA256 or just use it directly — message IDs are already unique enough)
+    3. Check Redis: has this message_id been processed?
+    4. If yes: return 200 (acknowledge) but skip processing
+    5. If no: set Redis key with TTL, then process
+
+    Key question: what TTL do you use? Too short and a genuine re-delivery after a server restart
+    gets processed twice. Too long and you're holding Redis memory for old message IDs.
+    What was your reasoning for the value you chose? -->
+
+    <pre><code>
+
+// TODO: Paste the actual deduplication middleware/function
+async function isDuplicate(messageId: string): Promise<boolean> {
+const key = `processed:whatsapp:${messageId}`;
+const result = await redis.set(key, '1', 'NX', 'EX', /_ TODO: your TTL _/);
+return result === null; // null means key already existed
+}
+</code></pre>
+
+    <!-- TODO: Why SET NX EX instead of GET then SET?
+    The GET-then-SET pattern has a TOCTOU race condition:
+    two webhook deliveries arriving simultaneously both GET (key doesn't exist),
+    both SET, both process.
+    SET NX is atomic — only one writer wins. -->
+
+    <p>[FILL IN: why SET NX vs GET-then-SET, and whether you ever hit the race in practice]</p>
+
+    <h2>The OCR Pipeline</h2>
+
+    <h3>Stage 1: Image → Gemini</h3>
+
+    <!-- TODO: Describe the Gemini AI call:
+    - What prompt do you send? (You can share the actual prompt structure)
+    - What does the response look like before and after structured parsing?
+    - What can go wrong here? (Gemini returns "I can't read this image", bad JSON, partial extraction)
+    - How do you handle Gemini API errors? Rate limits? Timeouts?
+
+    This is the most novel part of the pipeline — be specific. -->
+
+    <pre><code>
+
+// TODO: Show the Gemini prompt structure and response parsing
+const response = await gemini.generateContent({
+contents: [{
+parts: [
+{ inlineData: { mimeType: 'image/jpeg', data: base64Image } },
+{ text: `/* TODO: paste your actual extraction prompt */` }
+]
+}]
+});
+</code></pre>
+
+    <h3>Stage 2: JSON → Validation</h3>
+
+    <!-- TODO: What fields does Gemini extract?
+    (vendor name, amount, date, GST number, line items, currency)
+    What validation do you run before accepting the extraction?
+    What happens when a required field is missing or the amount is non-numeric?
+    Did you build a confidence threshold or retry logic for low-quality extractions? -->
+
+    <pre><code>
+
+// TODO: Show the validation schema for the extracted receipt data
+interface ExtractedReceipt {
+vendor: string;
+amount: number;
+date: string; // TODO: what format? ISO? Indian DD/MM/YYYY?
+gstNumber?: string;
+lineItems?: Array<{ description: string; amount: number }>;
+}
+</code></pre>
+
+    <h3>Stage 3: JSON → Tally XML</h3>
+
+    <!-- TODO: THIS IS THE MOST TECHNICALLY INTERESTING SECTION.
+    Tally's XML import format is non-obvious. Describe:
+    - The XML schema you output (VOUCHER element, LEDGER entries, AMOUNT formatting)
+    - The date format issue (Tally uses DD-MMM-YYYY like "17-Apr-2026", not ISO)
+    - The ledger name lookup — how do you map a vendor name from OCR to an existing Tally ledger name?
+      (This is a hard problem: OCR might return "RELIANCE FRESH" but Tally has "Reliance Fresh Pvt Ltd")
+    - GST fields: TAXABLE_AMOUNT, CGST, SGST, IGST — how do you compute/include these?
+    - What happens if the Tally XML is malformed? Does Tally give useful error messages?
+
+    Concrete example XML output is extremely valuable here. -->
+
+    <pre><code>
+
+&lt;!-- TODO: Paste a real example of the Tally XML your pipeline generates --&gt;
+&lt;ENVELOPE&gt;
+&lt;HEADER&gt;
+&lt;TALLYREQUEST&gt;Import Data&lt;/TALLYREQUEST&gt;
+&lt;/HEADER&gt;
+&lt;BODY&gt;
+&lt;IMPORTDATA&gt;
+&lt;REQUESTDESC&gt;
+&lt;REPORTNAME&gt;Vouchers&lt;/REPORTNAME&gt;
+&lt;/REQUESTDESC&gt;
+&lt;REQUESTDATA&gt;
+&lt;TALLYMESSAGE&gt;
+&lt;VOUCHER VCHTYPE="Purchase"&gt;
+&lt;DATE&gt;&lt;!-- TODO: DD-MMM-YYYY --&gt;&lt;/DATE&gt;
+&lt;PARTYLEDGERNAME&gt;&lt;!-- TODO: vendor --&gt;&lt;/PARTYLEDGERNAME&gt;
+&lt;AMOUNT&gt;&lt;!-- TODO: negative for credit --&gt;&lt;/AMOUNT&gt;
+&lt;/VOUCHER&gt;
+&lt;/TALLYMESSAGE&gt;
+&lt;/REQUESTDATA&gt;
+&lt;/IMPORTDATA&gt;
+&lt;/BODY&gt;
+&lt;/ENVELOPE&gt;
+</code></pre>
+
+    <h2>Idempotency at Every Layer</h2>
+
+    <!-- TODO: Explain why deduplication at the webhook layer isn't sufficient.
+    The pipeline has multiple stages, each of which can fail and retry:
+    1. Webhook received → message_id deduplicated ✓
+    2. OCR job enqueued (Bull queue) → what if the job fails and retries?
+    3. Gemini call made → what if you retry after a timeout and Gemini already processed it?
+    4. Ledger entry created → what prevents creating the same entry twice if the DB write fails
+       after Gemini succeeds?
+
+    Show how you handle idempotency at each stage. A job_id that maps to a message_id
+    is a common pattern. -->
+
+    <p>[FILL IN: how you ensure at-most-once processing at each pipeline stage, not just the webhook entry]</p>
+
+    <h2>What I'd Handle Differently at 10x Scale</h2>
+
+    <!-- TODO: Genuine engineering reflection. Options:
+    - Replace Bull queue with a persistent message queue (SQS, Redis Streams) for durability
+    - Add a dead letter queue for receipts that fail extraction after N retries
+    - Build an "uncertainty" flow: when Gemini isn't confident, ask the user to confirm
+    - Store raw webhook payloads for replay (invaluable when you find a parsing bug)
+    - The ledger name fuzzy matching problem — proper solution is a Tally API lookup -->
+
+    <p>[FILL IN: 2-3 specific architectural changes you'd make under higher load or stricter correctness requirements]</p>
+
+    <h2>Takeaways</h2>
+
+    <ul>
+      <li><strong>Assume every webhook will be delivered at least twice.</strong> Meta documents this. Build idempotency first.</li>
+      <li><strong>SET NX EX is the right deduplication primitive.</strong> GET-then-SET has a race condition; SET NX is atomic.</li>
+      <li><strong>Idempotency must be enforced at every stage, not just the entry point.</strong> A failure at stage 3 that retries from stage 1 will re-run stages 1 and 2.</li>
+      <li><strong>Tally's date format will burn you.</strong> It does not accept ISO dates. Test this before production.</li>
+      <li>[FILL IN: your specific hardest-won lesson from building this pipeline]</li>
+    </ul>

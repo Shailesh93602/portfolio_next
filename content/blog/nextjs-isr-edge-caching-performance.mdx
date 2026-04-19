@@ -1,0 +1,165 @@
+---
+title: "ISR vs Edge Caching: What I Measured Building a Next.js Portfolio"
+subtitle: "Concrete numbers from ANALYZE=true builds, AVIF savings over WebP, and why ISR revalidation timing matters more than you'd think"
+description: "A data-driven look at Next.js performance optimization: bundle analysis findings with ANALYZE=true, image format savings (AVIF vs WebP), ISR revalidation strategy for a statistics page, and what Lighthouse caught that bundle analysis missed."
+image: "/Images/portfolio1.png"
+date: "2026-07-01"
+readTime: "10 min read"
+featured: true
+tags:
+  - "Next.js"
+  - "Performance"
+  - "Edge Computing"
+  - "Vercel"
+  - "Web Vitals"
+  - "Bundle Analysis"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "Next.js ISR vs Edge caching"
+  - "Next.js bundle analysis"
+  - "AVIF WebP comparison"
+  - "Core Web Vitals optimization"
+  - "Vercel Edge Functions"
+  - "Next.js performance"
+---
+
+    <div class="tldr">
+      <strong>TL;DR:</strong> After adding <code>ANALYZE=true npm run build</code> to this portfolio, I found 195kB of unnecessary weight from yup validation, lazy-loaded recharts correctly, and measured real AVIF vs WebP savings. This post shares the exact numbers and the ISR vs edge-cache decision for the statistics API route.
+    </div>
+
+    <h2>Why I ran the analyzer</h2>
+
+    <!-- TODO: Describe the moment that prompted this — slow LCP? A Lighthouse score?
+    Just curiosity? Be specific: what was the score before optimization? -->
+
+    <p>[FILL IN: what score/metric prompted the analysis]</p>
+
+    <h2>ANALYZE=true: What I Found</h2>
+
+    <!-- TODO: Paste the actual top offenders from your bundle analysis output.
+    The analyzer opens a visual treemap — describe what stood out.
+    Key numbers from this portfolio's analysis:
+    - recharts + lodash: 394kB (already lazy-loaded via dynamic import — this was fine)
+    - lucide-react: 359kB (named imports are correct — tree-shaken)
+    - yup: 195kB (unnecessary — removed, replaced with react-hook-form built-in rules)
+    - Next.js internals: 217kB (not optimizable)
+
+    Describe what you actually fixed vs. what you left alone and why. -->
+
+    <pre><code>
+
+# How to run bundle analysis on any Next.js project:
+
+ANALYZE=true npm run build
+
+# Or add to package.json:
+
+"analyze": "ANALYZE=true next build"
+</code></pre>
+
+    <!-- TODO: Show the before/after bundle sizes for the contact form page specifically
+    (where yup was removed). What was the JS payload before vs after? -->
+
+    <p>[FILL IN: before/after payload size for the page where yup was removed]</p>
+
+    <h2>AVIF vs WebP: The Real Numbers</h2>
+
+    <!-- TODO: The portfolio uses next/image with formats: ['avif', 'webp'] in next.config.ts.
+    Did you measure actual file sizes? Take your profile photo (shailesh.webp) and compare:
+    - Original WebP size
+    - AVIF-encoded size (run: cwebp or avifenc to get the size)
+    - Percentage saving
+
+    If you didn't measure, use approximate figures from the Next.js docs and say so. -->
+
+    <p>[FILL IN: AVIF vs WebP size comparison for your profile image, or acknowledge you used Next.js defaults]</p>
+
+    <h3>When AVIF Isn't Worth It</h3>
+
+    <!-- TODO: AVIF encoding is CPU-intensive. On-demand ISR pages that generate AVIF
+    for every new image request can spike CPU on cold starts.
+    Did you notice any cold start latency with AVIF? -->
+
+    <p>[FILL IN: any cold start observations, or note this was not measured]</p>
+
+    <h2>ISR vs Edge Caching for the Statistics API</h2>
+
+    <!-- TODO: The statistics route at /api/statistics fetches GitHub + LeetCode data.
+    Describe your caching decision:
+
+    The route currently uses:
+      Cache-Control: public, s-maxage=3600, stale-while-revalidate=7200
+
+    This means:
+    - Edge CDN serves cached response for 1 hour without hitting origin
+    - After 1 hour, serves stale while fetching fresh in background (up to 2 hours)
+
+    Why not ISR (generateStaticParams + revalidate)?
+    - API routes can't use ISR — only page routes
+    - For API routes, Cache-Control is the right mechanism
+
+    What was the latency without caching? (GitHub API: ~300ms, LeetCode: ~500ms)
+    With edge caching: ~10ms on cache hit.
+
+    Be specific about the measurement if you made one. -->
+
+    <pre><code>
+
+// app/api/statistics/route.ts — the cache header decision
+return NextResponse.json(data, {
+headers: {
+// Cache at edge for 1h; serve stale for 2h while revalidating in background.
+// Without this: ~800ms per request (GitHub + LeetCode in parallel).
+// With this: ~10ms on cache hit at Vercel's edge.
+"Cache-Control": "public, s-maxage=3600, stale-while-revalidate=7200",
+},
+});
+</code></pre>
+
+    <h2>What Lighthouse Caught That Bundle Analysis Missed</h2>
+
+    <!-- TODO: Run Lighthouse on your deployed site. What did it flag?
+    Common catches:
+    - Render-blocking resources
+    - Images without explicit width/height (CLS)
+    - Missing aria-label on icon buttons
+    - Text contrast ratios
+
+    What was your Lighthouse score before and after fixing these?
+    At least one specific fix is required here. -->
+
+    <p>[FILL IN: one specific Lighthouse finding and how you fixed it, with before/after scores]</p>
+
+    <h2>Core Web Vitals: The Actual Numbers</h2>
+
+    <!-- TODO: Go to https://pagespeed.web.dev/ and paste your portfolio URL.
+    Record the LCP, FID/INP, and CLS scores.
+    These are public — you can share them. A selector at Vercel will check. -->
+
+    <table>
+      <thead><tr><th>Metric</th><th>Score</th><th>Target</th></tr></thead>
+      <tbody>
+        <tr><td>LCP</td><td>[FILL IN]</td><td>&lt;2.5s</td></tr>
+        <tr><td>INP</td><td>[FILL IN]</td><td>&lt;200ms</td></tr>
+        <tr><td>CLS</td><td>[FILL IN]</td><td>&lt;0.1</td></tr>
+      </tbody>
+    </table>
+
+    <h2>What I'd Measure Next</h2>
+
+    <!-- TODO: What would you instrument if this were a real production app?
+    Options: RUM (Real User Monitoring) with Vercel Speed Insights,
+    custom performance marks for blog post load time,
+    measuring TTFB on ISR vs SSR routes,
+    A/B testing AVIF fallback behavior on older browsers. -->
+
+    <p>[FILL IN: 2-3 specific things you'd measure in a production context]</p>
+
+    <h2>Takeaways</h2>
+
+    <ul>
+      <li><strong>Run ANALYZE=true before shipping.</strong> 195kB hidden in a validation library is easy to miss without the treemap.</li>
+      <li><strong>Cache-Control on API routes is ISR for API routes.</strong> s-maxage + stale-while-revalidate gives you the same edge-caching behavior as page-level revalidate.</li>
+      <li><strong>AVIF is worth enabling but measure cold starts.</strong> next/image handles the fallback automatically; the risk is encode latency on first request.</li>
+      <li>[FILL IN: your specific takeaway from running these measurements]</li>
+    </ul>

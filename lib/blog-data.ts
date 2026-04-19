@@ -64,6 +64,10 @@ export const BLOG_SLUGS: string[] = [
   "tailwindcss-nextjs-faster-ui-development",
   "getting-started-shadcn-ui-modern-react-applications",
   "best-practices-api-development-express-nestjs",
+  // DRAFTS — uncomment each slug after filling in [FILL IN:] placeholders in content/blog/<slug>.mdx
+  // "eduscale-redis-distributed-locks-real-time",
+  // "postgres-rbac-eduscale-permissions",
+  // "khatago-webhook-deduplication-receipt-pipeline",
 ];
 
 function loadPost(slug: string): BlogPost | null {

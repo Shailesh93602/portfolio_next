@@ -1,0 +1,191 @@
+---
+title: "Role-Based Access Control in Postgres: How EduScale Manages Permissions Without Code Changes"
+subtitle: "A practical walkthrough of schema-driven RBAC with a Postgres query that checks permission in one round trip, and when to use Row Level Security instead"
+description: "EduScale supports students, teachers, and admins with different permissions per feature per plan tier. This post shows how a normalized RBAC schema handles that in Postgres without if/else chains in application code — and when RLS is a better answer."
+image: "/Images/portfolio1.png"
+date: "2026-06-01"
+readTime: "11 min read"
+featured: true
+tags:
+  - "PostgreSQL"
+  - "Database"
+  - "Security"
+  - "Architecture"
+  - "Backend"
+  - "NestJS"
+  - "Prisma"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "Postgres RBAC"
+  - "Row Level Security"
+  - "role-based access control PostgreSQL"
+  - "Postgres permissions"
+  - "multi-tenant SaaS permissions"
+  - "NestJS authorization"
+  - "Prisma permissions"
+---
+
+    <div class="tldr">
+      <strong>TL;DR:</strong> Hardcoding <code>if (user.role === 'admin')</code> throughout your codebase is a maintenance trap. EduScale uses a normalized <code>Role → Permission → Feature</code> schema that lets you add or revoke permissions with a database row, not a deployment. This post shows the schema, the single-query permission check, and when Postgres Row Level Security is a better fit.
+    </div>
+
+    <h2>The Problem with if/else Permission Checks</h2>
+
+    <!-- TODO: Describe the moment you realized permission logic was getting out of hand.
+    Example: you added a "premium" plan tier and had to add plan checks to 15 different
+    API endpoints. Or a teacher accidentally got admin access because a condition was wrong
+    in one of the 20 places it appeared. Be specific. -->
+
+    <p>[FILL IN: the specific pain point that motivated the RBAC refactor]</p>
+
+    <h3>Why Application-Level Checks Don't Scale</h3>
+
+    <ul>
+      <li><strong>Scattered logic:</strong> Every endpoint independently checks <code>user.role</code>. One missing check = security hole.</li>
+      <li><strong>Plan-tier explosions:</strong> Adding "pro tier" means auditing every permission check in the codebase.</li>
+      <li><strong>Testing surface:</strong> You have to test every role × every endpoint combination. A schema check is one test.</li>
+      <li>[FILL IN: the specific case in EduScale that motivated this]</li>
+    </ul>
+
+    <h2>The Schema</h2>
+
+    <!-- TODO: Show the actual Prisma schema (or SQL DDL) for your RBAC tables.
+    The key entities are: Role, Permission, Feature (or Resource), and a join table.
+    If you also have plan tiers (free/premium), show how those interact with roles. -->
+
+    <pre><code>
+
+-- TODO: Paste the actual schema
+-- Example structure (replace with yours):
+CREATE TABLE roles (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+name TEXT NOT NULL UNIQUE -- 'student', 'teacher', 'admin'
+);
+
+CREATE TABLE features (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+slug TEXT NOT NULL UNIQUE -- 'battle:create', 'problem:edit', 'analytics:view'
+);
+
+CREATE TABLE role_permissions (
+role_id UUID REFERENCES roles(id),
+feature_id UUID REFERENCES features(id),
+PRIMARY KEY (role_id, feature_id)
+);
+</code></pre>
+
+    <!-- TODO: Explain the design decisions:
+    - Why TEXT slugs for features vs. integer IDs (readability in queries, easier seeding)
+    - Whether you have an "action" column (read/write/delete) or just feature-level grants
+    - How plan tiers interact — do roles have a plan_tier column or is that a separate table? -->
+
+    <p>[FILL IN: the key design decisions and why]</p>
+
+    <h2>The Single-Query Permission Check</h2>
+
+    <!-- TODO: Show the actual Postgres query (or Prisma query) that checks whether
+    a user has a given permission in one round trip. The goal is: does user X have
+    permission to do feature Y? Without N+1 queries.
+
+    This is the highest-value part of the post for Supabase readers. -->
+
+    <pre><code>
+
+-- TODO: Paste your actual permission check query
+-- Something like:
+SELECT EXISTS (
+SELECT 1
+FROM users u
+JOIN roles r ON r.id = u.role_id
+JOIN role_permissions rp ON rp.role_id = r.id
+JOIN features f ON f.id = rp.feature_id
+WHERE u.id = $1
+AND f.slug = $2
+) AS has_permission;
+</code></pre>
+
+    <!-- TODO: Explain the index strategy — what indexes make this query fast?
+    An index on (role_id, feature_id) in role_permissions and on features.slug
+    turns this into an index scan, not a seq scan. Did you measure the difference? -->
+
+    <p>[FILL IN: which indexes you added and whether you checked EXPLAIN ANALYZE]</p>
+
+    <h3>Using This in NestJS / Prisma</h3>
+
+    <!-- TODO: Show how you wire this into a NestJS Guard or decorator.
+    The pattern: a @RequiresPermission('battle:create') decorator that reads the
+    current user's role, runs the permission check, and returns 403 if denied. -->
+
+    <pre><code>
+
+// TODO: Paste your NestJS Guard or permission decorator
+</code></pre>
+
+    <h2>Row Level Security: When It's a Better Answer</h2>
+
+    <!-- TODO: THIS IS THE SECTION SUPABASE READERS CARE MOST ABOUT.
+    Explain the difference between application-level RBAC and Postgres RLS:
+    - RLS: enforced at the database layer, can't be bypassed by application bugs
+    - RBAC in application: more flexible, easier to test, but one misconfigured query = data leak
+
+    When did you consider RLS for EduScale? Did you use it anywhere?
+    If you didn't use it, explain honestly why (e.g., Prisma's limited RLS support,
+    complexity of setting up row-level policies for dynamic role assignments). -->
+
+    <h3>The RLS Version of the Same Policy</h3>
+
+    <pre><code>
+
+-- TODO: Show what the equivalent RLS policy would look like in Postgres
+-- This is a concrete Supabase-style example:
+CREATE POLICY "Users can only see their own battles"
+ON battles
+FOR SELECT
+USING (auth.uid() = user_id);
+
+-- A more complex policy for role-based access:
+CREATE POLICY "Teachers can see all battles in their course"
+ON battles
+FOR SELECT
+USING (
+EXISTS (
+SELECT 1 FROM course_teachers ct
+WHERE ct.teacher_id = auth.uid()
+AND ct.course_id = battles.course_id
+)
+);
+</code></pre>
+
+    <!-- TODO: Explain why you chose application-level RBAC over RLS (or vice versa).
+    Common reasons for application-level:
+    - Dynamic permission assignment without schema changes
+    - Easier to test in isolation (no database required)
+    - Prisma doesn't support RLS policies natively
+
+    When RLS wins:
+    - Multi-tenant data isolation (each tenant's rows truly can't leak to another tenant)
+    - Compliance requirements where "cannot be bypassed by application" is required -->
+
+    <p>[FILL IN: your specific reasoning for the approach you chose]</p>
+
+    <h2>What I'd Do Differently for Multi-Tenant SaaS</h2>
+
+    <!-- TODO: If EduScale were a fully multi-tenant SaaS (each "school" is a tenant),
+    how would you restructure the permissions model?
+
+    Key considerations:
+    - Tenant-scoped roles (admin of school A shouldn't affect school B)
+    - RLS for row-level tenant isolation vs. application-level tenant_id checks
+    - The "confused deputy" problem with service accounts -->
+
+    <p>[FILL IN: 2-3 specific changes you'd make for true multi-tenancy]</p>
+
+    <h2>Takeaways</h2>
+
+    <ul>
+      <li><strong>A normalized RBAC schema lets you change permissions without a deployment.</strong> This matters when a client calls and needs a role adjusted immediately.</li>
+      <li><strong>One indexed JOIN query beats 20 scattered if/else checks.</strong> It's also one test to write.</li>
+      <li><strong>RLS is the right default for multi-tenant data isolation.</strong> Application-level checks are easier to accidentally bypass.</li>
+      <li><strong>Prisma's RLS support is limited — plan for this before you commit to it.</strong> You'll need raw queries for complex policies.</li>
+      <li>[FILL IN: your specific lesson from building this in EduScale]</li>
+    </ul>

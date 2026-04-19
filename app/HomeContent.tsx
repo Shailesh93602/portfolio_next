@@ -83,11 +83,11 @@ export default function HomeContent({ featuredPosts }: Props) {
             </div>
 
             <p className="text-text-secondary text-lg leading-relaxed">
-              Software Engineer at ContextQA, building developer tools and
-              Chrome extensions used in production. I&apos;ve shipped full-stack
-              features across 6+ projects — EdTech platforms, AI-powered tools,
-              real-time systems. TypeScript everywhere, performance from the
-              start.
+              Software Engineer at ContextQA building Chrome extensions with
+              ~1,900 and ~1,600 merged PRs. I work on real-time systems with
+              Redis cluster adapters, distributed locks, and circuit breakers —
+              and AI pipelines integrating OCR, vector search, and webhook
+              deduplication. TypeScript everywhere, correctness first.
             </p>
 
             <div className="flex flex-wrap gap-2">
