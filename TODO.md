@@ -82,13 +82,52 @@ Test-coverage audit found **61.75% line coverage** — below the configured 70% 
 
 ---
 
-## New items added this turn (2026-04-19)
+## Razorpay integration plan (2026-04-19)
 
-- **N1 — Fix `/statistics` dark theme axe violation** — 3 svg-img-alt nodes (likely in github-contribution-heatmap / recharts). Add `<title>` child or `aria-label` to the chart SVGs. *~30 min*
-- **N2 — Razorpay subscription integration into KhataGO** (replaces §5E if user picks the Razorpay pivot in MANUAL §2 + §3). Same pattern as stripe-payments-demo (HMAC verify + idempotency guard + retry) but against Razorpay's webhook schema. New `/api/razorpay/webhook` + `BillingAccount` Prisma model + `/pricing` page. *~1 week*
-- **N3 — stripe-payments-demo fixture replay endpoint** — `scripts/replay-webhook.mjs` generates a signed fake event and posts to `/api/webhook` locally. Makes the idempotency demo reproducible without a Stripe account. *~60 min*
-- **N4 — Razorpay-patterns-demo** (optional) — fork stripe-payments-demo, change signing algorithm (SHA-256 HMAC of JSON body vs Stripe's `Stripe-Signature` timestamp format), keep the idempotency + retry helpers. Gives a live-testable demo since Razorpay is accessible in India. *~4 hr*
-- **N5 — Fix blog E2E `article, main` locator ambiguity** — ✅ Done this turn (used `page.locator("article").first()`).
+User picked BOTH: keep standalone demos + integrate into flagships. Full plan at `drafts/RAZORPAY_PLAN.md`.
+
+**Phase 1 — `razorpay-patterns-demo` standalone repo** (~2-3 hr Claude work):
+
+- **R1a** — Bootstrap new repo at `~/Desktop/Coding/razorpay-patterns-demo` from stripe-payments-demo structure
+- **R1b** — `lib/razorpay.ts` — lazy client + HMAC-SHA256 webhook signature verifier (Razorpay doesn't ship a `constructEvent` like Stripe; we hand-roll)
+- **R1c** — `app/api/webhook/route.ts` — read raw body, verify `X-Razorpay-Signature`, SETNX idempotency, dispatch by event type
+- **R1d** — `app/api/order/route.ts` — create Razorpay order with caller-supplied receipt (idempotency key)
+- **R1e** — `scripts/replay-webhook.mjs` — fixture replay for local demo (no real Razorpay account needed to run)
+- **R1f** — Jest tests (~25): signature verify happy/tamper paths, SETNX collision, event dispatch, retry helpers
+- **R1g** — Landing page (`app/page.tsx`) — static sequence diagram + pattern explanation
+- **R1h** — Portfolio integration: new entry in `constants/projects.ts` (id: `razorpay-patterns-demo`) + new Showcase case-study component
+- **R1i** — Deploy docs in the repo README (blocks on user Razorpay account setup)
+
+**Phase 2 — KhataGO subscription billing** (blocks on Phase 1 deploy + user keys, ~1 week Claude):
+
+- **R2a** — Prisma migration for `BillingAccount` model (tier, razorpaySubscriptionId, status, period dates)
+- **R2b** — `/pricing` page (3 tiers: free / CA Portal ₹299 / Business ₹999)
+- **R2c** — `POST /api/razorpay/checkout` — create Razorpay Subscription, return subscription_id
+- **R2d** — Frontend Razorpay Checkout modal integration
+- **R2e** — `POST /api/razorpay/webhook` — handle 6 subscription events + payment.failed (subscription.activated/charged/cancelled/paused/resumed + payment.failed)
+- **R2f** — `/settings/billing` — current plan, charge history, cancel button
+- **R2g** — Feature-gate middleware (CA Portal routes reject free-tier with 402)
+- **R2h** — `scripts/create-razorpay-plans.mjs` — one-time seeder for CA Portal + Business plans (test mode)
+- **R2i** — Tests: webhook signature, idempotent event processing, state-machine transitions, feature-gate enforcement
+- **R2j** — Playwright E2E: subscribe → validate DB → cancel → re-subscribe
+- **R2k** — Reframe KhataGO case study on `/portfolio/khatago` to highlight the live Razorpay pipeline
+
+**Phase 3 — EduScale tournament entry fees** (blocks on Phase 2 pattern, ~4-5 days Claude):
+
+- **R3a** — Prisma migrations: `Tournament.entryFee` + `TournamentEntry { userId, tournamentId, razorpayOrderId, status }`
+- **R3b** — `POST /api/tournaments/:id/enter` — create Razorpay Order + pending TournamentEntry
+- **R3c** — Tournament UI — "Enter (₹99)" button opens Razorpay Checkout.js modal
+- **R3d** — `POST /api/razorpay/webhook` — shares handler with KhataGO (order.paid, payment.captured, payment.failed, refund.processed)
+- **R3e** — Admin cancel flow → issues Razorpay refunds for all paid entries
+- **R3f** — Prometheus metrics: entry count, revenue, failure rate
+- **R3g** — Access gate: can't join battle without paid entry
+- **R3h** — Tests + Playwright E2E: order creation + payment capture → entry paid + refund flow
+- **R3i** — EduScale case study: add "Tournament billing" subsection in architecture + new incident about webhook-race conditions
+
+## Other items added this turn (2026-04-19)
+
+- **N1 — Fix `/statistics` dark theme axe violation** — 3 svg-img-alt nodes (likely recharts). Add `<title>` child or `aria-label` to chart SVGs. *~30 min*
+- **N3 — stripe-payments-demo fixture replay endpoint** — `scripts/replay-webhook.mjs` generates a signed fake Stripe event and posts to `/api/webhook` locally. Makes the idempotency demo reproducible without a Stripe account. *~60 min*
 
 ## Tier 4 — target-company-specific demos (Month 3 territory)
 

@@ -27,9 +27,14 @@ Rules for anything public: **no specific PR counts**, **no "real-time systems en
 
 ## P0 — This week
 
-### 1. Deploy `stripe-payments-demo` to Vercel (no Stripe account needed) — 15 min
+### 1. Confirm `stripe-payments-demo` is now deploying on Vercel — 2 min
 
-**Blocker cleared** (2026-04-19): the previous `"Function Runtimes must have a valid version"` error was a bad `functions.runtime` block in `vercel.json`. Fixed in [commit 8c0327a](https://github.com/Shailesh93602/stripe-payments-demo/commit/8c0327a) — redeploy should pass now.
+**You asked "why redeploy — Vercel auto-deploys on push."** Correct. The fix is already pushed ([commit 8c0327a](https://github.com/Shailesh93602/stripe-payments-demo/commit/8c0327a)) and Vercel should have auto-built it **IF the project was already imported to Vercel**. Two scenarios:
+
+- **If you already imported + the first deploy failed:** Vercel sees the new push on `main` and auto-deploys. Check Vercel → stripe-payments-demo → Deployments → latest should be green. No manual action.
+- **If you never completed the import (the failed first attempt blocked it):** you still need to do the initial `Vercel → Add New → Project → import` once. After that, every push auto-deploys.
+
+Tell Claude the live URL once it's up — Claude updates portfolio card + README.
 
 **Context (new — 2026-04-19):** Stripe is **invite-only in India**, so you can't create a Stripe test account today. The app still deploys and runs in "pattern reference" mode. Specifically:
 
@@ -46,23 +51,30 @@ Rules for anything public: **no specific PR counts**, **no "real-time systems en
 
 **Medium-term:** if/when Stripe opens in India OR if you can use a US-based partner's Stripe account, come back and wire real keys. Until then, see task §3 below for the Razorpay pivot.
 
-### 2. Pick: keep demos or fold into flagships — 15 min (your call)
+### 2. Razorpay integration — one-time account setup (10 min)
 
-See [prior MANUAL](#) for the full Option A / B / Hybrid framing. My recommendation given the Stripe-India constraint: **Hybrid → integrate Razorpay into KhataGO as real subscription billing** (Razorpay has the same webhook-idempotency pattern as Stripe and is Indian-developer-accessible). Keep `redis-battle-demo` as a simple visual demo.
+You picked **both paths** — keep standalone demos AND integrate the patterns into the real flagships (KhataGO + EduScale). Razorpay replaces Stripe as the "real usage" target since Stripe India is invite-only.
 
-Tell Claude which option. If Hybrid-with-Razorpay, Claude scopes the KhataGO Razorpay integration (~1 week) as a new TODO item.
+**Full plan:** [drafts/RAZORPAY_PLAN.md](drafts/RAZORPAY_PLAN.md) — 3 phases, what YOU do vs what CLAUDE does, open questions, risk register.
 
-### 3. Target-company pivot (given Stripe India blocker) — 15 min (your call)
+**Step 1 — Create account + get test keys (10 min, do this once):**
 
-Stripe being invite-only in India is a hard blocker for a Stripe application — not only can't you demo the integration, your day-to-day use is blocked. Options:
+1. Sign up at <https://razorpay.com/signup>. Choose "Individual / Freelancer" for fastest onboarding.
+2. Complete KYC lite (PAN + Aadhaar). You stay in **Test Mode** until you want real rupees — no full KYC needed for development.
+3. Dashboard → **Settings → API Keys → Generate Test Key**. You'll get:
+   - `Key ID`: `rzp_test_...` (safe to ship to frontend)
+   - `Key Secret`: one-time display — **save it securely now.**
+4. Tell Claude: **"Razorpay account ready, keys in my password manager, start Phase 1"** — Claude begins scaffolding `razorpay-patterns-demo` (code-only; you'll add the keys to Vercel at deploy time).
 
-- **(A) Keep Stripe on the target list** — valid if you're open to US/UK relocation. Applications focus on the *pattern* skill rather than Stripe-specific production experience.
-- **(B) Swap Stripe → Razorpay / Cashfree / Juspay** on the target list. Indian fintech. Same webhook/idempotency patterns. Actively hiring in India.
-- **(C) Keep Stripe as "bonus target", prioritize Vercel + Supabase** — both hire India-remote. Stripe becomes an opportunistic-if-US-role-opens play.
+**Phases 2 + 3 start after Phase 1 is deployed.** See `drafts/RAZORPAY_PLAN.md` for webhook setup + env vars per project.
 
-My recommendation: **(C)**. Ship the Razorpay integration demo anyway (it'll also work if you later apply to Stripe, since the pattern is the same). Tell Claude which option → Claude updates the target-company table in TODO.md + application-readiness matrix.
+**Open design decisions (answer inline in the plan doc or in chat):**
+- KhataGO tier prices — draft ₹299 / ₹999. Adjust?
+- EduScale tournament fee — draft ₹49 regular / ₹199 premier?
+- Refund policy for cancelled tournaments?
+- Repo name for the standalone demo: `razorpay-patterns-demo` OK?
 
-### 4. Upstash Redis one-time resume — 2 min
+### 3. Upstash Redis one-time resume — 2 min
 
 Your Upstash Redis for `redis-battle-demo` was paused. Go to <https://console.upstash.com/> → that database → **Resume**. After that, the daily URL health-check GitHub Action keeps it alive (daily GET wakes Render → reconnects to Upstash → counts as activity).
 
