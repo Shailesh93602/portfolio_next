@@ -42,7 +42,7 @@ Priority levels mirror the recruiter review (P0 = this week, P1 = this month, P2
 
 Recruiter review red flag #1: "Full Stack Developer" tells a Stripe recruiter nothing in 10 seconds.
 
-**IMPORTANT — honesty bar:** The drafts below describe only what you have actually shipped (ContextQA Chrome extensions + your side projects). No claim that you "build payment infrastructure in production" — that would invite a question you can't answer. The cycling job-title carousel has been updated to plain, truthful roles (Software Engineer / Backend Engineer / TypeScript Engineer / Next.js Developer / Node.js Developer / Full Stack Developer).
+**IMPORTANT — honesty bar:** The drafts below describe only what you have actually shipped (ContextQA Chrome extensions + your side projects). No claim that you "build payment infrastructure in production" — that would invite a question you can't answer. The cycling job-title carousel has been updated to plain, truthful roles (Software Engineer / Full Stack Developer / Backend Engineer / TypeScript Engineer / Next.js Developer / Node.js Developer).
 
 **Pick one of the 3 drafts below** (edit freely) and tell Claude which one; Claude wires it into `app/HomeContent.tsx`.
 
@@ -237,6 +237,18 @@ Fast-path fix is DONE in both repos. Only the Exavel deploy is pending.
 ### 8. Google Analytics setup — 30 min
 
 Shows you instrument your own products. Add `NEXT_PUBLIC_GA_MEASUREMENT_ID` on Vercel; the layout wiring already reads it.
+
+### 9. Wire up Resend for the contact form — 15 min
+
+The contact form at `/contact` now posts to `/api/contact` (real API with Zod validation + rate limit + email via Resend). If `RESEND_API_KEY` is not set, the route returns 503 with `fallback: "mailto"` and the UI falls back to opening the mail client — so the form keeps working either way. Set the key to enable direct sends:
+
+1. Sign up at <https://resend.com> (free tier: 100 emails/day, 3k/month).
+2. **Dashboard → API Keys → Create API Key** → name it `portfolio-production` → copy the `re_...` value.
+3. **Optional but recommended:** verify your domain at **Domains → Add Domain** (you'll add DNS TXT + CNAME records). Skip this step to get started — the fallback `onboarding@resend.dev` sender works but emails will be marked as third-party.
+4. Vercel dashboard → portfolio_next project → **Settings → Environment Variables** (Production):
+   - `RESEND_API_KEY` = the `re_...` value
+   - `RESEND_FROM` (optional, only if you verified a domain) = `"Portfolio Contact <contact@yourdomain>"` — otherwise leave unset to use the default
+5. Redeploy once. Test from `/contact` on the live site — you should receive an email at `CONTACT_INFO.EMAIL` (currently `shaileshchaudhari93602@gmail.com`).
 
 ---
 

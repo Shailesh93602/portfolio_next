@@ -93,20 +93,43 @@ export const ContactContent: React.FC = () => {
     null
   );
 
+  const openMailtoFallback = (data: FormData) => {
+    const phoneSegment = data.phoneNumber
+      ? `\nPhone: ${data.phoneNumber}`
+      : "";
+    const subject = encodeURIComponent(`[Portfolio Contact] ${data.subject}`);
+    const body = encodeURIComponent(
+      `Name: ${data.fullName}\nEmail: ${data.email}${phoneSegment}\n\n${data.message}`
+    );
+    window.location.href = `mailto:${CONTACT_INFO.EMAIL}?subject=${subject}&body=${body}`;
+  };
+
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       setSubmitStatus(null);
 
-      // Build mailto: URL with form data so the email client opens pre-filled
-      const phoneSegment = data.phoneNumber
-        ? `\nPhone: ${data.phoneNumber}`
-        : "";
-      const subject = encodeURIComponent(`[Portfolio Contact] ${data.subject}`);
-      const body = encodeURIComponent(
-        `Name: ${data.fullName}\nEmail: ${data.email}${phoneSegment}\n\n${data.message}`
-      );
-      const mailtoUrl = `mailto:${CONTACT_INFO.EMAIL}?subject=${subject}&body=${body}`;
-      window.location.href = mailtoUrl;
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      // 503 with fallback: "mailto" means Resend isn't configured in prod yet;
+      // open the mail client so the user's message still reaches me.
+      if (res.status === 503) {
+        const payload = await res.json().catch(() => ({}));
+        if (payload?.fallback === "mailto") {
+          openMailtoFallback(data);
+          setSubmitStatus("success");
+          reset();
+          setTimeout(() => setSubmitStatus(null), 5000);
+          return;
+        }
+      }
+
+      if (!res.ok) {
+        throw new Error(`Contact API returned ${res.status}`);
+      }
 
       // Track GA event
       if (typeof window !== "undefined" && window.gtag) {
@@ -119,10 +142,9 @@ export const ContactContent: React.FC = () => {
 
       setSubmitStatus("success");
       reset();
-
       setTimeout(() => setSubmitStatus(null), 5000);
     } catch (error) {
-      console.error("Error opening mail client:", error);
+      console.error("Contact form submit failed:", error);
       setSubmitStatus("error");
       setTimeout(() => setSubmitStatus(null), 5000);
     }
