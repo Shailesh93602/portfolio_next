@@ -209,8 +209,8 @@ export default function HomeContent({ featuredPosts }: Props) {
             Things I&apos;m building to learn
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-            Outside of my day job, these are the small-to-medium projects I
-            work on to explore specific backend patterns end-to-end.
+            Outside of my day job, these are the small-to-medium projects I work
+            on to explore specific backend patterns end-to-end.
           </p>
         </motion.div>
 

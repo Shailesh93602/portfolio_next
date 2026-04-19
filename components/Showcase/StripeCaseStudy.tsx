@@ -13,20 +13,75 @@ type Step = {
 };
 
 const LEFT_LANE: Step[] = [
-  { y: 110, from: 80, to: 240, label: "POST evt_abc123", sub: "Stripe-Signature header" },
-  { y: 170, from: 240, to: 400, label: "constructEvent() HMAC", sub: "verify signature" },
-  { y: 230, from: 240, to: 400, label: "SETNX stripe:event:evt_abc123", sub: "returns 1 (set)" },
-  { y: 290, from: 240, to: 400, label: "run handler", sub: "fulfill order, send email" },
+  {
+    y: 110,
+    from: 80,
+    to: 240,
+    label: "POST evt_abc123",
+    sub: "Stripe-Signature header",
+  },
+  {
+    y: 170,
+    from: 240,
+    to: 400,
+    label: "constructEvent() HMAC",
+    sub: "verify signature",
+  },
+  {
+    y: 230,
+    from: 240,
+    to: 400,
+    label: "SETNX stripe:event:evt_abc123",
+    sub: "returns 1 (set)",
+  },
+  {
+    y: 290,
+    from: 240,
+    to: 400,
+    label: "run handler",
+    sub: "fulfill order, send email",
+  },
   { y: 350, from: 400, to: 240, label: "ok", sub: "handler success" },
   { y: 410, from: 240, to: 80, label: "200 OK", sub: "ack delivery" },
 ];
 
 const RIGHT_LANE: Step[] = [
-  { y: 110, from: 560, to: 720, label: "POST evt_abc123", sub: "same event id, new attempt" },
-  { y: 170, from: 720, to: 880, label: "constructEvent() HMAC", sub: "verify signature" },
-  { y: 230, from: 720, to: 880, label: "SETNX stripe:event:evt_abc123", sub: "returns 0 (exists)" },
-  { y: 290, from: 720, to: 880, label: "skip handler", sub: "no side effects", muted: true },
-  { y: 410, from: 720, to: 560, label: "200 OK", sub: "ack duplicate, quietly" },
+  {
+    y: 110,
+    from: 560,
+    to: 720,
+    label: "POST evt_abc123",
+    sub: "same event id, new attempt",
+  },
+  {
+    y: 170,
+    from: 720,
+    to: 880,
+    label: "constructEvent() HMAC",
+    sub: "verify signature",
+  },
+  {
+    y: 230,
+    from: 720,
+    to: 880,
+    label: "SETNX stripe:event:evt_abc123",
+    sub: "returns 0 (exists)",
+  },
+  {
+    y: 290,
+    from: 720,
+    to: 880,
+    label: "skip handler",
+    sub: "no side effects",
+    muted: true,
+  },
+  {
+    y: 410,
+    from: 720,
+    to: 560,
+    label: "200 OK",
+    sub: "ack duplicate, quietly",
+  },
 ];
 
 const COLS = [
@@ -40,7 +95,9 @@ const COLS = [
 
 function renderSteps(steps: Step[], prefix: string) {
   return steps.map((s, idx) => {
-    const stroke = s.muted ? "hsl(var(--muted-foreground))" : "hsl(var(--primary))";
+    const stroke = s.muted
+      ? "hsl(var(--muted-foreground))"
+      : "hsl(var(--primary))";
     const marker = s.muted ? "url(#arrow-muted)" : "url(#arrow-primary)";
     return (
       <g key={`${prefix}-${idx}`}>
@@ -135,41 +192,125 @@ export default function StripeCaseStudy() {
               className="mx-auto block h-auto w-full min-w-[680px] max-w-[960px]"
             >
               <defs>
-                <marker id="arrow-primary" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <marker
+                  id="arrow-primary"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto-start-reverse"
+                >
                   <path d="M0,0 L10,5 L0,10 z" fill="hsl(var(--primary))" />
                 </marker>
-                <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M0,0 L10,5 L0,10 z" fill="hsl(var(--muted-foreground))" />
+                <marker
+                  id="arrow-muted"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto-start-reverse"
+                >
+                  <path
+                    d="M0,0 L10,5 L0,10 z"
+                    fill="hsl(var(--muted-foreground))"
+                  />
                 </marker>
               </defs>
 
-              <text x="240" y="28" textAnchor="middle" fontSize="14" fontWeight="700" className="fill-foreground">
+              <text
+                x="240"
+                y="28"
+                textAnchor="middle"
+                fontSize="14"
+                fontWeight="700"
+                className="fill-foreground"
+              >
                 First delivery
               </text>
-              <text x="720" y="28" textAnchor="middle" fontSize="14" fontWeight="700" className="fill-foreground">
+              <text
+                x="720"
+                y="28"
+                textAnchor="middle"
+                fontSize="14"
+                fontWeight="700"
+                className="fill-foreground"
+              >
                 Duplicate retry (2s later)
               </text>
-              <line x1="480" y1="12" x2="480" y2="548" stroke="hsl(var(--border))" strokeDasharray="4 6" />
+              <line
+                x1="480"
+                y1="12"
+                x2="480"
+                y2="548"
+                stroke="hsl(var(--border))"
+                strokeDasharray="4 6"
+              />
 
               {COLS.map((col) => (
                 <g key={`${col.x}-${col.label}`}>
-                  <rect x={col.x - 60} y={44} width={120} height={28} rx={8} fill="hsl(var(--card))" stroke="hsl(var(--border))" />
-                  <text x={col.x} y={62} textAnchor="middle" fontSize="11" fontWeight="700" className="fill-foreground">
+                  <rect
+                    x={col.x - 60}
+                    y={44}
+                    width={120}
+                    height={28}
+                    rx={8}
+                    fill="hsl(var(--card))"
+                    stroke="hsl(var(--border))"
+                  />
+                  <text
+                    x={col.x}
+                    y={62}
+                    textAnchor="middle"
+                    fontSize="11"
+                    fontWeight="700"
+                    className="fill-foreground"
+                  >
                     {col.label}
                   </text>
-                  <line x1={col.x} y1={72} x2={col.x} y2={540} stroke="hsl(var(--border))" />
+                  <line
+                    x1={col.x}
+                    y1={72}
+                    x2={col.x}
+                    y2={540}
+                    stroke="hsl(var(--border))"
+                  />
                 </g>
               ))}
 
               {renderSteps(LEFT_LANE, "left")}
               {renderSteps(RIGHT_LANE, "right")}
 
-              <rect x={40} y={480} width={880} height={52} rx={10} fill="hsl(var(--card))" stroke="hsl(var(--border))" />
-              <text x={480} y={502} textAnchor="middle" fontSize="11" fontWeight="700" className="fill-foreground">
-                Both paths return 200. Stripe stops retrying. The second delivery never touched the order.
+              <rect
+                x={40}
+                y={480}
+                width={880}
+                height={52}
+                rx={10}
+                fill="hsl(var(--card))"
+                stroke="hsl(var(--border))"
+              />
+              <text
+                x={480}
+                y={502}
+                textAnchor="middle"
+                fontSize="11"
+                fontWeight="700"
+                className="fill-foreground"
+              >
+                Both paths return 200. Stripe stops retrying. The second
+                delivery never touched the order.
               </text>
-              <text x={480} y={520} textAnchor="middle" fontSize="10" className="fill-muted-foreground">
-                Idempotency key TTL: 86400s (24h) — covers Stripe&apos;s full retry window of 3 days with room for clock skew.
+              <text
+                x={480}
+                y={520}
+                textAnchor="middle"
+                fontSize="10"
+                className="fill-muted-foreground"
+              >
+                Idempotency key TTL: 86400s (24h) — covers Stripe&apos;s full
+                retry window of 3 days with room for clock skew.
               </text>
             </svg>
           </div>
@@ -186,9 +327,9 @@ export default function StripeCaseStudy() {
               Redis state, before and after
             </h4>
             <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Trace the keys a real duplicate delivery produces. The store starts
-              empty, the first webhook writes one key with a 24-hour TTL, and
-              every subsequent retry of the same event bounces off that key.
+              Trace the keys a real duplicate delivery produces. The store
+              starts empty, the first webhook writes one key with a 24-hour TTL,
+              and every subsequent retry of the same event bounces off that key.
             </p>
           </div>
 
@@ -244,7 +385,9 @@ redis> TTL stripe:event:evt_abc123
               <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-primary">
                 t=2.113s
               </span>
-              <p className="text-sm font-bold text-foreground">Duplicate retry arrives</p>
+              <p className="text-sm font-bold text-foreground">
+                Duplicate retry arrives
+              </p>
               <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                 same evt_abc123, new delivery attempt
               </span>
@@ -257,7 +400,9 @@ redis> TTL stripe:event:evt_abc123
 (integer) 86398       // same key, ~2s burned`}
             </pre>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              <span className="font-semibold text-foreground">Why the handler is skipped:</span>{" "}
+              <span className="font-semibold text-foreground">
+                Why the handler is skipped:
+              </span>{" "}
               SETNX returning 0 is our signal that this exact event id has been
               processed in the last 24 hours. We short-circuit, return 200, and
               Stripe stops retrying. No duplicate charge reconciliation, no
@@ -277,8 +422,8 @@ redis> TTL stripe:event:evt_abc123
               What breaks when you retry on every error
             </h4>
             <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Retrying on transient failure is correct. Retrying on a Stripe
-              4xx is not — it turns a single declined card into four dashboard
+              Retrying on transient failure is correct. Retrying on a Stripe 4xx
+              is not — it turns a single declined card into four dashboard
               failures and four operator tickets.
             </p>
           </div>
@@ -349,21 +494,27 @@ throw new Error("out of retries");`}
                 <li className="flex gap-2">
                   <span className="text-primary">&bull;</span>
                   <span>
-                    <span className="font-semibold text-foreground">Network error:</span>{" "}
+                    <span className="font-semibold text-foreground">
+                      Network error:
+                    </span>{" "}
                     retry with exponential backoff.
                   </span>
                 </li>
                 <li className="flex gap-2">
                   <span className="text-primary">&bull;</span>
                   <span>
-                    <span className="font-semibold text-foreground">5xx from Stripe:</span>{" "}
+                    <span className="font-semibold text-foreground">
+                      5xx from Stripe:
+                    </span>{" "}
                     retry — their side, probably transient.
                   </span>
                 </li>
                 <li className="flex gap-2">
                   <span className="text-primary">&bull;</span>
                   <span>
-                    <span className="font-semibold text-foreground">4xx from Stripe:</span>{" "}
+                    <span className="font-semibold text-foreground">
+                      4xx from Stripe:
+                    </span>{" "}
                     fail fast, surface to caller.
                   </span>
                 </li>
