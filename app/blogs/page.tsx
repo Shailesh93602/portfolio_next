@@ -1,5 +1,4 @@
 export { metadata } from "./metadata";
-import { Suspense } from "react";
 import BlogsContent from "./BlogsContent";
 import { SITE_URL, BLOG_AUTHOR } from "@/lib/blog-constants";
 import { blogPosts, getAllTags } from "@/lib/blog-data";
@@ -46,9 +45,24 @@ export default function BlogPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(blogListSchema) }}
       />
-      <Suspense fallback={null}>
-        <BlogsContent posts={posts} allTags={allTags} />
-      </Suspense>
+      {/*
+        SEO-only index of every post. Rendered server-side so crawlers (and
+        recruiters) see every title + link even when the client-side filter
+        view only paginates a subset. Visually hidden with sr-only.
+      */}
+      <nav aria-label="All blog posts" className="sr-only">
+        <h2>All blog posts</h2>
+        <ul>
+          {posts.map((p) => (
+            <li key={p.slug}>
+              <a href={`/blog/${p.slug}`}>{p.title}</a>
+              <time dateTime={p.date}>{p.date}</time>
+              <p>{p.description}</p>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <BlogsContent posts={posts} allTags={allTags} />
     </>
   );
 }

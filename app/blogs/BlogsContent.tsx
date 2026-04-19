@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { BlogCard } from "@/components/blog/blog-card";
 import { BlogFilters } from "@/components/blog/blog-filters";
@@ -34,20 +34,34 @@ interface Props {
   allTags: string[];
 }
 
+// Read query params without useSearchParams(), which would otherwise force the
+// entire subtree into a client-only render (breaking SSR output for crawlers).
+function readInitialParams(): { q: string; tag: string } {
+  if (typeof window === "undefined") return { q: "", tag: "" };
+  const sp = new URLSearchParams(window.location.search);
+  return { q: sp.get("q") ?? "", tag: sp.get("tag") ?? "" };
+}
+
 export default function BlogsContent({ posts, allTags }: Props) {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
-  const [searchQuery, setSearchQuery] = React.useState(
-    searchParams.get("q") ?? ""
-  );
-  const [selectedTag, setSelectedTag] = React.useState(
-    searchParams.get("tag") ?? ""
-  );
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [selectedTag, setSelectedTag] = React.useState("");
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [hydrated, setHydrated] = React.useState(false);
 
-  // Sync search state → URL (debounced 300ms)
+  // On mount, pick up URL state (search/tag) from window.location.
+  // SSR pre-render shows the full, unfiltered grid — critical for SEO.
   React.useEffect(() => {
+    const initial = readInitialParams();
+    setSearchQuery(initial.q);
+    setSelectedTag(initial.tag);
+    setHydrated(true);
+  }, []);
+
+  // Sync search state → URL (debounced 300ms), only after hydration.
+  React.useEffect(() => {
+    if (!hydrated) return;
     const timer = setTimeout(() => {
       const params = new URLSearchParams();
       if (searchQuery) params.set("q", searchQuery);
@@ -56,7 +70,7 @@ export default function BlogsContent({ posts, allTags }: Props) {
       router.replace(qs ? `/blogs?${qs}` : "/blogs", { scroll: false });
     }, 300);
     return () => clearTimeout(timer);
-  }, [searchQuery, selectedTag, router]);
+  }, [searchQuery, selectedTag, router, hydrated]);
 
   const filteredPosts = posts.filter((post) => {
     const matchesSearch =
