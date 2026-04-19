@@ -627,7 +627,7 @@ export default function ProjectDetailContent({ project }: Props) {
                     >
                       <div className="flex items-start gap-3">
                         <CheckIcon className="mt-0.5 h-5 w-5 text-primary opacity-50 transition-opacity group-hover:opacity-100" />
-                        <span className="group-hover:text-text-primary text-muted-foreground transition-colors">
+                        <span className="group-hover:text-foreground text-muted-foreground transition-colors">
                           {feature}
                         </span>
                       </div>

@@ -55,7 +55,7 @@ const InputField: React.FC<InputFieldProps> = ({
   <div className="mb-4">
     <label
       htmlFor={name}
-      className="text-text-primary mb-2 block text-sm font-medium"
+      className="text-foreground mb-2 block text-sm font-medium"
     >
       {label}
     </label>
@@ -63,7 +63,7 @@ const InputField: React.FC<InputFieldProps> = ({
       id={name}
       type={type}
       {...register(name, rules)}
-      className={`bg-dark text-text-primary w-full rounded-md border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary ${
+      className={`bg-background text-foreground w-full rounded-md border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary ${
         error ? "border-red-500" : "border-gray-700"
       }`}
     />
@@ -160,7 +160,7 @@ export const ContactContent: React.FC = () => {
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
           Contact <span className="text-primary">Me</span>
         </h1>
-        <p className="text-text-secondary">
+        <p className="text-muted-foreground">
           Have a project in mind or just want to talk engineering? Send a
           message and I&apos;ll get back to you.
         </p>

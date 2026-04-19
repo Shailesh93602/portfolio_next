@@ -6,7 +6,7 @@ import { experiences, itemVariants } from "@/constants";
 export function ExperienceSection() {
   // Render plain-text description as a paragraph (no HTML injection)
   const renderDescription = (text: string) => (
-    <p className="text-text-secondary mb-3 leading-relaxed">{text}</p>
+    <p className="text-muted-foreground mb-3 leading-relaxed">{text}</p>
   );
 
   // Helper to determine if experience is internship
@@ -15,7 +15,7 @@ export function ExperienceSection() {
 
   return (
     <motion.div variants={itemVariants}>
-      <h3 className="text-text-primary mb-8 flex items-center text-2xl font-semibold">
+      <h3 className="text-foreground mb-8 flex items-center text-2xl font-semibold">
         <BriefcaseIcon className="mr-3 h-7 w-7 text-primary" />
         Professional Experience
       </h3>
@@ -108,7 +108,7 @@ export function ExperienceSection() {
                         {exp.highlights.map((h, i) => (
                           <p
                             key={i}
-                            className="text-text-secondary mb-2 flex items-start text-sm"
+                            className="text-muted-foreground mb-2 flex items-start text-sm"
                           >
                             <span className="mr-2 mt-1 text-primary">•</span>
                             {h}

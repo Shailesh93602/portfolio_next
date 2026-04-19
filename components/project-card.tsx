@@ -29,15 +29,15 @@ export function ProjectCard({
 }: ProjectCardProps) {
   return (
     <div className="transition-transform duration-500 ease-out will-change-transform">
-      <Card className="bg-dark overflow-hidden transition-shadow duration-300 hover:shadow-lg">
+      <Card className="bg-background overflow-hidden transition-shadow duration-300 hover:shadow-lg">
         <div className="relative h-48">
           <Image src={image} alt={title} fill className="object-cover" />
         </div>
         <CardContent className="p-6">
-          <h3 className="text-text-primary mb-2 text-xl font-semibold">
+          <h3 className="text-foreground mb-2 text-xl font-semibold">
             {title}
           </h3>
-          <p className="text-text-secondary mb-4">{description}</p>
+          <p className="text-muted-foreground mb-4">{description}</p>
 
           <div className="mb-4 flex flex-wrap gap-2">
             {tags.map((tag, index) => (
@@ -54,7 +54,7 @@ export function ProjectCard({
           <div className="flex items-center gap-4">
             {github && (
               <Link href={github} target="_blank" rel="noopener noreferrer">
-                <Button variant="ghost" size="sm" className="text-text-primary">
+                <Button variant="ghost" size="sm" className="text-foreground">
                   <GithubIcon className="mr-2 h-4 w-4" />
                   GitHub
                 </Button>
@@ -62,7 +62,7 @@ export function ProjectCard({
             )}
             {live && (
               <Link href={live} target="_blank" rel="noopener noreferrer">
-                <Button variant="ghost" size="sm" className="text-text-primary">
+                <Button variant="ghost" size="sm" className="text-foreground">
                   <ExternalLinkIcon className="mr-2 h-4 w-4" />
                   Live Demo
                 </Button>
@@ -72,7 +72,7 @@ export function ProjectCard({
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-text-primary"
+                className="text-foreground"
                 onClick={onShowDetails}
               >
                 {showDetails ? "Show Less" : "Show More"}

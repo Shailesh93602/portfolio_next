@@ -30,24 +30,30 @@ export default function ThemeComparison({
         )}
         <div className="flex rounded-full border border-border/50 bg-muted p-1">
           <button
+            type="button"
             onClick={() => setTheme("dark")}
+            aria-label="Show dark-mode preview"
+            aria-pressed={theme === "dark"}
             className={`rounded-full p-2 transition-all ${
               theme === "dark"
                 ? "bg-background text-primary shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <MoonIcon className="h-4 w-4" />
+            <MoonIcon aria-hidden="true" className="h-4 w-4" />
           </button>
           <button
+            type="button"
             onClick={() => setTheme("light")}
+            aria-label="Show light-mode preview"
+            aria-pressed={theme === "light"}
             className={`rounded-full p-2 transition-all ${
               theme === "light"
                 ? "bg-background text-primary shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <SunIcon className="h-4 w-4" />
+            <SunIcon aria-hidden="true" className="h-4 w-4" />
           </button>
         </div>
       </div>

@@ -22,9 +22,17 @@ const SocialLink: React.FC<SocialLinkProps> = ({ href, icon, label }) => {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-text-primary transition-colors hover:text-primary"
+          className="text-foreground transition-colors hover:text-primary"
         >
-          {icon}
+          {/*
+            The icon prop is always a decorative SVG from react-icons.
+            The accessible name comes from the outer Button's aria-label
+            — so hide the SVG from the a11y tree to avoid axe's
+            svg-img-alt violation on role="img" without title/label.
+          */}
+          <span aria-hidden="true" className="inline-flex">
+            {icon}
+          </span>
         </a>
       </Button>
     </motion.div>

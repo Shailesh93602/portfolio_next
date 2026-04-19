@@ -56,15 +56,15 @@ export default function HomeContent({ featuredPosts }: Props) {
               <Badge variant="outline" className="text-sm font-medium">
                 Available for hire · Open to part-time & freelance
               </Badge>
-              <h1 className="text-text-primary text-4xl font-bold lg:text-6xl">
+              <h1 className="text-foreground text-4xl font-bold lg:text-6xl">
                 Hi, I&apos;m Shailesh Chaudhari
               </h1>
-              <h2 className="h-12 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-2xl font-semibold text-primary text-transparent lg:text-3xl">
+              <h2 className="bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-2xl font-semibold leading-tight text-transparent sm:text-3xl lg:text-3xl">
                 Full-stack engineer with a backend focus
               </h2>
             </div>
 
-            <p className="text-text-secondary text-lg leading-relaxed">
+            <p className="text-muted-foreground text-lg leading-relaxed">
               ~2.5 years in the industry. Currently at ContextQA working on
               the backend of our core QA-automation product — test execution
               engine, VNC streaming, and multi-cloud browser orchestration
@@ -191,7 +191,7 @@ export default function HomeContent({ featuredPosts }: Props) {
           <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary/70">
             Side projects
           </p>
-          <h2 className="text-text-primary text-3xl font-bold lg:text-4xl">
+          <h2 className="text-foreground text-3xl font-bold lg:text-4xl">
             Things I&apos;m building to learn
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
@@ -244,7 +244,7 @@ export default function HomeContent({ featuredPosts }: Props) {
                     {card.tag}
                   </span>
                 </div>
-                <h3 className="text-text-primary mb-3 text-xl font-bold transition-colors group-hover:text-primary">
+                <h3 className="text-foreground mb-3 text-xl font-bold transition-colors group-hover:text-primary">
                   {card.title}
                 </h3>
                 <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
@@ -273,10 +273,10 @@ export default function HomeContent({ featuredPosts }: Props) {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mb-12 text-center"
         >
-          <h2 className="text-text-primary mb-4 text-3xl font-bold lg:text-4xl">
+          <h2 className="text-foreground mb-4 text-3xl font-bold lg:text-4xl">
             Featured Articles
           </h2>
-          <p className="text-text-secondary mx-auto max-w-2xl text-lg">
+          <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
             Dive into my latest insights on software development,
             problem-solving, and career growth.
           </p>
@@ -301,10 +301,10 @@ export default function HomeContent({ featuredPosts }: Props) {
                       {post.readTime}
                     </span>
                   </div>
-                  <h3 className="text-text-primary mb-3 line-clamp-2 text-xl font-semibold transition-colors group-hover:text-primary">
+                  <h3 className="text-foreground mb-3 line-clamp-2 text-xl font-semibold transition-colors group-hover:text-primary">
                     {post.title}
                   </h3>
-                  <p className="text-text-secondary mb-4 line-clamp-3 text-sm">
+                  <p className="text-muted-foreground mb-4 line-clamp-3 text-sm">
                     {post.description}
                   </p>
                   <div className="flex flex-wrap gap-1">

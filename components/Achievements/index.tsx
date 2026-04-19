@@ -31,7 +31,7 @@ export default function AchievementsSection() {
 
   return (
     <motion.div variants={itemVariants}>
-      <h3 className="text-text-primary mb-6 flex items-center text-2xl font-semibold">
+      <h3 className="text-foreground mb-6 flex items-center text-2xl font-semibold">
         <TrophyIcon className="mr-2 h-6 w-6 text-primary" />
         Achievements
       </h3>
@@ -40,7 +40,7 @@ export default function AchievementsSection() {
         {achievements.map((achievement, index) => (
           <Card
             key={index}
-            className={`bg-dark transition-colors duration-300 hover:border-primary/50 ${
+            className={`bg-background transition-colors duration-300 hover:border-primary/50 ${
               achievement.link ? "cursor-pointer" : ""
             }`}
             onClick={() => handleClick(achievement.link)}
@@ -49,10 +49,10 @@ export default function AchievementsSection() {
               <div className="flex items-start">
                 {getIcon(achievement.iconName)}
                 <div>
-                  <h4 className="text-text-primary text-lg font-semibold">
+                  <h4 className="text-foreground text-lg font-semibold">
                     {achievement.title}
                   </h4>
-                  <p className="text-text-secondary">
+                  <p className="text-muted-foreground">
                     {achievement.description}
                   </p>
                   {achievement.link && (
