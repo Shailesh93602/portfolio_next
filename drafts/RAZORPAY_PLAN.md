@@ -30,41 +30,87 @@ Mirror of `stripe-payments-demo`. Runnable in 5 minutes. 29+ passing tests. Depl
 
 ### 2. KhataGO subscription billing (Phase 2)
 
-**Real production usage.** Users pay ₹299/mo for CA Portal tier; ₹999/mo for Business tier. Pattern = Razorpay Subscriptions API.
+**Real production usage.** Razorpay Subscriptions API. Pricing uses **discount-anchor framing** — a strikethrough "full price" next to a "launch offer" price. This is the standard SaaS conversion pattern (Notion, Linear, LeetCode Premium all do this).
 
-**Plan:**
+**Tiers (finalized 2026-04-19):**
 
-- Tiers: `free` (current), `ca_portal` (₹299/mo — multi-user CA dashboard), `business` (₹999/mo — multi-business accounts).
-- Prisma model: `BillingAccount { id, userId, tier, razorpaySubscriptionId, status, currentPeriodStart, currentPeriodEnd, cancelAtPeriodEnd }`.
-- `/pricing` page — 3-tier comparison + "Subscribe" buttons.
+| Tier | Full price | Launch price | Target user | Key features |
+|---|---|---|---|---|
+| Free | — | ₹0 | Solo owners | Manual entries, basic reports, 3 parties |
+| **CA Portal** | ~~₹999/mo~~ | **₹299/mo** | Chartered Accountants | Multi-client view, Tally XML export, monthly GST summaries, unlimited parties |
+| **Business** | ~~₹1999/mo~~ | **₹1499/mo** | Small businesses | All of CA Portal + multi-business accounts + team seats (up to 3) + AI-assisted reconciliation + priority WhatsApp support |
+
+Launch offer runs through `billing_launch_ends_at` flag in Prisma config (default: 6 months from first Razorpay Plan created). Strikethrough rendering is a pure UI concern — Razorpay Plan stores only the current (launch) amount; switching to "full price" later = create new Plan IDs + migrate existing subscribers on renewal.
+
+**Plan (implementation):**
+
+- Prisma model: `BillingAccount { id, userId, tier, razorpaySubscriptionId, status, currentPeriodStart, currentPeriodEnd, cancelAtPeriodEnd, launchPriceApplied }`.
+- `/pricing` page — 3-tier comparison with strikethrough full-price next to launch price + "Launch offer — ends Oct 2026" countdown badge + "Subscribe" CTAs.
 - `POST /api/razorpay/checkout` — creates subscription via Razorpay Subscriptions API, returns `subscription_id` to frontend → opens Razorpay Checkout modal.
 - `POST /api/razorpay/webhook` — handles:
   - `subscription.activated` → set tier + period dates
   - `subscription.charged` → extend period
-  - `subscription.cancelled` → flag cancel_at_period_end
-  - `subscription.paused` → pause access
-  - `payment.failed` → notify + retry per Razorpay's native retry schedule
-- Feature gates: CA Portal is gated by `user.billingAccount?.tier === "ca_portal"` → reject requests with 402 if free-tier user hits CA-only routes.
-- Billing history UI at `/settings/billing` — list of charges, download invoices from Razorpay, cancel subscription.
-- Tests: webhook idempotency (shared with razorpay-patterns-demo), subscription state machine transitions, feature-gate enforcement.
+  - `subscription.cancelled` → flag cancel_at_period_end (access until period end)
+  - `subscription.paused` → pause access immediately
+  - `subscription.resumed` → restore access
+  - `payment.failed` → notify + delegate to Razorpay's native smart-retry schedule
+- Feature gates: middleware checks `user.billingAccount.tier` on CA-only / Business-only routes; returns 402 with upgrade CTA.
+- `/settings/billing` — current plan, billing history (fetched via Razorpay invoices API), cancel button (immediate vs end-of-period), downgrade to free, Razorpay-hosted invoice PDFs.
+- Tests: webhook idempotency (shared with razorpay-patterns-demo), subscription state machine transitions (active → paused → resumed → cancelled), feature-gate enforcement, launch-price expiry behavior.
 
-### 3. EduScale tournament entry fees (Phase 3)
+### 3. EduScale plan-based subscription (Phase 3 — **revised 2026-04-19**)
 
-**Real production usage.** Users pay ₹49–199 to enter a battle tournament. Pattern = Razorpay Orders API (one-time, not subscription).
+**Pivoted from tournament entry fees → LeetCode-style plan-based subscription** per user direction. Free users get limited access; Premium unlocks the rest. No per-tournament transactions.
 
-**Plan:**
+**Tiers:**
 
-- `Tournament` model: add `entryFee: number`, `currency: string` (default INR), `maxEntrants`.
-- `TournamentEntry` model: `{ id, userId, tournamentId, razorpayOrderId, razorpayPaymentId, status: 'pending' | 'paid' | 'refunded', paidAt }`.
-- `POST /api/tournaments/:id/enter` — creates Razorpay Order with `notes: { tournamentId, userId }` → returns order_id to frontend.
-- Frontend: Razorpay Checkout.js opens; on payment, fires webhook.
-- `POST /api/razorpay/webhook` (shared patterns with KhataGO's webhook handler):
-  - `order.paid` → find TournamentEntry by order_id → mark paid → grant tournament access
-  - `payment.failed` → keep entry pending, surface retry option in UI
-  - `refund.processed` → mark entry refunded (for cancelled tournaments)
-- Refund flow: `POST /api/admin/tournaments/:id/cancel` creates Razorpay refunds for every paid TournamentEntry.
-- Prometheus metrics: `tournament_entry_count_total`, `tournament_revenue_rupees_total`, `payment_failure_rate`.
-- Integrates with existing Redlock — tournament start locks prevent mid-payment tournament cancellation.
+| Tier | Full price | Launch price | Target | Key features |
+|---|---|---|---|---|
+| Free | — | ₹0 | Curious students | 3 battles/day, public tournaments only, core learning roadmaps, basic leaderboards |
+| **Premium** | ~~₹699/mo~~ or ~~₹4999/yr~~ | **₹299/mo** or **₹2499/yr** (save ~30%) | Serious prep | Unlimited battles, premium question bank, private rooms (invite-only with your friends), AI-generated post-battle review (code quality, efficiency, patterns missed), priority tournament slots, full leaderboard history + analytics, 1v1 coaching-mode with verified tutors (Month 3+) |
+
+Follows the LeetCode Premium rhythm: free tier is fully usable, premium unlocks volume + depth + AI-assisted learning.
+
+**Plan (implementation):**
+
+- Prisma model: `BillingAccount` (same shape as KhataGO's — share the schema snippet) with `tier: 'free' | 'premium'`, `interval: 'monthly' | 'yearly'`, `currentPeriodEnd`.
+- `/pricing` page — 2-tier comparison (no feature-matrix clutter — just "Free / Premium") + yearly-vs-monthly toggle showing ₹2499/yr equivalent to ₹208/mo with "Save 30%" badge.
+- `POST /api/razorpay/checkout` — same flow as KhataGO (Razorpay Subscriptions API). One Razorpay Plan per interval (premium-monthly, premium-yearly).
+- `POST /api/razorpay/webhook` — same 6 subscription event types as KhataGO. Shared handler code.
+- **Feature gates (the interesting part — this is where LeetCode-style UX lives):**
+  - `BATTLES_PER_DAY`: free=3, premium=unlimited. Middleware on `/api/battles/create` checks a Redis counter key `battles:{userId}:{YYYY-MM-DD}` with 24h TTL. Exceeds free limit? 402 + paywall modal.
+  - `PREMIUM_QUESTIONS`: questions tagged `isPremium: true` in Postgres. Free users see the title + tags but hit a paywall when attempting to start.
+  - `PRIVATE_ROOMS`: `POST /api/tournaments` with `visibility: 'private'` rejects if tier = free.
+  - `AI_REVIEW`: the post-battle AI review endpoint is premium-only. Free users see "Upgrade to get AI feedback."
+  - `LEADERBOARD_HISTORY`: free users see today's leaderboard; premium sees 90-day history.
+- `/settings/billing` — same layout as KhataGO.
+- Paywall modal — re-used component, accepts `{ feature, tier, reason }` and shows contextual upgrade CTA (route deep-links to `/pricing?ref=ai_review&plan=premium_yearly`).
+- Prometheus metrics: `active_subscriptions_total{tier,interval}`, `paywall_hits_total{feature}`, `upgrade_conversion_from_paywall_total{feature}` — use `paywall_hits` / `upgrades` to tune which features are worth moving into free tier.
+- Integrates with existing Redlock — subscription activation from webhook acquires a user-scoped lock so webhook race with frontend success redirect doesn't double-activate.
+
+### 3.5 Refund policy (LeetCode/Netflix/Notion-style)
+
+Standard subscription SaaS refund patterns — mirrored from how LeetCode, Notion, Netflix, Spotify handle it:
+
+**KhataGO + EduScale shared policy:**
+
+1. **7-day money-back guarantee (unconditional)** — any subscriber within 7 days of first purchase can request a full refund via `/settings/billing → Cancel & refund`. Handled automatically by a Razorpay refund call if criteria met.
+2. **Post-7-day cancellation** — no refund, but access continues until `currentPeriodEnd`. Subscription auto-cancels at period end. Standard industry practice; LeetCode, Notion, Linear all do this.
+3. **Pro-rated refunds NOT offered** by default — matches LeetCode. (Notion does pro-rate; we don't, to keep the billing logic simple and match the "you committed for the month" SaaS norm.)
+4. **Accidental-charge grace window** — if a subscription charges and the user requests a refund within 24 hours claiming accidental auto-renewal, full refund is issued. Tracked via `/settings/billing` modal.
+5. **Annual plans — pro-rated refund only within the first 30 days.** After 30 days, no refund, but user keeps access until period end. LeetCode does this exact policy.
+6. **Abuse / ToS violations** — no refund. Terms of Service lists prohibited behavior (sharing accounts, scraping, harassment).
+7. **Product outage SLA credit** — if EduScale or KhataGO is down >1% of a billing month (i.e. >7.2 hours), pro-rated credit on next invoice. Automated via `/api/billing/sla-credits` cron that reads Prometheus uptime metric (stretch goal for post-Phase-3).
+8. **Usage-based refund denial NOT needed** — subscription model means we don't have "user consumed 95% of their bucket." Everything is unlimited or gated, not consumed.
+
+**Implementation:**
+
+- `/settings/billing/refund` page — eligibility checker (days since first charge, interval, auto-renew flag) renders the applicable option.
+- `POST /api/billing/refund` — server-side re-validates eligibility, calls `razorpay.payments.refund(paymentId, { amount })` for the computed amount (full for 7-day, nothing post-7-day monthly, pro-rated for 30-day annual).
+- Idempotent — SETNX guard on `refund:{userId}:{subscriptionId}` so double-clicks can't double-refund.
+- Email via Resend on completion: "Your refund of ₹X is processed. Access continues until YYYY-MM-DD."
+- Razorpay refund.processed webhook → marks `BillingAccount.refundedAt` + downgrades tier to `free` if full refund.
+- Landing page → legal footer → `/refunds` shows this policy in plain English. Required by Razorpay merchant compliance anyway.
 
 ---
 

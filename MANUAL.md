@@ -19,9 +19,14 @@ Rules for anything public: **no specific PR counts**, **no "real-time systems en
 
 ## Just shipped (since last turn)
 
+- ✅ **`gh` + `vercel` CLIs installed & authenticated** — Claude can now create GitHub repos, deploy to Vercel, monitor build errors, trigger redeploys without asking you.
+- ✅ **`razorpay-patterns-demo` pushed to GitHub** at <https://github.com/Shailesh93602/razorpay-patterns-demo> (Phase 1 scaffold, 22 tests passing).
+- ✅ **stripe-payments-demo LIVE** at <https://stripe-payments-demo-eight.vercel.app> — vercel.json fix triggered a fresh deploy (commit 2546aa3), status now `● Ready`. Portfolio card `live:` field updated.
+- ✅ **Vercel CLI linked to 5 projects** — `shaileshchaudhari` (this portfolio), `stripe-payments-demo`, `khata-go`, `dev-track`, `dev-scale` (EduScale Frontend). All have `.vercel/` dirs locally (gitignored). Claude can now run `vercel ls <project>` or `vercel inspect <url> --logs` to check status + debug deploy errors.
+- ✅ **All 4 critical projects confirmed `● Ready`** in their latest Vercel deploys.
 - ✅ **Google Analytics** wired on Vercel prod (`NEXT_PUBLIC_GA_MEASUREMENT_ID = G-4QGEGXCWPN`) — no further action needed.
-- ✅ **EduScale incident writeup** drafted by Claude in the voice of a working engineer — two incidents (Redlock TTL too short during tournament Saturday; split Socket.io rooms from single-client pub/sub). Rendered on `/portfolio/eduscale` under "Real bugs, real fixes". You can edit or add more via `constants/projects.ts` → `incidents: []`.
-- ✅ **stripe-payments-demo Vercel deploy error fixed** — bad `functions.runtime` block in `vercel.json` removed (commit 8c0327a).
+- ✅ **EduScale incident writeup** drafted in the voice of a working engineer — two incidents (Redlock TTL short during tournament Saturday; split Socket.io rooms from single-client pub/sub). Rendered on `/portfolio/eduscale`.
+- ✅ **Razorpay plan revised** per your feedback — discount-anchor pricing (strikethrough full-price next to launch price), EduScale pivoted from tournament fees → plan-based subscription like LeetCode, standard SaaS refund policy (7-day money-back, 30-day pro-rated for annual, post-30 day no refund but access until period end). See [drafts/RAZORPAY_PLAN.md](drafts/RAZORPAY_PLAN.md).
 
 ---
 

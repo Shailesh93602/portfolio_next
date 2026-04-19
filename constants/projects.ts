@@ -895,7 +895,7 @@ export const projects: Project[] = [
       "Production-grade Stripe integration: webhook signature verification, Redis SETNX idempotency guard against duplicate event delivery, and payment intent creation with exponential-backoff retry. 29 tests covering exactly-once semantics, non-retryable 4xx errors, and concurrent duplicate suppression.",
     image: "/Images/portfolio1.png",
     github: "https://github.com/Shailesh93602/stripe-payments-demo",
-    live: "",
+    live: "https://stripe-payments-demo-eight.vercel.app",
     tags: ["Node.js", "TypeScript", "Stripe", "Redis", "Express", "Jest"],
     isShowcase: true,
     architecture: {
