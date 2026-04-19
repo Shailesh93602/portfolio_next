@@ -1,246 +1,126 @@
-# TODO.md — Code-Executable Tasks (Next 3 Months)
+# TODO.md — Code-Executable Tasks
 
-All tasks here can be done with code, terminal commands, or file edits.
-See MANUAL.md for tasks requiring credentials or writing.
+Tasks Claude can do with code, terminal commands, or file edits.
+See [MANUAL.md](MANUAL.md) for tasks that require your credentials, accounts, or original writing.
 
-Legend: Done | Pending | Blocked (needs manual step first)
+**Last updated: 2026-04-19**
 
 ## Recruiter review summary (2026-04-19)
 
 - Grade: **C+** — "promising early-career full-stack engineer; not yet a yes-screen for Stripe/Vercel/Supabase without targeted sharpening."
-- One-line verdict: polish and breadth are above-average for 2 YoE, but the hero fails to position, flagship case studies skew marketing-over-engineering, and target-company signals exist but don't stand out in 30 seconds.
-- Source: `/tmp/portfolio-recruiter-review.md` (read in full for evidence + red flags + target-company alignment notes).
-- Top 3 Claude-side fixes: /blogs listing renders empty, /statistics stuck in loading state, hero copy is generic.
-- Top 3 user-side fixes: deploy stripe-payments-demo + redis-battle-demo, write 3-sentence positioning statement, record 3 Looms.
+- Top 3 recruiter red flags (all in progress or fixed): empty `/blogs` (fixed), `/statistics` stuck loading (fixed), generic hero (updated with real work history, needs a draft pick from user).
+- Source: `/tmp/portfolio-recruiter-review.md`.
 
-**Current state (as of April 19, 2026):**
+## Current state (2026-04-19)
 
-- 9 portfolio projects live (eduscale, devtrack, vibe-testing, axetos, codesensei-search, khatago, redis-battle-demo, careerglyph, stripe-payments-demo)
-- Portfolio: 242 tests passing, 70.66% coverage
-- Shipped today (2026-04-19): `/portfolio/eduscale` build fix (commit 14c79b3); Supabase keep-alive workflow drafted (awaiting secrets — MANUAL §3); KhataGO AI chat fix (KhataGO repo commit 8d96698 — awaiting GEMINI_API_KEY verification on Vercel, MANUAL); EduScale middleware fast-path fix applied in main + Exavel forks
-- Blog posts BLOCKED by current employment — portfolio detail pages carry the writing load instead
+- 9 portfolio projects (EduScale, DevTrack, KhataGO, Vibe Testing, AxeTos, CodeSensei Search, CareerGlyph, redis-battle-demo, stripe-payments-demo). EduScale / DevTrack / KhataGO confirmed live; the rest need deploy.
+- Portfolio: 247 tests passing, `npm run build` clean.
+- Lint/build/format/type-check green across **all** of portfolio_next, KhataGO, DevTrack, EduScale/Frontend, EduScale/Backend, redis-battle-demo, stripe-payments-demo, CareerGlyph/FE+BE, CodeSensei/api.
+- Hero copy on home page now reflects real work: backend at ContextQA (core product, not Chrome extensions anymore), prior ~2 yrs at EsparkBiz, side-project breadth. **User still needs to pick one of the 3 single-line positioning drafts in MANUAL.md §1.**
 
 ---
 
-## Month 1 — Apr 19 → May 19, 2026 — Unblock and ship
+## Month 1 — Apr 19 → May 19, 2026 — Unblock + ship
 
-**Goal: eliminate every build/runtime error. Fix the three red-flag surfaces a recruiter sees first.**
+### Done
 
-### 1A — Fix portfolio build failure at /portfolio/eduscale
+- 1A — Portfolio build failure at `/portfolio/eduscale` fixed (commit 14c79b3: missing `"use client"` on PortfolioSkeleton.tsx caused framer-motion to be undefined in SSG)
+- 1B — KhataGO AI chat error fix shipped (commit 8d96698 in KhataGO: failing-loud on missing key + switched model to `gemini-2.0-flash`; user verified `GEMINI_API_KEY` on Vercel)
+- 1E — Supabase keep-alive (rewritten): replaced GitHub Actions with per-project Vercel crons in KhataGO, DevTrack, EduScale/Frontend — awaiting `CRON_SECRET` on Vercel (MANUAL §2)
+- 1H — `/blogs` SSR fix (commit 2bcac90: Suspense fallback was swallowing the list in initial HTML; now renders 27 post links server-side)
+- 1I — `/statistics` SSR fix (commit 38eaef0: added 10s upstream timeout + snapshot fallback; initial HTML now contains real numbers)
+- 1K — Honesty-pass on hero + home "What I'm building" strip (replaced fake PR counts + aspirational role titles with honest side-project framing)
+- 1L — Stripe case-study page on `/portfolio/stripe-payments-demo` (commit cec5f4a): SVG sequence diagram, Redis before/after walkthrough, naive-retry vs production-retry comparison panel
+- 1M — Contact form `/api/contact` route with Resend + Zod + rate limit + 5 new tests (commit 81650a1) — awaiting `RESEND_API_KEY` on Vercel (MANUAL §5)
+- 1N — Lint/build/format/type-check swept across all 9 repos (2026-04-19 audit) — scripts added, 4 classes of errors fixed (KhataGO `any`, EduScale/BE seeder vars, CareerGlyph root eslint config, CodeSensei stale `@ts-expect-error`)
 
-- Done (2026-04-19, commit 14c79b3) — `Element type is invalid: got undefined` resolved
-- Why: blocked `npm run build`; every deploy and every PR preview was red
-- Done when: `npm run build` completes clean; `/portfolio/eduscale` renders in prod
+### Pending (code-side)
 
-### 1B — Fix EduScale production AI chat error
+- **1C** — Port `stripe-payments-demo` from Express to Next.js API routes (path `app/api/webhook/route.ts`, `app/api/create-payment-intent/route.ts`, `app/api/simulate-payment/route.ts`). User will deploy to Vercel after the port. Move `src/{idempotency,payments,retry,webhook}.ts` helpers, adapt tests. Keep the express-based version in a `legacy/` branch. Blocks MANUAL §4.
+- **1D** — After user deploys the ported stripe-payments-demo, update `constants/projects.ts` with live URL + push new OG screenshot.
+- **1F** — Refresh `public/llms.txt` / `public/llms-full.txt` with all 9 projects (currently lags). Add short architecture note per project.
+- **1G** — Add a README to `stripe-payments-demo` that opens with the idempotency sequence diagram (reuse the SVG from portfolio's StripeCaseStudy), covers SETNX/HMAC/backoff/"don't retry 4xx", and has run+test steps.
 
-- Done (KhataGO repo commit 8d96698) — code fix shipped; awaiting env verification on Vercel (MANUAL §15)
-- Why: recruiters test the flagship feature first; broken chat = dead demo
-- Done when: chat sends a message and streams a Gemini response in prod
+### Blocked (waiting on user)
 
-### 1C — Deploy redis-battle-demo (Railway trial exhausted)
-
-- Blocked — deploy target is **Render or Fly** (Vercel serverless cannot hold Socket.io WebSocket connections). See MANUAL §4.
-- Why: portfolio card has no live link; distributed-lock demo is invisible
-- Done when: live URL returns 200; portfolio card `live:` populated
-
-### 1D — Deploy stripe-payments-demo
-
-- Blocked — two paths under consideration (MANUAL §5): (a) port Express routes to Next.js API routes and deploy on Vercel (preferred — matches target-company signal since everything else ships on Vercel) or (b) keep Express and deploy on Render. HTTP only, no WebSockets, so Vercel serverless works.
-- Why: Stripe application needs a live, curl-able artifact
-- Done when: webhook endpoint reachable over HTTPS; README updated with live URL
-
-### 1E — Supabase keep-alive GitHub Actions cron
-
-- Done (workflow committed) — waiting on MANUAL §3 secrets to start running
-- Why: free-tier Supabase pauses after 7 days; recruiters hit DB errors
-- Done when: workflow runs daily; last-run green for eduscale/devtrack/khatago
-
-### 1F — Update `llms.txt` / `llms-full.txt` for 9 projects
-
-- Pending — still reflects 6-project roster
-- Why: LLM-assisted recruiters and crawlers read this before hitting pages
-- Done when: both files list all 9 projects with short architecture notes
-
-### 1G — stripe-payments-demo README
-
-- Pending — repo committed without README
-- Why: 30-second recruiter scan needs problem → solution → idempotency pattern
-- Done when: README opens with the idempotency sequence diagram, covers SETNX webhook guard, HMAC verify, exponential backoff + jitter, "don't retry 4xx" rule, run/test steps
-
-### 1H — Fix /blogs listing render (recruiter red flag #7)
-
-- Pending — live `/blogs` returns no article cards despite 21 MDX files + sitemap entries
-- Why: recruiters see an empty blog; either a rendering bug or hydration gap
-- Done when: curl of `/blogs` shows at least 15 cards with dates in initial SSR HTML; verify `BLOG_SLUGS` export, `loadPost` gray-matter parsing, and page.tsx iteration
-
-### 1I — Fix /statistics loading-forever state (recruiter red flag #3)
-
-- Pending — `/api/statistics` never hydrates the client; visible state is "Loading coding statistics…"
-- Why: a blank page is worse than no page; kills credibility
-- Done when: add 10 s timeout with fallback UI backed by a static JSON snapshot committed to repo; curl of `/statistics` contains GitHub and LeetCode numbers in initial HTML
-
-### 1J — Rewrite hero positioning line (recruiter red flag #1)
-
-- Pending — current hero says "Full Stack Developer"; zero target-role signal
-- Why: a Stripe/Vercel/Supabase recruiter infers nothing in 10 seconds
-- Done when: `app/(home)/HomeContent.tsx` renders the 3-sentence positioning statement from MANUAL §P0-1; a recruiter can infer target role from hero in <5 seconds
+- 1J — Wire one of the 3 hero drafts from MANUAL §1 into `app/HomeContent.tsx` (currently the home hero paragraph is honest but the single-line positioning statement above it is still the cycling-titles carousel)
 
 ---
 
-## Month 2 — May 19 → Jun 19, 2026 — Depth, proof, and target-company artifacts
+## Month 2 — May 19 → Jun 19, 2026 — Depth + proof
 
-**Goal: case studies read like internal design docs, not product pages. Web Vitals proof visible.**
+### Already done
 
-### 2A — Expand EduScale case study on `/portfolio/eduscale` (red flag #2)
+- 2D — Dynamic OG images per project-detail page (commit 8754c2d)
+- 2G — URL health-check script exists (`scripts/check-live-urls.mjs`) — scheduled workflow wiring still pending (see 2G' below)
+- 2I — Replaced mailto contact with `/api/contact` (shipped this sprint)
+- 2J — "Things I'm building to learn" strip on home (commit cec5f4a — copy updated for honesty this turn)
 
-- Pending
-- Why: current page names the right primitives (Redlock, opossum, Redis adapter, Prometheus) but has no p95/p99, no concurrent-user numbers, no incident writeup, no tradeoff narrative
-- Done when: a "real incident" section is present (symptom / hypothesis / fix / confirmed-by-metric — 4 bullets minimum, sourced from MANUAL §P1-9), one real latency histogram from a k6 local run, one Redlock timeout-tuning tradeoff documented inline
+### Pending
 
-### 2B — Expand KhataGO case study on `/portfolio/khatago`
-
-- Pending
-- Why: fintech signal for Stripe; reframe as "ledger + reconciliation pipeline" not "WhatsApp AI app" (review target-company alignment note)
-- Done when: WhatsApp webhook flow, Gemini OCR prompt, Tally XML sample, SETNX dedup section all present on the detail page
-
-### 2C — Stripe-demo deep case-study page on `/portfolio/stripe-payments-demo` (red flag #4)
-
-- Pending
-- Why: this is the single highest-signal artifact for a Stripe application; must read like a Stripe internal design doc
-- Done when: (a) SVG sequence diagram of webhook → SETNX → handler → ack, (b) a "duplicate event walkthrough" showing Redis keys before/after, (c) a "what a 4xx retry would break" side-panel, (d) visible GitHub Actions CI badge, (e) the live URL from MANUAL §5
-
-### 2D — OG images on project detail pages
-
-- Done (commit 8754c2d) — `@vercel/og` dynamic OG wired on `/portfolio/[id]`
-- Why: LinkedIn shares of project pages no longer use the default OG
-- Done when: LinkedIn share of `/portfolio/eduscale` shows project-specific preview
-
-### 2E — Performance pass (LCP, INP, CLS, bundle) — Vercel-proof the site (red flag target #8)
-
-- Pending
-- Why: Vercel hires for perf obsession; no Web Vitals number is currently visible anywhere on the site
-- Done when: `npm run analyze` reviewed; recharts-heavy `stats-charts.tsx` + `github-contribution-heatmap.tsx` dynamic-imported (ssr:false already on charts — verify coverage); fonts subset; images >100 kB audited; `priority` only on hero; LCP <1.8 s, INP <150 ms, CLS <0.05 on a real device (PageSpeed ≥95 mobile); a Web Vitals screenshot added to the about page
-
-### 2F — CareerGlyph frontend completion
-
-- Pending
-- Why: `/[username]` viewer exists but flow gaps remain (edit profile, skill endorsements UI)
-- Done when: edit-profile page shipped; endorse button optimistic UX end-to-end; E2E tests cover register → edit → endorse path
-
-### 2G — URL health check in CI
-
-- Done (commit 8754c2d) — `scripts/check-live-urls.mjs` exists; scheduled workflow wiring pending
-- Why: catch silent outages before a recruiter does
-- Done when: GitHub Actions cron runs the script daily; failure opens an issue (or posts to Slack/email)
-
-### 2H — Guest mode / Loom for DevTrack live demo (red flag #5)
-
-- Pending — DevTrack live URL currently lands on a login wall; Supabase Realtime claims are unprovable by a logged-out visitor
-- Why: the Supabase-realtime signal is dead on arrival if a recruiter can't see it
-- Done when: either a seeded demo account auto-logs in on `/?demo=1` with pre-populated activity and Realtime updating, OR a 30 s Loom is embedded on `/portfolio/devtrack` (MANUAL §P1-7 delivers the Loom)
-
-### 2I — Replace mailto contact with a real API route (red flag #6)
-
-- Pending — contact form opens a mailto; looks amateur next to Cal.com or an API-backed form; no analytics on inbound interest
-- Why: senior-role recruiters expect an API-backed form + scheduling link
-- Done when: `/api/contact` ships using Resend or Postmark free tier + Zod validation + rate limit; Cal.com embed added to the contact page; form submits without opening a mail client
-
-### 2J — "What I'm optimizing for" strip on the home page
-
-- Pending
-- Why: the three target-company tells (payments / real-time / platform DX) must be visible above the fold — recruiters pattern-match in 10 seconds
-- Done when: 3 home-page cards ship — "Payments infra" → `/portfolio/stripe-payments-demo`, "Real-time systems" → `/portfolio/eduscale`, "Platform/DX" → `/portfolio/devtrack`
-
-### 2K — SEO: per-page OpenGraph + JSON-LD audit
-
-- Pending — partially in place; audit for completeness
-- Why: Person, BlogPosting, and SoftwareSourceCode schema surface on AI-assisted recruiter tooling
-- Done when: `https://search.google.com/test/rich-results` passes on 5 pages (home, about, portfolio, one project detail, one blog post)
-
-### 2L — Broken-links & console-error E2E gate
-
-- Pending
-- Why: CI must fail on any page that emits a console error or has a broken link
-- Done when: `e2e/` test iterates all routes, asserts zero console errors, asserts zero 4xx/5xx on internal links; CI green gate present
+- **2A** — Expand EduScale case study with a real-incident section (symptom / hypothesis / fix / confirmed-by-metric). **Blocked** on MANUAL §11 (user dictates 4 bullets).
+- **2B** — Expand KhataGO case study. Reframe as "WhatsApp → Gemini function-calling → Prisma + reconciliation" with explicit flows: webhook verification, OCR prompt, transaction/receivable write path, reminder cron. Target-company signal: fintech + AI tool-use.
+- **2C** — Stripe case-study page is mostly done (commit cec5f4a); pending: add visible GitHub Actions CI badge + live-URL link once 1D lands.
+- **2E** — Perf pass for Web Vitals proof. `npm run analyze`, audit images >100 kB, font subset, dynamic-import the remaining chart components, target LCP <1.8s, INP <150ms, CLS <0.05, PageSpeed ≥95 mobile. Add a Web-Vitals screenshot to `/about`.
+- **2F** — CareerGlyph frontend: edit-profile page, endorse button optimistic UX, register → edit → endorse E2E.
+- **2G'** — Wire `scripts/check-live-urls.mjs` into a GitHub Actions cron so silent outages get surfaced before a recruiter hits them.
+- **2H** — Guest-mode for DevTrack so a logged-out recruiter sees Realtime. Option A: seeded demo account auto-logs in on `?demo=1`. Option B: 30s Loom embedded on `/portfolio/devtrack` (MANUAL §9 delivers the Loom).
+- **2K** — SEO audit: verify per-page OpenGraph + JSON-LD schema renders on home, about, portfolio, a project detail, one blog post. `https://search.google.com/test/rich-results` must pass.
+- **2L** — E2E gate: every page must emit zero console errors, zero 4xx/5xx on internal links. CI fails on violation.
+- **2M** — Port ArchitectureDiagram's icon logic so non-showcase projects can also visualize architecture (currently the fallback just lists architecture as text).
 
 ---
 
 ## Month 3 — Jun 19 → Jul 19, 2026 — Target-company alignment
 
-**Goal: one polished demo per target company + Lighthouse CI enforced + tailored applications.**
+### Pending
 
-### 3A — Stripe SCA/3DS happy-path + failure-path demo (review P2-17)
+- **3A — Stripe SCA / 3DS demo** — `stripe-payments-demo` or sibling repo demonstrates `requires_action` → `confirmCardPayment` → webhook reconciliation; state machine on the case-study page; bonus: dispute/refund + metered billing.
+- **3B — Vercel edge-runtime demo** — `/api/geolocate` on edge runtime, Upstash-backed rate limiter, cold-start comparison vs Node lambda. New portfolio card.
+- **3C — Supabase-native demo** — Extend DevTrack with RLS policies (documented SQL on the case study page) + Realtime presence ("who's viewing this dashboard") + pgvector semantic search of commits.
+- **3D — Lighthouse CI in GitHub Actions** — `lhci` runs per PR against home + one project detail page; LCP/INP/CLS budgets block merge on regression.
+- **3E — Apply-ready sweep** — `scripts/check-live-urls.mjs` green + `npm run build` clean + `npm run type-check` clean + `npm run test:coverage` ≥ 70% + Lighthouse budgets met + all MANUAL §P0 items done.
 
-- Pending
-- Why: Stripe will filter on money-movement primitives; basic webhook idempotency is not enough
-- Done when: `stripe-payments-demo` (or a linked sibling repo) demonstrates `requires_action` → `confirmCardPayment` → webhook reconciliation; state machine documented in the case-study page; bonus: dispute/refund flow + metered-billing toy
+### Nice-to-have (added this turn, good-to-have for selection)
 
-### 3B — Vercel edge-runtime demo (review P2-15)
-
-- Pending
-- Why: Vercel wants engineers who already ship on the platform idiomatically
-- Done when: a tiny `/api/geolocate` on the edge runtime with a KV-backed rate limiter lives on Vercel; a short "portfolio note" page documents cold-start numbers vs node lambda; portfolio card added
-
-### 3C — Supabase-native demo: RLS + Realtime presence + pgvector (review P2-16)
-
-- Pending
-- Why: RLS expertise is Supabase's top filter
-- Done when: DevTrack (or a new small app) extended with RLS policies + Realtime presence (live cursors or "who's viewing this dashboard") + `pgvector` semantic search of commits; RLS policy documented with actual SQL on the devtrack case-study page; portfolio card updated
-
-### 3D — Lighthouse CI in GitHub Actions (review P2-18)
-
-- Pending
-- Why: enforce LCP/INP/CLS budgets per PR; makes the perf claim auditable
-- Done when: `lhci` runs on every PR against home + one project detail page; budget file commits LCP <1.8 s, INP <150 ms, CLS <0.05; failures block merge
-
-### 3E — Tailored application packets
-
-- Pending
-- Why: generic applications get filtered; each target gets its own cover + project list
-- Done when: three application folders (stripe/, vercel/, supabase/) each with cover letter, resume variant, and 3 top project links ordered by relevance
-
-### 3F — Final review pass before applying
-
-- Pending
-- Why: one broken link kills the application; hard sweep before send
-- Done when: `scripts/check-live-urls.mjs` green, `npm run build` clean, `npm run type-check` clean, `npm run test:coverage` >= 70%, Lighthouse CI green on home and one project detail page
+- **3F** — Blog-less technical content: add a `/notes` section to the portfolio that allows short, paragraph-sized writeups without the "blog post" framing (lower employer risk than /blogs per MANUAL §14 decision). One per target company: "How webhook idempotency actually breaks," "How RLS policies really compose," "Cold-start myths on Vercel Edge."
+- **3G** — CodeSensei Search deserves a live-demo widget on its portfolio page — embed a 3-query search box hitting the live API.
+- **3H** — Add a Sentry-like error log viewer on `/admin/errors` (gated by a local-only env flag). Shows you can instrument in addition to building.
+- **3I** — Repo badges — every project README gets a CI badge + test-count badge + coverage badge so a recruiter can scan the repo in 5 seconds.
 
 ---
 
 ## Quick Reference: Project → Target Company
 
-| Project              | Primary Signal                           | Target Company   |
+| Project              | Primary signal                           | Target           |
 | -------------------- | ---------------------------------------- | ---------------- |
 | EduScale             | Distributed systems (Redlock, Redis, CB) | All              |
-| redis-battle-demo    | Distributed lock visualization + metrics | Stripe, Vercel   |
+| redis-battle-demo    | Distributed-lock visualization + metrics | Stripe, Vercel   |
 | stripe-payments-demo | Correctness: idempotency, deduplication  | Stripe           |
-| KhataGO              | Ledger + reconciliation pipeline         | Stripe           |
+| KhataGO              | Reconciliation + AI tool-use             | Stripe           |
 | CareerGlyph          | NestJS API + auth + RBAC + test suite    | Supabase, Vercel |
-| CodeSenseiSearch     | pgvector semantic search, AI pipelines   | Supabase         |
-| DevTrack             | Next.js + Supabase Realtime + analytics  | Supabase, Vercel |
-| portfolio itself     | Next.js depth: SEO, ISR, Edge, 242 tests | Vercel           |
-
----
+| CodeSensei Search    | pgvector semantic search, AI pipelines   | Supabase         |
+| DevTrack             | Supabase Realtime + analytics            | Supabase, Vercel |
+| portfolio itself     | Next.js depth: SEO, SSR, 247 tests       | Vercel           |
 
 ## Quick Reference: File Locations
 
-| What to change                | File                                          |
-| ----------------------------- | --------------------------------------------- |
-| Project card content          | `constants/projects.ts`                       |
-| Experience / Education        | `constants/index.ts`                          |
-| Blog post list                | `lib/blog-data.ts` BLOG_SLUGS array           |
-| Blog post content             | `content/blog/<slug>.mdx`                     |
-| Social links, email, site URL | `lib/constants.ts`                            |
-| About page bio text           | `app/about/AboutContent.tsx`                  |
-| Navigation links              | `components/navbar/index.tsx`                 |
-| AI crawler context            | `public/llms.txt`, `public/llms-full.txt`     |
-| Resume PDF                    | `public/Shailesh_Chaudhari_Resume.pdf`        |
-| Page metadata                 | `app/<page>/metadata.ts`                      |
-| OG image design               | `app/api/og/route.tsx`                        |
-| RSS feed                      | `app/feed.xml/route.ts`                       |
-| Hero copy                     | `app/(home)/HomeContent.tsx`                  |
-| CareerGlyph API               | `~/Desktop/Coding/careerglyph/apps/backend/`  |
-| CareerGlyph Frontend          | `~/Desktop/Coding/careerglyph/apps/frontend/` |
-| redis-battle-demo             | `~/Desktop/Coding/redis-battle-demo/`         |
-| stripe-payments-demo          | `~/Desktop/Coding/stripe-payments-demo/`      |
+| What to change                | File                                           |
+| ----------------------------- | ---------------------------------------------- |
+| Project card content          | `constants/projects.ts`                        |
+| Experience / Education        | `constants/index.ts`                           |
+| Blog post list                | `lib/blog-data.ts` BLOG_SLUGS array            |
+| Blog post content             | `content/blog/<slug>.mdx`                      |
+| Social links, email, site URL | `lib/constants.ts`                             |
+| About page bio text           | `app/about/AboutContent.tsx`                   |
+| Navigation links              | `components/navbar/index.tsx`                  |
+| AI crawler context            | `public/llms.txt`, `public/llms-full.txt`      |
+| Resume PDF                    | `public/Shailesh_Chaudhari_Resume.pdf`         |
+| Page metadata                 | `app/<page>/metadata.ts`                       |
+| OG image design               | `app/api/og/route.tsx`                         |
+| RSS feed                      | `app/feed.xml/route.ts`                        |
+| Hero copy                     | `app/HomeContent.tsx`                          |
+| CareerGlyph API               | `~/Desktop/Coding/CareerGlyph/apps/backend/`   |
+| CareerGlyph Frontend          | `~/Desktop/Coding/CareerGlyph/apps/frontend/`  |
+| redis-battle-demo             | `~/Desktop/Coding/redis-battle-demo/`          |
+| stripe-payments-demo          | `~/Desktop/Coding/stripe-payments-demo/`       |
