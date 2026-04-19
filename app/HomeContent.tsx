@@ -19,11 +19,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SOCIAL_LINKS } from "@/lib/constants";
 const jobTitles: string[] = [
-  "Backend Systems Engineer",
-  "Real-time Systems Engineer",
-  "Distributed Systems Engineer",
-  "Payments Infrastructure Engineer",
-  "Full Stack Engineer (backend bias)",
+  "Software Engineer",
+  "Full Stack Developer",
+  "Backend Engineer",
+  "TypeScript Engineer",
+  "Next.js Developer",
+  "Node.js Developer",
 ];
 
 const skills = [
@@ -192,7 +193,7 @@ export default function HomeContent({ featuredPosts }: Props) {
         </div>
       </section>
 
-      {/* What I'm optimizing for — 3 target-company signals */}
+      {/* Side projects I'm building */}
       <section className="container mx-auto px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -202,36 +203,40 @@ export default function HomeContent({ featuredPosts }: Props) {
           className="mb-10 text-center"
         >
           <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary/70">
-            Currently focused on
+            Side projects
           </p>
           <h2 className="text-text-primary text-3xl font-bold lg:text-4xl">
-            The parts I go deep on
+            Things I&apos;m building to learn
           </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
+            Outside of my day job, these are the small-to-medium projects I
+            work on to explore specific backend patterns end-to-end.
+          </p>
         </motion.div>
 
         <div className="grid gap-6 md:grid-cols-3">
           {[
             {
-              tag: "Payments infra",
-              title: "Webhook idempotency + retry",
+              tag: "stripe-payments-demo",
+              title: "Webhook idempotency patterns",
               proof:
-                "stripe-payments-demo: Redis SETNX on event IDs, 24h TTL covering Stripe's retry window, exponential backoff + jitter, 4xx bypassed from retry. 29 tests incl. concurrent duplicate simulation.",
+                "Demo project exploring Stripe webhook handling: Redis SETNX on event IDs with 24h TTL, exponential backoff retry that skips 4xx, and 29 tests covering the duplicate-delivery edge cases.",
               href: "/portfolio/stripe-payments-demo",
               cta: "See the Stripe demo",
             },
             {
-              tag: "Real-time systems",
-              title: "Distributed locks + pub/sub",
+              tag: "eduscale",
+              title: "Real-time coding platform",
               proof:
-                "EduScale: Redlock over Redis prevents duplicate battle starts, @socket.io/redis-adapter for multi-instance broadcast, opossum circuit breaker around code execution, prom-client /metrics for p99 latency.",
+                "Side project with 1v1 coding battles. Uses Redlock over Redis to prevent duplicate battle starts, @socket.io/redis-adapter for horizontal scaling, opossum circuit breaker, and prom-client /metrics.",
               href: "/portfolio/eduscale",
-              cta: "See how EduScale scales",
+              cta: "See how EduScale works",
             },
             {
-              tag: "Developer tooling",
-              title: "Live collaboration UX",
+              tag: "devtrack",
+              title: "Dev-productivity dashboard",
               proof:
-                "DevTrack: Supabase Realtime postgres_changes subscription for live activity feed, optimistic UI with rollback on auth failure, sub-second multi-tab sync indicator.",
+                "Tracks coding time + streaks with Supabase Realtime postgres_changes for the live activity feed, optimistic UI with rollback on auth failure, and sub-second multi-tab sync indicator.",
               href: "/portfolio/devtrack",
               cta: "See DevTrack's realtime",
             },
