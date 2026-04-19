@@ -199,6 +199,7 @@ export const projects: Project[] = [
       "Prisma",
       "PostgreSQL",
       "Supabase",
+      "Supabase Realtime",
       "Tailwind CSS",
       "Shadcn UI",
       "Recharts",
@@ -206,7 +207,7 @@ export const projects: Project[] = [
     live: "https://daily-dev-track.vercel.app",
     github: "https://github.com/Shailesh93602/devtrack",
     detailedDescription:
-      "DevTrack is a high-performance developer productivity ecosystem built to centralize tracking of DSA progress, project milestones, and daily coding activity. It features a rule-based intelligence engine that generates personalized insights and prescriptive recommendations to help developers build a balanced technical profile.",
+      "DevTrack is a developer productivity dashboard tracking DSA progress, project milestones, and daily coding activity. It uses Supabase Realtime (postgres_changes subscriptions) so the activity feed updates live across tabs and devices without polling — a green pulsing indicator shows the WebSocket channel status. The analytics layer generates personalized insights and prescriptive recommendations from historical patterns.",
     architecture: {
       layers: [
         {

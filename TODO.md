@@ -1,420 +1,210 @@
-# TODO.md — Code-Executable Tasks (3-Month Plan)
+# TODO.md — Code-Executable Tasks (Next 3 Months)
 
 All tasks here can be done with code, terminal commands, or file edits.
 See PLAN.md for strategic context. See MANUAL.md for tasks requiring credentials or writing.
 
-Legend: ✅ Done 🔲 Pending 🚫 Blocked (needs manual step first)
+Legend: ✅ Done  🔲 Pending  🚫 Blocked (needs manual step first)
+
+**Current test counts (as of April 19, 2026):**
+- portfolio_next: 242 tests ✅, 70.66% coverage ✅
+- redis-battle-demo: 48 tests ✅
+- CareerGlyph backend: 58 unit + 13 E2E = 71 tests ✅
+- stripe-payments-demo: 29 tests ✅ (NEW)
 
 ---
 
-## Month 1 — April 16 to May 16, 2026
+## Completed (Month 1 — Apr 18–19, 2026)
 
-### 1A — Portfolio Project Card Overhaul
-
-- ✅ **Rewrite EduScale card** — Added `@socket.io/redis-adapter`, `redlock`, `opossum`, `prom-client`, `Bull` as tech tags and architecture items. `challengesSolved` now names specific libraries and patterns.
-- ✅ **Add CodeSenseiSearch project card** — Full card with NestJS, pgvector, embeddings architecture. No live demo (honest). GitHub link included.
-- ✅ **Fix KhataGO card** — Removed dead GitHub link (private repo). `challengesSolved` now names webhook deduplication, Gemini OCR pipeline, Tally XML schema specifics.
-- ✅ **Update ContextQA descriptions** — Vibe Testing: ~1,900 merged PRs. AxeTos: ~1,600 merged PRs. Both descriptions updated.
-
-### 1B — AI Crawler Files
-
-- ✅ **Update `public/llms.txt`** — CodeSenseiSearch added, EduScale real architecture named, KhataGO marked private repo, ContextQA PR counts added.
-- ✅ **Update `public/llms-full.txt`** — Full technical sections for EduScale distributed arch, KhataGO three-layer pipeline, CodeSenseiSearch ingestion+search.
-
-### 1C — Blog Infrastructure
-
-- ✅ **Migrate `lib/blog-data.ts` → MDX files** — `scripts/migrate-blog.mjs` extracted all 17 posts into `content/blog/<slug>.mdx` (YAML frontmatter + HTML body). `lib/blog-data.ts` reduced from 10,078 → 135 lines (thin index using `gray-matter` + `fs.readFileSync`). All helper functions preserved (`getFeaturedPosts`, `getAllTags`, `getRelatedPosts`, `getPostsByTag`). 66 tests still green.
-
-- ✅ **Add dynamic OpenGraph images** — `app/api/og/route.tsx` (edge runtime, `next/og` ImageResponse). Blog post metadata updated to use `/api/og?title=<encoded>`.
-
-- ✅ **Add RSS feed** — `app/feed.xml/route.ts` (RSS 2.0, sorted by date, XML-escaped, 1-hour cache). Linked from `<head>` in layout.
-
-### 1D — EduScale README _(run in the EduScale repo — needs repo access)_
-
-- 🚫 **Add ASCII architecture diagram** — Blocked until EduScale repo is reviewed locally
-- 🚫 **Document distributed lock usage** — Same blocker
-- 🚫 **Document circuit breaker** — Same blocker
-- 🚫 **Document Prometheus /metrics** — Same blocker
-- 🚫 **Add working "Running locally" section** — Same blocker
-
-### 1E — KhataGO README _(blocked: repo is private — see MANUAL.md §1)_
-
-- 🚫 **Document WhatsApp webhook flow** — Blocked until repo is public
-- 🚫 **Document Gemini OCR pipeline** — Blocked
-- 🚫 **Document Tally XML export** — Blocked
-
-### 1F — Security & Quality Fixes
-
-- ✅ **Remove `dangerouslySetInnerHTML`** from `ExperienceSection` — Replaced HTML-embedded strings with plain text descriptions + structured highlights array.
-
-### 1G — SEO Infrastructure
-
-- ✅ **`app/sitemap.ts`** — Already existed; verified correct (static routes + all blog slugs).
-- ✅ **`app/robots.ts`** — Added. Allows all crawlers, points to `/sitemap.xml`.
+| Task | Deliverable |
+|---|---|
+| 1A — Portfolio cards | redis-battle-demo + CareerGlyph + stripe-payments-demo added to `constants/projects.ts` |
+| 1B — CareerGlyph frontend | `/[username]` profile viewer, `/login`, `/register`, TanStack Query, optimistic endorsements |
+| 1C — EduScale README | Redis adapter, Redlock, circuit breaker, Prometheus all documented with code snippets |
+| 1D — stripe-payments-demo | Webhook deduplication (SETNX), payment intent idempotency key, exponential-backoff retry, 29 tests |
+| 1E — DevTrack Realtime | `useRealtimeLogs` hook, `RealtimeLogList` component, live indicator dot |
+| 2D — Statistics skeleton | `app/statistics/loading.tsx` already existed and is complete |
 
 ---
 
-## Month 2 — May 16 to June 16, 2026
+## Month 1 Remaining — by May 18, 2026
 
-### 2A — Statistics API Refactor
+### 1F — Update DevTrack portfolio card
 
-- ✅ **Refactor `app/api/statistics/route.ts`** — Extracted `lib/github-service.ts` (~240 lines) and `lib/leetcode-service.ts` (~200 lines). `route.ts` is now a 50-line orchestrator. Unit tests: `__tests__/github-service.test.ts` (10 tests), `__tests__/leetcode-service.test.ts` (5 tests). Total: 66 tests passing.
+DevTrack now has Supabase Realtime. The card doesn't mention it.
 
-### 2B — Portfolio Feature Additions
-
-- ✅ **Add blog search by URL query** — `/blogs?q=redis` and `?tag=react` filter client-side. State initialized from URL on mount. 300ms debounced `router.replace()` writes back. Wrapped in `<Suspense>` for `useSearchParams`.
-
-- ✅ **Add reading progress bar to blog posts** — `components/ReadingProgressBar.tsx`, `transform: scaleX()` GPU-accelerated. ARIA `progressbar` role. Tests in `__tests__/reading-progress.test.tsx`. Rendered in `app/blog/[slug]/page.tsx`.
-
-- ✅ **Add Lighthouse CI to GitHub Actions** — `.github/workflows/lighthouse.yml` PR trigger, desktop preset. `.lighthouserc.js` with assertions: perf ≥ 0.85 (warn), a11y/best-practices/seo ≥ 0.9 (error).
-
-### 2C — `redis-battle-demo` Standalone Repo
-
-- ✅ **Scaffold `redis-battle-demo`** — `~/Desktop/Coding/redis-battle-demo`. `src/server.js` (~180 lines): Express + Socket.io + `@socket.io/redis-adapter` (pub/sub clients) + `Redlock` (retryCount:0, distributed tick mutex). `docker-compose.yml` starts Redis. `public/index.html` live demo UI. README with ASCII architecture diagram + Redlock explanation.
+- 🔲 **`constants/projects.ts` DevTrack card** — add `Supabase Realtime` to tags array
+- 🔲 **Update `detailedDescription`** — mention the realtime activity feed with live indicator
 
 ---
 
-## Month 3 — June 16 to July 16, 2026
+### 1G — Update `llms.txt` for new projects
 
-### 3A — Bundle Analysis
+AI crawlers and LLM-assisted recruiters read `llms.txt`. Add the 3 new projects.
 
-- ✅ **Run bundle analysis** — Ran via `ANALYZE=true npx next build --webpack`. Top offenders: recharts+lodash (394kB, already lazy-loaded), lucide (359kB, named imports fine), yup (195kB — eliminated, see below), Next.js internals (217kB, not optimizable).
-
-- ✅ **Fix the worst bundle offender** — Removed `yup` + `@hookform/resolvers` (195kB). Replaced with react-hook-form's built-in `rules` API in `ContactContent.tsx`. Net saving: ~195kB from client bundle.
-
-### 3B — CareerGlyph MVP
-
-- ✅ **Scaffold CareerGlyph backend** — `~/Desktop/Coding/careerglyph` (existing monorepo). Added `prisma/schema.prisma` (Developer, Skill, Project, Endorsement with SkillCategory/SkillLevel enums). `PrismaService` + `@Global() DatabaseModule`. `GET /profile/:username` loads skills+endorsements+projects, 404 for unknown/private. Swagger decorators. Seed file with sample developer, 3 skills, 2 projects, 1 endorsement.
-
-### 3C — Test Suite Maintenance
-
-- ✅ **Regenerate all 42 Playwright screenshots** — All 42 (7 pages × 3 viewports × 2 themes) regenerated after UI changes (experience section, project cards, reading progress bar).
-
-- ✅ **Ensure all E2E tests green after Month 1 changes** — 22/22 pass (navigation + SEO). Fixed pre-existing framer-motion re-animation bug in `AboutContent` (`containerVariants` moved to module scope).
-
-- ✅ **Add unit tests for new Month 2 components** — `__tests__/reading-progress.test.tsx` (3 tests: aria attrs, initial 0%, scroll update to 50%).
-
-### 3D — SEO Polish
-
-- ✅ **Add `hire` page to sitemap** — Added to `app/sitemap.ts`.
-
-### 3E — Resume
-
-- 🔲 **Update resume PDF if content has changed** [S]
-  - Replace `public/Shailesh_Chaudhari_Resume.pdf`
-  - Filename must stay identical (all existing links remain valid)
+- 🔲 **`public/llms.txt`** — add redis-battle-demo, CareerGlyph frontend, stripe-payments-demo
+- 🔲 **`public/llms-full.txt`** — same, with architecture detail
 
 ---
 
-## Test Coverage Sprint — All Projects
+### 1H — CareerGlyph frontend README
 
-Current state: portfolio_next has 97 unit + 23 E2E tests. redis-battle-demo has 0 tests. CareerGlyph backend has 0 tests.
-Goal: full coverage at every layer (unit → integration → API → E2E) for all three projects.
+Recruiters who click the frontend GitHub folder see no README.
 
-Legend: ✅ Done 🔲 Pending
-
----
-
-### T1 — portfolio_next: Jest unit tests (missing coverage)
-
-#### T1a — lib/blog-data.ts coverage
-
-- ✅ **`__tests__/blog-data.test.ts`**
-  - `BLOG_SLUGS`: array has 17 entries, all strings, no duplicates
-  - `loadPost(slug)`: returns `BlogPost` with required fields (slug, title, date, tags, description)
-  - `loadPost('nonexistent')`: returns `null`
-  - `blogPosts`: length matches `BLOG_SLUGS`, no nulls
-  - `getPostBySlug(slug)`: returns matching post; returns `undefined` for unknown slug
-  - `getFeaturedPosts()`: returns only posts with `featured: true`; returns array (possibly empty)
-  - `getAllTags()`: returns unique tags, sorted, no empty strings
-  - `getRelatedPosts(slug, n)`: excludes the source post; caps at `n`; returns `[]` for unknown slug
-  - `getPostsByTag(tag)`: returns only posts containing the tag; empty array for unknown tag
-
-#### T1b — lib/hooks coverage
-
-- ✅ **`__tests__/hooks.test.tsx`** (React Testing Library renderHook)
-  - `useBlogPosts(posts, query, tag)`:
-    - returns all posts when query + tag are empty
-    - filters by title substring (case-insensitive)
-    - filters by tag exact match
-    - combined query + tag: intersection of both filters
-    - returns `[]` when no posts match
-  - `useStats()`:
-    - initial state: `{ data: null, loading: true, error: null }`
-    - after resolved fetch: `loading: false`, `data` populated
-    - after rejected fetch: `loading: false`, `error` populated
-    - mock `fetch` globally (jest.spyOn / msw or jest.fn)
-
-#### T1c — ExperienceSection component
-
-- ✅ **`__tests__/experience-section.test.tsx`**
-  - renders "Professional Experience" heading
-  - renders each job title from `EXPERIENCE` constant
-  - renders company name and date range for each entry
-  - renders at least one highlight bullet per entry
-  - no `dangerouslySetInnerHTML` present in rendered output (security regression)
-
-#### T1d — Achievements component
-
-- ✅ **`__tests__/achievements.test.tsx`**
-  - renders "Achievements" heading
-  - renders GeeksforGeeks Institute Rank 1 entry
-  - renders HackerRank 5-star entry
-  - renders all achievement titles from `ACHIEVEMENTS` constant
-
-#### T1e — SkillsSection component
-
-- ✅ **`__tests__/skills-section.test.tsx`**
-  - renders skills heading
-  - renders each skill category
-  - each skill name is present in the DOM
-
-#### T1f — Navbar component
-
-- ✅ **`__tests__/navbar.test.tsx`**
-  - renders main navigation landmark (`<nav aria-label="Main navigation">`)
-  - renders logo link
-  - all nav links present: About, Portfolio, Blogs, Contact, Hire
-  - skip-to-main link is present in DOM with correct href
-
-#### T1g — BlogFilters component
-
-- ✅ **`__tests__/blog-filters.test.tsx`**
-  - renders search input
-  - renders "All" tag button
-  - renders each tag from the `tags` prop
-  - typing in search input calls `onSearchChange`
-  - clicking a tag button calls `onTagChange` with the tag
-
-#### T1h — API route: /api/statistics
-
-- ✅ **`__tests__/api-statistics.test.ts`**
-  - Mock `fetchGithubStats` and `fetchLeetCodeStats` (jest.mock `@/lib/github-service` and `@/lib/leetcode-service`)
-  - `GET /api/statistics`: returns 200 with merged `{ github, leetcode }` shape
-  - When `fetchGithubStats` throws: response still returns 200 with `github: null` (graceful fallback)
-  - When `fetchLeetCodeStats` throws: response still returns 200 with `leetcode: null`
-  - Response has correct `Cache-Control` header
-
-#### T1i — API route: /api/blogs
-
-- ✅ **`__tests__/api-blogs.test.ts`**
-  - No query params: returns all posts as JSON array
-  - `?tag=redis`: returns only posts tagged "redis"
-  - `?q=socket`: returns posts whose title/description matches
-  - `?q=&tag=`: returns all posts (empty filters pass through)
-  - Empty result: returns `[]` not a 404
-
-#### T1j — ReadingProgressBar (extend existing)
-
-- ✅ Extend `__tests__/reading-progress.test.tsx`
-  - `aria-valuenow` updates to 100 when scrolled to bottom
-  - Component unmounts cleanly (scroll listener removed — no error thrown)
+- 🔲 **`apps/frontend/README.md`** — add: `npm run dev`, env vars (`NEXT_PUBLIC_API_URL`),
+  backend dependency (NestJS on :3001), pages (`/`, `/login`, `/register`, `/[username]`)
 
 ---
 
-### T2 — portfolio_next: Playwright E2E (missing scenarios)
+### 1I — stripe-payments-demo README
 
-#### T2a — Blog post detail page
+The repo is committed but the README is missing. Recruiters need to understand the
+idempotency pattern within 30 seconds of opening it.
 
-- ✅ **`e2e/blog.spec.ts`**
-  - Navigate to `/blogs` → click first article card → lands on `/blog/<slug>`
-  - Page has `<article>` or `role="article"` landmark
-  - Reading progress bar is present (`role="progressbar"`)
-  - Scrolling to bottom increases progress bar `aria-valuenow`
-  - Page title includes article title
-  - JSON-LD BlogPosting schema is in DOM
-
-#### T2b — Portfolio project detail page
-
-- ✅ **`e2e/portfolio-detail.spec.ts`**
-  - Navigate to `/portfolio` → click EduScale card → lands on `/portfolio/eduscale`
-  - Page shows architecture section
-  - Tech stack tags are visible
-  - Back/close navigation works (returns to `/portfolio`)
-
-#### T2c — Blog search and filter via URL
-
-- ✅ **Add to `e2e/blog.spec.ts`**
-  - Navigate to `/blogs?q=redis` → only Redis-related posts visible
-  - Navigate to `/blogs?tag=react` → only React-tagged posts visible
-  - Clear search → all posts return
-  - Tag filter shown as active/selected in UI
-
-#### T2d — Contact form validation
-
-- ✅ **`e2e/contact.spec.ts`**
-  - Submit empty form → required field errors appear
-  - Invalid email format → validation error on email field
-  - Valid submission → success state shown (or `mailto:` link constructed)
-
-#### T2e — Statistics page data renders
-
-- ✅ **Add to `e2e/navigation.spec.ts` or new spec**
-  - `/statistics`: at least one chart or data element renders (not just spinner)
-  - GitHub contribution heatmap container is in DOM
-  - LeetCode stats section is visible (or graceful empty state)
-
-#### T2f — RSS feed and OG image endpoints
-
-- ✅ **`e2e/api.spec.ts`**
-  - `GET /feed.xml` returns 200 with `Content-Type: application/rss+xml`
-  - Feed contains at least one `<item>` with `<title>` and `<link>`
-  - `GET /api/og?title=Hello+World` returns 200 with `Content-Type: image/png`
-  - `/robots.txt` returns 200 and contains `Sitemap:`
-  - `/sitemap.xml` returns 200 and contains the portfolio domain
-
-#### T2g — 404 page
-
-- ✅ **Add to `e2e/navigation.spec.ts`**
-  - Navigate to `/does-not-exist` → renders 404 page (not a blank/error page)
-  - Page contains a link back to home
-
-#### T2h — Accessibility assertions (jest-axe)
-
-- ✅ **`__tests__/a11y.test.tsx`** (jest-axe + `axe-core`)
-  - Install: `npm install --save-dev jest-axe @types/jest-axe`
-  - Render `<BlogCard />` → `expect(await axe(container)).toHaveNoViolations()`
-  - Render `<ProjectCard />` → no axe violations
-  - Render `<ExperienceSection />` → no axe violations
-  - Render `<EducationSection />` → no axe violations
-  - Render `<SkillsSection />` → no axe violations
+- 🔲 **`README.md`** — document:
+  - The problem: Stripe delivers webhooks at-least-once
+  - The solution: Redis SETNX idempotency guard
+  - Sequence diagram: first delivery → processed; duplicate → skipped
+  - Running locally: `npm run dev`, env vars (STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, REDIS_URL)
+  - Running tests: `npm test`
 
 ---
 
-### T3 — redis-battle-demo: Full test suite (0 → covered)
+## Month 2 — May 18 to Jun 18, 2026
 
-#### T3a — Test infrastructure setup
+**Goal: Get every project publicly accessible. Deploy redis-battle-demo and stripe-payments-demo.**
 
-- ✅ **Install test dependencies**
+---
+
+### 2A — Deploy redis-battle-demo to Railway
+
+- 🔲 **Add `railway.toml`** to redis-battle-demo repo
+  ```toml
+  [build]
+  builder = "NIXPACKS"
+
+  [deploy]
+  startCommand = "node src/server.js"
+  healthcheckPath = "/health"
   ```
-  npm install --save-dev jest @types/jest socket.io-client ioredis-mock
-  ```
-- ✅ **Add `jest.config.js`** — `testEnvironment: 'node'`, pattern `**/*.test.js`
-- ✅ **Add `"test": "jest"` script** to `package.json`
-
-#### T3b — Server configuration unit tests
-
-- ✅ **`src/__tests__/config.test.js`**
-  - `PORT` defaults to 3001 when env unset
-  - `REDIS_URL` defaults to `redis://localhost:6379`
-  - `INSTANCE_ID` is a non-empty string (randomUUID format)
-  - `TICK_INTERVAL_MS` is 2000
-  - `LOCK_TTL_MS` is 1500
-
-#### T3c — Redlock distributed mutex unit tests
-
-- ✅ **`src/__tests__/redlock.test.js`** (mock `redlock` module)
-  - `tryTick()` acquires lock on `battles:tick:lock`
-  - Emits `server_tick` event to all connected clients when lock acquired
-  - Does NOT emit when lock acquisition throws (another instance holds lock)
-  - Releases lock after emit
-  - Lock TTL is `LOCK_TTL_MS`
-
-#### T3d — Socket.io event handler tests
-
-- ✅ **`src/__tests__/socket-events.test.js`** (use `socket.io-client` against test server)
-  - `join_room` with roomId: player tracked in room state, `room_update` emitted to room
-  - Second `join_room` same room: `room_update` sent with both players
-  - `attack` red team: room's red score increases by 10, `room_update` emitted
-  - `attack` blue team: room's blue score increases by 10
-  - `disconnect`: player removed from room, `room_update` emitted to remaining players
-  - Room state empty after last player disconnects
-
-#### T3e — Redis adapter integration tests
-
-- ✅ **`src/__tests__/redis-adapter.test.js`** (use `ioredis-mock`)
-  - Adapter is configured with separate pub/sub clients
-  - Two server instances sharing same Redis: `server_tick` emitted on instance A is received by clients on instance B
-  - (Can simulate with two `Server` instances in same test process, shared mock Redis)
+- 🔲 **Verify `REDIS_URL` env var** is read from environment (already done — confirm)
+- 🔲 **Update portfolio card `live:` field** — after MANUAL §6 gives you the Railway URL
 
 ---
 
-### T4 — CareerGlyph backend: Full test suite (0 → covered)
+### 2B — Deploy stripe-payments-demo to Railway
 
-#### T4a — PrismaService unit tests
-
-- ✅ **`src/database/prisma.service.spec.ts`**
-  - `onModuleInit` calls `this.$connect()`
-  - `onModuleDestroy` calls `this.$disconnect()`
-  - Mock `$connect` and `$disconnect` (jest.spyOn)
-
-#### T4b — ProfileService unit tests
-
-- ✅ **`src/profile/profile.service.spec.ts`** (mock PrismaService)
-  - `getByUsername('existing-public-user')`: calls `prisma.developer.findUnique` with correct `where` + `include`
-  - `getByUsername('existing-public-user')`: returns formatted profile with `endorsementCount` on each skill
-  - `getByUsername('private-user')`: throws `NotFoundException` (isPublic = false)
-  - `getByUsername('nonexistent')`: throws `NotFoundException` (null result from Prisma)
-  - `formatProfile()`: strips `isPublic`, `createdAt`, `updatedAt` internal fields
-  - `formatProfile()`: computes `endorsementCount` = length of endorsements array per skill
-  - Prisma mock returns developer with 3 skills, 2 projects, 1 endorsement — shape matches expected output
-
-#### T4c — ProfileController unit tests
-
-- ✅ **`src/profile/profile.controller.spec.ts`** (mock ProfileService)
-  - `GET /profile/:username` calls `profileService.getByUsername(username)`
-  - Returns the formatted profile from service
-  - When service throws `NotFoundException`, controller propagates it (NestJS handles 404)
-  - Health endpoint returns `{ status: 'ok' }`
-
-#### T4d — AuthController + AuthService unit tests
-
-- ✅ **`src/auth/auth.controller.spec.ts`** + **`src/auth/auth.service.spec.ts`**
-  - `getHealth()` returns `{ status: 'ok' }`
-  - Controller routes `GET /auth/health` to service
-
-#### T4e — AppModule integration test
-
-- ✅ **`src/app.module.spec.ts`** (full NestJS module bootstrap)
-  - Creates NestJS testing module with all imports
-  - `ProfileService` is injectable (wired through `DatabaseModule`)
-  - `PrismaService` is globally provided
-
-#### T4f — E2E / API integration tests (supertest)
-
-- ✅ **`test/app.e2e-spec.ts`** (supertest against full bootstrap)
-  - Setup: mock PrismaService responses (don't hit real DB)
-  - `GET /profile/shailesh` → 200 with `{ username, skills, projects }` shape
-  - `GET /profile/private-user` → 404 `{ message: 'Developer not found or profile is private' }`
-  - `GET /profile/nonexistent` → 404
-  - `GET /auth/health` → 200 `{ status: 'ok' }`
-  - Response has CORS headers (from bootstrap CORS config)
-  - Response has `X-Powered-By` removed (helmet)
-  - Swagger JSON available: `GET /api-docs-json` → 200 (or `/api` → 200 HTML)
-
-#### T4g — ValidationPipe tests
-
-- ✅ **Add to e2e spec**
-  - `GET /profile/` (no username) → 404 (NestJS routing, not 500)
-  - `GET /profile/username-with-special-chars!@#` → 404 or 400 depending on validation
+- 🔲 **Add `railway.toml`** — same structure as redis-battle-demo
+  ```toml
+  [deploy]
+  startCommand = "npm run build && npm start"
+  healthcheckPath = "/health"
+  ```
+- 🔲 **Add hosted demo endpoints** (see §3B) — so recruiters can test without Stripe creds
+- 🔲 **Update portfolio card `live:` field** once deployed
 
 ---
 
-### T5 — Test quality gates (all projects)
+### 2C — CodeSenseiSearch: deploy + real screenshot
 
-- ✅ **Add Jest coverage thresholds** to `jest.config.ts` (portfolio_next):
-  ```ts
-  coverageThreshold: {
-    global: { branches: 70, functions: 80, lines: 80, statements: 80 }
-  }
-  ```
-- ✅ **Add coverage script** to portfolio_next `package.json`:
-  `"test:coverage": "jest --coverage"`
-- ✅ **Add coverage to CareerGlyph** — `npm run test:cov` already exists; add threshold in `package.json` jest config:
-  ```json
-  "coverageThreshold": { "global": { "lines": 80 } }
-  ```
-- ✅ **Add `npm test` to redis-battle-demo** CI/pre-commit — once T3a is done
-- ✅ **Update CLAUDE.md** — document new test commands and coverage commands for all three projects
+- 🔲 **Add `Procfile`**: `web: node dist/main.js`
+- 🔲 **Add `start:prod` script**: `nest build && node dist/main.js`
+- 🔲 **DATABASE_URL** must point to Supabase PostgreSQL with pgvector enabled
+- 🔲 **Update portfolio card** with real Railway URL
+- 🔲 **Real screenshot** (MANUAL.md — take screenshot of Swagger search results)
 
 ---
 
-## Ongoing
+### 2D — CareerGlyph: E2E tests for frontend
 
-- Run `npm test` after any utility/component change (target: 130+ tests green across all projects)
-- Run `npm run type-check` before every commit
-- Update `CLAUDE.md` when new routes, components, or conventions are added
-- Run `npm run generate-blog-manifest` when blog posts are added
+- 🔲 **`e2e/profile.spec.ts`**
+  - Navigate to `/:username` → profile renders (skills, projects)
+  - Navigate to `/ghost-user` → 404 state
+  - Skills show endorsement counts
+- 🔲 **`e2e/auth.spec.ts`**
+  - Register → JWT stored → redirected to profile
+  - Login with wrong password → error message shown
+  - Login → endorse button visible; no login → endorse button hidden
+
+---
+
+### 2E — Portfolio: OG images on project detail pages
+
+Project detail pages at `/portfolio/:id` have no OpenGraph image — they inherit the default.
+
+- 🔲 **`app/portfolio/[id]/metadata.ts`** — add `openGraph.images` pointing to
+  `/api/og?title=<project title>&description=<first 80 chars>`
+- 🔲 **Test with** `https://opengraph.xyz/` — verify the image generates
+
+---
+
+## Month 3 — Jun 18 to Jul 18, 2026
+
+**Goal: Ship blog posts, apply to companies, final polish pass.**
+
+---
+
+### 3A — Blog post publication (after MANUAL work is done)
+
+- 🔲 Uncomment `"eduscale-redis-distributed-locks-real-time"` in `lib/blog-data.ts` BLOG_SLUGS, run `npm run generate-blog-manifest`
+- 🔲 Uncomment `"postgres-rbac-eduscale-permissions"` — same
+- 🔲 Uncomment `"khatago-webhook-deduplication-receipt-pipeline"` — same (🚫 blocked until KhataGO public)
+- 🔲 Uncomment `"nextjs-isr-edge-caching-performance"` — same
+
+---
+
+### 3B — stripe-payments-demo: duplicate simulation endpoint
+
+- 🔲 **`GET /demo/simulate-duplicate`** — fires the same event ID twice
+  - Response: `{ eventId, firstCall: { processed: true }, secondCall: { skipped: true, ttlRemaining: N } }`
+  - This is the demo you run in a Stripe technical interview
+
+---
+
+### 3C — KhataGO README (blocked until MANUAL §1)
+
+- 🚫 WhatsApp webhook flow diagram
+- 🚫 Gemini OCR pipeline doc (prompt + XML example)
+- 🚫 Running locally (ngrok + webhook setup)
+
+---
+
+### 3D — URL health check script
+
+- 🔲 **`scripts/check-live-urls.mjs`** — curl each live URL, report 200 vs error
+  ```js
+  const URLS = [
+    'https://eduscale.vercel.app',
+    'https://daily-dev-track.vercel.app',
+    'https://khatago.vercel.app',
+  ];
+  // fetch each, log status + response time
+  // exit 1 if any fails — usable as a cron or pre-deploy check
+  ```
+
+---
+
+### 3E — Portfolio: final review pass before applications
+
+- 🔲 Run `scripts/check-live-urls.mjs` — verify all projects return 200
+- 🔲 Add `og:image` to project detail pages (§2E)
+- 🔲 Run `npm run test:coverage` — confirm still 70%+ after any changes
+- 🔲 Run `npm run type-check` — must be clean
+- 🔲 Run `npm run build` — zero warnings
+
+---
+
+## Quick Reference: Project → Target Company
+
+| Project               | Primary Signal                             | Target Company    |
+| --------------------- | ------------------------------------------ | ----------------- |
+| EduScale              | Distributed systems (Redlock, Redis, CB)   | All               |
+| redis-battle-demo     | Distributed lock visualization + metrics   | Stripe, Vercel    |
+| stripe-payments-demo  | Correctness: idempotency, deduplication    | Stripe            |
+| KhataGO               | Fintech: WhatsApp API, OCR, Tally XML      | Skydo, Stripe     |
+| CareerGlyph           | NestJS API + auth + RBAC + test suite      | Supabase, Vercel  |
+| CodeSenseiSearch      | pgvector semantic search, AI pipelines     | Supabase          |
+| DevTrack              | Next.js + Supabase Realtime + analytics    | Supabase, Vercel  |
+| portfolio itself      | Next.js depth: SEO, ISR, Edge, 242 tests   | Vercel            |
 
 ---
 
@@ -424,7 +214,8 @@ Legend: ✅ Done 🔲 Pending
 | ----------------------------- | ---------------------------------------------- |
 | Project card content          | `constants/projects.ts`                        |
 | Experience / Education        | `constants/index.ts`                           |
-| Blog post list                | `lib/blog-data.ts` + `data/blog-manifest.json` |
+| Blog post list                | `lib/blog-data.ts` BLOG_SLUGS array            |
+| Blog post content             | `content/blog/<slug>.mdx`                      |
 | Social links, email, site URL | `lib/constants.ts`                             |
 | About page bio text           | `app/about/AboutContent.tsx`                   |
 | Navigation links              | `components/navbar/index.tsx`                  |
@@ -433,3 +224,7 @@ Legend: ✅ Done 🔲 Pending
 | Page metadata                 | `app/<page>/metadata.ts`                       |
 | OG image design               | `app/api/og/route.tsx`                         |
 | RSS feed                      | `app/feed.xml/route.ts`                        |
+| CareerGlyph API               | `~/Desktop/Coding/careerglyph/apps/backend/`   |
+| CareerGlyph Frontend          | `~/Desktop/Coding/careerglyph/apps/frontend/`  |
+| redis-battle-demo             | `~/Desktop/Coding/redis-battle-demo/`          |
+| stripe-payments-demo          | `~/Desktop/Coding/stripe-payments-demo/`       |
