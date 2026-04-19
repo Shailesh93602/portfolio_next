@@ -623,4 +623,277 @@ export const projects: Project[] = [
       },
     ],
   },
+  {
+    id: "redis-battle-demo",
+    title: "Redis Battle Demo",
+    description:
+      "A live distributed systems demo: two Node.js instances compete for a Redlock distributed lock every 2 seconds, with the winner broadcasted to all clients via @socket.io/redis-adapter.",
+    image: "/Images/portfolio1.png",
+    isShowcase: true,
+    tags: [
+      "Node.js",
+      "Socket.io",
+      "@socket.io/redis-adapter",
+      "Redlock",
+      "Redis Pub/Sub",
+      "Prometheus",
+      "prom-client",
+      "Docker",
+      "TypeScript",
+    ],
+    github: "https://github.com/Shailesh93602/redis-battle-demo",
+    detailedDescription:
+      "A standalone demo that makes three distributed systems patterns visible in a browser: (1) @socket.io/redis-adapter publishes Socket.io events through Redis Pub/Sub so multiple Node.js instances share the same room state, (2) Redlock (the Redlock algorithm) ensures only one instance wins each tick interval — preventing duplicate score updates that would corrupt battle state, (3) prom-client exposes a Prometheus /metrics endpoint with 5 counters/gauges for connected clients, active rooms, attacks, ticks acquired, and ticks skipped.",
+    architecture: {
+      layers: [
+        {
+          name: "Transport",
+          items: [
+            "Socket.io (WebSocket + long-polling fallback)",
+            "@socket.io/redis-adapter (Redis Pub/Sub bridge)",
+            "Two independent Node.js instances",
+          ],
+        },
+        {
+          name: "Distributed Coordination",
+          items: [
+            "Redlock algorithm (retryCount: 0)",
+            "Redis SET NX for distributed mutex",
+            "1,500ms lock TTL — less than 2,000ms tick interval",
+          ],
+        },
+        {
+          name: "Observability",
+          items: [
+            "prom-client: 5 Prometheus metrics",
+            "GET /health — instance ID, uptime, room + client counts",
+            "GET /metrics — Prometheus text format",
+          ],
+        },
+      ],
+      description:
+        "Each tick interval, both instances race to acquire the Redlock mutex. The winner emits server_tick (with its instance ID) to all clients via Redis Pub/Sub, then releases the lock. Clients visualize which instance won — purple for this instance, yellow for the other. This directly mirrors how distributed cron jobs and leader election work in production.",
+    },
+    keyMetrics: [
+      {
+        label: "Test Coverage",
+        value: "48 tests",
+        description: "Config, Redlock, Socket events, Redis adapter, HTTP endpoints",
+      },
+      {
+        label: "Lock TTL",
+        value: "≤1.5s",
+        description: "Redlock TTL shorter than tick interval — guarantees release before next race",
+      },
+      {
+        label: "Metrics",
+        value: "5 Prometheus",
+        description: "Connected clients, active rooms, attacks, ticks acquired/skipped",
+      },
+    ],
+    features: [
+      "Live distributed lock visualization: which instance won each tick, updated in real time",
+      "Redis Pub/Sub bridge: Socket.io rooms work correctly across multiple Node.js processes",
+      "Redlock (retryCount: 0) — fails fast if lock is held, no queue buildup",
+      "Prometheus /metrics endpoint — production-observable from day one",
+      "GET /health returns instance ID, uptime, room/client counts",
+      "48 unit tests covering all distributed patterns and HTTP endpoints",
+    ],
+    techStack: [
+      "Runtime: Node.js, Express",
+      "Real-time: Socket.io + @socket.io/redis-adapter (Redis Pub/Sub)",
+      "Distributed locking: Redlock (Redis SET NX)",
+      "Observability: prom-client (Prometheus), /health endpoint",
+      "Infrastructure: Redis, Docker Compose",
+      "Tests: Jest, 48 tests",
+    ],
+    problem:
+      "Demonstrating distributed systems patterns (leader election, exactly-once processing, cross-process pub/sub) is hard without infrastructure overhead. Most demos fake it — they run a single process and claim horizontal scaling.",
+    solution:
+      "Two genuinely separate Node.js processes sharing one Redis. The Redlock race is real: one instance wins, one loses. The browser shows which one won each tick. The Prometheus metrics show the counts accumulate correctly across both instances.",
+    challengesSolved:
+      "The key insight was using retryCount: 0 on Redlock. With retries enabled, both instances queue up for the lock, and when the tick interval fires again before the queue drains, you get multiple ticks per interval — exactly the race condition you're trying to prevent. Zero retries means: if you didn't win this tick, you skip it. Clean, exactly-once semantics at the cost of occasional missed ticks under high contention.",
+  },
+  {
+    id: "careerglyph",
+    title: "CareerGlyph",
+    description:
+      "A developer profile platform where skills, projects, and peer endorsements replace static resumes. REST API with JWT auth, compound-key endorsements, and full Swagger documentation.",
+    image: "/Images/portfolio1.png",
+    isShowcase: true,
+    tags: [
+      "NestJS",
+      "TypeScript",
+      "Prisma",
+      "PostgreSQL",
+      "JWT",
+      "Passport",
+      "Swagger/OpenAPI",
+      "Jest",
+      "bcrypt",
+      "Rate Limiting",
+    ],
+    github: "https://github.com/Shailesh93602/careerglyph",
+    detailedDescription:
+      "CareerGlyph replaces static resume PDFs with live, verifiable developer profiles. The NestJS backend provides JWT authentication (register + login with bcrypt, rate-limited via @nestjs/throttler), a full skills CRUD API with SkillCategory/SkillLevel enums, project management, and a peer endorsement system. Endorsements use a compound unique index (skillId + giverId) with Prisma upsert — so endorsing twice updates the message rather than creating duplicates. All 9 endpoints are protected by JwtAuthGuard and documented in Swagger.",
+    architecture: {
+      layers: [
+        {
+          name: "API Layer",
+          items: [
+            "NestJS controllers with Swagger decorators",
+            "JwtAuthGuard on all mutation endpoints",
+            "ThrottlerModule: 5 req/min register, 10 req/min login",
+            "ValidationPipe with class-validator DTOs",
+          ],
+        },
+        {
+          name: "Business Logic",
+          items: [
+            "ProfileService: getByUsername, updateProfile, addSkill/removeSkill",
+            "Endorsement upsert with compound key (skillId + giverId)",
+            "Self-endorsement guard (BadRequestException)",
+            "formatProfile: strips internal fields, adds endorsementCount per skill",
+          ],
+        },
+        {
+          name: "Data Layer",
+          items: [
+            "Prisma ORM + PostgreSQL",
+            "Developer → Skill → Endorsement nested relations",
+            "@@unique([skillId, giverId]) on Endorsement",
+            "PrismaService with onModuleInit/$connect lifecycle",
+          ],
+        },
+      ],
+      description:
+        "Standard NestJS layered architecture: controllers delegate to services, services talk to Prisma, all DB queries are type-safe. The interesting design decision is the endorsement compound key — it makes the upsert pattern trivial and prevents duplicate endorsements at the DB level.",
+    },
+    keyMetrics: [
+      {
+        label: "Test Suite",
+        value: "71 tests",
+        description: "58 unit + 13 E2E tests across 5 spec files",
+      },
+      {
+        label: "API Surface",
+        value: "9 endpoints",
+        description: "Auth (2) + Profile CRUD (4) + Skills/Projects/Endorsements (3)",
+      },
+      {
+        label: "Auth Security",
+        value: "JWT + bcrypt",
+        description: "Rate-limited registration, bcrypt password hashing, Passport JWT strategy",
+      },
+    ],
+    features: [
+      "JWT authentication with @nestjs/passport — register, login, protected routes",
+      "Rate limiting: 5 reg/min, 10 login/min via @nestjs/throttler",
+      "Skills CRUD with SkillCategory (LANGUAGE/FRONTEND/BACKEND/DATABASE/DEVOPS) and SkillLevel enums",
+      "Peer endorsements with compound unique key — upsert on re-endorse, self-endorse blocked",
+      "Public profile API: formatProfile strips internal fields, adds endorsementCount per skill",
+      "Full Swagger/OpenAPI documentation at /api-docs",
+    ],
+    techStack: [
+      "Framework: NestJS, TypeScript, Express",
+      "Auth: @nestjs/jwt, @nestjs/passport, PassportStrategy (JWT), bcrypt",
+      "Database: Prisma ORM, PostgreSQL",
+      "Validation: class-validator, class-transformer, ValidationPipe",
+      "Security: @nestjs/throttler, JwtAuthGuard",
+      "Tests: Jest, 71 tests (unit + E2E with supertest)",
+    ],
+    problem:
+      "A PDF resume cannot show code quality, real contributions, or whether skills are endorsed by people who've actually worked with you. Skills on LinkedIn are self-reported with no verification.",
+    solution:
+      "A live API-backed profile: skills are added by the developer, projects link to live URLs and GitHub, and endorsements come from other developers who authenticate first. The compound key on endorsements means each developer can endorse each skill exactly once.",
+    challengesSolved:
+      "The endorsement upsert pattern was the key design decision. A naive implementation would check-then-insert (two queries, race condition). Using Prisma's upsert with the compound key makes it atomic — create if not exists, update if exists. The other non-obvious decision was ordering NestJS routes: static routes (me, me/skills) must be declared before the :username param route, otherwise NestJS matches 'me' as a username.",
+  },
+  {
+    id: "stripe-payments-demo",
+    title: "Stripe Payments Demo",
+    description:
+      "Production-grade Stripe integration: webhook signature verification, Redis SETNX idempotency guard against duplicate event delivery, and payment intent creation with exponential-backoff retry. 29 tests covering exactly-once semantics, non-retryable 4xx errors, and concurrent duplicate suppression.",
+    image: "/Images/portfolio1.png",
+    github: "https://github.com/Shailesh93602/stripe-payments-demo",
+    live: "",
+    tags: ["Node.js", "TypeScript", "Stripe", "Redis", "Express", "Jest"],
+    isShowcase: true,
+    architecture: {
+      layers: [
+        {
+          name: "API Layer",
+          items: [
+            "Express routes: POST /webhook, POST /create-payment-intent, POST /simulate-payment",
+            "express.raw() on /webhook — raw body required for Stripe signature verification",
+            "express.json() on all other routes",
+          ],
+        },
+        {
+          name: "Stripe Integration",
+          items: [
+            "stripe.webhooks.constructEvent() — HMAC-SHA256 signature verification",
+            "stripe.paymentIntents.create() with idempotencyKey option",
+            "Stripe API version pinned: 2023-10-16",
+          ],
+        },
+        {
+          name: "Idempotency (Redis)",
+          items: [
+            "Redis SETNX (SET NX EX) — atomic check-then-write in one command",
+            "24-hour TTL covers Stripe's 7-day retry window",
+            "Key namespace: stripe:event:{eventId}",
+          ],
+        },
+        {
+          name: "Retry Logic",
+          items: [
+            "Exponential backoff: baseDelay * 2^attempt, capped at maxDelayMs",
+            "25% jitter to avoid thundering herd on Stripe 5xx bursts",
+            "4xx errors (card decline, bad request) bypass retry immediately",
+          ],
+        },
+      ],
+      description:
+        "Express app with route-level middleware separation: raw body parsing only on /webhook (required for Stripe signature verification), JSON parsing everywhere else. Idempotency and retry are separate, independently testable modules — each with its own test file.",
+    },
+    keyMetrics: [
+      {
+        label: "Test Suite",
+        value: "29 tests",
+        description: "idempotency (9) + webhook (8) + payments (5) + retry (6) + app (5)",
+      },
+      {
+        label: "Idempotency",
+        value: "SETNX",
+        description: "Exactly-once delivery — same Stripe event processed at most once in 24h",
+      },
+      {
+        label: "Retry Policy",
+        value: "4 attempts",
+        description: "Exponential backoff + jitter, non-retryable 4xx bypassed immediately",
+      },
+    ],
+    features: [
+      "Stripe webhook handler with HMAC-SHA256 signature verification — rejects tampered payloads",
+      "Redis SETNX idempotency guard — concurrent duplicate webhooks suppressed atomically",
+      "Payment intent creation with caller-supplied idempotency key — safe to retry from client",
+      "Exponential backoff retry with jitter — handles Stripe 500s without thundering herd",
+      "4xx errors (card decline, invalid request) fail fast — no wasted retry attempts",
+      "29 tests including concurrent duplicate simulation and partial failure scenarios",
+    ],
+    techStack: [
+      "Runtime: Node.js 18, TypeScript",
+      "Web: Express 4",
+      "Payments: Stripe SDK v14 (2023-10-16 API version)",
+      "Idempotency: ioredis (SETNX)",
+      "Tests: Jest + Supertest — 29 tests, 80%+ coverage",
+    ],
+    problem:
+      "Stripe delivers webhooks at-least-once — the same payment_intent.succeeded event can arrive 3–5 times during retries. Without an idempotency guard, each delivery triggers a fulfillment action (email, inventory update, DB write), causing duplicate orders and corrupted state.",
+    solution:
+      "Redis SETNX on the event ID: the first delivery writes the key and processes. All subsequent deliveries hit the existing key and return 200 immediately without reprocessing. 24-hour TTL covers Stripe's full retry window. Payment intent creation uses a caller-supplied idempotency key, so double-clicks or network retries never create duplicate charges.",
+    challengesSolved:
+      "The non-obvious design decision was the retry policy for payment creation: retrying on 4xx (card decline, bad idempotency key) is harmful — Stripe will return the same error every time. The retry logic checks `statusCode >= 500` and treats all other errors as non-retryable. Network errors (no statusCode) are retried because they're transient. Jitter (0–25% of the exponential delay) prevents multiple failing payments from hitting Stripe simultaneously after a 5xx burst.",
+  },
 ];
