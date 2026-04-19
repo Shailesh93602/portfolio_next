@@ -7,16 +7,28 @@ See TODO.md for all code-executable tasks. See PLAN.md for strategic context.
 
 ---
 
-## What Was Already Done (Nothing to Re-do)
+## Urgent: Create 2 GitHub repos (5 min total)
 
-- Portfolio infrastructure: SEO, sitemap, robots.txt, OG images, RSS feed, 242 tests
-- EduScale card rewritten with real architecture (Redis adapter, Redlock, circuit breaker)
-- KhataGO card updated, GitHub link removed (dead link gone)
-- ContextQA PR counts (~1,900 / ~1,600) in portfolio cards + bio
-- Blog MDX migration (17 posts), reading progress bar, blog search
-- llms.txt + llms-full.txt rewritten with accurate technical depth
-- CareerGlyph backend: JWT auth, skills/projects/endorsements, 71 tests
-- redis-battle-demo: Prometheus metrics, redesigned UI, 48 tests
+The code for `redis-battle-demo` and `stripe-payments-demo` is complete and committed locally.
+They can't be pushed until you create the repos on GitHub.
+
+1. Go to https://github.com/new
+2. Create **`redis-battle-demo`** — Public, no README (local repo already has one)
+3. Then run:
+   ```bash
+   cd ~/Desktop/Coding/redis-battle-demo
+   git remote add origin https://github.com/Shailesh93602/redis-battle-demo.git
+   git push -u origin main
+   ```
+4. Create **`stripe-payments-demo`** — Public, no README
+5. Then run:
+   ```bash
+   cd ~/Desktop/Coding/stripe-payments-demo
+   git remote add origin https://github.com/Shailesh93602/stripe-payments-demo.git
+   git push -u origin main
+   ```
+
+After pushing: tell Claude "redis-battle-demo and stripe-payments-demo are on GitHub" and the portfolio card GitHub links will be verified.
 
 ---
 

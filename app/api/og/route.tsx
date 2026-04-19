@@ -6,9 +6,15 @@ export const runtime = "edge";
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const title = searchParams.get("title") ?? "Shailesh Chaudhari";
-  const type = searchParams.get("type") ?? "blog"; // "blog" | "page"
+  const type = searchParams.get("type") ?? "blog"; // "blog" | "project" | "page"
+  const description = searchParams.get("description") ?? "";
 
   const truncatedTitle = title.length > 70 ? title.slice(0, 67) + "..." : title;
+  const truncatedDesc =
+    description.length > 120 ? description.slice(0, 117) + "..." : description;
+  let typeLabel = "Portfolio";
+  if (type === "blog") typeLabel = "Blog Post";
+  else if (type === "project") typeLabel = "Project";
 
   return new ImageResponse(
     <div
@@ -56,16 +62,18 @@ export async function GET(request: NextRequest) {
             letterSpacing: "0.1em",
           }}
         >
-          {type === "blog" ? "Blog Post" : "Portfolio"}
+          {typeLabel}
         </div>
       </div>
 
-      {/* Title */}
+      {/* Title + description */}
       <div
         style={{
           flex: 1,
           display: "flex",
-          alignItems: "center",
+          flexDirection: "column",
+          justifyContent: "center",
+          gap: "16px",
         }}
       >
         <div
@@ -79,6 +87,18 @@ export async function GET(request: NextRequest) {
         >
           {truncatedTitle}
         </div>
+        {truncatedDesc && (
+          <div
+            style={{
+              fontSize: "22px",
+              color: "#94a3b8",
+              lineHeight: 1.5,
+              maxWidth: "860px",
+            }}
+          >
+            {truncatedDesc}
+          </div>
+        )}
       </div>
 
       {/* Footer */}

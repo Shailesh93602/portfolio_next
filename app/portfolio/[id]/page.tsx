@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = `${project.title} | Shailesh Chaudhary`;
   const description = project.description;
-  const image = project.image || "/Images/shailesh.webp";
+  const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(project.title)}&type=project&description=${encodeURIComponent(description.slice(0, 120))}`;
 
   return {
     title,
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: `${SITE_URL}/portfolio/${id}`,
       images: [
         {
-          url: image,
+          url: ogImageUrl,
           width: 1200,
           height: 630,
           alt: project.title,
@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       site: META_DEFAULTS.twitterHandle,
       creator: META_DEFAULTS.twitterHandle,
-      images: [image],
+      images: [ogImageUrl],
     },
     alternates: {
       canonical: `${SITE_URL}/portfolio/${id}`,
