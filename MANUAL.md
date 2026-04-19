@@ -1,155 +1,117 @@
 # MANUAL.md — Tasks Requiring Your Action (Next 3 Months)
 
-All tasks here require your credentials, accounts, original writing, or external actions.
+All tasks here require your credentials, accounts, external actions, or original writing.
 Nothing here can be done by code alone.
 
-See TODO.md for all code-executable tasks. See PLAN.md for strategic context.
+See TODO.md for all code-executable tasks.
 
 ---
 
 ## Priority Queue (in order — do these before applying anywhere)
 
-| #   | Task                             | Time    | Unlocks                                     |
-| --- | -------------------------------- | ------- | ------------------------------------------- |
-| 2   | Verify 3 live project URLs       | 15 min  | Don't let Supabase pause during recruiter   |
-| 3   | Google Analytics setup           | 30 min  | Shows you instrument your own products      |
-| 4   | Write EduScale architecture post | 3–4 hrs | Highest ROI task — proves distributed depth |
-| 5   | Deploy redis-battle-demo         | 1 hr    | Makes distributed demo publicly visible     |
-| 6   | Write KhataGO fintech post       | 2–3 hrs | Required for Skydo and Stripe               |
-| 7   | Write Postgres/RBAC post         | 3–4 hrs | Required for Supabase application           |
-| 8   | Write Vercel/ISR post            | 2–3 hrs | Required for Vercel application             |
-| 9   | Update resume PDF                | 30 min  | Must match portfolio                        |
-| 10  | LinkedIn update                  | 1–2 hrs | Recruiters check this before GitHub         |
-| 11  | One OSS PR merged                | ongoing | Required for Vercel; improves all profiles  |
+| #   | Task                                              | Time   | Unlocks                                      |
+| --- | ------------------------------------------------- | ------ | -------------------------------------------- |
+| 1   | Verify 3 live project URLs                        | 15 min | Don't let Supabase pause during recruiter    |
+| 2   | Google Analytics setup                            | 30 min | Shows you instrument your own products       |
+| 3   | Add 6 GitHub secrets for Supabase keep-alive cron | 10 min | Unblocks TODO 1E (auto keep-alive workflow)  |
+| 4   | Deploy redis-battle-demo (Render or Fly)          | 1 hr   | Makes distributed demo publicly visible      |
+| 5   | Deploy stripe-payments-demo (Render or Fly)       | 1 hr   | Stripe application needs a live artifact     |
+| 6   | Apply EduScale middleware fix to Exavel copy      | 15 min | Production parity for second EduScale deploy |
+| 7   | Update resume PDF                                 | 30 min | Must match portfolio                         |
+| 8   | LinkedIn update                                   | 1–2 hr | Recruiters check this before GitHub          |
+| 9   | One OSS PR merged                                 | ongoing| Required for Vercel; improves all profiles   |
 
 ---
 
-### 2. Verify Live Project URLs — 15 min
+### 1. Verify Live Project URLs — 15 min
 
 Free-tier Supabase pauses after 7 days of inactivity. If a recruiter clicks your project
 and sees "Error establishing DB connection," they don't investigate — they move on.
 
-Do this check every 2 weeks. Add a calendar reminder.
+Do this check every 2 weeks until Task 3 lands (then it's automated).
 
-| Project           | URL                                  | Fix if down                          |
-| ----------------- | ------------------------------------ | ------------------------------------ |
-| EduScale          | `https://eduscale.vercel.app`        | Supabase dashboard → Restore project |
-| DevTrack          | `https://daily-dev-track.vercel.app` | Supabase dashboard → Restore project |
-| KhataGO           | `https://khatago.vercel.app`         | Supabase dashboard → Restore project |
-| CareerGlyph       | add URL once deployed                | Railway/Render restart               |
-| redis-battle-demo | add URL once deployed (Task 6)       | Railway restart                      |
-
----
-
-### 4. Write EduScale Architecture Blog Post — 3–4 hrs (highest ROI task)
-
-**The stub is ready.** File: `content/blog/eduscale-redis-distributed-locks-real-time.mdx`
-
-The code scaffolding, section headings, and `<!-- TODO: -->` prompts are written.
-You only need to replace the `[FILL IN:]` placeholders.
-
-**The sections that matter most:**
-
-- "The Race Condition" — describe the exact scenario: two instances, same battle tick,
-  both fire, score doubles. Be specific about which state was corrupted.
-- "The Circuit Breaker" — paste the actual opossum config: timeout, errorThreshold,
-  resetTimeout. What service does it wrap? What does the fallback return?
-- "What Broke in Production" — one specific incident. The value is YOUR mistake, not a
-  generic description. This is what separates your post from AI-generated content.
-- "What I'd Do Differently" — genuine reflection, not "I'd add more tests."
-
-**After filling in:**
-
-```bash
-# Tell Claude to run these:
-npm run generate-blog-manifest
-# Then uncomment the slug in lib/blog-data.ts BLOG_SLUGS
-```
-
-**Do not use ChatGPT to fill in the sections.** Interviewers recognize AI-generated posts.
+| Project              | URL                                  | Fix if down                          |
+| -------------------- | ------------------------------------ | ------------------------------------ |
+| EduScale             | `https://eduscale.vercel.app`        | Supabase dashboard → Restore project |
+| DevTrack             | `https://daily-dev-track.vercel.app` | Supabase dashboard → Restore project |
+| KhataGO              | `https://khatago.vercel.app`         | Supabase dashboard → Restore project |
+| CareerGlyph          | add URL once deployed                | Render/Fly restart                   |
+| redis-battle-demo    | add URL once deployed (Task 4)       | Render/Fly restart                   |
+| stripe-payments-demo | add URL once deployed (Task 5)       | Render/Fly restart                   |
 
 ---
 
-### 5. Get One OSS Contribution Merged — Ongoing (target: by Jun 18)
+### 3. Add 6 GitHub Secrets for Supabase Keep-Alive Workflow — 10 min
 
-"0 OSS merged PRs" is visible on your GitHub profile. One merged PR changes the conversation.
+A GitHub Actions cron is being created in parallel that pings each Supabase project
+daily so they never auto-pause. It needs these secrets.
 
-**Best targets for your stack:**
+URL: `https://github.com/Shailesh93602/portfolio_next/settings/secrets/actions`
 
-1. **shadcn/ui** (`shadcn-ui/ui`) — look for:
-   - Missing ARIA attributes on existing components
-   - TypeScript type improvements in components you use (Button, Card, Badge)
-   - Documentation gaps in `apps/www/content/docs/`
+Add all 6:
 
-2. **Supabase JS** (`supabase/supabase-js`) — high signal for Supabase applications
-   - Missing TypeScript generics, edge case error handling
+- `EDUSCALE_SUPABASE_URL`
+- `EDUSCALE_SUPABASE_ANON_KEY`
+- `DEVTRACK_SUPABASE_URL`
+- `DEVTRACK_SUPABASE_ANON_KEY`
+- `KHATAGO_SUPABASE_URL`
+- `KHATAGO_SUPABASE_ANON_KEY`
 
-3. **Socket.io** — you know the internals now from redis-battle-demo
-   - Documentation improvements, TypeScript types
-
-**Process:**
-
-1. Clone the repo, run tests locally (this alone eliminates 80% of contributors)
-2. Find one specific bug or missing piece — not cosmetic
-3. Smallest possible fix, well-tested
-4. PR description: what was broken, why your fix is correct, link to the relevant code
+Values live in each project's Supabase dashboard → Project Settings → API.
 
 ---
 
-## Month 2: May 18 – Jun 18, 2026
+### 4. Deploy redis-battle-demo — 1 hr (Render.com free tier or Fly.io)
 
-### 6. Deploy redis-battle-demo on Railway — 1 hr
+Railway free trial exhausted. Recommended: **Render.com** (simpler) or **Fly.io** (better for multi-instance demo).
 
-Claude has added `railway.toml` and `REDIS_URL` support (TODO.md §2A).
-You just need to provision it.
+**Render.com path:**
 
-**Steps:**
+1. Create Web Service from `Shailesh93602/redis-battle-demo`
+2. Add Redis (Render has free managed Redis)
+3. Env: `REDIS_URL` = Render Redis URL, `NODE_ENV=production`
+4. Copy the assigned URL
+5. Tell Claude: "redis-battle-demo live at https://..." — Claude updates the portfolio card
 
-3. Add Redis plugin (Railway provides managed Redis)
-4. Set env vars: `REDIS_URL` = Railway Redis URL (auto-filled by plugin), `NODE_ENV=production`
-5. Railway auto-assigns a URL — copy it
-6. Tell Claude: "deploy URL is https://redis-battle-demo-xxx.railway.app"
-   Claude will update the portfolio card `live:` field
+**Fly.io path (needed if you want 2 instances for the distributed-lock visualization):**
 
-**For two-instance demo (optional but impressive):**
-Railway supports multiple replicas on the same service. Set replicas to 2.
-The distributed lock visualization in the UI shows which instance won each tick.
-
----
-
-### 7. Write KhataGO Fintech Post — 2–3 hrs
-
-**The stub is ready.** File: `content/blog/khatago-webhook-deduplication-receipt-pipeline.mdx`
-
-**Sections to fill:**
-
-- "How Often Meta Sends Duplicates" — real numbers from your production logs
-- "The Deduplication Middleware" — paste the actual Redis SET NX code with your TTL and why
-- "The OCR Prompt" — paste the actual Gemini prompt you send, and a real Tally XML example output
-- "Idempotency at Each Stage" — describe what happens if each Bull queue stage fires twice
-- "What Broke" — one specific production incident (wrong amount recorded? duplicate transaction?)
+1. `fly launch` in the repo (Dockerfile already present)
+2. `fly redis create` → copy URL into `fly secrets set REDIS_URL=...`
+3. `fly scale count 2` for two instances
+4. Copy URL, report back
 
 ---
 
-### 8. Write Postgres/RBAC Post — 3–4 hrs
+### 5. Deploy stripe-payments-demo — 1 hr
 
-**The stub is ready.** File: `content/blog/postgres-rbac-eduscale-permissions.mdx`
+Same choice: Render.com or Fly.io.
 
-**Sections to fill:**
-
-- The specific pain point that triggered the RBAC refactor
-- Paste the actual Prisma schema or SQL DDL for your roles/features/permissions tables
-- Paste the actual permission check query + your index strategy (EXPLAIN ANALYZE output if you have it)
-- Whether you used RLS anywhere — be honest if you didn't, explain the tradeoff
+1. Provision Node web service from `Shailesh93602/stripe-payments-demo`
+2. Add managed Redis (webhook dedup needs it)
+3. Env: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `REDIS_URL`, `NODE_ENV=production`
+4. In Stripe Dashboard → Developers → Webhooks, add the deployed `/webhook` endpoint,
+   copy the signing secret back into `STRIPE_WEBHOOK_SECRET`
+5. Report URL to Claude for portfolio + README updates
 
 ---
 
-## Month 3: Jun 18 – Jul 18, 2026
+### 6. Apply EduScale Middleware Fast-Path Fix to Exavel Copy — 15 min
 
-### 9. Update Resume PDF — 30 min
+The fast-path fix (skip `getUser()` for purely public routes) is applied to
+`/Users/shaileshchaudhary/Desktop/Coding/EduScale/Frontend/src/utils/supabase/middleware.ts`.
 
-The portfolio links to `/Shailesh_Chaudhari_Resume.pdf`. Update it to match what's now in
-the portfolio, especially EduScale architecture depth, CareerGlyph, stripe-payments-demo.
+Exavel has a fork of the same code that also needs it:
+
+- File: `/Users/shaileshchaudhary/Desktop/Coding/Development/Exavel/EduScale/Frontend/src/utils/supabase/middleware.ts`
+- Action: diff the two files, port the fast-path block into the Exavel copy
+- Deploy: whatever deploy flow Exavel uses (Vercel/own infra — you know which)
+- Verify: public pages load without the middleware timeout that originally motivated the fix
+
+---
+
+### 7. Update Resume PDF — 30 min
+
+The portfolio links to `/Shailesh_Chaudhari_Resume.pdf`. Keep it in sync.
 
 **Specific lines to update:**
 
@@ -161,62 +123,75 @@ the portfolio, especially EduScale architecture depth, CareerGlyph, stripe-payme
 
 **After updating:**
 
-1. Export as PDF — filename must stay `Shailesh_Chaudhari_Resume.pdf`
+1. Export as PDF — filename stays `Shailesh_Chaudhari_Resume.pdf`
 2. Replace `public/Shailesh_Chaudhari_Resume.pdf`
-3. `git add public/Shailesh_Chaudhari_Resume.pdf && git commit -m "docs: update resume PDF"`
+3. Commit: `docs: update resume PDF`
 
 ---
 
-### 10. LinkedIn Profile Update — 1–2 hrs
+### 8. LinkedIn Profile Update — 1–2 hrs
 
-LinkedIn is the first thing recruiters check. It currently doesn't reflect the EduScale
-architecture depth or KhataGO's real stack.
+LinkedIn is the first thing recruiters check.
 
-**Specific updates:**
-
-1. ContextQA description: add "~1,900 merged PRs on Vibe Testing Chrome extension,
-   ~1,600 merged PRs on AxeTos accessibility extension"
-2. EduScale description: "@socket.io/redis-adapter, redlock (distributed locks),
-   opossum (circuit breaker), prom-client (Prometheus /metrics)"
-3. KhataGO description: "WhatsApp Business API, Google Gemini AI OCR, Tally ERP XML export,
+1. ContextQA: add "~1,900 merged PRs Vibe Testing; ~1,600 merged PRs AxeTos"
+2. EduScale: "@socket.io/redis-adapter, redlock (distributed locks), opossum (circuit breaker),
+   prom-client (Prometheus /metrics)"
+3. KhataGO: "WhatsApp Business API, Google Gemini AI OCR, Tally ERP XML export,
    Redis-backed webhook deduplication"
 4. Projects: add CareerGlyph, redis-battle-demo, stripe-payments-demo
-5. Featured: pin the EduScale architecture post after it's published (Task 4)
+5. Featured: pin the EduScale portfolio detail page (since public blog is blocked)
 6. Skills: add "Redis (Cluster, Pub/Sub)", "Socket.io", "Prometheus", "Stripe Webhooks"
 
 ---
 
-### 11. Write Vercel/ISR Performance Post — 2–3 hrs
+### 9. Get One OSS Contribution Merged — Ongoing (target: by Jul 18)
 
-**The stub is ready.** File: `content/blog/nextjs-isr-edge-caching-performance.mdx`
+"0 OSS merged PRs" is visible on your GitHub profile. One merged PR changes the conversation.
 
-**Before writing, run these measurements and fill them in:**
+**Best targets for your stack:**
 
-1. Run `pagespeed.web.dev` on `https://shaileshchaudhari.vercel.app`
-   → fill in the LCP, INP, CLS values in the Core Web Vitals table
-2. Run Lighthouse on the deployed site → record one specific finding
-3. Measure AVIF vs WebP size for `public/Images/shailesh.webp` (use Squoosh or ImageOptim)
-   → fill in the before/after size numbers
+1. **shadcn/ui** (`shadcn-ui/ui`) — missing ARIA, type improvements, docs gaps
+2. **Supabase JS** (`supabase/supabase-js`) — high signal for Supabase applications
+3. **Socket.io** — you know internals now from redis-battle-demo
+
+**Process:**
+
+1. Clone, run tests locally (this alone eliminates 80% of contributors)
+2. Find one specific bug — not cosmetic
+3. Smallest possible fix, well-tested
+4. PR description: what was broken, why the fix is correct, link to the relevant code
+
+---
+
+## Month 3: Jun 19 – Jul 19, 2026
+
+### 10. Tailored Application Packets — 3 hrs total
+
+For each of Stripe, Vercel, Supabase:
+
+- One-page cover letter referencing their engineering blog (read 5 posts first)
+- Resume variant emphasizing relevant projects (Stripe → stripe-payments-demo + KhataGO;
+  Vercel → portfolio itself + Next.js demos; Supabase → DevTrack + CareerGlyph)
+- Send via referral if possible (check LinkedIn for 1st/2nd connections)
 
 ---
 
 ## Application Readiness Checklist
 
-**Before applying to any company, all items in that row must be ✅:**
+**Before applying to any company, all items in that row must be done:**
 
-| Company  | Required before applying                                                      |
-| -------- | ----------------------------------------------------------------------------- |
-| Skydo    | KhataGO public ✅, KhataGO README ✅, KhataGO fintech post ✅, 3 live URLs ✅ |
-| Stripe   | KhataGO post ✅, stripe-payments-demo live ✅, resume updated ✅              |
-| Vercel   | OSS PR merged ✅, EduScale post ✅, Vercel/ISR post ✅, resume updated ✅     |
-| Supabase | Postgres/RBAC post ✅, EduScale post ✅, DevTrack Realtime ✅                 |
+| Company  | Required before applying                                                               |
+| -------- | -------------------------------------------------------------------------------------- |
+| Skydo    | KhataGO public, KhataGO case study page expanded, 3 live URLs green                    |
+| Stripe   | stripe-payments-demo live, case study page expanded, resume updated                    |
+| Vercel   | OSS PR merged, performance pass done, Vercel-aligned demo shipped, resume updated      |
+| Supabase | Supabase-aligned demo shipped, DevTrack Realtime live, CareerGlyph RBAC case study up  |
 
 ---
 
 ## Add CodeSenseiSearch Screenshot — 15 min (when convenient)
 
-The CodeSenseiSearch portfolio card uses a placeholder image. Once Claude deploys
-it to Railway (TODO.md §2B):
+The CodeSenseiSearch portfolio card uses a placeholder image.
 
 1. Navigate to the live Swagger UI (`/api`)
 2. Make a sample semantic search query

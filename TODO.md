@@ -1,198 +1,158 @@
 # TODO.md — Code-Executable Tasks (Next 3 Months)
 
 All tasks here can be done with code, terminal commands, or file edits.
-See PLAN.md for strategic context. See MANUAL.md for tasks requiring credentials or writing.
+See MANUAL.md for tasks requiring credentials or writing.
 
-Legend: ✅ Done 🔲 Pending 🚫 Blocked (needs manual step first)
+Legend: Done | Pending | Blocked (needs manual step first)
 
-**Current test counts (as of April 19, 2026):**
+**Current state (as of April 19, 2026):**
 
-- portfolio_next: 242 tests ✅, 70.66% coverage ✅
-- redis-battle-demo: 48 tests ✅
-- CareerGlyph backend: 58 unit + 13 E2E = 71 tests ✅
-- stripe-payments-demo: 29 tests ✅ (NEW)
-
----
-
-## Completed (Month 1 — Apr 18–19, 2026)
-
-| Task                      | Deliverable                                                                                        |
-| ------------------------- | -------------------------------------------------------------------------------------------------- |
-| 1A — Portfolio cards      | redis-battle-demo + CareerGlyph + stripe-payments-demo added to `constants/projects.ts`            |
-| 1B — CareerGlyph frontend | `/[username]` profile viewer, `/login`, `/register`, TanStack Query, optimistic endorsements       |
-| 1C — EduScale README      | Redis adapter, Redlock, circuit breaker, Prometheus all documented with code snippets              |
-| 1D — stripe-payments-demo | Webhook deduplication (SETNX), payment intent idempotency key, exponential-backoff retry, 29 tests |
-| 1E — DevTrack Realtime    | `useRealtimeLogs` hook, `RealtimeLogList` component, live indicator dot                            |
-| 2D — Statistics skeleton  | `app/statistics/loading.tsx` already existed and is complete                                       |
+- 9 portfolio projects live (eduscale, devtrack, vibe-testing, axetos, codesensei-search, khatago, redis-battle-demo, careerglyph, stripe-payments-demo)
+- Portfolio: 242 tests passing, 70.66% coverage
+- EduScale middleware fast-path fix applied (public routes skip getUser())
+- Blog posts BLOCKED by current employment — use portfolio pages to showcase tech depth instead
 
 ---
 
-## Month 1 Remaining — by May 18, 2026
+## Month 1 — Apr 19 → May 19, 2026 — Unblock and ship
 
-### 1F — Update DevTrack portfolio card
+**Goal: eliminate every build/runtime error. Get all demos deployable.**
 
-DevTrack now has Supabase Realtime. The card doesn't mention it.
+### 1A — Fix portfolio build failure at /portfolio/eduscale
 
-- 🔲 **`constants/projects.ts` DevTrack card** — add `Supabase Realtime` to tags array
-- 🔲 **Update `detailedDescription`** — mention the realtime activity feed with live indicator
+- Pending — build fails with `Element type is invalid: got undefined`
+- Why: blocks `npm run build`; every deploy and every PR preview is red
+- Done when: `npm run build` completes clean; `/portfolio/eduscale` renders in prod
 
----
+### 1B — Fix EduScale production AI chat error
 
-### 1G — Update `llms.txt` for new projects
+- Pending — prod chat returns "Sorry, I encountered an error processing your request."
+- Why: recruiters test the flagship feature first; broken chat = dead demo
+- Done when: chat sends a message and streams a Gemini response in prod
 
-AI crawlers and LLM-assisted recruiters read `llms.txt`. Add the 3 new projects.
+### 1C — Deploy redis-battle-demo (Railway trial exhausted)
 
-- 🔲 **`public/llms.txt`** — add redis-battle-demo, CareerGlyph frontend, stripe-payments-demo
-- 🔲 **`public/llms-full.txt`** — same, with architecture detail
+- Pending — needs Render.com or Fly.io (MANUAL §12)
+- Why: portfolio card has no live link; distributed-lock demo is invisible
+- Done when: live URL returns 200; portfolio card `live:` populated
 
----
+### 1D — Deploy stripe-payments-demo
 
-### 1H — CareerGlyph frontend README
+- Pending — same Render/Fly alternative path
+- Why: Stripe-target signal requires a runnable demo, not only a GitHub link
+- Done when: webhook endpoint reachable over HTTPS; README updated with live URL
 
-Recruiters who click the frontend GitHub folder see no README.
+### 1E — Supabase keep-alive GitHub Actions cron
 
-- 🔲 **`apps/frontend/README.md`** — add: `npm run dev`, env vars (`NEXT_PUBLIC_API_URL`),
-  backend dependency (NestJS on :3001), pages (`/`, `/login`, `/register`, `/[username]`)
+- Pending — repo workflow being authored in parallel (needs secrets from MANUAL §13)
+- Why: free-tier Supabase projects auto-pause after 7 days; recruiters see DB errors
+- Done when: workflow runs daily; last-run green for eduscale/devtrack/khatago
 
----
+### 1F — Update `llms.txt` / `llms-full.txt` for 9 projects
 
-### 1I — stripe-payments-demo README
+- Pending — still reflects 6-project roster
+- Why: LLM-assisted recruiters and crawlers read this before hitting pages
+- Done when: both files list all 9 projects with short architecture notes
 
-The repo is committed but the README is missing. Recruiters need to understand the
-idempotency pattern within 30 seconds of opening it.
+### 1G — stripe-payments-demo README
 
-- 🔲 **`README.md`** — document:
-  - The problem: Stripe delivers webhooks at-least-once
-  - The solution: Redis SETNX idempotency guard
-  - Sequence diagram: first delivery → processed; duplicate → skipped
-  - Running locally: `npm run dev`, env vars (STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, REDIS_URL)
-  - Running tests: `npm test`
-
----
-
-## Month 2 — May 18 to Jun 18, 2026
-
-**Goal: Get every project publicly accessible. Deploy redis-battle-demo and stripe-payments-demo.**
-
----
-
-### 2A — Deploy redis-battle-demo to Railway
-
-- 🔲 **Add `railway.toml`** to redis-battle-demo repo
-
-  ```toml
-  [build]
-  builder = "NIXPACKS"
-
-  [deploy]
-  startCommand = "node src/server.js"
-  healthcheckPath = "/health"
-  ```
-
-- 🔲 **Verify `REDIS_URL` env var** is read from environment (already done — confirm)
-- 🔲 **Update portfolio card `live:` field** — after MANUAL §6 gives you the Railway URL
+- Pending — repo committed without README
+- Why: 30-second recruiter scan needs problem → solution → idempotency pattern
+- Done when: README covers SETNX webhook guard, idempotency key, retry, run/test steps
 
 ---
 
-### 2B — Deploy stripe-payments-demo to Railway
+## Month 2 — May 19 → Jun 19, 2026 — Polish and deepen portfolio content
 
-- 🔲 **Add `railway.toml`** — same structure as redis-battle-demo
-  ```toml
-  [deploy]
-  startCommand = "npm run build && npm start"
-  healthcheckPath = "/health"
-  ```
-- 🔲 **Add hosted demo endpoints** (see §3B) — so recruiters can test without Stripe creds
-- 🔲 **Update portfolio card `live:` field** once deployed
+**Goal: performance pass + expand project case studies as portfolio pages (NOT blog posts).**
 
----
+### 2A — Expand EduScale case study on `/portfolio/eduscale`
 
-### 2C — CodeSenseiSearch: deploy + real screenshot
+- Pending
+- Why: blog post route is blocked; portfolio detail page is the new home for depth
+- Done when: page documents Redlock, opossum circuit breaker, Redis adapter, Prometheus,
+  with code snippets and one real incident write-up (non-blog tone)
 
-- 🔲 **Add `Procfile`**: `web: node dist/main.js`
-- 🔲 **Add `start:prod` script**: `nest build && node dist/main.js`
-- 🔲 **DATABASE_URL** must point to Supabase PostgreSQL with pgvector enabled
-- 🔲 **Update portfolio card** with real Railway URL
-- 🔲 **Real screenshot** (MANUAL.md — take screenshot of Swagger search results)
+### 2B — Expand KhataGO case study on `/portfolio/khatago`
 
----
+- Pending
+- Why: fintech signal for Skydo/Stripe; blog blocked; page must carry the weight
+- Done when: WhatsApp webhook flow, Gemini OCR prompt, Tally XML sample, SETNX dedup
+  section all present on the detail page
 
-### 2D — CareerGlyph: E2E tests for frontend
+### 2C — Expand stripe-payments-demo case study on `/portfolio/stripe-payments-demo`
 
-- 🔲 **`e2e/profile.spec.ts`**
-  - Navigate to `/:username` → profile renders (skills, projects)
-  - Navigate to `/ghost-user` → 404 state
-  - Skills show endorsement counts
-- 🔲 **`e2e/auth.spec.ts`**
-  - Register → JWT stored → redirected to profile
-  - Login with wrong password → error message shown
-  - Login → endorse button visible; no login → endorse button hidden
+- Pending
+- Why: Stripe application requires this as the single highest-signal artifact
+- Done when: idempotency diagram, duplicate-event walkthrough, test list on detail page
 
----
+### 2D — OG images on project detail pages
 
-### 2E — Portfolio: OG images on project detail pages
+- Pending
+- Why: `/portfolio/:id` currently inherits default OG image; LinkedIn shares look generic
+- Done when: `app/portfolio/[id]/metadata.ts` generates per-project OG via `/api/og`
 
-Project detail pages at `/portfolio/:id` have no OpenGraph image — they inherit the default.
+### 2E — Performance pass (LCP, INP, CLS, bundle)
 
-- 🔲 **`app/portfolio/[id]/metadata.ts`** — add `openGraph.images` pointing to
-  `/api/og?title=<project title>&description=<first 80 chars>`
-- 🔲 **Test with** `https://opengraph.xyz/` — verify the image generates
+- Pending
+- Why: Vercel application needs measurable Web Vitals; current bundle never analyzed
+- Done when: `npm run analyze` reviewed; LCP < 2.0s on `/`; INP < 200ms;
+  at least one concrete optimization landed (image format, dynamic import, or font subset)
 
----
+### 2F — CareerGlyph frontend completion
 
-## Month 3 — Jun 18 to Jul 18, 2026
+- Pending
+- Why: `/[username]` viewer exists but flow gaps remain (edit profile, skill endorsements UI)
+- Done when: edit-profile page shipped; endorse button optimistic UX end-to-end;
+  E2E tests cover register → edit → endorse path
 
-**Goal: Ship blog posts, apply to companies, final polish pass.**
+### 2G — URL health check in CI
 
----
-
-### 3A — Blog post publication (after MANUAL work is done)
-
-- 🔲 Uncomment `"eduscale-redis-distributed-locks-real-time"` in `lib/blog-data.ts` BLOG_SLUGS, run `npm run generate-blog-manifest`
-- 🔲 Uncomment `"postgres-rbac-eduscale-permissions"` — same
-- 🔲 Uncomment `"khatago-webhook-deduplication-receipt-pipeline"` — same (🚫 blocked until KhataGO public)
-- 🔲 Uncomment `"nextjs-isr-edge-caching-performance"` — same
+- Pending — `scripts/check-live-urls.mjs` exists; wire into a scheduled workflow
+- Why: catch silent outages before a recruiter does
+- Done when: GitHub Actions runs the script daily; failure opens an issue
 
 ---
 
-### 3B — stripe-payments-demo: duplicate simulation endpoint
+## Month 3 — Jun 19 → Jul 19, 2026 — Target-company alignment
 
-- 🔲 **`GET /demo/simulate-duplicate`** — fires the same event ID twice
-  - Response: `{ eventId, firstCall: { processed: true }, secondCall: { skipped: true, ttlRemaining: N } }`
-  - This is the demo you run in a Stripe technical interview
+**Goal: one small demo per target company + tailored applications.**
 
----
+### 3A — Study Stripe engineering blog + ship small demo
 
-### 3C — KhataGO README (blocked until MANUAL §1)
+- Pending
+- Why: tailored signal beats generic resume; Stripe values idempotency/correctness
+- Done when: one demo repo (e.g., dispute-webhook replay tool, or idempotency key
+  benchmark) linked from portfolio; notes file summarizing 5 Stripe eng posts
 
-- 🚫 WhatsApp webhook flow diagram
-- 🚫 Gemini OCR pipeline doc (prompt + XML example)
-- 🚫 Running locally (ngrok + webhook setup)
+### 3B — Study Vercel engineering blog + ship small demo
 
----
+- Pending
+- Why: Vercel hires for Next.js/edge depth; need edge-runtime specific artifact
+- Done when: one demo repo (edge middleware A/B router, or streaming RSC pattern) live
+  on Vercel; portfolio card added
 
-### 3D — URL health check script
+### 3C — Study Supabase engineering blog + ship small demo
 
-- 🔲 **`scripts/check-live-urls.mjs`** — curl each live URL, report 200 vs error
-  ```js
-  const URLS = [
-    "https://eduscale.vercel.app",
-    "https://daily-dev-track.vercel.app",
-    "https://khatago.vercel.app",
-  ];
-  // fetch each, log status + response time
-  // exit 1 if any fails — usable as a cron or pre-deploy check
-  ```
+- Pending
+- Why: Supabase values Postgres/RLS/Realtime expertise
+- Done when: one demo repo (RLS policy playground, or Realtime presence demo) live;
+  portfolio card added
 
----
+### 3D — Tailored application packets
 
-### 3E — Portfolio: final review pass before applications
+- Pending
+- Why: generic applications get filtered; each target gets its own cover + project list
+- Done when: three application folders (stripe/, vercel/, supabase/) each with
+  cover letter, resume variant, and 3 top project links ordered by relevance
 
-- 🔲 Run `scripts/check-live-urls.mjs` — verify all projects return 200
-- 🔲 Add `og:image` to project detail pages (§2E)
-- 🔲 Run `npm run test:coverage` — confirm still 70%+ after any changes
-- 🔲 Run `npm run type-check` — must be clean
-- 🔲 Run `npm run build` — zero warnings
+### 3E — Final review pass before applying
+
+- Pending
+- Why: one broken link kills the application; do a hard sweep
+- Done when: `scripts/check-live-urls.mjs` green, `npm run build` clean,
+  `npm run type-check` clean, `npm run test:coverage` >= 70%,
+  Lighthouse >= 95 on home and one project detail page
 
 ---
 
