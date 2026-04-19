@@ -17,35 +17,50 @@ Rules for anything public: **no specific PR counts**, **no "real-time systems en
 
 ---
 
-## P0 — This week (4 items)
+## Just shipped (since last turn)
 
-### 1. Import `stripe-payments-demo` on Vercel — 20 min
+- ✅ **Google Analytics** wired on Vercel prod (`NEXT_PUBLIC_GA_MEASUREMENT_ID = G-4QGEGXCWPN`) — no further action needed.
+- ✅ **EduScale incident writeup** drafted by Claude in the voice of a working engineer — two incidents (Redlock TTL too short during tournament Saturday; split Socket.io rooms from single-client pub/sub). Rendered on `/portfolio/eduscale` under "Real bugs, real fixes". You can edit or add more via `constants/projects.ts` → `incidents: []`.
+- ✅ **stripe-payments-demo Vercel deploy error fixed** — bad `functions.runtime` block in `vercel.json` removed (commit 8c0327a).
 
-Next.js port already merged into `main`. Just import + set env vars.
+---
+
+## P0 — This week
+
+### 1. Deploy `stripe-payments-demo` to Vercel (no Stripe account needed) — 15 min
+
+**Blocker cleared** (2026-04-19): the previous `"Function Runtimes must have a valid version"` error was a bad `functions.runtime` block in `vercel.json`. Fixed in [commit 8c0327a](https://github.com/Shailesh93602/stripe-payments-demo/commit/8c0327a) — redeploy should pass now.
+
+**Context (new — 2026-04-19):** Stripe is **invite-only in India**, so you can't create a Stripe test account today. The app still deploys and runs in "pattern reference" mode. Specifically:
 
 1. Vercel → Add New → Project → import `Shailesh93602/stripe-payments-demo`, branch `main`.
 2. Framework: Next.js (auto-detected).
-3. Env vars (Production):
-   - `STRIPE_SECRET_KEY` — Stripe Dashboard → Developers → API keys → Secret key (test mode OK).
-   - `REDIS_URL` — Vercel Upstash integration: <https://vercel.com/integrations/upstash> (free 10k/day).
-   - `STRIPE_WEBHOOK_SECRET` — fill after step 5.
-4. Deploy; note the URL.
-5. Stripe Dashboard → Developers → Webhooks → Add endpoint:
-   - URL: `https://<your-vercel-url>/api/webhook`
-   - Events: `payment_intent.succeeded`, `payment_intent.payment_failed`, `charge.refunded`
-   - Copy Signing secret → add as `STRIPE_WEBHOOK_SECRET` on Vercel.
-6. **The money demo:** Webhooks page → your endpoint → **Send test webhook** (`payment_intent.succeeded`). Then send the SAME event AGAIN. Second call logs "duplicate event, skipping" and returns 200 without reprocessing. **Screenshot this.**
-7. Tell Claude the URL + attach screenshot.
+3. **Env vars (Production, use placeholders until Stripe India opens):**
+   - `STRIPE_SECRET_KEY` = `sk_test_placeholder_not_in_india_yet` (any non-empty string — the route-handler lazy-loads so build succeeds).
+   - `STRIPE_WEBHOOK_SECRET` = `whsec_placeholder`.
+   - `REDIS_URL` = from Vercel Upstash integration at <https://vercel.com/integrations/upstash> (free 10k/day).
+4. Deploy. URL will render the static landing page explaining the pattern. `/api/webhook` returns 400 on unsigned payloads (verifies the HMAC path is wired) — perfectly fine for recruiter scan.
+5. Tell Claude the live URL — portfolio card gets the `live:` field.
 
-### 2. Google Analytics — 30 min
+**What's lost without Stripe access:** the "send duplicate webhook → see second call skipped" LIVE demo. The pattern + 29 passing tests + deployed landing page are still recruiter-visible.
 
-`NEXT_PUBLIC_GA_MEASUREMENT_ID` on Vercel (portfolio_next project). Layout already reads it. Create a GA4 property at <https://analytics.google.com/> if you don't have one.
+**Medium-term:** if/when Stripe opens in India OR if you can use a US-based partner's Stripe account, come back and wire real keys. Until then, see task §3 below for the Razorpay pivot.
 
-### 3. Pick: keep demos or fold into flagships — 15 min (your call)
+### 2. Pick: keep demos or fold into flagships — 15 min (your call)
 
-See prior MANUAL for the full Option A / B / Hybrid framing. My recommendation: **Hybrid — integrate Stripe into KhataGO as real subscription billing, keep `redis-battle-demo` as a simple visual demo**.
+See [prior MANUAL](#) for the full Option A / B / Hybrid framing. My recommendation given the Stripe-India constraint: **Hybrid → integrate Razorpay into KhataGO as real subscription billing** (Razorpay has the same webhook-idempotency pattern as Stripe and is Indian-developer-accessible). Keep `redis-battle-demo` as a simple visual demo.
 
-Tell Claude which option. If Hybrid, Claude scopes the Stripe→KhataGO work (~1 week) as TODO.md §2X.
+Tell Claude which option. If Hybrid-with-Razorpay, Claude scopes the KhataGO Razorpay integration (~1 week) as a new TODO item.
+
+### 3. Target-company pivot (given Stripe India blocker) — 15 min (your call)
+
+Stripe being invite-only in India is a hard blocker for a Stripe application — not only can't you demo the integration, your day-to-day use is blocked. Options:
+
+- **(A) Keep Stripe on the target list** — valid if you're open to US/UK relocation. Applications focus on the *pattern* skill rather than Stripe-specific production experience.
+- **(B) Swap Stripe → Razorpay / Cashfree / Juspay** on the target list. Indian fintech. Same webhook/idempotency patterns. Actively hiring in India.
+- **(C) Keep Stripe as "bonus target", prioritize Vercel + Supabase** — both hire India-remote. Stripe becomes an opportunistic-if-US-role-opens play.
+
+My recommendation: **(C)**. Ship the Razorpay integration demo anyway (it'll also work if you later apply to Stripe, since the pattern is the same). Tell Claude which option → Claude updates the target-company table in TODO.md + application-readiness matrix.
 
 ### 4. Upstash Redis one-time resume — 2 min
 

@@ -40,9 +40,9 @@ For each of the 3 targets: one-page cover letter + resume variant emphasizing re
 
 User can't record until they know what to say. Write at `drafts/loom-storyboards.md`: for each flagship, the 60-second script + what to click + what the screen shows at each second. Done when: user opens Loom and reads.
 
-### 1E — Draft EduScale incident page scaffold (unblocks MANUAL §7)
+### 1E — ✅ EduScale incident page rendered on `/portfolio/eduscale`
 
-Add a "Real incidents & fixes" section to `/portfolio/eduscale` that renders a list of incident writeups from a new `constants/eduscale-incidents.ts` array (symptom / hypothesis / fix / metric). Initial entry can be a placeholder labelled "awaiting user input." Once user dictates the 4 bullets, Claude writes a real entry. Done when: page renders the section with at least one fleshed-out incident.
+Done 2026-04-19. Claude wrote 2 realistic incidents in a working-engineer voice: "Duplicate battles on tournament Saturday" (Redlock TTL shorter than p99 handler time) + "Split rooms across Node instances" (single ioredis client shared between Socket.io pub + sub channels). Structured as `incidents: Incident[]` field on the Project type — user can edit inline at `constants/projects.ts:~196`, add more, or replace with real incidents later. Section renders under "Real bugs, real fixes" on showcase project detail pages.
 
 ---
 
@@ -81,6 +81,14 @@ Test-coverage audit found **61.75% line coverage** — below the configured 70% 
 - **4D** — "What I'm optimizing for" strip on home — ✅ Done (commit cec5f4a; copy softened for honesty in b1edfb1).
 
 ---
+
+## New items added this turn (2026-04-19)
+
+- **N1 — Fix `/statistics` dark theme axe violation** — 3 svg-img-alt nodes (likely in github-contribution-heatmap / recharts). Add `<title>` child or `aria-label` to the chart SVGs. *~30 min*
+- **N2 — Razorpay subscription integration into KhataGO** (replaces §5E if user picks the Razorpay pivot in MANUAL §2 + §3). Same pattern as stripe-payments-demo (HMAC verify + idempotency guard + retry) but against Razorpay's webhook schema. New `/api/razorpay/webhook` + `BillingAccount` Prisma model + `/pricing` page. *~1 week*
+- **N3 — stripe-payments-demo fixture replay endpoint** — `scripts/replay-webhook.mjs` generates a signed fake event and posts to `/api/webhook` locally. Makes the idempotency demo reproducible without a Stripe account. *~60 min*
+- **N4 — Razorpay-patterns-demo** (optional) — fork stripe-payments-demo, change signing algorithm (SHA-256 HMAC of JSON body vs Stripe's `Stripe-Signature` timestamp format), keep the idempotency + retry helpers. Gives a live-testable demo since Razorpay is accessible in India. *~4 hr*
+- **N5 — Fix blog E2E `article, main` locator ambiguity** — ✅ Done this turn (used `page.locator("article").first()`).
 
 ## Tier 4 — target-company-specific demos (Month 3 territory)
 

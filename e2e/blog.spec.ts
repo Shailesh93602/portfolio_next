@@ -12,7 +12,10 @@ test.describe("Blog", () => {
     expect(href).toBeTruthy();
 
     await page.goto(href!);
-    await expect(page.locator('article, [role="article"], main')).toBeVisible({
+    // Blog post pages render a dedicated <article> inside <main>; assert
+    // the article specifically so we test the content rendered, not just
+    // that the layout's <main> landmark is visible on any page.
+    await expect(page.locator("article").first()).toBeVisible({
       timeout: 10000,
     });
     await expect(page).toHaveURL(/\/blog\//);

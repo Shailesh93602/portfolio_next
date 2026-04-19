@@ -440,6 +440,82 @@ export default function ProjectDetailContent({ project }: Props) {
             </section>
           )}
 
+          {/* Incidents — real bugs + fixes, shown when the project has any */}
+          {project.incidents && project.incidents.length > 0 && (
+            <section className="space-y-12">
+              <div className="mx-auto mb-12 max-w-3xl space-y-4 text-center">
+                <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary/80">
+                  Incidents &amp; fixes
+                </p>
+                <h2 className="text-4xl font-black uppercase italic tracking-tight md:text-5xl">
+                  Real bugs, real fixes
+                </h2>
+                <p className="text-lg leading-relaxed text-muted-foreground">
+                  The case-study sections above cover what the system does
+                  well. These are the times it didn&apos;t — what broke, what
+                  I got wrong on the first hypothesis, and how we confirmed
+                  the fix held.
+                </p>
+              </div>
+
+              <div className="space-y-8">
+                {project.incidents.map((incident, idx) => (
+                  <motion.article
+                    key={incident.title}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-80px" }}
+                    transition={{ duration: 0.5, delay: idx * 0.05 }}
+                    className="overflow-hidden rounded-[2rem] border border-border bg-card"
+                  >
+                    <header className="flex items-center gap-4 border-b border-border bg-muted/30 px-8 py-5">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-sm font-black text-primary">
+                        {String(idx + 1).padStart(2, "0")}
+                      </span>
+                      <h3 className="text-xl font-bold md:text-2xl">
+                        {incident.title}
+                      </h3>
+                    </header>
+                    <div className="grid gap-10 px-8 py-8 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <p className="text-xs font-black uppercase tracking-widest text-destructive/80">
+                          Symptom
+                        </p>
+                        <p className="leading-relaxed text-foreground">
+                          {incident.symptom}
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+                          First hypothesis (and where it went wrong)
+                        </p>
+                        <p className="leading-relaxed text-muted-foreground">
+                          {incident.hypothesis}
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-xs font-black uppercase tracking-widest text-primary">
+                          Fix
+                        </p>
+                        <p className="leading-relaxed text-foreground">
+                          {incident.fix}
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-xs font-black uppercase tracking-widest text-primary/70">
+                          Confirmed by
+                        </p>
+                        <p className="leading-relaxed text-muted-foreground">
+                          {incident.confirmed}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.article>
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* Action Footer */}
           <section className="py-20 text-center">
             <div className="mx-auto max-w-3xl space-y-8">

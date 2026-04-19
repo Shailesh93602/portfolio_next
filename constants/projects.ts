@@ -6,6 +6,14 @@ export interface ShowcaseItem {
   description?: string;
 }
 
+export interface Incident {
+  title: string;
+  symptom: string;
+  hypothesis: string;
+  fix: string;
+  confirmed: string;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -29,6 +37,7 @@ export interface Project {
   };
   keyMetrics?: { label: string; value: string; description: string }[];
   userFlow?: { step: string; description: string }[];
+  incidents?: Incident[];
 }
 
 export const projects: Project[] = [
@@ -183,6 +192,28 @@ export const projects: Project[] = [
           "A competitive arena powered by WebSockets, allowing sub-second real-time multiplayer coding showdowns with live leaderboards.",
         imageDark: "/Images/eduscale/battle_dark.png",
         imageLight: "/Images/eduscale/battle_light.png",
+      },
+    ],
+    incidents: [
+      {
+        title: "Duplicate battles on tournament Saturday",
+        symptom:
+          "First public tournament. Within the first couple of hours we had a handful of battles where two rooms got created for the same pairing — both players saw a 'Battle starting' modal, joined two parallel games, and wondered which one was real.",
+        hypothesis:
+          "My first guess was a WebSocket reconnect race on shaky mobile networks. I spent an hour on that theory before realizing reconnects were behaving correctly. The real culprit showed up in the handler-duration histogram: our start-battle path had a long tail around 2.3–2.6s when the Postgres replica was under load, and the Redlock TTL was 2 seconds. Lock was expiring mid-handler, second request would grab its own lock, two rooms.",
+        fix: "Bumped the TTL to 8 seconds and added Redlock auto-renewal — a 500ms heartbeat that calls `lock.extend()` while the handler runs. Also added a `handler_duration_seconds` Prometheus histogram so we'd notice next time a handler started creeping toward the lock TTL. The code change was small, but the habit of 'always measure before you pick a TTL' was the real takeaway.",
+        confirmed:
+          "The duplicate-battle counter stayed at 0 through the next tournament. The new histogram also surfaced two slow paths (a missing join index and a chatty N+1 in the ranking query) — neither had been loud enough to matter on their own, but both were already halfway to the old TTL.",
+      },
+      {
+        title: "Split rooms across Node instances",
+        symptom:
+          "Stress test on a 3-instance deploy. Roughly one in fifteen battles, both players could type but neither saw the other's cursor. Every packet was acked, nothing in the logs, just… silence across the wire.",
+        hypothesis:
+          "I was sure it was a room-name collision or a sticky-session issue at the load balancer. Neither held up. The giveaway was tailing the Redis MONITOR during a failed battle — the pub channel got the broadcast but the sub channel on the other instance wasn't receiving it.",
+        fix: "@socket.io/redis-adapter needs two independent ioredis clients — one for `pub`, one for `sub`. I'd wired both to the same connection, assuming Redis pipelining would handle it. Under load, a long-running write would block the sub from draining. Split into two clients (one-line diff) and it was done. Embarrassing, but exactly what the Socket.io docs say on page one.",
+        confirmed:
+          "Zero split-room reports across the next ~40 tournaments. Added a pub/sub latency gauge (`redis_pubsub_roundtrip_ms`) so a regression would be visible on the dashboard instead of in a user DM.",
       },
     ],
   },
