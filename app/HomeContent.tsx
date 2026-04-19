@@ -19,12 +19,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SOCIAL_LINKS } from "@/lib/constants";
 const jobTitles: string[] = [
-  "Full Stack Developer",
-  "Software Engineer",
-  "MERN Stack Developer",
-  "Node.js Developer",
-  "Next.js Developer",
-  "React.js Developer",
+  "Backend Systems Engineer",
+  "Real-time Systems Engineer",
+  "Distributed Systems Engineer",
+  "Payments Infrastructure Engineer",
+  "Full Stack Engineer (backend bias)",
 ];
 
 const skills = [
@@ -190,6 +189,88 @@ export default function HomeContent({ featuredPosts }: Props) {
               />
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* What I'm optimizing for — 3 target-company signals */}
+      <section className="container mx-auto px-4 py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mb-10 text-center"
+        >
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary/70">
+            Currently focused on
+          </p>
+          <h2 className="text-text-primary text-3xl font-bold lg:text-4xl">
+            The parts I go deep on
+          </h2>
+        </motion.div>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          {[
+            {
+              tag: "Payments infra",
+              title: "Webhook idempotency + retry",
+              proof:
+                "stripe-payments-demo: Redis SETNX on event IDs, 24h TTL covering Stripe's retry window, exponential backoff + jitter, 4xx bypassed from retry. 29 tests incl. concurrent duplicate simulation.",
+              href: "/portfolio/stripe-payments-demo",
+              cta: "See the Stripe demo",
+            },
+            {
+              tag: "Real-time systems",
+              title: "Distributed locks + pub/sub",
+              proof:
+                "EduScale: Redlock over Redis prevents duplicate battle starts, @socket.io/redis-adapter for multi-instance broadcast, opossum circuit breaker around code execution, prom-client /metrics for p99 latency.",
+              href: "/portfolio/eduscale",
+              cta: "See how EduScale scales",
+            },
+            {
+              tag: "Developer tooling",
+              title: "Live collaboration UX",
+              proof:
+                "DevTrack: Supabase Realtime postgres_changes subscription for live activity feed, optimistic UI with rollback on auth failure, sub-second multi-tab sync indicator.",
+              href: "/portfolio/devtrack",
+              cta: "See DevTrack's realtime",
+            },
+          ].map((card, index) => (
+            <motion.div
+              key={card.tag}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <Link
+                href={card.href}
+                className="group block h-full rounded-2xl border border-border bg-card p-8 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl"
+              >
+                <div className="mb-4 flex items-center gap-2">
+                  <span className="inline-flex h-2 w-2 rounded-full bg-primary" />
+                  <span className="text-xs font-bold uppercase tracking-widest text-primary">
+                    {card.tag}
+                  </span>
+                </div>
+                <h3 className="text-text-primary mb-3 text-xl font-bold transition-colors group-hover:text-primary">
+                  {card.title}
+                </h3>
+                <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
+                  {card.proof}
+                </p>
+                <span className="inline-flex items-center gap-1 text-sm font-semibold text-primary">
+                  {card.cta}
+                  <span
+                    aria-hidden
+                    className="transition-transform group-hover:translate-x-1"
+                  >
+                    →
+                  </span>
+                </span>
+              </Link>
+            </motion.div>
+          ))}
         </div>
       </section>
 

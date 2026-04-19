@@ -38,17 +38,28 @@ Priority levels mirror the recruiter review (P0 = this week, P1 = this month, P2
 
 ## P0 — Do this week
 
-### 1. Write a 3-sentence hero positioning statement — 30 min
+### 1. Pick a hero positioning statement — 15 min
 
 Recruiter review red flag #1: "Full Stack Developer" tells a Stripe recruiter nothing in 10 seconds.
 
-Write 3 sentences that answer:
+**Pick one of the 3 drafts below** (edit as you like) and paste into this doc or tell Claude which one; Claude wires it into `app/HomeContent.tsx`. The cycling job-title carousel has already been sharpened (no more "MERN Stack Developer" / "React.js Developer") in commit that ships alongside this update.
 
-- What role in 18 months (e.g. "backend engineer on a payments-infra team")
-- Which two technical areas are your specialties (e.g. "webhook idempotency + real-time systems")
-- What proof you have (e.g. "shipped Redlock + opossum at EduScale, built stripe-payments-demo")
+#### Draft A — Backend/infra positioning (strongest for Stripe)
 
-Hand the result to Claude; Claude wires it into `app/(home)/HomeContent.tsx` (TODO 1J).
+> Backend engineer shipping production-grade real-time and payments systems. Built webhook idempotency with Redis SETNX, distributed locks preventing duplicate battle starts, and OCR + agent pipelines processing WhatsApp invoices. Looking to work on payment infrastructure or developer platforms where correctness is non-negotiable.
+
+#### Draft B — Distributed systems positioning (strongest for Vercel)
+
+> I build the boring parts of distributed systems — the circuit breakers, the idempotency guards, the retry policies that quietly hold things together under load. At EduScale that meant Redlock + Redis cluster adapter + prom-client metrics for 1:1 battle rooms; at stripe-payments-demo it meant SETNX + exponential-backoff + a hard line against retrying 4xx. Next: platform engineering at a company where this is the product.
+
+#### Draft C — Full-stack with depth positioning (strongest for Supabase)
+
+> Software engineer with a backend bias. I work across the stack — Next.js 16 + TypeScript on the frontend, Prisma + Postgres + Redis on the backend, Supabase Realtime for live collaboration — and I go deep on the 10% of the stack that breaks under load: race conditions, duplicate webhooks, RLS policies, cold-start middleware. Targeting teams where the platform is the product.
+
+**Rules of thumb:**
+- Pick the one whose tech ≈ the target company's stack
+- Replace or edit the proof points with your own
+- If none feel right, the structure to keep is: "{what role in 18 months} + {2 specialties} + {2 concrete proofs}"
 
 ### 2. Verify 3 Live Project URLs + screenshot each — 15 min
 
