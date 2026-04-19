@@ -94,9 +94,7 @@ export const ContactContent: React.FC = () => {
   );
 
   const openMailtoFallback = (data: FormData) => {
-    const phoneSegment = data.phoneNumber
-      ? `\nPhone: ${data.phoneNumber}`
-      : "";
+    const phoneSegment = data.phoneNumber ? `\nPhone: ${data.phoneNumber}` : "";
     const subject = encodeURIComponent(`[Portfolio Contact] ${data.subject}`);
     const body = encodeURIComponent(
       `Name: ${data.fullName}\nEmail: ${data.email}${phoneSegment}\n\n${data.message}`

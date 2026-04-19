@@ -9,7 +9,9 @@ import { POST } from "@/app/api/contact/route";
 jest.mock("resend", () => ({
   Resend: jest.fn().mockImplementation(() => ({
     emails: {
-      send: jest.fn().mockResolvedValue({ data: { id: "msg_123" }, error: null }),
+      send: jest
+        .fn()
+        .mockResolvedValue({ data: { id: "msg_123" }, error: null }),
     },
   })),
 }));

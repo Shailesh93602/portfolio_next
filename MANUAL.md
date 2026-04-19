@@ -138,7 +138,6 @@ Do this check every 2 weeks until Task 3 lands (then it's automated).
    - Plan: **Free** (spins down after 15 min of inactivity; spins up in ~30s on next request — fine for a demo)
 
 3. **Environment variables** (Environment section on the service page):
-
    - `REDIS_URL` = the Internal Redis URL from step 1
    - `NODE_ENV` = `production`
    - `PORT` = `10000` (Render's convention — their LB expects this port)
@@ -146,7 +145,6 @@ Do this check every 2 weeks until Task 3 lands (then it's automated).
 4. **Deploy** → wait ~3 min for the first build. Watch logs for errors.
 
 5. **Test the demo works:**
-
    - Open the assigned URL (`https://redis-battle-demo.onrender.com` or similar)
    - Click "Start Battle" — should connect via Socket.io
    - If 502s, check logs; common issue is a hardcoded `localhost:6379` that should read from `REDIS_URL`
@@ -368,15 +366,15 @@ For each of Stripe, Vercel, Supabase:
 
 Every time you deploy a new project (yours or otherwise) that has a DB, auth, or background workloads, run through this list so nothing rots on free tier:
 
-| Concern | What to do |
-|---|---|
+| Concern                        | What to do                                                                                                                                                                                                                                                                              |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Supabase / Postgres keep-alive | If the project uses a free-tier Supabase Postgres, add a `/api/cron/keepalive` route + a `vercel.json` cron entry (`0 9 * * *`) that runs a trivial DB query. See `app/api/cron/keepalive/route.ts` in KhataGO or DevTrack as copy-paste templates. Protect with `CRON_SECRET` env var. |
-| Vercel env vars | Minimum: `NODE_ENV=production`, plus whatever the project needs (`DATABASE_URL`, `SUPABASE_*`, `STRIPE_*`, `GEMINI_API_KEY`, `CRON_SECRET`, etc.). Set for **Production** and **Preview** unless there's a reason to split. |
-| Error surfacing | Make sure the app doesn't swallow prod errors into generic messages without logging the real error to the Vercel function log. Pattern: `console.error("...", { message, stack, context })` before returning the friendly response. |
-| Public URL | Once deployed, add the live URL to the portfolio's `constants/projects.ts` (for the project card) and to the README. Tell Claude the URL to auto-update. |
-| Sentry / monitoring (optional) | If the project already imports `@sentry/nextjs`, make sure `NEXT_PUBLIC_SENTRY_DSN` is set on Vercel. Otherwise skip. |
-| Deploy-platform choice | Default to Vercel. Go to Render/Fly only if the project needs persistent connections (Socket.io / WebSockets / long-polling / worker queues). See MANUAL task 4/5 for the redis-battle-demo and stripe-payments-demo decisions as templates. |
-| Screenshots for portfolio | After deploy, take 1 light-mode + 1 dark-mode screenshot of the main flow. Used as OG images + portfolio card image. |
+| Vercel env vars                | Minimum: `NODE_ENV=production`, plus whatever the project needs (`DATABASE_URL`, `SUPABASE_*`, `STRIPE_*`, `GEMINI_API_KEY`, `CRON_SECRET`, etc.). Set for **Production** and **Preview** unless there's a reason to split.                                                             |
+| Error surfacing                | Make sure the app doesn't swallow prod errors into generic messages without logging the real error to the Vercel function log. Pattern: `console.error("...", { message, stack, context })` before returning the friendly response.                                                     |
+| Public URL                     | Once deployed, add the live URL to the portfolio's `constants/projects.ts` (for the project card) and to the README. Tell Claude the URL to auto-update.                                                                                                                                |
+| Sentry / monitoring (optional) | If the project already imports `@sentry/nextjs`, make sure `NEXT_PUBLIC_SENTRY_DSN` is set on Vercel. Otherwise skip.                                                                                                                                                                   |
+| Deploy-platform choice         | Default to Vercel. Go to Render/Fly only if the project needs persistent connections (Socket.io / WebSockets / long-polling / worker queues). See MANUAL task 4/5 for the redis-battle-demo and stripe-payments-demo decisions as templates.                                            |
+| Screenshots for portfolio      | After deploy, take 1 light-mode + 1 dark-mode screenshot of the main flow. Used as OG images + portfolio card image.                                                                                                                                                                    |
 
 **Concretely — when you deploy project X:**
 

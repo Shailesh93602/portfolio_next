@@ -11,7 +11,10 @@ const contactSchema = z.object({
   email: z.string().email("Enter a valid email"),
   phoneNumber: z.string().max(40).optional().or(z.literal("")),
   subject: z.string().min(1, "Subject is required").max(200),
-  message: z.string().min(10, "Message must be at least 10 characters").max(5000),
+  message: z
+    .string()
+    .min(10, "Message must be at least 10 characters")
+    .max(5000),
 });
 
 // Simple in-memory rate limit: 5 submissions per IP per hour.
