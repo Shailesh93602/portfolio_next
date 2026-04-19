@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   SiLeetcode,
@@ -18,14 +17,6 @@ import SocialLink from "./components/SocialLink";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SOCIAL_LINKS } from "@/lib/constants";
-const jobTitles: string[] = [
-  "Software Engineer",
-  "Full Stack Developer",
-  "Backend Engineer",
-  "TypeScript Engineer",
-  "Next.js Developer",
-  "Node.js Developer",
-];
 
 const skills = [
   "TypeScript",
@@ -51,15 +42,6 @@ interface Props {
 }
 
 export default function HomeContent({ featuredPosts }: Props) {
-  const [jobTitleIndex, setJobTitleIndex] = useState<number>(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setJobTitleIndex((prevIndex) => (prevIndex + 1) % jobTitles.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div>
       <section className="container mx-auto px-4 py-12">
@@ -78,18 +60,20 @@ export default function HomeContent({ featuredPosts }: Props) {
                 Hi, I&apos;m Shailesh Chaudhari
               </h1>
               <h2 className="h-12 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-2xl font-semibold text-primary text-transparent lg:text-3xl">
-                {jobTitles[jobTitleIndex]}
+                Full-stack engineer with a backend focus
               </h2>
             </div>
 
             <p className="text-text-secondary text-lg leading-relaxed">
-              Software Engineer at ContextQA, working on the backend of our
-              core QA automation product — test execution engine, VNC
-              streaming, and Playwright / WebdriverIO / LambdaTest
-              orchestration. Previously ~2 years at EsparkBiz (intern to SE)
-              shipping full-stack client projects. Side projects explore
-              real-time systems, AI pipelines, and webhook idempotency
-              patterns. TypeScript everywhere, correctness first.
+              ~2.5 years in the industry. Currently at ContextQA working on
+              the backend of our core QA-automation product — test execution
+              engine, VNC streaming, and multi-cloud browser orchestration
+              across Playwright / WebdriverIO / LambdaTest. Comfortable across
+              the stack from my EsparkBiz client-project days, but I go deep
+              on backend systems: distributed locks (Redlock), real-time
+              pub/sub (Socket.io + Redis adapter), webhook idempotency (SETNX),
+              AI pipelines (Gemini function-calling). Targeting backend,
+              platform, or developer-tooling roles.
             </p>
 
             <div className="flex flex-wrap gap-2">

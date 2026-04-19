@@ -23,127 +23,87 @@ Rules when writing anything public: **no specific PR counts** (you haven't commi
 
 ## Priority Queue
 
-| #   | Priority | Task                                                   | Time    | Status    |
-| --- | -------- | ------------------------------------------------------ | ------- | --------- |
-| 1   | P0       | Pick a hero positioning statement (see §1 below)       | 15 min  | pending   |
-| 2   | P0       | Add `CRON_SECRET` to 3 Vercel projects + redeploy      | 15 min  | pending   |
-| 3   | P0       | Deploy `redis-battle-demo` (Render or Fly)             | 45 min  | pending   |
-| 4   | P0       | Deploy `stripe-payments-demo` to Vercel after the port | 30 min  | pending   |
-| 5   | P0       | Wire up Resend (`RESEND_API_KEY`) for contact form     | 15 min  | pending   |
-| 6   | P0       | Google Analytics setup (`NEXT_PUBLIC_GA_MEASUREMENT_ID`) | 30 min | pending |
-| 7   | P1       | Update resume PDF to match hero positioning            | 1 hr    | pending   |
-| 8   | P1       | LinkedIn headline + About rewrite                      | 2 hr    | pending   |
-| 9   | P1       | Record 3 Loom videos (eduscale, devtrack, stripe)      | 2 hr    | pending   |
-| 10  | P1       | Get one OSS PR merged (Vercel-required signal)         | ongoing | pending   |
-| 11  | P1       | Dictate one real-incident writeup for EduScale         | 30 min  | pending   |
-| 12  | P2       | Speak once (meetup / lightning talk)                   | 1 talk  | pending   |
-| 13  | P2       | Get one LinkedIn recommendation from a senior eng      | ask     | pending   |
-| 14  | P2       | Stripe-specific cold outreach (2 engineers)            | 3 hr    | pending   |
-| 15  | P2       | Tailored application packets (Stripe/Vercel/Supabase)  | 3 hr    | pending   |
+| #   | Priority | Task                                                    | Time    | Status   |
+| --- | -------- | ------------------------------------------------------- | ------- | -------- |
+| 1   | P0       | Redeploy the 3 Vercel projects to pick up `CRON_SECRET` | 5 min   | pending  |
+| 2   | P0       | Merge + deploy `stripe-payments-demo` to Vercel         | 30 min  | pending  |
+| 3   | P0       | Wire up Resend (`RESEND_API_KEY`) for contact form      | 15 min  | pending  |
+| 4   | P0       | Google Analytics (`NEXT_PUBLIC_GA_MEASUREMENT_ID`)      | 30 min  | pending  |
+| 5   | P0       | Decide: keep small demo repos or fold into flagships    | 15 min  | pending  |
+| 6   | P1       | Update resume PDF to match hero positioning             | 1 hr    | pending  |
+| 7   | P1       | LinkedIn headline + About rewrite                       | 2 hr    | pending  |
+| 8   | P1       | Record 3 Loom videos (eduscale, devtrack, stripe)       | 2 hr    | pending  |
+| 9   | P1       | Get one OSS PR merged (Vercel-required signal)          | ongoing | pending  |
+| 10  | P1       | Dictate one real-incident writeup for EduScale          | 30 min  | pending  |
+| 11  | P2       | Speak once (meetup / lightning talk)                    | 1 talk  | pending  |
+| 12  | P2       | Get one LinkedIn recommendation from a senior eng       | ask     | pending  |
+| 13  | P2       | Stripe-specific cold outreach (2 engineers)             | 3 hr    | pending  |
+| 14  | P2       | Tailored application packets (Stripe/Vercel/Supabase)   | 3 hr    | pending  |
 
-**Recently completed (just for context — no action needed):**
+**Recently completed (just for context):**
+- ✓ Picked hero positioning Draft B — wired into `app/HomeContent.tsx`
+- ✓ `redis-battle-demo` deployed at <https://redis-battle-demo.onrender.com/> (portfolio card + health check updated)
+- ✓ `CRON_SECRET` added to Vercel env vars for the 3 projects (you did this — just needs redeploy)
 - ✓ All 3 Supabase-backed projects (EduScale / DevTrack / KhataGO) confirmed live
 - ✓ `GEMINI_API_KEY` added to KhataGO Vercel
 - ✓ EduScale middleware fast-path fix deployed in both repos
-- ✓ 6 Supabase GitHub secrets added (now deprecated by Vercel cron approach — can delete them if you want)
-- ✓ CodeSenseiSearch screenshot (if you already did this; otherwise see P2 bottom of file)
+- ✓ 6 Supabase GitHub secrets added (now deprecated by Vercel cron approach — can delete)
+- ✓ `stripe-payments-demo` ported to Next.js on branch `nextjs-port` — ready to merge + deploy
 
 ---
 
 ## P0 — Do this week
 
-### 1. Pick a hero positioning statement — 15 min
+### 1. Redeploy the 3 Vercel projects to pick up `CRON_SECRET` — 5 min
 
-Recruiter review red flag #1: "Full Stack Developer" tells a Stripe recruiter nothing in 10 seconds.
+You added `CRON_SECRET` in Vercel → Settings → Environment Variables → Production. That's the right spot. But **Vercel doesn't auto-redeploy when you add an env var** — the currently-running deployment doesn't know about it. You need one of:
 
-**Pick one of the 3 drafts below** (edit freely), then tell Claude which one; Claude wires it into `app/HomeContent.tsx`. The paragraph on the home page has already been updated to reflect your real current role (backend of ContextQA's core product, not Chrome extensions). These drafts replace the *single-sentence* above the paragraph that currently cycles through generic job titles.
+**Option A (zero-effort):** trigger a redeploy from the Vercel UI.
 
-#### Draft A — Backend-engineer positioning (most accurate)
+1. Open each project on Vercel (KhataGO, DevTrack, EduScale Frontend)
+2. **Deployments tab → click the latest deployment → click the three-dot menu → "Redeploy"**
+3. Confirm (no cache-bust needed).
 
-> Software engineer at ContextQA working on the backend of our core QA-automation product — test execution engine, VNC streaming, and browser-automation orchestration (Playwright / WebdriverIO / LambdaTest). Previously ~2 years at EsparkBiz shipping client projects end-to-end. Side projects explore real-time coordination (EduScale — Redlock + Socket.io), AI tool-calling (KhataGO — Gemini + OCR), and webhook idempotency (stripe-payments-demo).
+**Option B (git push):** any commit to `main` in each repo triggers a fresh deploy that'll pick up the new env var.
 
-#### Draft B — Full-stack-with-backend-pivot
+**After redeploy, verify:** Vercel dashboard → Project → **Cron Jobs** tab → should list `/api/cron/keepalive` scheduled at `0 9 * * *`.
 
-> Full-stack engineer (~2.5 years), now backend-only on ContextQA's QA-automation core — test execution, VNC, and multi-cloud browser orchestration. Comfortable across the stack from EsparkBiz client-project days, but going deep on backend systems: distributed locks, real-time pub/sub, webhook idempotency, AI pipelines. Targeting backend / platform / developer-tooling roles.
+**Optional sanity check** (once deployed):
 
-#### Draft C — Side-project-forward
+```
+curl -H "Authorization: Bearer $CRON_SECRET" https://<project>.vercel.app/api/cron/keepalive
+```
 
-> Software engineer at ContextQA on the backend of a QA-automation platform (test execution, VNC, Playwright/WebdriverIO/LambdaTest). The projects here are what I build outside work to explore patterns end-to-end: EduScale (Redlock + Socket.io Redis adapter), stripe-payments-demo (SETNX idempotency, exponential-backoff retry), KhataGO (Gemini function-calling with OCR). Open to backend / distributed-systems / developer-platform roles.
+Expect `{"ok":true,"db":"postgres","now":...}` or `{"ok":true,"db":"supabase",...}`.
 
-**What to avoid in any rewrite:**
+That's it. No additional env vars, no additional config. The cron runs once per day at 09:00 UTC automatically.
 
-- Any specific PR count
-- Title of "Real-time systems engineer" / "Payments infrastructure engineer" (not real industry titles)
-- Saying current role is Chrome extensions (that was only first 2-3 months)
-- Claiming you build production payment infrastructure
+### 2. Merge + deploy stripe-payments-demo to Vercel — 30 min
 
-### 2. Activate Vercel Cron Keep-Alive — 15 min
-
-Per-project daily DB ping replaces the old GitHub Actions approach. Prevents Supabase free-tier auto-pause. Already live in **KhataGO**, **DevTrack**, and **EduScale Frontend** repos.
+Claude ported the Express routes to Next.js — branch **`nextjs-port`**, commit **`bc18b84`**. All 29 tests pass. PR URL: <https://github.com/Shailesh93602/stripe-payments-demo/pull/new/nextjs-port>
 
 **Steps:**
 
-1. Generate one secret: `openssl rand -hex 32`
-2. On Vercel (Settings → Environment Variables → Production) add `CRON_SECRET` = that value to each of:
-   - KhataGO
-   - DevTrack
-   - EduScale Frontend
-3. Trigger a redeploy on each (any commit, or "Redeploy" from Vercel UI)
-4. Verify: Vercel dashboard → Project → **Cron Jobs** should show `/api/cron/keepalive` scheduled `0 9 * * *`
-5. Optional sanity: `curl -H "Authorization: Bearer $CRON_SECRET" https://<project>.vercel.app/api/cron/keepalive` → expect `{"ok":true,...}`
-
-**Cleanup (optional):** delete the 6 now-unused repo secrets at <https://github.com/Shailesh93602/portfolio_next/settings/secrets/actions> (`EDUSCALE_SUPABASE_URL`, `EDUSCALE_SUPABASE_ANON_KEY`, `DEVTRACK_*`, `KHATAGO_*`).
-
-### 3. Deploy redis-battle-demo to Render — 45 min
-
-**Why not Vercel:** Socket.io + Express needs persistent WebSocket connections. Vercel serverless can't hold those open.
-
-1. **Provision Redis first** (web service needs the URL at deploy time):
-   - Render dashboard → **New +** → **Redis**
-   - Name: `redis-battle-demo-redis`, plan: **Free**, region: Oregon (or closest)
-   - Copy **Internal Redis URL** (format: `redis://red-xxxxx:6379`)
-2. **Provision the web service:**
-   - **New +** → **Web Service** → connect `Shailesh93602/redis-battle-demo`
-   - Name: `redis-battle-demo`, region: **same as Redis**, branch: `main`
-   - Build: `npm install && npm run build` (or just `npm install` if no build script — check)
-   - Start: `npm start`
-   - Plan: **Free** (spins down after 15 min inactivity, ~30s cold start)
-3. **Environment variables:**
-   - `REDIS_URL` = the Internal Redis URL
-   - `NODE_ENV` = `production`
-   - `PORT` = `10000` (Render convention)
-4. **Deploy**, wait ~3 min, test the battle UI, report URL to Claude.
-
-**Free-tier limit:** single instance only — Redlock's 2-node demo needs upgrade OR use **Fly.io** free:
-
-```
-cd ~/Desktop/Coding/redis-battle-demo
-fly launch && fly redis create
-fly secrets set REDIS_URL=<from fly redis>
-fly deploy && fly scale count 2
-```
-
-### 4. Deploy stripe-payments-demo to Vercel — 30 min (after Claude's port)
-
-Claude is porting the Express routes to Next.js API routes so it can deploy to Vercel (target-company signal). After the port PR lands:
-
-1. Vercel → **Add New** → **Project** → import `Shailesh93602/stripe-payments-demo`, branch = the port branch (Claude will name it)
-2. Framework preset: Next.js (auto-detected)
-3. **Environment Variables** (Production):
-   - `STRIPE_SECRET_KEY` — Stripe Dashboard → Developers → API keys → **Secret key** (test mode is fine)
-   - `REDIS_URL` — use Vercel's **Upstash** integration at <https://vercel.com/integrations/upstash> (free 10k commands/day)
-   - `STRIPE_WEBHOOK_SECRET` — fill after step 5
-4. **Deploy**, note the URL
-5. **Stripe webhook config:**
+1. **Review the PR + merge to main.** Nothing surprising — `app/api/{webhook,create-payment-intent,simulate-payment,health}/route.ts` added; legacy Express runnable via `npm run dev:legacy` as fallback.
+2. **Vercel → Add New → Project** → import `Shailesh93602/stripe-payments-demo`, branch `main` (after merge).
+3. Framework preset: Next.js (auto-detected).
+4. **Environment Variables** (Production):
+   - `STRIPE_SECRET_KEY` — Stripe Dashboard → Developers → API keys → **Secret key** (test mode is fine).
+   - `REDIS_URL` — use Vercel's **Upstash** integration at <https://vercel.com/integrations/upstash> (free 10k commands/day).
+   - `STRIPE_WEBHOOK_SECRET` — fill after step 6.
+5. **Deploy**, note the URL.
+6. **Stripe webhook config:**
    - Stripe Dashboard → Developers → Webhooks → **Add endpoint**
    - URL: `https://<your-vercel-url>/api/webhook`
    - Events: `payment_intent.succeeded`, `payment_intent.payment_failed`, `charge.refunded`
    - Save → click into endpoint → copy **Signing secret** (`whsec_...`)
-6. Add `STRIPE_WEBHOOK_SECRET` on Vercel → redeploy
-7. **The money demo:** Stripe dashboard → Webhooks → your endpoint → **Send test webhook** → pick `payment_intent.succeeded`. Check Vercel function logs. **Click "Send test webhook" AGAIN with the same event.** The second delivery should log "duplicate event, skipping" and return 200 without reprocessing. **Screenshot this.**
-8. Tell Claude the URL — Claude updates portfolio card `live:` + README with the duplicate-webhook screenshot.
+7. Add `STRIPE_WEBHOOK_SECRET` on Vercel → redeploy (same Option A/B from task 1).
+8. **The money demo (screenshot this):** Stripe dashboard → Webhooks → your endpoint → **Send test webhook** → pick `payment_intent.succeeded`. Watch Vercel function logs. **Then click "Send test webhook" AGAIN with the same event.** Second delivery should log "duplicate event, skipping" and return 200 without reprocessing.
+9. Tell Claude the URL + attach the duplicate-webhook screenshot.
 
-### 5. Wire up Resend for the contact form — 15 min
+**Why this matters:** deploying on Vercel is an explicit signal to Vercel recruiters that you use their platform idiomatically. Combined with the MANUAL §5 decision below.
+
+### 3. Wire up Resend for the contact form — 15 min
 
 `/api/contact` is live and falls back to `mailto:` when `RESEND_API_KEY` isn't set. To enable direct sends:
 
@@ -155,9 +115,60 @@ Claude is porting the Express routes to Next.js API routes so it can deploy to V
    - `RESEND_FROM` (only if you verified a domain): `"Portfolio Contact <contact@yourdomain>"` — else leave unset
 5. Redeploy → test from `/contact` on live site → email arrives at `CONTACT_INFO.EMAIL`.
 
-### 6. Google Analytics — 30 min
+### 4. Google Analytics — 30 min
 
 Shows you instrument your own products. Add `NEXT_PUBLIC_GA_MEASUREMENT_ID` on Vercel (root layout already reads it). Create a new GA4 property if you don't have one.
+
+### 5. Decide: keep small demos, or fold them into flagships — 15 min (your call)
+
+You asked the right architectural question: "Why do we have `redis-battle-demo` when EduScale already uses Redis? Why `stripe-payments-demo` when KhataGO already does webhook idempotency? Can we integrate Stripe into KhataGO / EduScale directly instead?"
+
+**Both options are defensible. Pick one:**
+
+#### Option A — Keep small demos as "5-minute read" artifacts (current setup)
+
+The small repos (`redis-battle-demo`, `stripe-payments-demo`) exist because:
+
+- A recruiter who wants to *see the pattern* doesn't want to boot up EduScale or KhataGO (big apps, need Supabase + more). They want `git clone && npm start` and 5 lines that demonstrate the pattern.
+- Focused test suites specifically for the pattern (e.g. 29 tests on webhook idempotency alone) are easier to read than finding the same patterns buried inside a larger app.
+- Different "story" per repo — EduScale is "real-time platform," stripe-payments-demo is "webhook idempotency handbook." A Stripe recruiter doesn't have to re-contextualize when they open it.
+
+**Cost:** ~9 repos to maintain, keepalives to configure, deploys to track. But the flagship projects still demonstrate the patterns **in production**, so demos are purely supplemental.
+
+#### Option B — Fold demos into flagships as "real integrations" (aggressive)
+
+- **Add Stripe subscription billing to KhataGO** (users pay ₹299/month for the accountant portal). The webhook idempotency code moves from `stripe-payments-demo` into KhataGO's real webhook handler. Archive `stripe-payments-demo`.
+- **Add Stripe tournament-entry fees to EduScale** (users pay ₹50 to enter a battle tournament). Same pattern — Stripe webhook in EduScale's real backend.
+- **Retire `redis-battle-demo`** — EduScale's case-study page already documents Redlock + @socket.io/redis-adapter at production scale. Point recruiters to the real EduScale backend code.
+
+**Pros:** one place per pattern, visible "real" usage (not a demo), fewer repos.
+**Cons:** 6-10 hours of integration work per flagship; risk of breaking live apps while wiring up payments.
+
+#### My recommendation
+
+**Hybrid — do Option B for Stripe, Option A for Redis.**
+
+- **Stripe:** integrate into KhataGO as subscription billing. Real Stripe usage beats a demo for a Stripe application. Archive `stripe-payments-demo` README but link to it as "the pattern reference." ~8 hr work, high signal.
+- **Redis:** keep `redis-battle-demo` as a simple visual demo. EduScale's Redis usage is deep but not *visually demo-able* in a recruiter's 30-second scan. The battle demo's two-instance Redlock race IS visual and runs in <5 min. Low maintenance cost (one Render free service).
+
+**Tell Claude which option you want.** Claude can then:
+- (If Option A) leave as-is, just keep them maintained.
+- (If Option B / hybrid) scope the Stripe→KhataGO integration — at minimum: subscription tier model, `/api/stripe/webhook` route, Redis SETNX in KhataGO, billing page UI. ~1 week of code work.
+
+### Upstash Redis keepalive (for redis-battle-demo on Render)
+
+Your Upstash Redis for `redis-battle-demo` got paused. This is the same free-tier-inactivity problem as Supabase, just for Upstash.
+
+The [URL health-check GitHub Action](.github/workflows/url-health-check.yml) already pings `https://redis-battle-demo.onrender.com/` daily at 10:00 UTC. Here's the keepalive chain:
+
+1. GitHub Action does `HEAD /` on the Render URL
+2. Render free-tier instance wakes up (if spun down)
+3. The app reconnects to Upstash Redis on wake
+4. That reconnection counts as Upstash activity → Upstash doesn't pause
+
+**Action:** no Vercel action needed. The GitHub workflow already covers it (shipped 2026-04-19). Just keep Upstash unpaused manually **once** (Upstash Dashboard → your database → "Resume") — the health check takes it from there.
+
+If you want extra safety (Upstash activity from HTTP-independent pings), Claude can add a **tiny cron inside `redis-battle-demo`** that does `redis.ping()` every 6 hours. Let me know.
 
 ---
 

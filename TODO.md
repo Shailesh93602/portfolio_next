@@ -51,16 +51,21 @@ See [MANUAL.md](MANUAL.md) for tasks that require your credentials, accounts, or
 
 ### Already done
 
+- 2B — KhataGO case study reframed as reconciliation pipeline (commit d7a3e2e)
 - 2D — Dynamic OG images per project-detail page (commit 8754c2d)
-- 2G — URL health-check script exists (`scripts/check-live-urls.mjs`) — scheduled workflow wiring still pending (see 2G' below)
+- 2G — URL health-check script + GitHub Actions cron wired (commit d7a3e2e + new workflow)
 - 2I — Replaced mailto contact with `/api/contact` (shipped this sprint)
-- 2J — "Things I'm building to learn" strip on home (commit cec5f4a — copy updated for honesty this turn)
+- 2J — "Things I'm building to learn" strip on home (commit cec5f4a — copy updated for honesty)
 
 ### Pending
 
-- **2A** — Expand EduScale case study with a real-incident section (symptom / hypothesis / fix / confirmed-by-metric). **Blocked** on MANUAL §11 (user dictates 4 bullets).
-- **2B** — Expand KhataGO case study. Reframe as "WhatsApp → Gemini function-calling → Prisma + reconciliation" with explicit flows: webhook verification, OCR prompt, transaction/receivable write path, reminder cron. Target-company signal: fintech + AI tool-use.
-- **2C** — Stripe case-study page is mostly done (commit cec5f4a); pending: add visible GitHub Actions CI badge + live-URL link once 1D lands.
+- **2A** — Expand EduScale case study with a real-incident section (symptom / hypothesis / fix / confirmed-by-metric). **Blocked** on MANUAL §10 (user dictates 4 bullets).
+- **2C** — Stripe case-study page is mostly done (commit cec5f4a); pending: add visible GitHub Actions CI badge + live-URL link once MANUAL §2 (Vercel deploy) lands.
+
+### Blocked on user decision (MANUAL §5)
+
+- **2X — Integrate Stripe into KhataGO as real subscription billing.** If the user picks the hybrid / Option-B path in MANUAL §5: scope + ship a `/pricing` page in KhataGO with 3 tiers (Free / CA-Portal / Business), a `POST /api/stripe/checkout` route that creates a Stripe Checkout Session, a `POST /api/stripe/webhook` handler using the same SETNX idempotency pattern from `stripe-payments-demo`, and a `BillingAccount` model in Prisma to track subscription state. Case-study page on `/portfolio/khatago` adds a "Billing pipeline" section. Archives `stripe-payments-demo` (or keeps it as a pattern-reference repo). **~1 week of work.** Highest-signal move for a Stripe application because it turns a demo into production usage.
+- **2Y — Integrate Stripe into EduScale as tournament-entry fees.** Only if 2X lands first and proves the pattern. Adds per-tournament Stripe Checkout, escrow-style refund if tournament cancels, Stripe Connect payouts to winners (advanced — defer).
 - **2E** — Perf pass for Web Vitals proof. `npm run analyze`, audit images >100 kB, font subset, dynamic-import the remaining chart components, target LCP <1.8s, INP <150ms, CLS <0.05, PageSpeed ≥95 mobile. Add a Web-Vitals screenshot to `/about`.
 - **2F** — CareerGlyph frontend: edit-profile page, endorse button optimistic UX, register → edit → endorse E2E.
 - **2G'** — Wire `scripts/check-live-urls.mjs` into a GitHub Actions cron so silent outages get surfaced before a recruiter hits them.

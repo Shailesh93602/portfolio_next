@@ -684,8 +684,9 @@ export const projects: Project[] = [
       "TypeScript",
     ],
     github: "https://github.com/Shailesh93602/redis-battle-demo",
+    live: "https://redis-battle-demo.onrender.com/",
     detailedDescription:
-      "A standalone demo that makes three distributed systems patterns visible in a browser: (1) @socket.io/redis-adapter publishes Socket.io events through Redis Pub/Sub so multiple Node.js instances share the same room state, (2) Redlock (the Redlock algorithm) ensures only one instance wins each tick interval — preventing duplicate score updates that would corrupt battle state, (3) prom-client exposes a Prometheus /metrics endpoint with 5 counters/gauges for connected clients, active rooms, attacks, ticks acquired, and ticks skipped.",
+      "A standalone, 5-minute-review demo extracting three distributed-systems patterns from EduScale into a single runnable app: (1) @socket.io/redis-adapter publishes Socket.io events through Redis Pub/Sub so multiple Node.js instances share the same room state, (2) Redlock (the Redlock algorithm) ensures only one instance wins each tick interval — preventing duplicate score updates that would corrupt battle state, (3) prom-client exposes a Prometheus /metrics endpoint with 5 counters/gauges for connected clients, active rooms, attacks, ticks acquired, and ticks skipped. Deployed on Render (free tier, single instance) with Upstash Redis.",
     architecture: {
       layers: [
         {

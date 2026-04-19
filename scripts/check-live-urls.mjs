@@ -14,6 +14,10 @@ const URLS = [
   { name: "EduScale", url: "https://eduscale.vercel.app" },
   { name: "DevTrack", url: "https://daily-dev-track.vercel.app" },
   { name: "KhataGO", url: "https://khatago.vercel.app" },
+  // Render free-tier spins down after 15 min; daily GET wakes it up,
+  // which in turn reconnects to Upstash Redis — that Redis activity
+  // prevents Upstash from pausing the free-tier instance.
+  { name: "Redis Battle Demo", url: "https://redis-battle-demo.onrender.com/" },
 ];
 
 const TIMEOUT_MS = 10_000;
