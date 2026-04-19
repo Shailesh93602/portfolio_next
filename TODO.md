@@ -54,8 +54,11 @@ See [MANUAL.md](MANUAL.md) for tasks that require your credentials, accounts, or
 - 2B — KhataGO case study reframed as reconciliation pipeline (commit d7a3e2e)
 - 2D — Dynamic OG images per project-detail page (commit 8754c2d)
 - 2G — URL health-check script + GitHub Actions cron wired (commit d7a3e2e + new workflow)
-- 2I — Replaced mailto contact with `/api/contact` (shipped this sprint)
+- 2I — Replaced mailto contact with `/api/contact` + Resend validated end-to-end against live production via Playwright
 - 2J — "Things I'm building to learn" strip on home (commit cec5f4a — copy updated for honesty)
+- 2L — Broken-links + console-error E2E gate (11 pages × 0 errors — local build test passes)
+- 2Z — EduScale Backend Redis keepalive via Vercel cron on `/api/v1/health` (commit 7353e6db in EduScale repo — existing health endpoint already pings Redis + Postgres + Bull; now scheduled daily)
+- 2AA — stripe-payments-demo Next.js port merged into `main` (ready for Vercel import — MANUAL §1)
 
 ### Pending
 
@@ -71,7 +74,6 @@ See [MANUAL.md](MANUAL.md) for tasks that require your credentials, accounts, or
 - **2G'** — Wire `scripts/check-live-urls.mjs` into a GitHub Actions cron so silent outages get surfaced before a recruiter hits them.
 - **2H** — Guest-mode for DevTrack so a logged-out recruiter sees Realtime. Option A: seeded demo account auto-logs in on `?demo=1`. Option B: 30s Loom embedded on `/portfolio/devtrack` (MANUAL §9 delivers the Loom).
 - **2K** — SEO audit: verify per-page OpenGraph + JSON-LD schema renders on home, about, portfolio, a project detail, one blog post. `https://search.google.com/test/rich-results` must pass.
-- **2L** — E2E gate: every page must emit zero console errors, zero 4xx/5xx on internal links. CI fails on violation.
 - **2M** — Port ArchitectureDiagram's icon logic so non-showcase projects can also visualize architecture (currently the fallback just lists architecture as text).
 
 ---
