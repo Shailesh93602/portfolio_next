@@ -3,11 +3,11 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function StatisticsLoading() {
   return (
-    <div className="container py-24 space-y-12">
+    <div className="container space-y-12 py-24">
       {/* Heading */}
       <div className="space-y-3 text-center">
-        <Skeleton className="h-10 w-72 mx-auto" />
-        <Skeleton className="h-5 w-96 mx-auto opacity-60" />
+        <Skeleton className="mx-auto h-10 w-72" />
+        <Skeleton className="mx-auto h-5 w-96 opacity-60" />
       </div>
 
       {/* Stat cards row */}
@@ -24,7 +24,7 @@ export default function StatisticsLoading() {
 
       {/* Chart area */}
       <Card className="border-border/50 bg-card/30">
-        <CardContent className="p-6 space-y-4">
+        <CardContent className="space-y-4 p-6">
           <Skeleton className="h-6 w-40" />
           <Skeleton className="h-48 w-full opacity-40" />
         </CardContent>
@@ -32,7 +32,7 @@ export default function StatisticsLoading() {
 
       {/* Heatmap area */}
       <Card className="border-border/50 bg-card/30">
-        <CardContent className="p-6 space-y-4">
+        <CardContent className="space-y-4 p-6">
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-32 w-full opacity-40" />
         </CardContent>

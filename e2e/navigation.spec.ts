@@ -62,9 +62,9 @@ test.describe("Navigation", () => {
     await showLessBtn.scrollIntoViewIfNeeded();
     await showLessBtn.click();
     // After collapse the button becomes "Show More" — wait for framer-motion state update
-    await expect(
-      page.getByRole("button", { name: /show more/i })
-    ).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole("button", { name: /show more/i })).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test("portfolio page lists projects", async ({ page }) => {

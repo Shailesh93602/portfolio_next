@@ -63,19 +63,19 @@ public/        # Static assets and images
 
 ## Scripts
 
-| Command | Description |
-|---|---|
-| `npm run dev` | Development server (localhost:3000) |
-| `npm run build` | Production build |
-| `npm run start` | Serve production build |
-| `npm run lint` | ESLint |
-| `npm run type-check` | TypeScript strict check |
-| `npm run format` | Prettier (writes) |
-| `npm run analyze` | Bundle analysis (ANALYZE=true build) |
-| `npm test` | Jest unit tests (130 tests, 14 suites) |
-| `npm run test:coverage` | Jest with coverage report |
-| `npm run test:e2e` | Playwright E2E (requires running server) |
-| `npm run test:e2e:ui` | Playwright with UI mode |
+| Command                 | Description                              |
+| ----------------------- | ---------------------------------------- |
+| `npm run dev`           | Development server (localhost:3000)      |
+| `npm run build`         | Production build                         |
+| `npm run start`         | Serve production build                   |
+| `npm run lint`          | ESLint                                   |
+| `npm run type-check`    | TypeScript strict check                  |
+| `npm run format`        | Prettier (writes)                        |
+| `npm run analyze`       | Bundle analysis (ANALYZE=true build)     |
+| `npm test`              | Jest unit tests (130 tests, 14 suites)   |
+| `npm run test:coverage` | Jest with coverage report                |
+| `npm run test:e2e`      | Playwright E2E (requires running server) |
+| `npm run test:e2e:ui`   | Playwright with UI mode                  |
 
 ## Deployment
 

@@ -532,6 +532,7 @@ export const projects: Project[] = [
       "Redis",
     ],
     live: "https://khatago.vercel.app/",
+    github: "https://github.com/Shailesh93602/khatago",
     detailedDescription:
       "KhataGO is a revolutionary WhatsApp-first SaaS billing platform designed for the Indian MSME market. It leverages Gemini AI to parse natural language messages and images of receipts directly from WhatsApp, automatically recording transactions into a cloud-based ledger.",
     architecture: {
@@ -679,17 +680,20 @@ export const projects: Project[] = [
       {
         label: "Test Coverage",
         value: "48 tests",
-        description: "Config, Redlock, Socket events, Redis adapter, HTTP endpoints",
+        description:
+          "Config, Redlock, Socket events, Redis adapter, HTTP endpoints",
       },
       {
         label: "Lock TTL",
         value: "≤1.5s",
-        description: "Redlock TTL shorter than tick interval — guarantees release before next race",
+        description:
+          "Redlock TTL shorter than tick interval — guarantees release before next race",
       },
       {
         label: "Metrics",
         value: "5 Prometheus",
-        description: "Connected clients, active rooms, attacks, ticks acquired/skipped",
+        description:
+          "Connected clients, active rooms, attacks, ticks acquired/skipped",
       },
     ],
     features: [
@@ -779,12 +783,14 @@ export const projects: Project[] = [
       {
         label: "API Surface",
         value: "9 endpoints",
-        description: "Auth (2) + Profile CRUD (4) + Skills/Projects/Endorsements (3)",
+        description:
+          "Auth (2) + Profile CRUD (4) + Skills/Projects/Endorsements (3)",
       },
       {
         label: "Auth Security",
         value: "JWT + bcrypt",
-        description: "Rate-limited registration, bcrypt password hashing, Passport JWT strategy",
+        description:
+          "Rate-limited registration, bcrypt password hashing, Passport JWT strategy",
       },
     ],
     features: [
@@ -862,17 +868,20 @@ export const projects: Project[] = [
       {
         label: "Test Suite",
         value: "29 tests",
-        description: "idempotency (9) + webhook (8) + payments (5) + retry (6) + app (5)",
+        description:
+          "idempotency (9) + webhook (8) + payments (5) + retry (6) + app (5)",
       },
       {
         label: "Idempotency",
         value: "SETNX",
-        description: "Exactly-once delivery — same Stripe event processed at most once in 24h",
+        description:
+          "Exactly-once delivery — same Stripe event processed at most once in 24h",
       },
       {
         label: "Retry Policy",
         value: "4 attempts",
-        description: "Exponential backoff + jitter, non-retryable 4xx bypassed immediately",
+        description:
+          "Exponential backoff + jitter, non-retryable 4xx bypassed immediately",
       },
     ],
     features: [

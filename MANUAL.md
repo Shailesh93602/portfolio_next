@@ -7,36 +7,10 @@ See TODO.md for all code-executable tasks. See PLAN.md for strategic context.
 
 ---
 
-## Urgent: Create 2 GitHub repos (5 min total)
-
-The code for `redis-battle-demo` and `stripe-payments-demo` is complete and committed locally.
-They can't be pushed until you create the repos on GitHub.
-
-1. Go to https://github.com/new
-2. Create **`redis-battle-demo`** — Public, no README (local repo already has one)
-3. Then run:
-   ```bash
-   cd ~/Desktop/Coding/redis-battle-demo
-   git remote add origin https://github.com/Shailesh93602/redis-battle-demo.git
-   git push -u origin main
-   ```
-4. Create **`stripe-payments-demo`** — Public, no README
-5. Then run:
-   ```bash
-   cd ~/Desktop/Coding/stripe-payments-demo
-   git remote add origin https://github.com/Shailesh93602/stripe-payments-demo.git
-   git push -u origin main
-   ```
-
-After pushing: tell Claude "redis-battle-demo and stripe-payments-demo are on GitHub" and the portfolio card GitHub links will be verified.
-
----
-
 ## Priority Queue (in order — do these before applying anywhere)
 
 | #   | Task                             | Time    | Unlocks                                     |
 | --- | -------------------------------- | ------- | ------------------------------------------- |
-| 1   | Make KhataGO repo public         | 30 min  | Dead link → working link; Skydo/Stripe      |
 | 2   | Verify 3 live project URLs       | 15 min  | Don't let Supabase pause during recruiter   |
 | 3   | Google Analytics setup           | 30 min  | Shows you instrument your own products      |
 | 4   | Write EduScale architecture post | 3–4 hrs | Highest ROI task — proves distributed depth |
@@ -47,28 +21,6 @@ After pushing: tell Claude "redis-battle-demo and stripe-payments-demo are on Gi
 | 9   | Update resume PDF                | 30 min  | Must match portfolio                        |
 | 10  | LinkedIn update                  | 1–2 hrs | Recruiters check this before GitHub         |
 | 11  | One OSS PR merged                | ongoing | Required for Vercel; improves all profiles  |
-
----
-
-## Month 1: April 18 – May 18, 2026
-
-### 1. Make KhataGO Repo Public — 30 min
-
-The KhataGO GitHub link in your portfolio is currently removed (dead link). Every recruiter
-who sees your KhataGO card thinks "no source code visible." KhataGO is your only fintech
-project — it's the exact kind of work Skydo and Stripe want to see.
-
-**Steps:**
-
-1. Go to `https://github.com/Shailesh93602/khatago`
-2. Settings → Danger Zone → Change visibility → Public
-3. Before making public: run these checks in the repo directory:
-   ```bash
-   git log --all --full-history -- .env
-   git grep -ri "api_key\|secret\|password\|token" -- "*.ts" "*.env*"
-   ```
-4. If any secrets found: rewrite git history with `git filter-repo` or just remove them manually and force-push
-5. After making it public: tell Claude to run TODO.md §3C (KhataGO README overhaul)
 
 ---
 
@@ -86,24 +38,6 @@ Do this check every 2 weeks. Add a calendar reminder.
 | KhataGO           | `https://khatago.vercel.app`         | Supabase dashboard → Restore project |
 | CareerGlyph       | add URL once deployed                | Railway/Render restart               |
 | redis-battle-demo | add URL once deployed (Task 6)       | Railway restart                      |
-
----
-
-### 3. Google Analytics Setup — 30 min
-
-The GA script is wired. You just need to create the property and add the env var.
-
-**Steps:**
-
-1. Go to `https://analytics.google.com`
-2. Create Account → Property → Data Stream → Web → `https://shaileshchaudhari.vercel.app`
-3. Copy the Measurement ID (`G-XXXXXXXXXX`)
-4. Vercel Dashboard → your portfolio project → Settings → Environment Variables
-5. Add `NEXT_PUBLIC_GA_MEASUREMENT_ID` = `G-XXXXXXXXXX` (Production + Preview + Development)
-6. Redeploy (push any trivial commit, or trigger manual redeploy)
-
-**Why it matters:** Vercel and Supabase EM's look at whether you instrument your own products.
-It shows you think about observability and data-driven decisions.
 
 ---
 
@@ -171,8 +105,6 @@ You just need to provision it.
 
 **Steps:**
 
-1. Go to `https://railway.app` → New Project
-2. Deploy from GitHub → select `redis-battle-demo` repo
 3. Add Redis plugin (Railway provides managed Redis)
 4. Set env vars: `REDIS_URL` = Railway Redis URL (auto-filled by plugin), `NODE_ENV=production`
 5. Railway auto-assigns a URL — copy it

@@ -3,11 +3,11 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function BlogsLoading() {
   return (
-    <div className="container py-24 space-y-10">
+    <div className="container space-y-10 py-24">
       {/* Heading */}
       <div className="space-y-3 text-center">
-        <Skeleton className="h-10 w-48 mx-auto" />
-        <Skeleton className="h-5 w-80 mx-auto opacity-60" />
+        <Skeleton className="mx-auto h-10 w-48" />
+        <Skeleton className="mx-auto h-5 w-80 opacity-60" />
       </div>
 
       {/* Search + filter row */}
@@ -23,7 +23,7 @@ export default function BlogsLoading() {
       {/* Blog card grid */}
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 6 }).map((_, i) => (
-          <Card key={i} className="border-border/50 bg-card/30 overflow-hidden">
+          <Card key={i} className="overflow-hidden border-border/50 bg-card/30">
             <Skeleton className="h-48 w-full opacity-30" />
             <CardContent className="space-y-3 p-5">
               <div className="flex gap-2">

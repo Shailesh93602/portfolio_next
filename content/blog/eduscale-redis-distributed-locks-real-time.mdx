@@ -63,6 +63,7 @@ seoKeywords:
 const pubClient = createClient({ url: REDIS_URL });
 const subClient = pubClient.duplicate();
 io.adapter(createAdapter(pubClient, subClient));
+
 </code></pre>
 
     <h3>Reconnect Logic</h3>
@@ -98,6 +99,7 @@ retryCount: 0, // TODO: explain WHY 0 — don't want to queue, want to skip
 retryDelay: 200,
 driftFactor: 0.01,
 });
+
 </code></pre>
 
     <!-- TODO: Show the tryTick() function — the pattern where you:
@@ -111,6 +113,7 @@ driftFactor: 0.01,
     <pre><code>
 
 // TODO: Paste the tryTick() function
+
 </code></pre>
 
     <h3>Why Not Just SET NX EX?</h3>
@@ -142,6 +145,7 @@ errorThresholdPercentage: 50,
 resetTimeout: 30000,
 });
 breaker.fallback(() => {/* TODO: what does your fallback do? */});
+
 </code></pre>
 
     <!-- TODO: Did the circuit breaker ever trip in testing or production?

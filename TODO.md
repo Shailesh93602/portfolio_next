@@ -3,9 +3,10 @@
 All tasks here can be done with code, terminal commands, or file edits.
 See PLAN.md for strategic context. See MANUAL.md for tasks requiring credentials or writing.
 
-Legend: ✅ Done  🔲 Pending  🚫 Blocked (needs manual step first)
+Legend: ✅ Done 🔲 Pending 🚫 Blocked (needs manual step first)
 
 **Current test counts (as of April 19, 2026):**
+
 - portfolio_next: 242 tests ✅, 70.66% coverage ✅
 - redis-battle-demo: 48 tests ✅
 - CareerGlyph backend: 58 unit + 13 E2E = 71 tests ✅
@@ -15,14 +16,14 @@ Legend: ✅ Done  🔲 Pending  🚫 Blocked (needs manual step first)
 
 ## Completed (Month 1 — Apr 18–19, 2026)
 
-| Task | Deliverable |
-|---|---|
-| 1A — Portfolio cards | redis-battle-demo + CareerGlyph + stripe-payments-demo added to `constants/projects.ts` |
-| 1B — CareerGlyph frontend | `/[username]` profile viewer, `/login`, `/register`, TanStack Query, optimistic endorsements |
-| 1C — EduScale README | Redis adapter, Redlock, circuit breaker, Prometheus all documented with code snippets |
+| Task                      | Deliverable                                                                                        |
+| ------------------------- | -------------------------------------------------------------------------------------------------- |
+| 1A — Portfolio cards      | redis-battle-demo + CareerGlyph + stripe-payments-demo added to `constants/projects.ts`            |
+| 1B — CareerGlyph frontend | `/[username]` profile viewer, `/login`, `/register`, TanStack Query, optimistic endorsements       |
+| 1C — EduScale README      | Redis adapter, Redlock, circuit breaker, Prometheus all documented with code snippets              |
 | 1D — stripe-payments-demo | Webhook deduplication (SETNX), payment intent idempotency key, exponential-backoff retry, 29 tests |
-| 1E — DevTrack Realtime | `useRealtimeLogs` hook, `RealtimeLogList` component, live indicator dot |
-| 2D — Statistics skeleton | `app/statistics/loading.tsx` already existed and is complete |
+| 1E — DevTrack Realtime    | `useRealtimeLogs` hook, `RealtimeLogList` component, live indicator dot                            |
+| 2D — Statistics skeleton  | `app/statistics/loading.tsx` already existed and is complete                                       |
 
 ---
 
@@ -78,6 +79,7 @@ idempotency pattern within 30 seconds of opening it.
 ### 2A — Deploy redis-battle-demo to Railway
 
 - 🔲 **Add `railway.toml`** to redis-battle-demo repo
+
   ```toml
   [build]
   builder = "NIXPACKS"
@@ -86,6 +88,7 @@ idempotency pattern within 30 seconds of opening it.
   startCommand = "node src/server.js"
   healthcheckPath = "/health"
   ```
+
 - 🔲 **Verify `REDIS_URL` env var** is read from environment (already done — confirm)
 - 🔲 **Update portfolio card `live:` field** — after MANUAL §6 gives you the Railway URL
 
@@ -173,9 +176,9 @@ Project detail pages at `/portfolio/:id` have no OpenGraph image — they inheri
 - 🔲 **`scripts/check-live-urls.mjs`** — curl each live URL, report 200 vs error
   ```js
   const URLS = [
-    'https://eduscale.vercel.app',
-    'https://daily-dev-track.vercel.app',
-    'https://khatago.vercel.app',
+    "https://eduscale.vercel.app",
+    "https://daily-dev-track.vercel.app",
+    "https://khatago.vercel.app",
   ];
   // fetch each, log status + response time
   // exit 1 if any fails — usable as a cron or pre-deploy check
@@ -195,36 +198,36 @@ Project detail pages at `/portfolio/:id` have no OpenGraph image — they inheri
 
 ## Quick Reference: Project → Target Company
 
-| Project               | Primary Signal                             | Target Company    |
-| --------------------- | ------------------------------------------ | ----------------- |
-| EduScale              | Distributed systems (Redlock, Redis, CB)   | All               |
-| redis-battle-demo     | Distributed lock visualization + metrics   | Stripe, Vercel    |
-| stripe-payments-demo  | Correctness: idempotency, deduplication    | Stripe            |
-| KhataGO               | Fintech: WhatsApp API, OCR, Tally XML      | Skydo, Stripe     |
-| CareerGlyph           | NestJS API + auth + RBAC + test suite      | Supabase, Vercel  |
-| CodeSenseiSearch      | pgvector semantic search, AI pipelines     | Supabase          |
-| DevTrack              | Next.js + Supabase Realtime + analytics    | Supabase, Vercel  |
-| portfolio itself      | Next.js depth: SEO, ISR, Edge, 242 tests   | Vercel            |
+| Project              | Primary Signal                           | Target Company   |
+| -------------------- | ---------------------------------------- | ---------------- |
+| EduScale             | Distributed systems (Redlock, Redis, CB) | All              |
+| redis-battle-demo    | Distributed lock visualization + metrics | Stripe, Vercel   |
+| stripe-payments-demo | Correctness: idempotency, deduplication  | Stripe           |
+| KhataGO              | Fintech: WhatsApp API, OCR, Tally XML    | Skydo, Stripe    |
+| CareerGlyph          | NestJS API + auth + RBAC + test suite    | Supabase, Vercel |
+| CodeSenseiSearch     | pgvector semantic search, AI pipelines   | Supabase         |
+| DevTrack             | Next.js + Supabase Realtime + analytics  | Supabase, Vercel |
+| portfolio itself     | Next.js depth: SEO, ISR, Edge, 242 tests | Vercel           |
 
 ---
 
 ## Quick Reference: File Locations
 
-| What to change                | File                                           |
-| ----------------------------- | ---------------------------------------------- |
-| Project card content          | `constants/projects.ts`                        |
-| Experience / Education        | `constants/index.ts`                           |
-| Blog post list                | `lib/blog-data.ts` BLOG_SLUGS array            |
-| Blog post content             | `content/blog/<slug>.mdx`                      |
-| Social links, email, site URL | `lib/constants.ts`                             |
-| About page bio text           | `app/about/AboutContent.tsx`                   |
-| Navigation links              | `components/navbar/index.tsx`                  |
-| AI crawler context            | `public/llms.txt`, `public/llms-full.txt`      |
-| Resume PDF                    | `public/Shailesh_Chaudhari_Resume.pdf`         |
-| Page metadata                 | `app/<page>/metadata.ts`                       |
-| OG image design               | `app/api/og/route.tsx`                         |
-| RSS feed                      | `app/feed.xml/route.ts`                        |
-| CareerGlyph API               | `~/Desktop/Coding/careerglyph/apps/backend/`   |
-| CareerGlyph Frontend          | `~/Desktop/Coding/careerglyph/apps/frontend/`  |
-| redis-battle-demo             | `~/Desktop/Coding/redis-battle-demo/`          |
-| stripe-payments-demo          | `~/Desktop/Coding/stripe-payments-demo/`       |
+| What to change                | File                                          |
+| ----------------------------- | --------------------------------------------- |
+| Project card content          | `constants/projects.ts`                       |
+| Experience / Education        | `constants/index.ts`                          |
+| Blog post list                | `lib/blog-data.ts` BLOG_SLUGS array           |
+| Blog post content             | `content/blog/<slug>.mdx`                     |
+| Social links, email, site URL | `lib/constants.ts`                            |
+| About page bio text           | `app/about/AboutContent.tsx`                  |
+| Navigation links              | `components/navbar/index.tsx`                 |
+| AI crawler context            | `public/llms.txt`, `public/llms-full.txt`     |
+| Resume PDF                    | `public/Shailesh_Chaudhari_Resume.pdf`        |
+| Page metadata                 | `app/<page>/metadata.ts`                      |
+| OG image design               | `app/api/og/route.tsx`                        |
+| RSS feed                      | `app/feed.xml/route.ts`                       |
+| CareerGlyph API               | `~/Desktop/Coding/careerglyph/apps/backend/`  |
+| CareerGlyph Frontend          | `~/Desktop/Coding/careerglyph/apps/frontend/` |
+| redis-battle-demo             | `~/Desktop/Coding/redis-battle-demo/`         |
+| stripe-payments-demo          | `~/Desktop/Coding/stripe-payments-demo/`      |

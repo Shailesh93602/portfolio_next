@@ -72,6 +72,7 @@ role_id UUID REFERENCES roles(id),
 feature_id UUID REFERENCES features(id),
 PRIMARY KEY (role_id, feature_id)
 );
+
 </code></pre>
 
     <!-- TODO: Explain the design decisions:
@@ -102,6 +103,7 @@ JOIN features f ON f.id = rp.feature_id
 WHERE u.id = $1
 AND f.slug = $2
 ) AS has_permission;
+
 </code></pre>
 
     <!-- TODO: Explain the index strategy — what indexes make this query fast?
@@ -119,6 +121,7 @@ AND f.slug = $2
     <pre><code>
 
 // TODO: Paste your NestJS Guard or permission decorator
+
 </code></pre>
 
     <h2>Row Level Security: When It's a Better Answer</h2>
@@ -154,6 +157,7 @@ WHERE ct.teacher_id = auth.uid()
 AND ct.course_id = battles.course_id
 )
 );
+
 </code></pre>
 
     <!-- TODO: Explain why you chose application-level RBAC over RLS (or vice versa).

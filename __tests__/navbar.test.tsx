@@ -87,15 +87,23 @@ describe("Navbar", () => {
 
   it("renders the SC logo link pointing to /", () => {
     render(<Navbar />);
-    const logoLink = screen.getByRole("link", { name: /shailesh chaudhari.*home/i });
+    const logoLink = screen.getByRole("link", {
+      name: /shailesh chaudhari.*home/i,
+    });
     expect(logoLink).toHaveAttribute("href", "/");
   });
 
   it("renders Home, Statistics, and Hire Me links", () => {
     render(<Navbar />);
     // Both desktop and mobile — at least one occurrence each
-    expect(screen.getAllByRole("link", { name: /^home$/i }).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByRole("link", { name: /statistics/i }).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByRole("link", { name: /hire me/i }).length).toBeGreaterThanOrEqual(1);
+    expect(
+      screen.getAllByRole("link", { name: /^home$/i }).length
+    ).toBeGreaterThanOrEqual(1);
+    expect(
+      screen.getAllByRole("link", { name: /statistics/i }).length
+    ).toBeGreaterThanOrEqual(1);
+    expect(
+      screen.getAllByRole("link", { name: /hire me/i }).length
+    ).toBeGreaterThanOrEqual(1);
   });
 });

@@ -12,9 +12,9 @@ test.describe("Blog", () => {
     expect(href).toBeTruthy();
 
     await page.goto(href!);
-    await expect(
-      page.locator('article, [role="article"], main')
-    ).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('article, [role="article"], main')).toBeVisible({
+      timeout: 10000,
+    });
     await expect(page).toHaveURL(/\/blog\//);
   });
 

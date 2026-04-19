@@ -57,7 +57,9 @@ test.describe("Portfolio Detail", () => {
     });
 
     // Find "Show More" button and click it
-    const showMoreBtn = page.getByRole("button", { name: /show more/i }).first();
+    const showMoreBtn = page
+      .getByRole("button", { name: /show more/i })
+      .first();
     if ((await showMoreBtn.count()) > 0) {
       await showMoreBtn.click();
       // After click, should show "Show Less"

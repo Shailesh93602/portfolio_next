@@ -93,7 +93,9 @@ describe("GET /api/statistics", () => {
 
   it("returns 200 with fallback leetcode data when fetchLeetCodeStats throws", async () => {
     mockFetchGithubStats.mockResolvedValueOnce(MOCK_GITHUB as never);
-    mockFetchLeetCodeStats.mockRejectedValueOnce(new Error("LeetCode API error"));
+    mockFetchLeetCodeStats.mockRejectedValueOnce(
+      new Error("LeetCode API error")
+    );
 
     const response = await GET();
     expect(response.status).toBe(200);

@@ -29,7 +29,9 @@ export default function GlobalError({ error, reset }: Props) {
             fontFamily: "system-ui, sans-serif",
           }}
         >
-          <h1 style={{ fontSize: "4rem", fontWeight: 700, marginBottom: "8px" }}>
+          <h1
+            style={{ fontSize: "4rem", fontWeight: 700, marginBottom: "8px" }}
+          >
             500
           </h1>
           <h2

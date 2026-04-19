@@ -189,13 +189,13 @@ const app = express()
 
 // Session configuration
 app.use(session({
-secret: process.env.SESSION_SECRET!,
+secret: process.env.SESSION*SECRET!,
 resave: false,
 saveUninitialized: false,
 cookie: {
 secure: process.env.NODE_ENV === 'production',
 httpOnly: true,
-maxAge: 24 _ 60 _ 60 \* 1000 // 24 hours
+maxAge: 24 * 60 \_ 60 \* 1000 // 24 hours
 }
 }))
 
@@ -573,18 +573,18 @@ const authUrl = `https://accounts.google.com/oauth/authorize?...\${codeChallenge
     <pre><code>// Session configuration for production
 
 app.use(session({
-secret: process.env.SESSION_SECRET!,
+secret: process.env.SESSION*SECRET!,
 resave: false,
 saveUninitialized: false,
 cookie: {
 secure: process.env.NODE_ENV === 'production', // HTTPS only
 httpOnly: true, // Prevent XSS
 sameSite: 'strict', // CSRF protection
-maxAge: 24 _ 60 _ 60 _ 1000 // 24 hours
+maxAge: 24 * 60 _ 60 _ 1000 // 24 hours
 },
 store: new RedisStore({ // Use Redis in production
 client: redisClient,
-ttl: 24 _ 60 \* 60
+ttl: 24 \_ 60 \* 60
 })
 }))</code></pre>
 

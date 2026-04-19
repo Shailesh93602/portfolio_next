@@ -65,6 +65,7 @@ const key = `processed:whatsapp:${messageId}`;
 const result = await redis.set(key, '1', 'NX', 'EX', /_ TODO: your TTL _/);
 return result === null; // null means key already existed
 }
+
 </code></pre>
 
     <!-- TODO: Why SET NX EX instead of GET then SET?
@@ -98,6 +99,7 @@ parts: [
 ]
 }]
 });
+
 </code></pre>
 
     <h3>Stage 2: JSON → Validation</h3>
@@ -118,6 +120,7 @@ date: string; // TODO: what format? ISO? Indian DD/MM/YYYY?
 gstNumber?: string;
 lineItems?: Array<{ description: string; amount: number }>;
 }
+
 </code></pre>
 
     <h3>Stage 3: JSON → Tally XML</h3>
@@ -157,6 +160,7 @@ lineItems?: Array<{ description: string; amount: number }>;
 &lt;/IMPORTDATA&gt;
 &lt;/BODY&gt;
 &lt;/ENVELOPE&gt;
+
 </code></pre>
 
     <h2>Idempotency at Every Layer</h2>
