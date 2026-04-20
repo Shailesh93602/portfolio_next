@@ -107,6 +107,11 @@
     font-feature-settings:
       "rlig" 1,
       "calt" 1;
+    /* The mobile nav drawer lives at translate-x-full off-screen when closed,
+       which technically extends document scrollWidth past viewport on mobile.
+       overflow-x: clip keeps the drawer's transition intact while preventing
+       horizontal page scroll. */
+    overflow-x: clip;
   }
 }
 

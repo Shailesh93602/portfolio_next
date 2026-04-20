@@ -108,14 +108,15 @@ export default function HomeContent({ featuredPosts }: Props) {
                 size="lg"
                 className="rounded-full border-2 transition-all duration-300 hover:bg-primary/10"
               >
-                <Link
+                <a
                   href="/Shailesh_Chaudhari_Resume.pdf"
                   target="_blank"
+                  rel="noopener noreferrer"
                   download
                 >
                   <Download className="mr-2 inline-block h-4 w-4" />
                   Download Resume
-                </Link>
+                </a>
               </Button>
             </div>
 

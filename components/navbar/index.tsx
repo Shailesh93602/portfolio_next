@@ -99,6 +99,9 @@ export default function Navbar() {
         </div>
       </div>
       {/* Mobile menu (simple CSS-based toggle to avoid bundling framer-motion) */}
+      {/* `inert` when closed removes the whole subtree from the focus order —
+          prevents axe aria-hidden-focus failures that used to fire because the
+          close button + nav links remained tab-reachable inside an aria-hidden region. */}
       <div
         className={`fixed inset-0 z-[999] flex h-[100vh] transform flex-col border-l border-border/40 bg-background/95 backdrop-blur-sm transition-transform duration-300 ease-out md:hidden ${
           menuOpen
@@ -106,6 +109,7 @@ export default function Navbar() {
             : "pointer-events-none translate-x-full opacity-0"
         }`}
         aria-hidden={!menuOpen}
+        inert={!menuOpen}
       >
         <div className="flex items-center justify-between border-b px-6 py-5">
           <Link
