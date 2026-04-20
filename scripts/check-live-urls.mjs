@@ -18,6 +18,14 @@ const URLS = [
   // which in turn reconnects to Upstash Redis — that Redis activity
   // prevents Upstash from pausing the free-tier instance.
   { name: "Redis Battle Demo", url: "https://redis-battle-demo.onrender.com/" },
+  {
+    name: "Stripe Patterns Demo",
+    url: "https://stripe-payments-demo-eight.vercel.app",
+  },
+  {
+    name: "Razorpay Patterns Demo",
+    url: "https://razorpay-patterns-demo.vercel.app",
+  },
 ];
 
 const TIMEOUT_MS = 10_000;

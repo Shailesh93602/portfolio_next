@@ -978,4 +978,102 @@ export const projects: Project[] = [
     challengesSolved:
       "The non-obvious design decision was the retry policy for payment creation: retrying on 4xx (card decline, bad idempotency key) is harmful — Stripe will return the same error every time. The retry logic checks `statusCode >= 500` and treats all other errors as non-retryable. Network errors (no statusCode) are retried because they're transient. Jitter (0–25% of the exponential delay) prevents multiple failing payments from hitting Stripe simultaneously after a 5xx burst.",
   },
+  {
+    id: "razorpay-patterns-demo",
+    title: "Razorpay Patterns Demo",
+    description:
+      "India-accessible sibling of stripe-payments-demo. Razorpay Standard Checkout end-to-end with webhook HMAC verification, Redis SETNX idempotency, exponential-backoff retry, and client-callback signature verification. 30 tests, live /demo page with Razorpay Checkout.js modal.",
+    image: "/Images/portfolio1.png",
+    github: "https://github.com/Shailesh93602/razorpay-patterns-demo",
+    live: "https://razorpay-patterns-demo.vercel.app",
+    tags: [
+      "Next.js",
+      "TypeScript",
+      "Razorpay",
+      "Redis",
+      "ioredis",
+      "Jest",
+      "Webhook HMAC",
+      "Idempotency",
+    ],
+    isShowcase: true,
+    architecture: {
+      layers: [
+        {
+          name: "Client / UX",
+          items: [
+            "Next.js App Router page at /demo",
+            "Razorpay Checkout.js loaded lazily from CDN",
+            "Amount input → create-order → open modal → verify-payment → success UI",
+          ],
+        },
+        {
+          name: "API (Standard Checkout)",
+          items: [
+            "POST /api/create-order — razorpay.orders.create + retry + receipt",
+            "POST /api/verify-payment — HMAC-SHA256(order_id|payment_id, KEY_SECRET)",
+            "POST /api/webhook — async authoritative notification, HMAC of raw body",
+          ],
+        },
+        {
+          name: "Idempotency",
+          items: [
+            "Redis SETNX guard on extracted event ID (payment|order|subscription|refund)",
+            "24-hour TTL matches Razorpay's webhook retry window",
+            "constant-time HMAC compare prevents timing attacks",
+          ],
+        },
+        {
+          name: "Retry",
+          items: [
+            "Exponential backoff + 0–25% jitter on 5xx / network",
+            "4xx (invalid amount, duplicate receipt, auth) fail fast",
+            "Shared helpers with stripe-payments-demo — identical retry policy",
+          ],
+        },
+      ],
+      description:
+        "Two-tier trust boundary: client → /api/verify-payment (confirms success callback isn't forged), Razorpay → /api/webhook (authoritative async notification for billing state). Production architecture uses both.",
+    },
+    keyMetrics: [
+      {
+        label: "Test Suite",
+        value: "30 tests",
+        description:
+          "signature verify (8) + retry (7) + webhook verify (6) + event-id extract (7) + helpers",
+      },
+      {
+        label: "Client verify",
+        value: "HMAC-SHA256",
+        description:
+          "order_id|payment_id signed with KEY_SECRET on Checkout.js success",
+      },
+      {
+        label: "Webhook dedup",
+        value: "SETNX",
+        description:
+          "Redis SET NX EX 86400 on entity ID — matches Razorpay's 24h retry window",
+      },
+    ],
+    features: [
+      "Razorpay Standard Web Checkout flow end-to-end: create-order → Checkout.js modal → verify-payment → webhook",
+      "Client-callback signature verification — HMAC-SHA256(order_id|payment_id) with KEY_SECRET, constant-time compare",
+      "Async webhook receiver with HMAC verification + SETNX idempotency guard, 24h TTL",
+      "Exponential-backoff retry on order creation (5xx / network retry; 4xx fail fast)",
+      "Interactive /demo page — test card 4111 1111 1111 1111, see full 4-step flow live in browser",
+      "30 unit tests across 3 suites — signature verification, retry policy, event-id extraction",
+    ],
+    techStack: [
+      "Runtime: Node.js 20, TypeScript, Next.js 16 App Router",
+      "Payments: razorpay SDK v2",
+      "Idempotency: ioredis (SETNX), Upstash Redis in prod",
+      "Tests: Jest + ts-jest — 30 tests passing",
+    ],
+    problem:
+      "Stripe is invite-only in India, so Indian developers can't build production Stripe integrations locally. Razorpay is the India-accessible equivalent and uses nearly identical patterns — webhook HMAC signing, idempotency on event IDs, subscription + order APIs. Without a reference implementation, every integration rediscovers the same footguns: missing raw body reads that break HMAC verification, no dedup on at-least-once webhook delivery, naive retry on 4xx that spams the gateway with guaranteed-to-fail requests.",
+    solution:
+      "A runnable reference that mirrors stripe-payments-demo at the pattern level but swaps in Razorpay's specifics: hand-rolled HMAC-SHA256 signature verification (Razorpay doesn't ship a constructEvent helper), derived event ID from payment/order/subscription/refund entity IDs (Razorpay doesn't have a top-level event.id), and client-side Standard Checkout flow (order creation + modal + signature verify on success callback). Shared idempotency + retry helpers make the two demos interchangeable reading material.",
+    challengesSolved:
+      "Razorpay's signing scheme is subtly different from Stripe's in two ways that bite: (1) Razorpay signs the raw body only, while Stripe prepends a timestamp — if you copy-paste the Stripe verifier and just swap the header name, the HMAC will fail on every payload. (2) Razorpay uses a DIFFERENT secret for the Checkout.js client-callback verification (the pair-secret of KEY_ID) vs the webhook signature (a separate webhook secret generated per endpoint). Confusing the two is the most common integration bug. The demo makes both secret boundaries explicit in code comments and tests each path separately.",
+  },
 ];

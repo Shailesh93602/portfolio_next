@@ -19,27 +19,43 @@ Rules for anything public: **no specific PR counts**, **no "real-time systems en
 
 ## Just shipped (since last turn)
 
-- ✅ **`gh` + `vercel` CLIs installed & authenticated** — Claude can now create GitHub repos, deploy to Vercel, monitor build errors, trigger redeploys without asking you.
-- ✅ **`razorpay-patterns-demo` pushed to GitHub** at <https://github.com/Shailesh93602/razorpay-patterns-demo> (Phase 1 scaffold, 22 tests passing).
-- ✅ **stripe-payments-demo LIVE** at <https://stripe-payments-demo-eight.vercel.app> — vercel.json fix triggered a fresh deploy (commit 2546aa3), status now `● Ready`. Portfolio card `live:` field updated.
-- ✅ **Vercel CLI linked to 5 projects** — `shaileshchaudhari` (this portfolio), `stripe-payments-demo`, `khata-go`, `dev-track`, `dev-scale` (EduScale Frontend). All have `.vercel/` dirs locally (gitignored). Claude can now run `vercel ls <project>` or `vercel inspect <url> --logs` to check status + debug deploy errors.
-- ✅ **All 4 critical projects confirmed `● Ready`** in their latest Vercel deploys.
-- ✅ **Google Analytics** wired on Vercel prod (`NEXT_PUBLIC_GA_MEASUREMENT_ID = G-4QGEGXCWPN`) — no further action needed.
-- ✅ **EduScale incident writeup** drafted in the voice of a working engineer — two incidents (Redlock TTL short during tournament Saturday; split Socket.io rooms from single-client pub/sub). Rendered on `/portfolio/eduscale`.
-- ✅ **Razorpay plan revised** per your feedback — discount-anchor pricing (strikethrough full-price next to launch price), EduScale pivoted from tournament fees → plan-based subscription like LeetCode, standard SaaS refund policy (7-day money-back, 30-day pro-rated for annual, post-30 day no refund but access until period end). See [drafts/RAZORPAY_PLAN.md](drafts/RAZORPAY_PLAN.md).
+- ✅ **Razorpay Standard Checkout integration COMPLETE** in `razorpay-patterns-demo` — `/api/create-order` + `/api/verify-payment` + interactive `/demo` page with Checkout.js modal. 30 tests passing (was 22). Pushed to GitHub as commit e3a0d54; Vercel auto-deploying.
+- ✅ **3 Razorpay env vars added to Vercel** (encrypted, never touched git): `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `NEXT_PUBLIC_RAZORPAY_KEY_ID`.
+- ✅ **`gh` + `vercel` CLIs installed & authenticated** — Claude manages GitHub + Vercel autonomously now.
+- ✅ **`razorpay-patterns-demo` pushed to GitHub** at <https://github.com/Shailesh93602/razorpay-patterns-demo>.
+- ✅ **stripe-payments-demo LIVE** at <https://stripe-payments-demo-eight.vercel.app>.
+- ✅ **Vercel CLI linked to 6 projects**: portfolio, stripe-payments-demo, khata-go, dev-track, dev-scale, razorpay-patterns-demo.
+- ✅ **Google Analytics** wired on Vercel prod.
+- ✅ **EduScale incident writeup** drafted + rendered on `/portfolio/eduscale`.
+- ✅ **Razorpay plan v2** with discount-anchor pricing + LeetCode-style plan-based EduScale + SaaS refund policy in [drafts/RAZORPAY_PLAN.md](drafts/RAZORPAY_PLAN.md).
 
 ---
 
 ## P0 — This week
 
-### 1. Confirm `stripe-payments-demo` is now deploying on Vercel — 2 min
+### 1. Set up the Razorpay Webhook endpoint (~5 min)
 
-**You asked "why redeploy — Vercel auto-deploys on push."** Correct. The fix is already pushed ([commit 8c0327a](https://github.com/Shailesh93602/stripe-payments-demo/commit/8c0327a)) and Vercel should have auto-built it **IF the project was already imported to Vercel**. Two scenarios:
+Only thing you need to click before the Razorpay Standard Checkout demo is fully wired. Claude already added the three Razorpay keys to Vercel; this one you have to do in Razorpay's dashboard because Razorpay generates the secret.
 
-- **If you already imported + the first deploy failed:** Vercel sees the new push on `main` and auto-deploys. Check Vercel → stripe-payments-demo → Deployments → latest should be green. No manual action.
-- **If you never completed the import (the failed first attempt blocked it):** you still need to do the initial `Vercel → Add New → Project → import` once. After that, every push auto-deploys.
+**Steps (after Vercel deploy finishes):**
 
-Tell Claude the live URL once it's up — Claude updates portfolio card + README.
+1. **Confirm the deploy URL.** Tell Claude the live URL of `razorpay-patterns-demo` on Vercel (should be something like `https://razorpay-patterns-demo-<hash>.vercel.app` or a custom subdomain). Claude will use it in the portfolio card + README.
+2. Razorpay Dashboard → **Settings → Webhooks → Add New Webhook**.
+3. **Webhook URL:** `https://<your-deploy-url>/api/webhook`
+4. **Secret:** click **Generate** — Razorpay gives you a random string. **Copy it.**
+5. **Active Events** — select:
+   - `payment.captured`
+   - `payment.failed`
+   - `order.paid`
+   - `refund.processed`
+6. **Create Webhook**.
+7. Tell Claude the webhook secret value. Claude runs `vercel env add RAZORPAY_WEBHOOK_SECRET production` and redeploys. (The secret stays encrypted on Vercel — never in git.)
+
+**Once that's done:**
+
+- Visit `https://<your-deploy>/demo` — click "Pay ₹1", use test card `4111 1111 1111 1111`, any future expiry, any CVV, any OTP. Complete the flow.
+- Vercel function logs will show: `create-order → verify-payment (ok:true) → webhook (duplicate:false first time, true on retry)`.
+- Tell Claude the live URL — Claude updates the portfolio card on `/portfolio/razorpay-patterns-demo`.
 
 **Context (new — 2026-04-19):** Stripe is **invite-only in India**, so you can't create a Stripe test account today. The app still deploys and runs in "pattern reference" mode. Specifically:
 
