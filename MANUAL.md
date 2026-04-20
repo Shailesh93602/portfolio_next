@@ -52,43 +52,20 @@ Webhook endpoint already confirmed working via signed-payload replay (see "Just 
 
 Your Upstash Redis for `redis-battle-demo` was paused. Go to <https://console.upstash.com/> → that database → **Resume**. After that, the daily URL health-check GitHub Action keeps it alive (daily GET wakes Render → reconnects to Upstash → counts as activity).
 
-### 3. KhataGO Phase 2 — finish the deploy (YOU, ~10 min)
+### 3. KhataGO Phase 2 — one thing left for you (~2 min)
 
-Phase 2 code is merged locally (commit on `main`). Claude needs 4 things from you to take it live:
+Claude already handled: `git push` (you did this), pinned Prisma CLI from 7.7.0 back to 5.22.0 to fix a build failure (Prisma 7 breaking-changes + `@prisma/client@5` mismatch), added 4 Razorpay env vars to Vercel via `printf`, triggered redeploy. Latest production build is **Ready** — verify at <https://khatago.vercel.app>.
 
-1. **Push KhataGO to GitHub + deploy:**
-   ```bash
-   cd ~/Desktop/Coding/KhataGO
-   git push origin main
-   ```
-   Vercel auto-deploys. If the `khata-go` project isn't linked to Vercel yet, run `vercel link` once and pick it.
+**YOU still need to:** add the KhataGO webhook URL in the Razorpay dashboard so Razorpay posts events to KhataGO:
 
-2. **Run the Prisma migration on KhataGO's production DB.** The migration file is committed at `prisma/migrations/20260420090000_add_billing/migration.sql`. You have two options:
-   - **Locally (recommended for first run):** `DATABASE_URL="<prod-url>" npx prisma migrate deploy` — applies the migration idempotently, no schema prompt.
-   - **Or:** connect via Supabase SQL editor and run the SQL file directly.
+1. Razorpay Dashboard → **Settings → Webhooks → Add New Webhook**
+2. URL: `https://khatago.vercel.app/api/razorpay/webhook`
+3. When Razorpay asks for a secret, paste the same value used for razorpay-patterns-demo (`Thenameisshaileshbhai`) — KhataGO's Vercel env var is already set to that. If Razorpay force-generates a new one, copy it and tell Claude to `vercel env rm + vercel env add` on KhataGO.
+4. Active events: `payment.captured`, `payment.failed`, `order.paid`, `refund.processed`.
 
-3. **Add 4 env vars to KhataGO on Vercel** (reuse the same Razorpay test-mode keys from razorpay-patterns-demo, OR create a new test webhook — both work):
-   ```bash
-   cd ~/Desktop/Coding/KhataGO
-   printf "rzp_test_SfalnI8G95Qoen" | vercel env add RAZORPAY_KEY_ID production
-   printf "OIedtZ0duGKGOzeT7z1AYD5J" | vercel env add RAZORPAY_KEY_SECRET production
-   printf "rzp_test_SfalnI8G95Qoen" | vercel env add NEXT_PUBLIC_RAZORPAY_KEY_ID production
-   # For the webhook secret, add a NEW webhook in Razorpay dashboard pointing at
-   # https://khatago.vercel.app/api/razorpay/webhook and use the generated secret:
-   printf "<new-webhook-secret>" | vercel env add RAZORPAY_WEBHOOK_SECRET production
-   ```
-   **Important:** `printf`, not `echo` — `echo` adds a trailing newline and breaks HMAC (we already debugged this once on razorpay-patterns-demo).
+Once that's saved in Razorpay, Claude runs live E2E verification (valid → 200 `duplicate:false`, replay → 200 `duplicate:true`, tampered → 400) and starts on feature gates + `/settings/billing` + `/refund-policy` + Phase 3 (EduScale).
 
-4. **Redeploy** (`vercel --prod` from the KhataGO dir, or just push an empty commit).
-
-**After that, Claude does the rest:**
-- E2E verification (valid → 200 duplicate:false, replay → 200 duplicate:true, tampered → 400) on the live KhataGO webhook
-- Feature-gate rollout (free-tier limits on `/api/transactions` POST etc. with friendly upgrade messages)
-- `/settings/billing` page (show plan, renewal date, cancel button, refund-policy link)
-- `/refund-policy` page
-- Phase 3 — EduScale LeetCode-style plan gates
-
-See [drafts/RAZORPAY_PLAN.md](drafts/RAZORPAY_PLAN.md) for the full Phase 2 + Phase 3 plans.
+See [drafts/RAZORPAY_PLAN.md](drafts/RAZORPAY_PLAN.md).
 
 ---
 
@@ -104,16 +81,15 @@ Claude can't be on camera. One per flagship:
 
 Tell Claude "Loom URLs are X, Y, Z" → Claude embeds on the case-study pages. Claude has pre-drafted the storyboard scripts in TODO.md §1E so you know exactly what to say.
 
-### 6. One OSS PR merged — ongoing (target by Jul 18)
+### 6. One OSS PR merged — target by Jul 18
 
-Vercel in particular filters on "has-OSS-PR" — required signal. Claude can't submit PRs for you. Targets (stack-matched):
+Vercel/Stripe/Supabase filter on "has-OSS-PR" — required signal. Claude can't push PRs for you but has already scanned all 4 target repos. **Full plan with file paths + first-PR sentences:** [drafts/OSS_PLAN.md](drafts/OSS_PLAN.md).
 
-1. `shadcn-ui/ui` — ARIA / type / docs gaps
-2. `supabase/supabase-js` — Supabase application signal
-3. `vercel/next.js` examples — typed Playwright recipe (leverages your ContextQA Playwright work)
-4. `stripe/stripe-node` — idempotency-key helper gaps
+Repos cloned shallow at `~/Desktop/Coding/OSS/`: `shadcn-ui`, `supabase-js`, `stripe-node`. `next.js` surveyed via `gh`.
 
-Process: clone → tests pass locally → find one specific non-cosmetic bug → smallest possible fix → PR with "what broke / why the fix / code refs."
+**🎯 Recommended first PR — stripe-node (~1.5 hr):** add `step`/`cause` fields to `StripeSignatureVerificationError` so callers can distinguish timestamp-tolerance failures (retry) from HMAC mismatches (wrong secret). Perfect stack-match with stripe-payments-demo — you already wrote the code that hits this gap.
+
+Process: `gh repo fork stripe/stripe-node --remote` → `cd ~/Desktop/Coding/OSS/stripe-node` → `git checkout -b fix/sig-verify-error-codes` → make the change → `npm test` → `gh pr create` with the first-sentence from OSS_PLAN.md. Tell Claude when the PR is open and Claude will link it from the stripe-payments-demo case study.
 
 ### 7. Dictate one EduScale incident writeup — 30 min
 
