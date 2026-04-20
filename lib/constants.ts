@@ -8,6 +8,13 @@ export const SOCIAL_LINKS = {
   LEETCODE: "https://leetcode.com/u/Shaileshbhai/",
 } as const;
 
+// Canonical usernames — profile URL shapes vary between platforms so deriving
+// these with split("/").pop() is unreliable (trailing slashes, /u/ prefixes).
+export const PROFILE_USERNAMES = {
+  GITHUB: "shailesh93602",
+  LEETCODE: "Shaileshbhai",
+} as const;
+
 export const COMPANY_LINKS = {
   ESPARKBIZ: "https://www.esparkinfo.com/",
   CONTEXTQA: "https://www.contextqa.com/",

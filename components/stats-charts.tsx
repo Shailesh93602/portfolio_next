@@ -94,53 +94,72 @@ export function StatsCharts({
       >
         <Card className="border-primary/20 bg-gradient-to-br from-background to-background/80 p-6 backdrop-blur-sm">
           <h3 className="mb-4 text-lg font-semibold">GitHub Contributions</h3>
-          <div className="h-[250px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={contributionsData}>
-                <defs>
-                  <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                    <stop
-                      offset="5%"
-                      stopColor="var(--color-primary)"
-                      stopOpacity={0.8}
+          {githubContributions.length === 0 ? (
+            <div className="flex h-[250px] flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-muted/20 text-center text-sm text-muted-foreground">
+              <span>
+                Daily contribution history is refreshing from the GitHub API.
+              </span>
+              <span className="text-xs">
+                Aggregate totals above are from the last successful snapshot.
+              </span>
+            </div>
+          ) : (
+            <>
+              <div className="h-[250px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={contributionsData}>
+                    <defs>
+                      <linearGradient
+                        id="colorCount"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="var(--color-primary)"
+                          stopOpacity={0.8}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="var(--color-primary)"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fontSize: 12 }}
+                      interval={30}
+                      tickFormatter={(value) => format(new Date(value), "MMM")}
+                      stroke="var(--color-muted-foreground)"
                     />
-                    <stop
-                      offset="95%"
-                      stopColor="var(--color-primary)"
-                      stopOpacity={0}
+                    <YAxis
+                      tick={{ fontSize: 12 }}
+                      stroke="var(--color-muted-foreground)"
                     />
-                  </linearGradient>
-                </defs>
-                <XAxis
-                  dataKey="date"
-                  tick={{ fontSize: 12 }}
-                  interval={30}
-                  tickFormatter={(value) => format(new Date(value), "MMM")}
-                  stroke="var(--color-muted-foreground)"
-                />
-                <YAxis
-                  tick={{ fontSize: 12 }}
-                  stroke="var(--color-muted-foreground)"
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Area
-                  type="monotone"
-                  dataKey="count"
-                  stroke="var(--color-primary)"
-                  strokeWidth={2}
-                  fillOpacity={1}
-                  fill="url(#colorCount)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="mt-4 flex justify-between text-sm text-muted-foreground">
-            <span>Last 365 days</span>
-            <span>
-              Total: {githubContributions.reduce((a, b) => a + b, 0)}{" "}
-              contributions
-            </span>
-          </div>
+                    <Tooltip content={<CustomTooltip />} />
+                    <Area
+                      type="monotone"
+                      dataKey="count"
+                      stroke="var(--color-primary)"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#colorCount)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-4 flex justify-between text-sm text-muted-foreground">
+                <span>Last 365 days</span>
+                <span>
+                  Total: {githubContributions.reduce((a, b) => a + b, 0)}{" "}
+                  contributions
+                </span>
+              </div>
+            </>
+          )}
         </Card>
       </motion.div>
 
@@ -152,7 +171,11 @@ export function StatsCharts({
       >
         <Card className="border-primary/20 bg-gradient-to-br from-background to-background/80 p-6 backdrop-blur-sm">
           <h3 className="mb-4 text-lg font-semibold">LeetCode Problems</h3>
-          <div className="flex h-[250px] items-center">
+          <div
+            className="flex h-[250px] items-center"
+            role="img"
+            aria-label={`LeetCode difficulty distribution — Easy ${leetcodeProblemStats.easy}, Medium ${leetcodeProblemStats.medium}, Hard ${leetcodeProblemStats.hard}. Total ${totalProblems} problems solved.`}
+          >
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -167,6 +190,8 @@ export function StatsCharts({
                     `${name} ${(percent * 100).toFixed(0)}%`
                   }
                   labelLine={false}
+                  isAnimationActive={false}
+                  rootTabIndex={-1}
                 >
                   {problemStatsData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />

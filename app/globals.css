@@ -14,14 +14,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 265 89% 65%;
+    /* Primary dropped to 55% lightness in light mode for WCAG AA 4.5:1 contrast on white.
+       Dark mode keeps 65% since contrast flips against the dark canvas. */
+    --primary: 265 89% 55%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 222 47% 11%;
 
     --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    --muted-foreground: 240 3.8% 40%;
 
     --accent: 240 4.8% 95.9%;
     --accent-foreground: 222 47% 11%;
@@ -31,21 +33,21 @@
 
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 265 89% 65%;
+    --ring: 265 89% 55%;
 
     /* Custom Colors - Light Mode */
-    --hero-gradient-from: 265 89% 65%;
-    --hero-gradient-to: 283 95% 65%;
+    --hero-gradient-from: 265 89% 55%;
+    --hero-gradient-to: 283 95% 55%;
     --hero-text: 222 47% 11%;
 
     --nav-bg: 0 0% 100%;
     --nav-border: 240 5.9% 90%;
 
     --card-hover: 240 4.8% 95.9%;
-    --card-hover-border: 265 89% 65%;
+    --card-hover-border: 265 89% 55%;
 
-    --button-gradient-from: 265 89% 65%;
-    --button-gradient-to: 283 95% 65%;
+    --button-gradient-from: 265 89% 55%;
+    --button-gradient-to: 283 95% 55%;
     --button-text: 0 0% 100%;
   }
 

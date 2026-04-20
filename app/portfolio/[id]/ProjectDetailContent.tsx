@@ -37,7 +37,7 @@ export default function ProjectDetailContent({ project }: Props) {
 
   if (project.isShowcase) {
     return (
-      <main className="min-h-screen bg-background">
+      <article className="min-h-screen bg-background">
         <motion.div
           className="fixed left-0 right-0 top-0 z-[100] h-1 origin-left bg-primary"
           style={{ scaleX }}
@@ -546,13 +546,13 @@ export default function ProjectDetailContent({ project }: Props) {
             </div>
           </section>
         </div>
-      </main>
+      </article>
     );
   }
 
   // Fallback for non-showcase projects (Existing generic UI)
   return (
-    <main className="min-h-screen bg-background pb-20">
+    <article className="min-h-screen bg-background pb-20">
       {/* Hero Section */}
       <section className="relative h-[60vh] min-h-[400px] w-full overflow-hidden">
         <Image
@@ -806,6 +806,6 @@ export default function ProjectDetailContent({ project }: Props) {
           </div>
         </div>
       </div>
-    </main>
+    </article>
   );
 }

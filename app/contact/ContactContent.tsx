@@ -51,25 +51,34 @@ const InputField: React.FC<InputFieldProps> = ({
   rules,
   error,
   register,
-}) => (
-  <div className="mb-4">
-    <label
-      htmlFor={name}
-      className="text-foreground mb-2 block text-sm font-medium"
-    >
-      {label}
-    </label>
-    <input
-      id={name}
-      type={type}
-      {...register(name, rules)}
-      className={`bg-background text-foreground w-full rounded-md border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary ${
-        error ? "border-red-500" : "border-gray-700"
-      }`}
-    />
-    {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
-  </div>
-);
+}) => {
+  const errorId = `${name}-error`;
+  return (
+    <div className="mb-4">
+      <label
+        htmlFor={name}
+        className="text-foreground mb-2 block text-sm font-medium"
+      >
+        {label}
+      </label>
+      <input
+        id={name}
+        type={type}
+        aria-invalid={error ? "true" : undefined}
+        aria-describedby={error ? errorId : undefined}
+        {...register(name, rules)}
+        className={`bg-background text-foreground w-full rounded-md border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary ${
+          error ? "border-red-500" : "border-gray-700"
+        }`}
+      />
+      {error && (
+        <p id={errorId} role="alert" className="mt-1 text-sm text-red-500">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+};
 
 export const ContactContent: React.FC = () => {
   const {
@@ -89,9 +98,9 @@ export const ContactContent: React.FC = () => {
     },
   });
 
-  const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(
-    null
-  );
+  const [submitStatus, setSubmitStatus] = useState<
+    "success-sent" | "success-fallback" | "error" | null
+  >(null);
 
   const openMailtoFallback = (data: FormData) => {
     const phoneSegment = data.phoneNumber ? `\nPhone: ${data.phoneNumber}` : "";
@@ -118,9 +127,9 @@ export const ContactContent: React.FC = () => {
         const payload = await res.json().catch(() => ({}));
         if (payload?.fallback === "mailto") {
           openMailtoFallback(data);
-          setSubmitStatus("success");
+          setSubmitStatus("success-fallback");
           reset();
-          setTimeout(() => setSubmitStatus(null), 5000);
+          setTimeout(() => setSubmitStatus(null), 8000);
           return;
         }
       }
@@ -138,9 +147,9 @@ export const ContactContent: React.FC = () => {
         });
       }
 
-      setSubmitStatus("success");
+      setSubmitStatus("success-sent");
       reset();
-      setTimeout(() => setSubmitStatus(null), 5000);
+      setTimeout(() => setSubmitStatus(null), 8000);
     } catch (error) {
       console.error("Contact form submit failed:", error);
       setSubmitStatus("error");
@@ -309,6 +318,8 @@ export const ContactContent: React.FC = () => {
               </label>
               <Textarea
                 id="message"
+                aria-invalid={errors.message ? "true" : undefined}
+                aria-describedby={errors.message ? "message-error" : undefined}
                 {...register("message", {
                   required: "Message is required",
                   minLength: {
@@ -321,7 +332,11 @@ export const ContactContent: React.FC = () => {
                 }`}
               />
               {errors.message && (
-                <p className="mt-1 text-sm text-red-500">
+                <p
+                  id="message-error"
+                  role="alert"
+                  className="mt-1 text-sm text-red-500"
+                >
                   {errors.message.message}
                 </p>
               )}
@@ -338,32 +353,46 @@ export const ContactContent: React.FC = () => {
             </div>
 
             {/* Status Messages */}
-            {submitStatus === "success" && (
-              <div className="rounded-md border border-green-200 bg-green-50 p-3 text-center text-green-500 dark:border-green-800 dark:bg-green-900/20">
-                ✅ Thank you for your message! Your default email client should
-                open with a pre-filled message. If it doesn't open
-                automatically, please check your email client or contact me
-                directly at {CONTACT_INFO.EMAIL}
+            {submitStatus === "success-sent" && (
+              <div
+                role="status"
+                aria-live="polite"
+                className="rounded-md border border-green-200 bg-green-50 p-3 text-center text-green-600 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400"
+              >
+                ✅ Message sent. I&apos;ll reply from{" "}
+                <span className="font-medium">{CONTACT_INFO.EMAIL}</span>{" "}
+                within a day or two.
+              </div>
+            )}
+            {submitStatus === "success-fallback" && (
+              <div
+                role="status"
+                aria-live="polite"
+                className="rounded-md border border-amber-200 bg-amber-50 p-3 text-center text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-300"
+              >
+                ✉️ Your default email client should open with the message
+                pre-filled. If it doesn&apos;t, email me directly at{" "}
+                {CONTACT_INFO.EMAIL}.
               </div>
             )}
             {submitStatus === "error" && (
-              <div className="rounded-md border border-red-200 bg-red-50 p-3 text-center text-red-500 dark:border-red-800 dark:bg-red-900/20">
-                ❌ There was an error processing your message. Please try again
-                or contact me directly at {CONTACT_INFO.EMAIL}
+              <div
+                role="alert"
+                aria-live="assertive"
+                className="rounded-md border border-red-200 bg-red-50 p-3 text-center text-red-600 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400"
+              >
+                ❌ Something went wrong sending your message. Please try again
+                or email me directly at {CONTACT_INFO.EMAIL}.
               </div>
             )}
 
-            {/* Note about email client */}
-            <div className="text-center text-sm text-muted-foreground">
-              <p>
-                💡 Note: This will open your default email client with a
-                pre-filled message.
-              </p>
-              <p>
-                For immediate contact, you can also email me directly at{" "}
-                {CONTACT_INFO.EMAIL}
-              </p>
-            </div>
+            <p className="text-center text-sm text-muted-foreground">
+              Prefer email? Reach me directly at{" "}
+              <a
+                href={`mailto:${CONTACT_INFO.EMAIL}`}
+                className="font-medium text-primary hover:underline"
+              >{CONTACT_INFO.EMAIL}</a>.
+            </p>
           </form>
         </motion.div>
       </motion.div>

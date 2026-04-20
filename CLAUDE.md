@@ -178,8 +178,13 @@ public/
 - The `KeyMetrics` / `ArchitectureDiagram` / `ThemeComparison` components are already direct imports (not `next/dynamic`) — `next/dynamic` with `ssr:false` inside a "use client" component also triggers the Turbopack SSG bug.
 - Stripe test webhook bodies must be read via `await req.text()` — do NOT JSON-parse first. The HMAC verify depends on the raw bytes exactly as Stripe signed them.
 
-## Related docs
+## Related docs (external — NOT tracked in this repo)
 
-- [MANUAL.md](MANUAL.md) — tasks that require user credentials / accounts / writing
-- [TODO.md](TODO.md) — code-executable task backlog
-- `/tmp/portfolio-recruiter-review.md` — 2026-04-19 recruiter-style review (seed for the 3-month plan)
+Working-state docs live outside the public repo to keep roadmap, recruiter strategy, and WIP drafts off GitHub. All paths below are absolute on the owner's machine.
+
+- `/Users/shaileshchaudhary/Desktop/Coding/docs/portfolio-next/MANUAL.md` — tasks that require the owner's credentials / accounts / writing.
+- `/Users/shaileshchaudhary/Desktop/Coding/docs/portfolio-next/TODO.md` — code-executable backlog.
+- `/Users/shaileshchaudhary/Desktop/Coding/docs/portfolio-next/PLAN.md` — 3-month plan, target companies, priorities.
+- `/Users/shaileshchaudhary/Desktop/Coding/docs/portfolio-next/drafts/` — OSS contribution drafts, Razorpay plan, Loom storyboards, audits, etc.
+
+If a future session needs any of these, read from the path above. Do NOT recreate them inside this repo.

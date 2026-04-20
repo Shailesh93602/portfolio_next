@@ -31,7 +31,14 @@ export function ProjectCard({
     <div className="transition-transform duration-500 ease-out will-change-transform">
       <Card className="bg-background overflow-hidden transition-shadow duration-300 hover:shadow-lg">
         <div className="relative h-48">
-          <Image src={image} alt={title} fill className="object-cover" />
+          <Image
+            src={image}
+            alt={title}
+            fill
+            loading="lazy"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover"
+          />
         </div>
         <CardContent className="p-6">
           <h3 className="text-foreground mb-2 text-xl font-semibold">

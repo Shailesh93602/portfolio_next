@@ -171,6 +171,7 @@ export default function HomeContent({ featuredPosts }: Props) {
                 alt="Shailesh Chaudhari"
                 fill
                 priority
+                fetchPriority="high"
                 sizes="(max-width: 768px) 288px, 500px"
                 className="profile-glow rounded-full border-4 border-primary/20 object-cover shadow-2xl"
               />

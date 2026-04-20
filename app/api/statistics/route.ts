@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { SOCIAL_LINKS } from "@/config/constants";
+import { PROFILE_USERNAMES } from "@/lib/constants";
 import { fetchGithubStats } from "@/lib/github-service";
 import { fetchLeetCodeStats } from "@/lib/leetcode-service";
 import { getStatisticsSnapshot } from "@/lib/statistics-snapshot";
@@ -62,8 +62,8 @@ function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
 
 export async function GET() {
   try {
-    const githubUsername = SOCIAL_LINKS.GITHUB.split("/").pop() ?? "";
-    const leetcodeUsername = SOCIAL_LINKS.LEETCODE.split("/").pop() ?? "";
+    const githubUsername = PROFILE_USERNAMES.GITHUB;
+    const leetcodeUsername = PROFILE_USERNAMES.LEETCODE;
 
     const snapshot = getStatisticsSnapshot();
     let githubStats = snapshot.github ?? GITHUB_FALLBACK;
