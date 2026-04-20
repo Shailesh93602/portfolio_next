@@ -5,12 +5,13 @@ Tasks that need user credentials / accounts / writing → [MANUAL.md](MANUAL.md)
 
 **Last updated: 2026-04-20**
 
-## Just shipped (Razorpay Phase 1)
+## Just shipped (Razorpay Phase 1 + Phase 2 scaffold)
 
 - ✅ `razorpay-patterns-demo` LIVE at <https://razorpay-patterns-demo.vercel.app> — E2E verified: valid → `200 duplicate:false`, replay → `200 duplicate:true`, tampered → `400`.
-- ✅ Idempotency layer: Redis SETNX (prod) + in-memory Map fallback for the standalone demo. 30 tests green.
+- ✅ Idempotency layer (demo): Redis SETNX in prod + in-memory Map fallback. 30 tests green.
 - ✅ 4 Razorpay env vars on Vercel (encrypted). Trailing-newline bug debugged (`echo` → `printf` fix).
-- Next: Phase 2 — KhataGO billing scaffold (Prisma BillingAccount, /pricing, /api/razorpay/{checkout,webhook}, feature gates, /settings/billing).
+- ✅ **KhataGO Phase 2 scaffold merged locally** — BillingAccount + BillingEvent models, `/api/razorpay/{checkout,verify,webhook}`, Razorpay Checkout.js button on `/pricing` with discount-anchor pricing. Typecheck + lint + 43 tests all green. Waiting for user to push + migrate + env-wire (MANUAL §3).
+- Next after KhataGO Phase 2 deploy: feature gates on transaction POST routes, `/settings/billing` page, `/refund-policy` page, Phase 3 EduScale plan gates.
 
 ## Sources
 

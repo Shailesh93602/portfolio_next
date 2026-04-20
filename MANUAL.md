@@ -19,6 +19,7 @@ Rules for anything public: **no specific PR counts**, **no "real-time systems en
 
 ## Just shipped (since last turn)
 
+- ✅ **Razorpay Phase 2 scaffold MERGED into KhataGO** (not yet deployed to prod — see §3 below for your part). Adds `BillingAccount` + `BillingEvent` Prisma models, `/api/razorpay/{checkout,verify,webhook}` routes, `/pricing` with discount-anchor (~~₹999~~ **₹299** Pro, ~~₹1,999~~ **₹1,499** CA), and a Razorpay Checkout.js button client component. Idempotency is DB-backed (unique-constraint on `razorpayEventId`) — stronger than the demo's SETNX because it ties to the audit row.
 - ✅ **Razorpay Phase 1 E2E VERIFIED LIVE** at <https://razorpay-patterns-demo.vercel.app>. End-to-end webhook test: valid signed payload → `200 duplicate:false`, replay → `200 duplicate:true`, tampered signature → `400 Invalid signature`. All three idempotency + HMAC paths confirmed on production.
 - ✅ **Razorpay Standard Checkout integration COMPLETE** in `razorpay-patterns-demo` — `/api/create-order` + `/api/verify-payment` + interactive `/demo` page with Checkout.js modal. 30 tests passing (was 22).
 - ✅ **4 Razorpay env vars added to Vercel** (encrypted, never touched git): `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `NEXT_PUBLIC_RAZORPAY_KEY_ID`, `RAZORPAY_WEBHOOK_SECRET`. Trailing-newline bug (from `echo` vs `printf`) debugged and fixed.
@@ -51,19 +52,43 @@ Webhook endpoint already confirmed working via signed-payload replay (see "Just 
 
 Your Upstash Redis for `redis-battle-demo` was paused. Go to <https://console.upstash.com/> → that database → **Resume**. After that, the daily URL health-check GitHub Action keeps it alive (daily GET wakes Render → reconnects to Upstash → counts as activity).
 
-### 3. Phase 2 — KhataGO subscription billing (CLAUDE doing most of it)
+### 3. KhataGO Phase 2 — finish the deploy (YOU, ~10 min)
 
-With Phase 1 deployed and verified, Claude starts scaffolding Razorpay into KhataGO next:
+Phase 2 code is merged locally (commit on `main`). Claude needs 4 things from you to take it live:
 
-- Prisma schema additions (`BillingAccount`, plan fields on `User`)
-- `/pricing` page with discount-anchor pricing (~~₹999~~ **₹299** CA Portal, ~~₹1999~~ **₹1499** Business)
-- `/api/razorpay/checkout` + `/api/razorpay/webhook` (reusing the verify-payment + SETNX patterns)
-- Feature gates (LeetCode-style — free tier limited)
-- `/settings/billing` page with cancel / update-plan / refund-policy link
+1. **Push KhataGO to GitHub + deploy:**
+   ```bash
+   cd ~/Desktop/Coding/KhataGO
+   git push origin main
+   ```
+   Vercel auto-deploys. If the `khata-go` project isn't linked to Vercel yet, run `vercel link` once and pick it.
 
-**What YOU do:** create a **second** Razorpay test account dashboard entry or reuse the current one for KhataGO. You'll add the secret to KhataGO's Vercel env when Claude says "ready to wire keys." No code from you.
+2. **Run the Prisma migration on KhataGO's production DB.** The migration file is committed at `prisma/migrations/20260420090000_add_billing/migration.sql`. You have two options:
+   - **Locally (recommended for first run):** `DATABASE_URL="<prod-url>" npx prisma migrate deploy` — applies the migration idempotently, no schema prompt.
+   - **Or:** connect via Supabase SQL editor and run the SQL file directly.
 
-See [drafts/RAZORPAY_PLAN.md](drafts/RAZORPAY_PLAN.md) for the full plan.
+3. **Add 4 env vars to KhataGO on Vercel** (reuse the same Razorpay test-mode keys from razorpay-patterns-demo, OR create a new test webhook — both work):
+   ```bash
+   cd ~/Desktop/Coding/KhataGO
+   printf "rzp_test_SfalnI8G95Qoen" | vercel env add RAZORPAY_KEY_ID production
+   printf "OIedtZ0duGKGOzeT7z1AYD5J" | vercel env add RAZORPAY_KEY_SECRET production
+   printf "rzp_test_SfalnI8G95Qoen" | vercel env add NEXT_PUBLIC_RAZORPAY_KEY_ID production
+   # For the webhook secret, add a NEW webhook in Razorpay dashboard pointing at
+   # https://khatago.vercel.app/api/razorpay/webhook and use the generated secret:
+   printf "<new-webhook-secret>" | vercel env add RAZORPAY_WEBHOOK_SECRET production
+   ```
+   **Important:** `printf`, not `echo` — `echo` adds a trailing newline and breaks HMAC (we already debugged this once on razorpay-patterns-demo).
+
+4. **Redeploy** (`vercel --prod` from the KhataGO dir, or just push an empty commit).
+
+**After that, Claude does the rest:**
+- E2E verification (valid → 200 duplicate:false, replay → 200 duplicate:true, tampered → 400) on the live KhataGO webhook
+- Feature-gate rollout (free-tier limits on `/api/transactions` POST etc. with friendly upgrade messages)
+- `/settings/billing` page (show plan, renewal date, cancel button, refund-policy link)
+- `/refund-policy` page
+- Phase 3 — EduScale LeetCode-style plan gates
+
+See [drafts/RAZORPAY_PLAN.md](drafts/RAZORPAY_PLAN.md) for the full Phase 2 + Phase 3 plans.
 
 ---
 
