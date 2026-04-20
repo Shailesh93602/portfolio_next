@@ -53,7 +53,7 @@ export default function Navbar() {
           <Link
             href="/"
             aria-label="Shailesh Chaudhari — home"
-            className="flex items-center space-x-2"
+            className="flex min-h-11 min-w-11 items-center space-x-2"
           >
             <span
               className="text-gradient text-xl font-bold"

@@ -2,6 +2,7 @@ export { metadata } from "./metadata";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { SITE_URL, BLOG_AUTHOR } from "@/lib/blog-constants";
+import { CONTACT_INFO, SOCIAL_LINKS } from "@/lib/constants";
 
 const hireMeta = {
   "@context": "https://schema.org",
@@ -90,6 +91,46 @@ export default function HirePage() {
             >
               <Button variant="outline">View Resume</Button>
             </a>
+          </div>
+
+          {/* Explicit end-of-page CTA — prose-heavy pages need a second,
+              visually louder call-to-action so scrollers never hit a dead end.
+              Contact form + direct email + LinkedIn all one click away. */}
+          <div className="not-prose mt-16 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-purple-600/5 p-8 text-center">
+            <h2 className="text-2xl font-bold tracking-tight">
+              Have a project in mind?
+            </h2>
+            <p className="mx-auto mt-3 max-w-lg text-muted-foreground">
+              Send a one-line description of what you&apos;re building and the
+              rough timeline. I&apos;ll reply within a day or two with whether
+              it&apos;s a fit and what it would take.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <Link href="/contact">
+                <Button size="lg">Start a conversation</Button>
+              </Link>
+              <a
+                href={`mailto:${CONTACT_INFO.EMAIL}?subject=${encodeURIComponent(
+                  "Project inquiry"
+                )}`}
+              >
+                <Button variant="outline" size="lg">
+                  Email directly
+                </Button>
+              </a>
+              <a
+                href={SOCIAL_LINKS.LINKEDIN}
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                <Button variant="ghost" size="lg">
+                  LinkedIn
+                </Button>
+              </a>
+            </div>
+            <p className="mt-4 text-xs text-muted-foreground">
+              Typical reply time: under 48 hours · Remote, async-friendly
+            </p>
           </div>
         </div>
       </div>

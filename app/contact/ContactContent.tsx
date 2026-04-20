@@ -99,7 +99,7 @@ export const ContactContent: React.FC = () => {
   });
 
   const [submitStatus, setSubmitStatus] = useState<
-    "success-sent" | "success-fallback" | "error" | null
+    "success-sent" | "success-fallback" | "rate-limited" | "error" | null
   >(null);
 
   const openMailtoFallback = (data: FormData) => {
@@ -132,6 +132,14 @@ export const ContactContent: React.FC = () => {
           setTimeout(() => setSubmitStatus(null), 8000);
           return;
         }
+      }
+
+      // 429 = rate-limited. Show a friendly message instead of the generic
+      // "something went wrong" — the 5 req/hr per-IP limit is intentional.
+      if (res.status === 429) {
+        setSubmitStatus("rate-limited");
+        setTimeout(() => setSubmitStatus(null), 10000);
+        return;
       }
 
       if (!res.ok) {
@@ -372,6 +380,17 @@ export const ContactContent: React.FC = () => {
               >
                 ✉️ Your default email client should open with the message
                 pre-filled. If it doesn&apos;t, email me directly at{" "}
+                {CONTACT_INFO.EMAIL}.
+              </div>
+            )}
+            {submitStatus === "rate-limited" && (
+              <div
+                role="status"
+                aria-live="polite"
+                className="rounded-md border border-amber-200 bg-amber-50 p-3 text-center text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-300"
+              >
+                ⏳ You&apos;ve sent several messages in a short window. Please
+                wait a bit and try again, or email me directly at{" "}
                 {CONTACT_INFO.EMAIL}.
               </div>
             )}

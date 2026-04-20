@@ -61,14 +61,16 @@ export function Footer() {
             .
           </p>
         </div>
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2">
           {socialLinks.map((item) => (
             <Link
               key={item.name}
               href={item.href}
               target="_blank"
               rel="noreferrer"
-              className="text-muted-foreground transition-colors hover:text-primary"
+              aria-label={item.name}
+              /* min-h/w 11 (44px) hits WCAG 2.5.5 target-size; visual glyph stays 20px. */
+              className="inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/60 hover:text-primary"
             >
               {/* Inline icons from local icon set to reduce bundle size */}
               {item.name === "GitHub" && <GithubIcon className="h-5 w-5" />}
