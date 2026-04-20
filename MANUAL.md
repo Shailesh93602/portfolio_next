@@ -2,7 +2,7 @@
 
 Everything Claude can automate lives in [TODO.md](TODO.md). This file is only things that need your credentials, voice, personal accounts, or a human decision.
 
-**Last updated: 2026-04-19**
+**Last updated: 2026-04-20**
 
 ---
 
@@ -19,8 +19,10 @@ Rules for anything public: **no specific PR counts**, **no "real-time systems en
 
 ## Just shipped (since last turn)
 
-- ✅ **Razorpay Standard Checkout integration COMPLETE** in `razorpay-patterns-demo` — `/api/create-order` + `/api/verify-payment` + interactive `/demo` page with Checkout.js modal. 30 tests passing (was 22). Pushed to GitHub as commit e3a0d54; Vercel auto-deploying.
-- ✅ **3 Razorpay env vars added to Vercel** (encrypted, never touched git): `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `NEXT_PUBLIC_RAZORPAY_KEY_ID`.
+- ✅ **Razorpay Phase 1 E2E VERIFIED LIVE** at <https://razorpay-patterns-demo.vercel.app>. End-to-end webhook test: valid signed payload → `200 duplicate:false`, replay → `200 duplicate:true`, tampered signature → `400 Invalid signature`. All three idempotency + HMAC paths confirmed on production.
+- ✅ **Razorpay Standard Checkout integration COMPLETE** in `razorpay-patterns-demo` — `/api/create-order` + `/api/verify-payment` + interactive `/demo` page with Checkout.js modal. 30 tests passing (was 22).
+- ✅ **4 Razorpay env vars added to Vercel** (encrypted, never touched git): `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `NEXT_PUBLIC_RAZORPAY_KEY_ID`, `RAZORPAY_WEBHOOK_SECRET`. Trailing-newline bug (from `echo` vs `printf`) debugged and fixed.
+- ✅ **Idempotency layer** — Redis-backed in production (SETNX on Upstash), in-memory Map fallback for the demo instance (24h TTL either way).
 - ✅ **`gh` + `vercel` CLIs installed & authenticated** — Claude manages GitHub + Vercel autonomously now.
 - ✅ **`razorpay-patterns-demo` pushed to GitHub** at <https://github.com/Shailesh93602/razorpay-patterns-demo>.
 - ✅ **stripe-payments-demo LIVE** at <https://stripe-payments-demo-eight.vercel.app>.
@@ -33,71 +35,35 @@ Rules for anything public: **no specific PR counts**, **no "real-time systems en
 
 ## P0 — This week
 
-### 1. Set up the Razorpay Webhook endpoint (~5 min)
+### 1. Try the Razorpay demo end-to-end (optional, 2 min)
 
-Only thing you need to click before the Razorpay Standard Checkout demo is fully wired. Claude already added the three Razorpay keys to Vercel; this one you have to do in Razorpay's dashboard because Razorpay generates the secret.
+Phase 1 is live and verified — no action required. But if you want to see it yourself:
 
-**Steps (after Vercel deploy finishes):**
+- Open <https://razorpay-patterns-demo.vercel.app/demo>
+- Click **"Pay ₹1"** → Razorpay Checkout modal opens
+- Test card: `4111 1111 1111 1111`, any future expiry, any CVV, any OTP
+- Status line cycles: creating-order → opening-modal → verifying → **verified ✓**
+- Vercel function logs show the webhook firing with `duplicate:false` first, `duplicate:true` on Razorpay's retries
 
-1. **Confirm the deploy URL.** Tell Claude the live URL of `razorpay-patterns-demo` on Vercel (should be something like `https://razorpay-patterns-demo-<hash>.vercel.app` or a custom subdomain). Claude will use it in the portfolio card + README.
-2. Razorpay Dashboard → **Settings → Webhooks → Add New Webhook**.
-3. **Webhook URL:** `https://<your-deploy-url>/api/webhook`
-4. **Secret:** click **Generate** — Razorpay gives you a random string. **Copy it.**
-5. **Active Events** — select:
-   - `payment.captured`
-   - `payment.failed`
-   - `order.paid`
-   - `refund.processed`
-6. **Create Webhook**.
-7. Tell Claude the webhook secret value. Claude runs `vercel env add RAZORPAY_WEBHOOK_SECRET production` and redeploys. (The secret stays encrypted on Vercel — never in git.)
+Webhook endpoint already confirmed working via signed-payload replay (see "Just shipped").
 
-**Once that's done:**
-
-- Visit `https://<your-deploy>/demo` — click "Pay ₹1", use test card `4111 1111 1111 1111`, any future expiry, any CVV, any OTP. Complete the flow.
-- Vercel function logs will show: `create-order → verify-payment (ok:true) → webhook (duplicate:false first time, true on retry)`.
-- Tell Claude the live URL — Claude updates the portfolio card on `/portfolio/razorpay-patterns-demo`.
-
-**Context (new — 2026-04-19):** Stripe is **invite-only in India**, so you can't create a Stripe test account today. The app still deploys and runs in "pattern reference" mode. Specifically:
-
-1. Vercel → Add New → Project → import `Shailesh93602/stripe-payments-demo`, branch `main`.
-2. Framework: Next.js (auto-detected).
-3. **Env vars (Production, use placeholders until Stripe India opens):**
-   - `STRIPE_SECRET_KEY` = `sk_test_placeholder_not_in_india_yet` (any non-empty string — the route-handler lazy-loads so build succeeds).
-   - `STRIPE_WEBHOOK_SECRET` = `whsec_placeholder`.
-   - `REDIS_URL` = from Vercel Upstash integration at <https://vercel.com/integrations/upstash> (free 10k/day).
-4. Deploy. URL will render the static landing page explaining the pattern. `/api/webhook` returns 400 on unsigned payloads (verifies the HMAC path is wired) — perfectly fine for recruiter scan.
-5. Tell Claude the live URL — portfolio card gets the `live:` field.
-
-**What's lost without Stripe access:** the "send duplicate webhook → see second call skipped" LIVE demo. The pattern + 29 passing tests + deployed landing page are still recruiter-visible.
-
-**Medium-term:** if/when Stripe opens in India OR if you can use a US-based partner's Stripe account, come back and wire real keys. Until then, see task §3 below for the Razorpay pivot.
-
-### 2. Razorpay integration — one-time account setup (10 min)
-
-You picked **both paths** — keep standalone demos AND integrate the patterns into the real flagships (KhataGO + EduScale). Razorpay replaces Stripe as the "real usage" target since Stripe India is invite-only.
-
-**Full plan:** [drafts/RAZORPAY_PLAN.md](drafts/RAZORPAY_PLAN.md) — 3 phases, what YOU do vs what CLAUDE does, open questions, risk register.
-
-**Step 1 — Create account + get test keys (10 min, do this once):**
-
-1. Sign up at <https://razorpay.com/signup>. Choose "Individual / Freelancer" for fastest onboarding.
-2. Complete KYC lite (PAN + Aadhaar). You stay in **Test Mode** until you want real rupees — no full KYC needed for development.
-3. Dashboard → **Settings → API Keys → Generate Test Key**. You'll get:
-   - `Key ID`: `rzp_test_...` (safe to ship to frontend)
-   - `Key Secret`: one-time display — **save it securely now.**
-4. Tell Claude: **"Razorpay account ready, keys in my password manager, start Phase 1"** — Claude begins scaffolding `razorpay-patterns-demo` (code-only; you'll add the keys to Vercel at deploy time).
-
-**Phases 2 + 3 start after Phase 1 is deployed.** See `drafts/RAZORPAY_PLAN.md` for webhook setup + env vars per project.
-
-**Open design decisions (answer inline in the plan doc or in chat):**
-- KhataGO tier prices — draft ₹299 / ₹999. Adjust?
-- EduScale tournament fee — draft ₹49 regular / ₹199 premier?
-- Refund policy for cancelled tournaments?
-- Repo name for the standalone demo: `razorpay-patterns-demo` OK?
-
-### 3. Upstash Redis one-time resume — 2 min
+### 2. Upstash Redis one-time resume — 2 min
 
 Your Upstash Redis for `redis-battle-demo` was paused. Go to <https://console.upstash.com/> → that database → **Resume**. After that, the daily URL health-check GitHub Action keeps it alive (daily GET wakes Render → reconnects to Upstash → counts as activity).
+
+### 3. Phase 2 — KhataGO subscription billing (CLAUDE doing most of it)
+
+With Phase 1 deployed and verified, Claude starts scaffolding Razorpay into KhataGO next:
+
+- Prisma schema additions (`BillingAccount`, plan fields on `User`)
+- `/pricing` page with discount-anchor pricing (~~₹999~~ **₹299** CA Portal, ~~₹1999~~ **₹1499** Business)
+- `/api/razorpay/checkout` + `/api/razorpay/webhook` (reusing the verify-payment + SETNX patterns)
+- Feature gates (LeetCode-style — free tier limited)
+- `/settings/billing` page with cancel / update-plan / refund-policy link
+
+**What YOU do:** create a **second** Razorpay test account dashboard entry or reuse the current one for KhataGO. You'll add the secret to KhataGO's Vercel env when Claude says "ready to wire keys." No code from you.
+
+See [drafts/RAZORPAY_PLAN.md](drafts/RAZORPAY_PLAN.md) for the full plan.
 
 ---
 

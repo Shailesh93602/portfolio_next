@@ -3,7 +3,14 @@
 Tasks Claude can do with code, terminal commands, or file edits.
 Tasks that need user credentials / accounts / writing → [MANUAL.md](MANUAL.md).
 
-**Last updated: 2026-04-19**
+**Last updated: 2026-04-20**
+
+## Just shipped (Razorpay Phase 1)
+
+- ✅ `razorpay-patterns-demo` LIVE at <https://razorpay-patterns-demo.vercel.app> — E2E verified: valid → `200 duplicate:false`, replay → `200 duplicate:true`, tampered → `400`.
+- ✅ Idempotency layer: Redis SETNX (prod) + in-memory Map fallback for the standalone demo. 30 tests green.
+- ✅ 4 Razorpay env vars on Vercel (encrypted). Trailing-newline bug debugged (`echo` → `printf` fix).
+- Next: Phase 2 — KhataGO billing scaffold (Prisma BillingAccount, /pricing, /api/razorpay/{checkout,webhook}, feature gates, /settings/billing).
 
 ## Sources
 
