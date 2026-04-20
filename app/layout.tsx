@@ -8,6 +8,7 @@ import Navbar from "@/components/navbar/index";
 import { Providers } from "./providers";
 import Script from "next/script";
 import { SITE_URL, BLOG_AUTHOR, META_DEFAULTS } from "@/lib/blog-constants";
+import { PROFILE } from "@/lib/profile";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
@@ -111,8 +112,8 @@ export default function RootLayout({
               "@type": "Person",
               "@id": `${SITE_URL}/#person`,
               name: BLOG_AUTHOR.name,
-              alternateName: ["Shaileshbhai Chaudhari", "Shailesh"],
-              jobTitle: "Software Engineer",
+              alternateName: ["Shaileshbhai Chaudhari", PROFILE.name.preferred],
+              jobTitle: PROFILE.role.title,
               url: SITE_URL,
               image: {
                 "@type": "ImageObject",
@@ -120,11 +121,19 @@ export default function RootLayout({
                 width: 400,
                 height: 400,
               },
-              email: "shailesh93602@gmail.com",
+              email: PROFILE.contact.email,
               nationality: "Indian",
               homeLocation: {
                 "@type": "Place",
-                name: "Gujarat, India",
+                // Where he's based day-to-day (Ahmedabad). His hometown
+                // (Patan) is separately expressed on the About page copy.
+                address: {
+                  "@type": "PostalAddress",
+                  addressLocality: PROFILE.location.currentCity,
+                  addressRegion: PROFILE.location.state,
+                  addressCountry: PROFILE.location.country,
+                },
+                name: PROFILE.location.displayShort,
               },
               sameAs: [
                 BLOG_AUTHOR.social.github,
@@ -134,8 +143,7 @@ export default function RootLayout({
                 "https://www.hackerrank.com/profile/shailesh93602",
                 "https://leetcode.com/u/Shaileshbhai/",
               ],
-              description:
-                "Software Engineer with expertise in full-stack web development using Next.js, React, Node.js, TypeScript, and PostgreSQL. Currently at ContextQA building developer tools and Chrome extensions.",
+              description: PROFILE.bio.medium,
               knowsAbout: [
                 "JavaScript",
                 "TypeScript",

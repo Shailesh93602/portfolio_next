@@ -64,13 +64,13 @@ export default function AboutContent() {
                 variants={itemVariants}
                 className="text-muted-foreground text-lg leading-relaxed"
               >
-                I&apos;m a Software Engineer from Bhavnagar, Gujarat. At
-                ContextQA I work on the backend of our core QA-automation
-                product — test execution engine, VNC streaming, and
-                browser-automation orchestration (Playwright / WebdriverIO /
-                LambdaTest). The first 2-3 months I shipped 2 Chrome
-                extensions (Vibe Testing, AxeTos) before moving to the core
-                product. Before ContextQA, I spent ~2 years at eSparkBiz
+                I&apos;m a Software Engineer from Patan, Gujarat, currently
+                based in Ahmedabad. At ContextQA I work on the backend of our
+                core QA-automation product — test execution engine, VNC
+                streaming, and browser-automation orchestration (Playwright /
+                WebdriverIO / LambdaTest). The first 2-3 months I shipped 2
+                Chrome extensions (Vibe Testing, AxeTos) before moving to the
+                core product. Before ContextQA, I spent ~2 years at eSparkBiz
                 building EdTech, e-commerce, and corporate training platforms
                 end-to-end. On the side I explore distributed systems (Redlock,
                 Socket.io Redis adapter, Prometheus metrics), AI pipelines

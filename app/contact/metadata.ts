@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
+import { PROFILE } from "@/lib/profile";
+
+const contactTitle = `Contact ${PROFILE.name.full}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Contact Shailesh Chaudhari",
-  description:
-    "Get in touch for part-time or freelance web development work. I build in Next.js, Node.js, and TypeScript, and I'm available for remote projects. Based in Gujarat, India.",
+  title: contactTitle,
+  description: `Get in touch for part-time, freelance, or full-time work. I build in Next.js, Node.js, and TypeScript, and I'm available for remote projects. Based in ${PROFILE.location.displayShort}.`,
   alternates: {
     canonical: `${SITE_URL}/contact`,
   },

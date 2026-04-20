@@ -1,7 +1,9 @@
+import { PROFILE } from "./profile";
+
 export const BLOG_AUTHOR = {
-  name: "Shailesh Chaudhari",
-  role: "Full-Stack Developer & Problem Solver",
-  bio: "Software Engineer at ContextQA building developer tools and Chrome extensions. I work across the stack — Next.js frontends, Node.js backends, and real-time systems with Redis and Socket.io. BE in Information Technology from GEC Bhavnagar, 2024.",
+  name: PROFILE.name.full,
+  role: PROFILE.role.positioning,
+  bio: PROFILE.bio.short,
   avatar: "/Images/shailesh.webp",
   social: {
     twitter: "https://twitter.com/shaileshwork",

@@ -9,7 +9,8 @@
 
 **Name:** Shailesh Chaudhari (also: Shaileshbhai Chaudhari)
 **Role:** Software Engineer
-**Location:** Gujarat, India
+**Home town:** Patan, Gujarat, India
+**Based in:** Ahmedabad, Gujarat, India
 **Email:** shailesh93602@gmail.com
 **Portfolio:** https://shaileshchaudhari.vercel.app
 **GitHub:** https://github.com/shailesh93602
@@ -59,8 +60,8 @@ Owned authentication module end-to-end on Garage Management System team project 
 ## Education
 
 **Degree:** Bachelor of Engineering — Information Technology
-**Institution:** Government Engineering College Bhavnagar (GEC Bhavnagar)
-**Location:** Bhavnagar, Gujarat, India
+**Institution:** Government Engineering College, Bhavnagar (GEC Bhavnagar)
+**Institution location:** Bhavnagar, Gujarat, India
 **Period:** 2020 – 2024
 **CGPA:** 7.99 / 10
 **Notable:** Institute Rank 1 on GeeksforGeeks (604+ problems solved); Hackathon Finalist at New India Vibrant Hackathon 2023

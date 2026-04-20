@@ -26,8 +26,12 @@ export const PROFILE_LINKS = {
   RESUME: "/Shailesh_Chaudhari_Resume.pdf",
 } as const;
 
+// Contact info sourced from the single-source-of-truth at lib/profile.ts.
+// If editing these values, edit profile.ts — never this file.
+import { PROFILE } from "./profile";
+
 export const CONTACT_INFO = {
-  EMAIL: "shailesh93602@gmail.com",
-  PHONE: "+91 9313026530",
-  LOCATION: "Gujarat, India",
+  EMAIL: PROFILE.contact.email,
+  PHONE: PROFILE.contact.phone,
+  LOCATION: PROFILE.location.displayShort,
 } as const;

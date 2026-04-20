@@ -2,6 +2,9 @@ export { metadata } from "./metadata";
 import HomeContent from "./HomeContent";
 import { SITE_URL } from "@/lib/blog-constants";
 import { getFeaturedPosts } from "@/lib/blog-data";
+import { PROFILE } from "@/lib/profile";
+
+const whoIsAnswer = `${PROFILE.name.full} is a ${PROFILE.role.title} based in ${PROFILE.location.displayShort}, originally from ${PROFILE.location.hometown}. At ${PROFILE.role.company} he works on the ${PROFILE.role.focus}. During his first 2-3 months at ${PROFILE.role.company} he shipped two Chrome extensions (Vibe Testing, AxeTos). Previously ~2 years at EsparkBiz shipping full-stack client projects. Side projects explore distributed systems (Redlock, Socket.io Redis adapter, Prometheus), AI pipelines (Gemini function-calling, OCR), and webhook idempotency patterns.`;
 
 const faqSchema = {
   "@context": "https://schema.org",
@@ -9,10 +12,10 @@ const faqSchema = {
   mainEntity: [
     {
       "@type": "Question",
-      name: "Who is Shailesh Chaudhari?",
+      name: `Who is ${PROFILE.name.full}?`,
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Shailesh Chaudhari is a Software Engineer from Gujarat, India. At ContextQA he works on the backend of the core QA-automation product — test execution engine, VNC streaming, and browser-automation orchestration across Playwright, WebdriverIO, and LambdaTest. During his first 2-3 months at ContextQA he shipped two Chrome extensions (Vibe Testing, AxeTos). Previously ~2 years at EsparkBiz shipping full-stack client projects. Side projects explore distributed systems (Redlock, Socket.io Redis adapter, Prometheus), AI pipelines (Gemini function-calling, OCR), and webhook idempotency patterns.",
+        text: whoIsAnswer,
       },
     },
     {

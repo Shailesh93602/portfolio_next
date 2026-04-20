@@ -2,7 +2,7 @@
 
 > Software Engineer (~2.5 years) with a backend focus. Current role: backend of ContextQA's core QA-automation product (test execution engine, VNC streaming, Playwright/WebdriverIO/LambdaTest orchestration).
 
-Shailesh Chaudhari is a Software Engineer based in Gujarat, India. BE in Information Technology from Government Engineering College Bhavnagar (2024, CGPA 7.99). Institute Rank 1 on GeeksforGeeks with 604+ problems solved.
+Shailesh Chaudhari is a Software Engineer based in Ahmedabad, Gujarat, India (originally from Patan, Gujarat). BE in Information Technology from Government Engineering College, Bhavnagar (2024, CGPA 7.99). Institute Rank 1 on GeeksforGeeks with 604+ problems solved.
 
 Professional timeline:
 - Jan 2024 – Aug 2024: Software Developer Intern at EsparkBiz Technologies (full-stack learning — Node.js, React, Next.js, TypeScript, Tailwind; dummy projects; real-time patterns).
