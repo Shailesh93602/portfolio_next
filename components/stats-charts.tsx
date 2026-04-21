@@ -105,7 +105,11 @@ export function StatsCharts({
             </div>
           ) : (
             <>
-              <div className="h-[250px]">
+              <div
+                className="h-[250px]"
+                role="img"
+                aria-label={`GitHub contribution trend over the last ${contributionsData.length} days. Total ${githubContributions.reduce((a, b) => a + b, 0)} contributions.`}
+              >
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={contributionsData}>
                     <defs>
