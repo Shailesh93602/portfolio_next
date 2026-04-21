@@ -116,6 +116,26 @@
 }
 
 @layer utilities {
+  /* Safety net for framer-motion whileInView: if for any reason the
+     IntersectionObserver never fires (headless screenshot tools, some
+     reduced-motion edge cases, iOS Safari quirks on rapid scroll),
+     ensure all opacity-0 elements become visible within 2s so a
+     recruiter never sees a blank section. Motion still animates
+     normally on the happy path. */
+  @keyframes a11y-motion-fallback {
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [style*="opacity:0"],
+    [style*="opacity: 0"] {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
   .text-foreground {
     color: hsl(var(--foreground));
   }

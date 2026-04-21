@@ -1,6 +1,16 @@
 import type { Metadata } from "next";
 import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 
+// Point OG at the dynamic /api/og route which returns a true 1200×630 card.
+// The old /Images/shailesh.webp is a 615×614 portrait photo — valid as an
+// avatar but produced pillar-boxed previews on Twitter/LinkedIn because the
+// declared meta dimensions (1200×630) didn't match the actual pixels.
+const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(
+  "Shailesh Chaudhari"
+)}&type=page&description=${encodeURIComponent(
+  "Software Engineer at ContextQA · backend, distributed systems, webhook idempotency"
+)}`;
+
 export const metadata: Metadata = {
   title: "Shailesh Chaudhari — Software Engineer",
   description:
@@ -17,10 +27,10 @@ export const metadata: Metadata = {
     siteName: META_DEFAULTS.siteName,
     images: [
       {
-        url: "/Images/shailesh.webp",
+        url: ogImageUrl,
         width: 1200,
         height: 630,
-        alt: "Shailesh Chaudhari",
+        alt: "Shailesh Chaudhari — Software Engineer at ContextQA",
       },
     ],
     locale: "en_US",
@@ -30,8 +40,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Shailesh Chaudhari — Software Engineer",
     description:
-      "Software Engineer at ContextQA. Chrome extensions, real-time systems, Next.js. Open to part-time & freelance.",
-    images: ["/Images/shailesh.webp"],
+      "Software Engineer at ContextQA. Backend, real-time systems, Next.js. Open to part-time & freelance.",
+    images: [ogImageUrl],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,
   },

@@ -94,7 +94,7 @@ export default function ArchitectureDiagram({ architecture }: Props) {
                   key={layer.name}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
+                  viewport={{ once: true, amount: 0.01 }}
                   transition={{
                     delay: idx * 0.15,
                     duration: 0.6,

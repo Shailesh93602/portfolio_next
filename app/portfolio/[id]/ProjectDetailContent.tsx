@@ -252,7 +252,7 @@ export default function ProjectDetailContent({ project }: Props) {
                     key={showcase.title}
                     initial={{ opacity: 0, y: 40 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-100px" }}
+                    viewport={{ once: true, amount: 0.01 }}
                     transition={{ duration: 0.7, ease: "easeOut" }}
                     className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12"
                   >
@@ -464,7 +464,7 @@ export default function ProjectDetailContent({ project }: Props) {
                     key={incident.title}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-80px" }}
+                    viewport={{ once: true, amount: 0.01 }}
                     transition={{ duration: 0.5, delay: idx * 0.05 }}
                     className="overflow-hidden rounded-[2rem] border border-border bg-card"
                   >

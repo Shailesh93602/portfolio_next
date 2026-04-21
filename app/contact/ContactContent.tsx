@@ -101,6 +101,18 @@ export const ContactContent: React.FC = () => {
   const [submitStatus, setSubmitStatus] = useState<
     "success-sent" | "success-fallback" | "rate-limited" | "error" | null
   >(null);
+  const statusBannerRef = React.useRef<HTMLDivElement>(null);
+
+  // Scroll the status banner into view on every new state — the banner lives
+  // below the submit button on tall forms, which previously read as "silent
+  // success" because the user never saw it.
+  React.useEffect(() => {
+    if (!submitStatus) return;
+    statusBannerRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  }, [submitStatus]);
 
   const openMailtoFallback = (data: FormData) => {
     const phoneSegment = data.phoneNumber ? `\nPhone: ${data.phoneNumber}` : "";
@@ -129,7 +141,7 @@ export const ContactContent: React.FC = () => {
           openMailtoFallback(data);
           setSubmitStatus("success-fallback");
           reset();
-          setTimeout(() => setSubmitStatus(null), 8000);
+          setTimeout(() => setSubmitStatus(null), 12000);
           return;
         }
       }
@@ -157,7 +169,7 @@ export const ContactContent: React.FC = () => {
 
       setSubmitStatus("success-sent");
       reset();
-      setTimeout(() => setSubmitStatus(null), 8000);
+      setTimeout(() => setSubmitStatus(null), 12000);
     } catch (error) {
       console.error("Contact form submit failed:", error);
       setSubmitStatus("error");
@@ -360,23 +372,28 @@ export const ContactContent: React.FC = () => {
               </Button>
             </div>
 
-            {/* Status Messages */}
+            {/* Status Messages — wrapped in a ref so useEffect can scroll
+                whichever state renders into view. */}
             {submitStatus === "success-sent" && (
               <div
+                ref={statusBannerRef}
                 role="status"
                 aria-live="polite"
-                className="rounded-md border border-green-200 bg-green-50 p-3 text-center text-green-600 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400"
+                className="rounded-md border-2 border-green-500/50 bg-green-50 p-4 text-center text-green-700 shadow-lg dark:border-green-400/40 dark:bg-green-900/30 dark:text-green-300"
               >
-                ✅ Message sent. I&apos;ll reply from{" "}
+                <span className="text-lg">✅</span>{" "}
+                <span className="font-semibold">Message sent.</span> I&apos;ll
+                reply from{" "}
                 <span className="font-medium">{CONTACT_INFO.EMAIL}</span>{" "}
                 within a day or two.
               </div>
             )}
             {submitStatus === "success-fallback" && (
               <div
+                ref={statusBannerRef}
                 role="status"
                 aria-live="polite"
-                className="rounded-md border border-amber-200 bg-amber-50 p-3 text-center text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-300"
+                className="rounded-md border-2 border-amber-400/50 bg-amber-50 p-4 text-center text-amber-800 shadow-lg dark:border-amber-400/40 dark:bg-amber-900/30 dark:text-amber-300"
               >
                 ✉️ Your default email client should open with the message
                 pre-filled. If it doesn&apos;t, email me directly at{" "}
@@ -385,9 +402,10 @@ export const ContactContent: React.FC = () => {
             )}
             {submitStatus === "rate-limited" && (
               <div
+                ref={statusBannerRef}
                 role="status"
                 aria-live="polite"
-                className="rounded-md border border-amber-200 bg-amber-50 p-3 text-center text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-300"
+                className="rounded-md border-2 border-amber-400/50 bg-amber-50 p-4 text-center text-amber-800 shadow-lg dark:border-amber-400/40 dark:bg-amber-900/30 dark:text-amber-300"
               >
                 ⏳ You&apos;ve sent several messages in a short window. Please
                 wait a bit and try again, or email me directly at{" "}
@@ -396,9 +414,10 @@ export const ContactContent: React.FC = () => {
             )}
             {submitStatus === "error" && (
               <div
+                ref={statusBannerRef}
                 role="alert"
                 aria-live="assertive"
-                className="rounded-md border border-red-200 bg-red-50 p-3 text-center text-red-600 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400"
+                className="rounded-md border-2 border-red-500/50 bg-red-50 p-4 text-center text-red-700 shadow-lg dark:border-red-400/40 dark:bg-red-900/30 dark:text-red-300"
               >
                 ❌ Something went wrong sending your message. Please try again
                 or email me directly at {CONTACT_INFO.EMAIL}.

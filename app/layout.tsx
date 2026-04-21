@@ -71,6 +71,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Anti-FOUC for dark mode — runs before first paint, sets the
+            dark class on <html> based on saved prefs or OS setting so the
+            page never flashes light before React hydration. next-themes
+            handles this server-side in Pages router but App Router needs
+            the inline script manually. Kept minimal + synchronous. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');var m=window.matchMedia('(prefers-color-scheme: dark)').matches;if(t==='dark'||(!t&&m)||(t==='system'&&m)){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}else{document.documentElement.style.colorScheme='light';}}catch(e){}})();`,
+          }}
+        />
         {/* Preconnect to external origins to reduce connection latency */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link

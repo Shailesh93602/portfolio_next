@@ -33,11 +33,15 @@ export interface BlogPost {
   lastModified?: string;
 }
 
+// Sourced from lib/profile.ts (single-source-of-truth for identity facts).
+// Anything about name / role / bio / location lives there.
+import { PROFILE } from "./profile";
+
 export const BLOG_AUTHOR = {
-  name: "Shailesh Chaudhari",
+  name: PROFILE.name.full,
   avatar: "/Images/shailesh.webp",
-  bio: "Software Engineer passionate about creating efficient, scalable, and user-friendly web applications. Expert in full-stack development with modern technologies and strong problem-solving skills.",
-  role: "Full-Stack Developer & Problem Solver",
+  bio: PROFILE.bio.short,
+  role: PROFILE.role.positioning,
   social: {
     twitter: "https://twitter.com/shaileshwork",
     github: "https://github.com/Shailesh93602",

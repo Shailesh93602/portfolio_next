@@ -56,7 +56,21 @@ export function GitHubContributionHeatmap({
       transition={{ duration: 0.5 }}
     >
       <Card className="overflow-hidden p-6">
-        <h3 className="mb-4 text-lg font-semibold">Contribution Activity</h3>
+        {/* Total + window labels reconcile the heatmap against the stat
+            cards at the top of /statistics — removes the "is this hardcoded?"
+            ambiguity a recruiter has when scanning the page. */}
+        <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+          <h3 className="text-lg font-semibold">Contribution Activity</h3>
+          <p className="text-sm text-muted-foreground">
+            Last 365 days &middot; Total:{" "}
+            <span className="font-medium text-foreground">
+              {contributionData
+                .reduce((a, d) => a + d.count, 0)
+                .toLocaleString("en-US")}
+            </span>{" "}
+            contributions
+          </p>
+        </div>
         <CardContent className="p-0">
           <div className="overflow-x-auto pb-2">
             <div className="flex flex-col gap-2">
