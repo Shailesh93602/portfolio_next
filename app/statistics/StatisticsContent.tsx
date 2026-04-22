@@ -32,12 +32,14 @@ const StatCard = ({
   icon: Icon,
   color = "bg-primary/10",
   textColor = "text-primary",
+  hint,
 }: {
   label: string;
   value: string;
   icon: React.ElementType;
   color?: string;
   textColor?: string;
+  hint?: string;
 }) => (
   <div className="relative transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]">
     <Card
@@ -47,6 +49,9 @@ const StatCard = ({
         <div>
           <p className="text-sm font-medium text-muted-foreground">{label}</p>
           <h3 className={`mt-1 text-xl font-bold ${textColor}`}>{value}</h3>
+          {hint && (
+            <p className="mt-1 text-[10px] text-muted-foreground/70">{hint}</p>
+          )}
         </div>
         <div className="rounded-full bg-background/80 p-2.5">
           <Icon className="h-5 w-5" />
@@ -290,6 +295,7 @@ export function StatisticsContent({
                   icon={CommitIcon}
                   color="bg-gradient-to-br from-green-500/10 to-green-600/5"
                   textColor="text-green-500"
+                  hint="public repos only"
                 />
                 {/* 'Total Commits' + 'Contribution Activity' heatmap
                     used to show different numbers (4758 vs 7184) because

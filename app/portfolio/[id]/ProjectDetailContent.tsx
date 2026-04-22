@@ -68,7 +68,7 @@ export default function ProjectDetailContent({ project }: Props) {
                 <ArrowLeftIcon className="h-4 w-4" />
                 Featured Project
               </Link>
-              <h1 className="text-5xl font-black uppercase italic leading-none tracking-tighter text-white md:text-8xl">
+              <h1 className="break-words text-[2.5rem] font-black uppercase italic leading-none tracking-tighter text-white sm:text-6xl md:text-8xl">
                 {project.title}
               </h1>
               <p className="mx-auto max-w-2xl text-xl font-medium leading-relaxed text-white/70 md:text-2xl">

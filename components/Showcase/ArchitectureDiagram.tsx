@@ -65,12 +65,12 @@ export default function ArchitectureDiagram({ architecture }: Props) {
   if (!architecture) return null;
 
   return (
-    <div className="relative w-full overflow-hidden rounded-[3rem] border border-white/5 bg-card/30 py-12 pb-20">
+    <div className="relative w-full overflow-hidden rounded-[3rem] border border-white/5 bg-card/30 py-10 pb-12">
       {/* Background Glow */}
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[80%] w-[80%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/5 blur-[120px]" />
 
       <div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center px-6">
-        <h3 className="mb-16 text-center text-sm font-black uppercase tracking-[0.4em] text-primary/80">
+        <h3 className="mb-10 text-center text-sm font-black uppercase tracking-[0.4em] text-primary/80">
           System Architecture
         </h3>
 
@@ -84,7 +84,7 @@ export default function ArchitectureDiagram({ architecture }: Props) {
             />
           </div>
 
-          <div className="relative z-10 flex w-full flex-col items-center space-y-16">
+          <div className="relative z-10 flex w-full flex-col items-center space-y-10">
             {architecture.layers.map((layer, idx) => {
               const Icon = getLayerIcon(layer.name);
               const isEven = idx % 2 === 0;
@@ -117,7 +117,7 @@ export default function ArchitectureDiagram({ architecture }: Props) {
                   <div
                     className={`flex w-full flex-1 ${isEven ? "justify-start" : "justify-end"}`}
                   >
-                    <div className="group w-full max-w-lg rounded-3xl border border-white/10 bg-card/80 p-8 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-primary/40">
+                    <div className="group w-full max-w-2xl rounded-3xl border border-white/10 bg-card/80 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 hover:border-primary/40 md:p-8">
                       <div
                         className={`mb-6 flex items-center gap-3 ${isEven ? "justify-start" : "justify-start md:justify-end"}`}
                       >
@@ -154,9 +154,9 @@ export default function ArchitectureDiagram({ architecture }: Props) {
         <motion.p
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.6 }}
-          className="mx-auto mt-20 max-w-2xl border-t border-border pt-8 text-center text-lg italic leading-relaxed text-muted-foreground"
+          viewport={{ once: true, amount: 0.05 }}
+          transition={{ delay: 0.2 }}
+          className="mx-auto mt-10 max-w-2xl border-t border-border pt-6 text-center text-lg italic leading-relaxed text-muted-foreground"
         >
           &quot;{architecture.description}&quot;
         </motion.p>

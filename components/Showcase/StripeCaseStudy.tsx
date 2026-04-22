@@ -147,10 +147,10 @@ const LABEL = "text-xs font-black uppercase tracking-[0.3em] text-primary/80";
 const CODE_BOX =
   "overflow-x-auto rounded-xl border border-white/5 bg-black/40 p-4 font-mono text-xs leading-relaxed text-muted-foreground";
 const REVEAL = {
-  initial: { opacity: 0, y: 20 },
+  initial: { opacity: 0, y: 12 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-80px" },
-  transition: { duration: 0.6 },
+  viewport: { once: true, amount: 0.05 },
+  transition: { duration: 0.4 },
 };
 
 export default function StripeCaseStudy() {
@@ -184,6 +184,10 @@ export default function StripeCaseStudy() {
             </span>
           </div>
 
+          <p className="text-xs text-muted-foreground md:hidden">
+            Tip: swipe sideways to pan the diagram.
+          </p>
+
           {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- axe's scrollable-region-focusable requires tabIndex=0 for keyboard scrolling */}
           <section
             className="w-full overflow-x-auto"
@@ -194,7 +198,7 @@ export default function StripeCaseStudy() {
               viewBox="0 0 960 560"
               role="img"
               aria-label="Webhook sequence diagram comparing first delivery and duplicate retry paths"
-              className="mx-auto block h-auto w-full min-w-[680px] max-w-[960px]"
+              className="mx-auto block h-auto w-full min-w-[640px] max-w-[960px]"
             >
               <defs>
                 <marker

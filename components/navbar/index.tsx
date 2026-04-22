@@ -46,7 +46,7 @@ export default function Navbar() {
   return (
     <nav
       aria-label="Main navigation"
-      className="fixed top-0 z-[100] w-full border-b border-border/40 bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/60"
+      className="fixed top-0 z-[100] w-full border-b border-border/40 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/85"
     >
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
