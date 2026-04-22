@@ -43,6 +43,12 @@ TODOS.md
 test-results/
 .vercel
 
+# Playwright-generated artifacts — regenerate locally via screenshots.spec.ts
+public/Images/screenshots/
+
+# Local quality-audit artifact
+quality.md
+
 # Working-state docs — live at ~/Desktop/Coding/docs/portfolio-next/
 /MANUAL.md
 /TODO.md

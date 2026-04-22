@@ -111,7 +111,7 @@ scripts/
 
 public/
   Images/                     # Static images (shailesh.webp, project screenshots, per-project /Images/<project>/)
-  Images/screenshots/         # Playwright screenshots (42 files, gitignored)
+  Images/screenshots/         # Playwright screenshots (gitignored; regenerate via e2e/screenshots.spec.ts)
   Shailesh_Chaudhari_Resume.pdf
   llms.txt, llms-full.txt     # AI crawler context files
   feed.xml/route.ts           # RSS feed
