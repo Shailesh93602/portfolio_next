@@ -10,7 +10,15 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  plugins: [blogTypography, require("tailwindcss-animate")],
+  // @tailwindcss/typography activates the `prose` / `prose-invert`
+  // utility classes used by blog post bodies and the hire page. Without
+  // it those classes silently no-op, so h1/h2/p all render at body-copy
+  // size and the page looks like a wall of text.
+  plugins: [
+    require("@tailwindcss/typography"),
+    blogTypography,
+    require("tailwindcss-animate"),
+  ],
   prefix: "",
   theme: {
     container: {

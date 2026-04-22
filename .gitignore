@@ -43,6 +43,9 @@ TODOS.md
 test-results/
 .vercel
 
+# Claude Code internal state — not portable between machines
+.claude/
+
 # Playwright-generated artifacts — regenerate locally via screenshots.spec.ts
 public/Images/screenshots/
 

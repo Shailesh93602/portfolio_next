@@ -53,10 +53,16 @@ const pages = [
   { name: "hire", path: "/hire" },
 ];
 
+// Cover every band from iPhone-SE class (320) up to a 24" desktop
+// (1920). Adding 320 catches tight-column overflow + cramped touch
+// targets that 390 hides, and 1920 catches hero-copy strand-limit
+// + gutter issues that 1440 hides.
 const viewports = [
+  { label: "desktop-xl", width: 1920, height: 1080 },
   { label: "desktop", width: 1440, height: 900 },
   { label: "tablet", width: 768, height: 1024 },
   { label: "mobile", width: 390, height: 844 },
+  { label: "mobile-sm", width: 320, height: 568 },
 ];
 
 const themes: Array<"light" | "dark"> = ["light", "dark"];

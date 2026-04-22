@@ -200,7 +200,7 @@ export const ContactContent: React.FC = () => {
         whileInView="visible"
         viewport={{ once: true }}
         variants={staggerContainer(0.1)}
-        className="grid gap-16 lg:grid-cols-2"
+        className="grid gap-10 md:grid-cols-2 md:gap-12 lg:gap-16"
       >
         {/* Contact Information */}
         <motion.div variants={fadeIn(0.2)}>

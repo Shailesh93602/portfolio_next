@@ -22,10 +22,12 @@ export default function HirePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(hireMeta) }}
       />
-      <div className="container mx-auto px-4 py-12">
-        <div className="prose prose-invert mx-auto max-w-3xl">
-          <h1>Hire {BLOG_AUTHOR.name}</h1>
-          <p>
+      <div className="container mx-auto px-4 py-12 md:py-16">
+        <div className="mx-auto max-w-3xl">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+            Hire {BLOG_AUTHOR.name}
+          </h1>
+          <p className="mt-6 text-base leading-relaxed text-muted-foreground sm:text-lg">
             Software Engineer at ContextQA, working on the backend of our core
             QA-automation product (test execution engine, VNC streaming,
             Playwright / WebdriverIO / LambdaTest orchestration). First 2-3
@@ -37,66 +39,108 @@ export default function HirePage() {
             TypeScript everywhere, correctness first.
           </p>
 
-          <h2>What I work on</h2>
-          <ul>
-            <li>
-              Full-stack web apps — Next.js + Node.js / NestJS, Prisma,
-              PostgreSQL
+          <h2 className="mt-10 text-2xl font-bold tracking-tight sm:text-3xl">
+            What I work on
+          </h2>
+          <ul className="mt-4 space-y-3 text-base leading-relaxed text-muted-foreground sm:text-lg">
+            <li className="flex gap-3">
+              <span aria-hidden className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              <span>
+                <strong className="font-semibold text-foreground">
+                  Full-stack web apps
+                </strong>{" "}
+                — Next.js + Node.js / NestJS, Prisma, PostgreSQL
+              </span>
             </li>
-            <li>
-              Chrome extensions — content scripts, service workers, DevTools
-              panels, backend APIs
+            <li className="flex gap-3">
+              <span aria-hidden className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              <span>
+                <strong className="font-semibold text-foreground">
+                  Chrome extensions
+                </strong>{" "}
+                — content scripts, service workers, DevTools panels, backend
+                APIs
+              </span>
             </li>
-            <li>
-              Real-time systems — Socket.io with Redis adapter for horizontal
-              scaling, distributed locks
+            <li className="flex gap-3">
+              <span aria-hidden className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              <span>
+                <strong className="font-semibold text-foreground">
+                  Real-time systems
+                </strong>{" "}
+                — Socket.io with Redis adapter for horizontal scaling,
+                distributed locks
+              </span>
             </li>
-            <li>
-              AI integrations — Gemini AI, pgvector semantic search, OCR
-              pipelines, webhook deduplication
+            <li className="flex gap-3">
+              <span aria-hidden className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              <span>
+                <strong className="font-semibold text-foreground">
+                  AI integrations
+                </strong>{" "}
+                — Gemini AI, pgvector semantic search, OCR pipelines, webhook
+                deduplication
+              </span>
             </li>
-            <li>
-              Performance — Core Web Vitals, bundle analysis, ISR vs edge
-              caching, AVIF optimization
+            <li className="flex gap-3">
+              <span aria-hidden className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              <span>
+                <strong className="font-semibold text-foreground">
+                  Performance
+                </strong>{" "}
+                — Core Web Vitals, bundle analysis, ISR vs edge caching, AVIF
+                optimization
+              </span>
             </li>
-            <li>
-              Database design — PostgreSQL (RBAC, RLS), MongoDB, Prisma,
-              Supabase
+            <li className="flex gap-3">
+              <span aria-hidden className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              <span>
+                <strong className="font-semibold text-foreground">
+                  Database design
+                </strong>{" "}
+                — PostgreSQL (RBAC, RLS), MongoDB, Prisma, Supabase
+              </span>
             </li>
           </ul>
 
-          <h2>How I work</h2>
-          <p>
+          <h2 className="mt-10 text-2xl font-bold tracking-tight sm:text-3xl">
+            How I work
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
             I prefer small, shippable iterations over big-bang deliveries. I
-            share working code early, flag blockers quickly, and write tests for
-            anything that needs to stay working. I&apos;m remote-first and
+            share working code early, flag blockers quickly, and write tests
+            for anything that needs to stay working. I&apos;m remote-first and
             async-friendly.
           </p>
 
-          <h2>Rates &amp; availability</h2>
-          <p>
+          <h2 className="mt-10 text-2xl font-bold tracking-tight sm:text-3xl">
+            Rates &amp; availability
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
             Open to project-based fixed-price work and hourly retainers.
             Part-time availability alongside my full-time role. Contact me and
             we can figure out what makes sense for your project.
           </p>
 
-          <div className="not-prose mt-8 flex gap-4">
+          <div className="mt-10 flex flex-wrap gap-4">
             <Link href="/contact">
-              <Button>Contact Me</Button>
+              <Button size="lg">Contact Me</Button>
             </Link>
             <a
               href="/Shailesh_Chaudhari_Resume.pdf"
               target="_blank"
               rel="noreferrer"
             >
-              <Button variant="outline">View Resume</Button>
+              <Button variant="outline" size="lg">
+                View Resume
+              </Button>
             </a>
           </div>
 
           {/* Explicit end-of-page CTA — prose-heavy pages need a second,
               visually louder call-to-action so scrollers never hit a dead end.
               Contact form + direct email + LinkedIn all one click away. */}
-          <div className="not-prose mt-16 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-purple-600/5 p-8 text-center">
+          <div className="mt-16 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-purple-600/5 p-8 text-center">
             <h2 className="text-2xl font-bold tracking-tight">
               Have a project in mind?
             </h2>

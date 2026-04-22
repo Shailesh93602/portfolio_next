@@ -109,20 +109,25 @@ export function PortfolioContent() {
                 </Button>
               )}
             </div>
-            <div className="mx-auto flex max-w-4xl flex-wrap justify-center gap-3">
-              {allTags.map((tag) => (
-                <button
-                  key={tag}
-                  onClick={() => toggleTag(tag)}
-                  className={`rounded-xl border px-5 py-2.5 text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
-                    selectedTags.includes(tag)
-                      ? "z-10 scale-105 border-primary bg-primary text-white shadow-xl shadow-primary/20"
-                      : "border-border bg-card/50 text-muted-foreground backdrop-blur-sm hover:border-primary/50"
-                  }`}
-                >
-                  {tag}
-                </button>
-              ))}
+            {/* Mobile: horizontal snap-scroll so the chip row takes one row,
+                 not 6+ wrapped rows pushing every card below the fold.
+                 sm and up: wrap as before. */}
+            <div className="mx-auto max-w-4xl">
+              <div className="-mx-4 flex gap-2 overflow-x-auto scroll-smooth px-4 pb-2 sm:mx-0 sm:flex-wrap sm:justify-center sm:gap-3 sm:overflow-visible sm:px-0 sm:pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {allTags.map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => toggleTag(tag)}
+                    className={`shrink-0 whitespace-nowrap rounded-xl border px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-300 sm:px-5 sm:py-2.5 ${
+                      selectedTags.includes(tag)
+                        ? "z-10 scale-105 border-primary bg-primary text-white shadow-xl shadow-primary/20"
+                        : "border-border bg-card/50 text-muted-foreground backdrop-blur-sm hover:border-primary/50"
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </motion.div>
