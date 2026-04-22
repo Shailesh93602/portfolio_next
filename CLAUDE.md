@@ -169,7 +169,7 @@ public/
 - This portfolio is deployed on Vercel. The 3 Supabase-backed projects (KhataGO, DevTrack, EduScale/Frontend) each own `/api/cron/keepalive` + `vercel.json` cron at `0 9 * * *`. Each does a real DB query (Prisma `SELECT NOW()` / Supabase `auth.getSession()`).
 - EduScale Backend has its own Vercel cron at `/api/v1/health` which pings Redis + Postgres + Bull daily at 09:00 UTC (keeps Upstash Redis unpaused).
 - Render-hosted `redis-battle-demo` is kept alive via the [url-health-check.yml](.github/workflows/url-health-check.yml) GitHub Action (daily GET wakes Render free tier which reconnects to Upstash).
-- Secret convention: all cron endpoints gate on `Authorization: Bearer $CRON_SECRET`. Add `CRON_SECRET` in each project's Vercel env (Production) before redeploying.
+- Secret convention: cron endpoints in the sibling repos (KhataGO, DevTrack, EduScale) gate on `Authorization: Bearer $CRON_SECRET`. Add `CRON_SECRET` in each of those projects' Vercel env (Production) before redeploying. **This portfolio repo has no cron routes of its own** — the mention is here so future-me doesn't add an unprotected one by accident.
 
 ## Known gotchas
 

@@ -46,8 +46,9 @@ test-results/
 # Playwright-generated artifacts — regenerate locally via screenshots.spec.ts
 public/Images/screenshots/
 
-# Local quality-audit artifact
+# Local quality-audit artifacts
 quality.md
+quality-*.md
 
 # Working-state docs — live at ~/Desktop/Coding/docs/portfolio-next/
 /MANUAL.md
