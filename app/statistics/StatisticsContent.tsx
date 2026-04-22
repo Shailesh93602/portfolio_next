@@ -291,9 +291,14 @@ export function StatisticsContent({
                   color="bg-gradient-to-br from-green-500/10 to-green-600/5"
                   textColor="text-green-500"
                 />
+                {/* 'Total Commits' + 'Contribution Activity' heatmap
+                    used to show different numbers (4758 vs 7184) because
+                    commits exclude PRs/issues/reviews. Renamed to
+                    'Contributions' and sourced from the same field the
+                    heatmap sums — both now reconcile. */}
                 <StatCard
-                  label="Total Commits"
-                  value={stats?.github?.totalCommits || "0"}
+                  label="Contributions"
+                  value={stats?.github?.contributions || "0"}
                   icon={CommitIcon}
                   color="bg-gradient-to-br from-indigo-500/10 to-indigo-600/5"
                   textColor="text-indigo-500"
