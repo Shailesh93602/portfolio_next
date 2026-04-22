@@ -143,7 +143,7 @@ const GLOW_BOTTOM =
   "pointer-events-none absolute -left-24 -bottom-24 h-72 w-72 rounded-full bg-primary/10 blur-[120px]";
 const GLOW_DESTRUCT =
   "pointer-events-none absolute -right-24 -bottom-24 h-72 w-72 rounded-full bg-destructive/10 blur-[120px]";
-const LABEL = "text-xs font-black uppercase tracking-[0.3em] text-primary/80";
+const LABEL = "text-xs font-black uppercase tracking-[0.3em] text-primary";
 const CODE_BOX =
   "overflow-x-auto rounded-xl border border-white/5 bg-black/40 p-4 font-mono text-xs leading-relaxed text-muted-foreground";
 const REVEAL = {
@@ -157,7 +157,7 @@ export default function StripeCaseStudy() {
   return (
     <div className="space-y-12">
       <div className="space-y-3 text-center">
-        <p className="text-xs font-black uppercase tracking-[0.4em] text-primary/80">
+        <p className="text-xs font-black uppercase tracking-[0.4em] text-primary">
           Internal Design Doc
         </p>
         <h3 className="text-3xl font-bold tracking-tight md:text-4xl">

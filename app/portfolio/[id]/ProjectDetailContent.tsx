@@ -137,7 +137,7 @@ export default function ProjectDetailContent({ project }: Props) {
         <div className="container space-y-32 py-24">
           {/* Key Metrics Section */}
           <section>
-            <h2 className="mb-12 text-center text-sm font-black uppercase tracking-[0.4em] text-primary opacity-50">
+            <h2 className="mb-12 text-center text-sm font-black uppercase tracking-[0.4em] text-primary">
               Performance & Impact
             </h2>
             <KeyMetrics metrics={project.keyMetrics} />

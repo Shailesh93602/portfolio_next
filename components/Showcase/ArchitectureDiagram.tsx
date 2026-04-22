@@ -70,7 +70,7 @@ export default function ArchitectureDiagram({ architecture }: Props) {
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[80%] w-[80%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/5 blur-[120px]" />
 
       <div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center px-6">
-        <h3 className="mb-10 text-center text-sm font-black uppercase tracking-[0.4em] text-primary/80">
+        <h3 className="mb-10 text-center text-sm font-black uppercase tracking-[0.4em] text-primary">
           System Architecture
         </h3>
 
