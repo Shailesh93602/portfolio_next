@@ -198,7 +198,17 @@ export function StatsCharts({
                   rootTabIndex={-1}
                 >
                   {problemStatsData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+                    // Each sector gets its own accessible name so axe's
+                    // svg-img-alt rule doesn't flag the role=img path
+                    // that recharts emits per sector. The parent div
+                    // already has the aggregate aria-label for screen
+                    // readers; these per-sector labels cover the nodes
+                    // individually.
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={entry.color}
+                      aria-label={`${entry.name}: ${entry.value} problems`}
+                    />
                   ))}
                 </Pie>
                 <Tooltip

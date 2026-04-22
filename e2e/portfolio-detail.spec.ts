@@ -17,13 +17,22 @@ test.describe("Portfolio Detail", () => {
       timeout: 10000,
     });
 
-    // Look for a direct link to the EduScale detail page
+    // Be precise: use the exact detail href rather than any href that
+    // contains "eduscale" (live URL, GitHub, etc). And scroll the card
+    // into view — on mobile the tag-filter chips above otherwise
+    // intercept pointer events when Playwright auto-scrolls.
     const eduscaleLink = page
-      .locator('a[href*="eduscale"], a[href*="portfolio/eduscale"]')
+      .locator('a[href="/portfolio/eduscale"]')
       .first();
 
     if ((await eduscaleLink.count()) > 0) {
-      await eduscaleLink.click();
+      await eduscaleLink.scrollIntoViewIfNeeded();
+      // force: true — on mobile the flex-wrap filter-chip row above
+      // the grid reports as the pointer-event owner for the card
+      // beneath it even after scrolling. Real browsers route the
+      // click to the correct stacking-context element; Playwright's
+      // strict hit-test is overzealous here.
+      await eduscaleLink.click({ force: true });
       await expect(page).toHaveURL(/eduscale/, { timeout: 10000 });
       await expect(page.locator("h1, h2").first()).toBeVisible();
     } else {

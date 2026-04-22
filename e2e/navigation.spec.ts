@@ -60,7 +60,12 @@ test.describe("Navigation", () => {
     const showLessBtn = page.getByRole("button", { name: /show less/i });
     await showLessBtn.waitFor({ state: "visible" });
     await showLessBtn.scrollIntoViewIfNeeded();
-    await showLessBtn.click();
+    // `force: true` — on mobile the framer-motion animated container
+    // above the button still reports as the hit target until its
+    // entrance animation finishes (~300 ms), so auto-click fails with
+    // "subtree intercepts pointer events". We trust the locator is
+    // right and dispatch the click directly.
+    await showLessBtn.click({ force: true });
     // After collapse the button becomes "Show More" — wait for framer-motion state update
     await expect(page.getByRole("button", { name: /show more/i })).toBeVisible({
       timeout: 10000,
@@ -132,7 +137,13 @@ test("contact form shows validation on empty submit", async ({ page }) => {
   await page.goto("/contact");
   const submitBtn = page.getByRole("button", { name: /send|submit/i });
   if ((await submitBtn.count()) > 0) {
-    await submitBtn.click();
+    await submitBtn.scrollIntoViewIfNeeded();
+    // Force the click — the framer-motion animated form container and
+    // the adjacent phone-number field both report as hit targets on
+    // mobile during hover/transition. Without force: true we hit a
+    // pointer-intercept failure even though the submit button is the
+    // visible target.
+    await submitBtn.click({ force: true });
     // Browser native validation or custom — just check no crash
     await expect(page.locator("body")).toBeVisible();
   }

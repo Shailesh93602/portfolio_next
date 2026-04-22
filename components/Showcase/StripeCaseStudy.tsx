@@ -184,7 +184,12 @@ export default function StripeCaseStudy() {
             </span>
           </div>
 
-          <div className="w-full overflow-x-auto">
+          {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- axe's scrollable-region-focusable requires tabIndex=0 for keyboard scrolling */}
+          <section
+            className="w-full overflow-x-auto"
+            tabIndex={0}
+            aria-label="Webhook sequence diagram (scrollable)"
+          >
             <svg
               viewBox="0 0 960 560"
               role="img"
@@ -313,7 +318,7 @@ export default function StripeCaseStudy() {
                 retry window of 3 days with room for clock skew.
               </text>
             </svg>
-          </div>
+          </section>
         </div>
       </motion.div>
 
@@ -343,7 +348,7 @@ export default function StripeCaseStudy() {
                   t=0.000s
                 </span>
               </div>
-              <pre className={CODE_BOX}>
+              <pre className={CODE_BOX} tabIndex={0}>
                 {`redis> KEYS stripe:event:*
 (empty array)
 
@@ -364,7 +369,7 @@ redis> GET stripe:event:evt_abc123
                   t=0.041s
                 </span>
               </div>
-              <pre className={CODE_BOX}>
+              <pre className={CODE_BOX} tabIndex={0}>
                 {`redis> SETNX stripe:event:evt_abc123 1
 (integer) 1
 
@@ -392,7 +397,7 @@ redis> TTL stripe:event:evt_abc123
                 same evt_abc123, new delivery attempt
               </span>
             </div>
-            <pre className={CODE_BOX}>
+            <pre className={CODE_BOX} tabIndex={0}>
               {`redis> SETNX stripe:event:evt_abc123 1
 (integer) 0           // already exists — we bail
 
@@ -438,7 +443,7 @@ redis> TTL stripe:event:evt_abc123
                   anti-pattern
                 </span>
               </div>
-              <pre className={CODE_BOX}>
+              <pre className={CODE_BOX} tabIndex={0}>
                 {`for (let i = 0; i < 4; i++) {
   try {
     return await stripe.paymentIntents
@@ -474,7 +479,7 @@ throw new Error("out of retries");`}
                   production
                 </span>
               </div>
-              <pre className={CODE_BOX}>
+              <pre className={CODE_BOX} tabIndex={0}>
                 {`async function withRetry(fn, { tries = 4 } = {}) {
   for (let i = 0; i < tries; i++) {
     try {
