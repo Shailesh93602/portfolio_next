@@ -481,17 +481,18 @@ export const projects: Project[] = [
     id: "codesensei-search",
     title: "CodeSenseiSearch",
     description:
-      "Semantic code-search monorepo — work in progress. Landing page + search UI with mock data shipped; embedding + pgvector retrieval pipeline under active development.",
+      "Semantic code-search monorepo — Next.js + NestJS deployed on Vercel, Postgres with pgvector on Supabase, BullMQ workers backed by Upstash Redis, embeddings via Gemini.",
     image: "/Images/portfolio1.png",
     tags: [
       "NestJS",
       "TypeScript",
       "PostgreSQL",
       "pgvector",
+      "Gemini Embeddings",
       "Monorepo",
-      "Work in Progress",
     ],
     github: "https://github.com/Shailesh93602/CodeSenseiSearch",
+    live: "https://code-sensei-search-web.vercel.app",
     detailedDescription:
       "A monorepo (pnpm workspaces) exploring AI-powered semantic code search. Shipped so far: Next.js landing page with feature showcase, search UI with real-time suggestions and filtering against a ~50-example mock dataset, NestJS backend scaffolding, Prisma schema with a pgvector column, and a Docker Compose for Postgres + Redis + pgAdmin. The ingestion → embedding → retrieval pipeline is prototyped but not yet wired end-to-end; Phase 2 (real content ingestion from GitHub / StackOverflow) is the active work.",
     architecture: {
