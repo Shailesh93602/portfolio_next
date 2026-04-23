@@ -35,7 +35,6 @@ const TIMEOUT_MS = 15_000;
  */
 const KNOWN_PRIVATE = new Set([
   "https://github.com/Shailesh93602/khatago",
-  "https://github.com/Shailesh93602/CodeSenseiSearch",
 ]);
 
 /**
