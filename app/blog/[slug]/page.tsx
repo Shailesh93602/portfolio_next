@@ -84,6 +84,15 @@ export default async function Page({ params }: Props) {
     notFound();
   }
 
+  // Strip HTML for word-count — Google uses wordCount + timeRequired as
+  // ranking signals for in-depth articles, and AI summarizers use them to
+  // decide how much of the post to quote.
+  const plain = post.content.replaceAll(/<[^>]+>/g, " ").replaceAll(/\s+/g, " ").trim();
+  const wordCount = plain ? plain.split(" ").length : 0;
+  // ISO 8601 duration — readTime in frontmatter is "16 min read"; extract digits.
+  const readMin = Number.parseInt(post.readTime?.match(/\d+/)?.[0] || "5", 10);
+  const articleSection = post.tags?.[0] || "Software Engineering";
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -98,6 +107,11 @@ export default async function Page({ params }: Props) {
     keywords: [...post.tags, "Shailesh Chaudhari", "Full Stack Development"],
     publisher: { "@id": `${SITE_URL}/#person` },
     inLanguage: "en-US",
+    wordCount,
+    timeRequired: `PT${readMin}M`,
+    articleSection,
+    url: `${SITE_URL}/blog/${slug}`,
+    isAccessibleForFree: true,
   };
 
   // BreadcrumbList — Google uses this for the search result breadcrumb trail.
