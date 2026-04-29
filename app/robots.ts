@@ -1,6 +1,5 @@
 import { MetadataRoute } from "next";
-
-const BASE_URL = "https://shaileshchaudhari.vercel.app";
+import { SITE_URL } from "@/lib/blog-constants";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -8,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: `${BASE_URL}/sitemap.xml`,
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

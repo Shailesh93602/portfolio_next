@@ -21,7 +21,7 @@ const socialLinks = [
   },
   {
     name: "Twitter",
-    href: "https://twitter.com/shaileshwork",
+    href: "https://twitter.com/ShaileshWork",
   },
   {
     name: "Email",

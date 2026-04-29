@@ -1,7 +1,7 @@
 export const SOCIAL_LINKS = {
   GITHUB: "https://github.com/shailesh93602",
   LINKEDIN: "https://www.linkedin.com/in/shaileshbhaichaudhari/",
-  TWITTER: "https://twitter.com/shaileshwork",
+  TWITTER: "https://twitter.com/ShaileshWork",
   GEEKSFORGEEKS: "https://www.geeksforgeeks.org/user/thenameisshaileshbhai/",
   HACKERRANK: "https://www.hackerrank.com/profile/shailesh93602",
   CODECHEF: "https://www.codechef.com/users/shaileshbhai03",

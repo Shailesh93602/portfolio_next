@@ -57,8 +57,4 @@ export const metadata: Metadata = {
     "freelance developer India",
     "part-time software engineer",
   ],
-  icons: {
-    icon: "/Images/shailesh.webp",
-    apple: "/Images/shailesh.webp",
-  },
 };

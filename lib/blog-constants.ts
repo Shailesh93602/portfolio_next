@@ -6,7 +6,7 @@ export const BLOG_AUTHOR = {
   bio: PROFILE.bio.short,
   avatar: "/Images/shailesh.webp",
   social: {
-    twitter: "https://twitter.com/shaileshwork",
+    twitter: "https://twitter.com/ShaileshWork",
     github: "https://github.com/Shailesh93602",
     linkedin: "https://linkedin.com/in/shaileshbhaichaudhari",
   },
@@ -44,6 +44,6 @@ export const META_DEFAULTS = {
     "Articles and tutorials about web development, software engineering, and tech career by Shailesh Chaudhari",
   locale: "en-US",
   type: "website",
-  twitterHandle: "@shaileshwork",
+  twitterHandle: "@ShaileshWork",
   twitterCardType: "summary_large_image",
 };

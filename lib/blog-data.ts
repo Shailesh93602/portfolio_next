@@ -43,7 +43,7 @@ export const BLOG_AUTHOR = {
   bio: PROFILE.bio.short,
   role: PROFILE.role.positioning,
   social: {
-    twitter: "https://twitter.com/shaileshwork",
+    twitter: "https://twitter.com/ShaileshWork",
     github: "https://github.com/Shailesh93602",
     linkedin: "https://linkedin.com/in/shaileshbhaichaudhari",
   },
