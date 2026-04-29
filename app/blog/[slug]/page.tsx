@@ -87,20 +87,38 @@ export default async function Page({ params }: Props) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
+    "@id": `${SITE_URL}/blog/${slug}#article`,
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}/blog/${slug}` },
     headline: post.title,
     description: post.description,
-    author: {
-      "@type": "Person",
-      name: "Shailesh Chaudhari",
-      url: SITE_URL,
-    },
+    author: { "@id": `${SITE_URL}/#person` },
     datePublished: post.date,
+    dateModified: post.lastModified || post.date,
     image: `${SITE_URL}${post.image}`,
     keywords: [...post.tags, "Shailesh Chaudhari", "Full Stack Development"],
-    publisher: {
-      "@type": "Person",
-      name: "Shailesh Chaudhari",
-    },
+    publisher: { "@id": `${SITE_URL}/#person` },
+    inLanguage: "en-US",
+  };
+
+  // BreadcrumbList — Google uses this for the search result breadcrumb trail.
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Blog",
+        item: `${SITE_URL}/blogs`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: post.title,
+        item: `${SITE_URL}/blog/${slug}`,
+      },
+    ],
   };
 
   return (
@@ -109,6 +127,10 @@ export default async function Page({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
 
       <div className="min-h-screen">
