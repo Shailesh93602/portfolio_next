@@ -106,6 +106,12 @@ export default function RootLayout({
           title="Shailesh Chaudhari — Blog"
           href="/feed.xml"
         />
+        {/* IndieWeb / rel=me — proves the social profiles belong to the same
+            person, used by Mastodon for verification ticks and by IndieAuth. */}
+        <link rel="me" href="https://github.com/Shailesh93602" />
+        <link rel="me" href="https://www.linkedin.com/in/shaileshbhaichaudhari" />
+        <link rel="me" href="https://twitter.com/ShaileshWork" />
+        <link rel="me" href="mailto:shailesh93602@gmail.com" />
         {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
           <>
             <Script
