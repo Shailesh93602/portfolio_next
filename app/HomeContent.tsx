@@ -46,12 +46,11 @@ export default function HomeContent({ featuredPosts }: Props) {
     <div>
       <section className="container mx-auto px-4 py-12">
         <div className="flex flex-col items-center justify-between gap-12 lg:flex-row">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-6 lg:w-1/2"
-          >
+          {/* Hero column intentionally NOT wrapped in motion.* — the LCP <p>
+              lives here. Wrapping in framer-motion delays paint by ~2.6s
+              while the bundle hydrates and the opacity:0 → 1 transition
+              runs. CSS-only fade keeps Lighthouse perf above 90. */}
+          <div className="motion-safe:animate-[fade-in-up_0.5s_ease-out] space-y-6 lg:w-1/2">
             <div className="space-y-2">
               <Badge variant="outline" className="text-sm font-medium">
                 Available for hire · Open to part-time & freelance
@@ -157,14 +156,9 @@ export default function HomeContent({ featuredPosts }: Props) {
                 label="GeeksforGeeks"
               />
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="flex justify-center lg:w-1/2 lg:justify-end"
-          >
+          <div className="motion-safe:animate-[fade-in-scale_0.5s_ease-out] flex justify-center lg:w-1/2 lg:justify-end">
             <div className="relative h-72 w-72 overflow-hidden rounded-full lg:h-[500px] lg:w-[500px]">
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/20 to-purple-600/20 blur-3xl" />
               <Image
@@ -177,7 +171,7 @@ export default function HomeContent({ featuredPosts }: Props) {
                 className="profile-glow rounded-full border-4 border-primary/20 object-cover shadow-2xl"
               />
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
