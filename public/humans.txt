@@ -1,0 +1,21 @@
+/* TEAM */
+Software Engineer: Shailesh Chaudhari
+Site: https://shaileshchaudhari.vercel.app
+Email: shailesh93602@gmail.com
+Twitter: @ShaileshWork
+GitHub: @Shailesh93602
+LinkedIn: /in/shaileshbhaichaudhari
+Location: Ahmedabad, Gujarat, India
+
+/* THANKS */
+Tooling: Next.js, Vercel, Cloudflare, Supabase, Upstash, Resend
+Open source: shadcn/ui, Tailwind CSS, Framer Motion, TanStack Query
+
+/* SITE */
+Last update: 2026-04-30
+Standards: HTML5, CSS3, ES2024, WCAG 2.1 AA
+Components: Next.js 16 (App Router) + Turbopack, TypeScript (strict)
+Doctype: HTML5
+IDE: VS Code
+
+# This file is a humans.txt — see https://humanstxt.org for context.
