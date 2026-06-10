@@ -42,7 +42,7 @@ export const homeFaq: FaqItem[] = [
 export const portfolioFaq = (count: number): FaqItem[] => [
   {
     question: "What projects has Shailesh Chaudhari built?",
-    answer: `Shailesh has shipped ${count} side projects covering real-time distributed systems (EduScale, redis-battle-demo), AI pipelines (KhataGO with Gemini AI for WhatsApp accounting, CodeSenseiSearch with pgvector semantic search), payment infrastructure patterns (stripe-payments-demo, razorpay-patterns-demo), developer productivity (DevTrack with Supabase Realtime), and developer identity (CareerGlyph). At ContextQA he also shipped two production Chrome extensions — Vibe Testing and AxeTos — in his first months on the team.`,
+    answer: `Shailesh has shipped ${count} side projects covering real-time distributed systems (EduScale, redis-battle-demo), AI pipelines (KhataGO with Gemini AI for WhatsApp accounting, CodeSenseiSearch with pgvector semantic search), payment infrastructure patterns (stripe-payments-demo, razorpay-patterns-demo), developer productivity (DevTrack with Supabase Realtime). At ContextQA he also shipped two production Chrome extensions — Vibe Testing and AxeTos — in his first months on the team.`,
   },
   {
     question: "Which technologies does Shailesh Chaudhari work with?",
@@ -57,7 +57,7 @@ export const portfolioFaq = (count: number): FaqItem[] => [
   {
     question: "Where can I see Shailesh Chaudhari's code?",
     answer:
-      "Most projects are open-source on GitHub at https://github.com/Shailesh93602. Notable public repos: stripe-payments-demo, razorpay-patterns-demo, redis-battle-demo, CodeSenseiSearch, careerglyph, devscale (EduScale). KhataGO and ContextQA's Vibe Testing / AxeTos are proprietary or private.",
+      "Most projects are open-source on GitHub at https://github.com/Shailesh93602. Notable public repos: stripe-payments-demo, razorpay-patterns-demo, redis-battle-demo, CodeSenseiSearch, devscale (EduScale). KhataGO and ContextQA's Vibe Testing / AxeTos are proprietary or private.",
   },
   {
     question: "What is Shailesh Chaudhari's experience level?",
