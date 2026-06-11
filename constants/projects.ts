@@ -215,19 +215,22 @@ export const projects: Project[] = [
     },
     keyMetrics: [
       {
-        label: "Sync Latency",
-        value: "< 200ms",
-        description: "Real-time state synchronization via WebSocket",
+        label: "Real-time",
+        value: "Redis adapter",
+        description:
+          "Cross-instance battle broadcast via @socket.io/redis-adapter (works across Node instances)",
       },
       {
-        label: "Execution Engine",
-        value: "Sub-second",
-        description: "Remote code execution & test validation",
+        label: "Concurrency",
+        value: "Redlock",
+        description:
+          "Distributed lock prevents duplicate battle starts across horizontally-scaled instances",
       },
       {
-        label: "Data Integrity",
-        value: "99.9%",
-        description: "Atomic transactions & state persistence",
+        label: "Resilience",
+        value: "Circuit breaker",
+        description:
+          "opossum around code execution + Redis-backed rate limiting with in-memory fallback",
       },
     ],
     userFlow: [
@@ -297,7 +300,7 @@ export const projects: Project[] = [
       {
         title: "Real-time Battle Zone",
         description:
-          "A competitive arena powered by WebSockets, allowing sub-second real-time multiplayer coding showdowns with live leaderboards.",
+          "A competitive arena powered by WebSockets, allowing real-time multiplayer coding showdowns with live leaderboards.",
         imageDark: "/Images/eduscale/battle_dark.png",
         imageLight: "/Images/eduscale/battle_light.png",
       },
@@ -374,7 +377,7 @@ export const projects: Project[] = [
         },
       ],
       description:
-        "A modern full-stack architecture leveraging server-side business logic and parallel database execution for sub-second dashboard updates.",
+        "A modern full-stack architecture leveraging server-side business logic and parallel database execution for fast dashboard updates.",
     },
     keyMetrics: [
       {
