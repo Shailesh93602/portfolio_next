@@ -61,6 +61,7 @@ export const projects: Project[] = [
       "Vitest",
     ],
     github: "https://github.com/Shailesh93602/holdfast",
+    live: "https://holdfast-50gt.onrender.com",
     detailedDescription:
       "Holdfast solves the hardest correctness problem in quick-commerce (Zepto / Blinkit / Instamart): when hundreds of customers race for the last few units of a SKU, exactly the available quantity must succeed — never one more. It implements three concurrency-control strategies (pessimistic SELECT … FOR UPDATE, optimistic version compare-and-swap, and an atomic conditional UPDATE) behind one interface and benchmarks them against real Postgres. Order placement is idempotent via a UNIQUE idempotency key, so a retried request never double-reserves. Multi-item baskets reserve atomically with deadlock-safe global lock ordering. A reservation lifecycle (HOLD → CONFIRMED / RELEASED) with a background expiry sweeper returns abandoned holds to stock. Schema and migrations are model-driven via Drizzle, while the reservation hot path deliberately uses raw SQL so the locking stays explicit. Prometheus metrics expose throughput, latency, and optimistic retry counts.",
     architecture: {
@@ -118,9 +119,9 @@ export const projects: Project[] = [
       },
       {
         label: "Tests",
-        value: "11 passing",
+        value: "12 passing",
         description:
-          "Concurrency, idempotency, deadlock-safe baskets, lifecycle — vs real Postgres",
+          "Concurrency, idempotency, deadlock-safe baskets, lifecycle, chaos — vs real Postgres",
       },
     ],
     features: [
@@ -129,6 +130,7 @@ export const projects: Project[] = [
       "Idempotent placement: the same key fired 100× concurrently reserves exactly once",
       "Deadlock-safe multi-item baskets: 100 baskets locking two SKUs in opposite order, 0 deadlocks",
       "Reservation lifecycle with TTL holds + background expiry sweeper (FOR UPDATE SKIP LOCKED)",
+      "Fails closed under chaos: a test kills ~100 transactions mid-flight (pg_terminate_backend) and still never oversells",
       "Prometheus /metrics + CI that runs the proof on a Postgres service container",
     ],
     techStack: [
@@ -137,7 +139,7 @@ export const projects: Project[] = [
       "Data access: Drizzle (schema + migrations + typed reads) + raw SQL on the lock path",
       "Server: Fastify, Zod",
       "Observability: prom-client (Prometheus)",
-      "Tests: Vitest (11, against real Postgres)",
+      "Tests: Vitest (12, against real Postgres)",
       "Infra: Docker, GitHub Actions CI with a Postgres service",
     ],
     problem:
