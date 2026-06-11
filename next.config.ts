@@ -4,6 +4,12 @@ const baseConfig: NextConfig = {
   reactStrictMode: true,
   productionBrowserSourceMaps: false,
   poweredByHeader: false,
+  // Tree-shake barrel imports (icons/animation/charts) at build time — shrinks
+  // the client bundle without per-component dynamic imports, which trip the
+  // Turbopack SSG bug with framer-motion (see CLAUDE.md).
+  experimental: {
+    optimizePackageImports: ["lucide-react", "framer-motion", "recharts"],
+  },
   images: {
     remotePatterns: [
       {
