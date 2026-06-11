@@ -42,6 +42,112 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: "holdfast",
+    title: "Holdfast — Inventory Reservation Engine",
+    description:
+      "A backend engine that never oversells inventory under concurrency — the core correctness problem in quick-commerce. It benchmarks three concurrency-control strategies against real Postgres and proves the no-oversell guarantee with tests.",
+    image: "/Images/portfolio1.png",
+    isShowcase: true,
+    tags: [
+      "TypeScript",
+      "PostgreSQL",
+      "Drizzle ORM",
+      "node-postgres",
+      "Fastify",
+      "Concurrency Control",
+      "Idempotency",
+      "Prometheus",
+      "Docker",
+      "Vitest",
+    ],
+    github: "https://github.com/Shailesh93602/holdfast",
+    detailedDescription:
+      "Holdfast solves the hardest correctness problem in quick-commerce (Zepto / Blinkit / Instamart): when hundreds of customers race for the last few units of a SKU, exactly the available quantity must succeed — never one more. It implements three concurrency-control strategies (pessimistic SELECT … FOR UPDATE, optimistic version compare-and-swap, and an atomic conditional UPDATE) behind one interface and benchmarks them against real Postgres. Order placement is idempotent via a UNIQUE idempotency key, so a retried request never double-reserves. Multi-item baskets reserve atomically with deadlock-safe global lock ordering. A reservation lifecycle (HOLD → CONFIRMED / RELEASED) with a background expiry sweeper returns abandoned holds to stock. Schema and migrations are model-driven via Drizzle, while the reservation hot path deliberately uses raw SQL so the locking stays explicit. Prometheus metrics expose throughput, latency, and optimistic retry counts.",
+    architecture: {
+      layers: [
+        {
+          name: "API",
+          items: [
+            "Fastify HTTP (/reserve, /reserve-basket, /inventory/:sku)",
+            "Zod request validation",
+            "Idempotency-Key header → exactly-once placement",
+          ],
+        },
+        {
+          name: "Concurrency Engine",
+          items: [
+            "Pessimistic: SELECT … FOR UPDATE",
+            "Optimistic: version compare-and-swap with retry",
+            "Atomic: conditional UPDATE … WHERE available >= qty",
+            "Deadlock-safe basket reservation (global lock ordering)",
+          ],
+        },
+        {
+          name: "Data",
+          items: [
+            "PostgreSQL 16",
+            "Drizzle: schema-as-code + generated migrations + typed reads",
+            "Raw SQL on the lock hot path",
+            "CHECK (available >= 0) — DB backstop against oversell",
+          ],
+        },
+        {
+          name: "Observability & Ops",
+          items: [
+            "prom-client: reservations, latency histogram, CAS attempts",
+            "Background expiry sweeper (FOR UPDATE SKIP LOCKED)",
+            "Dockerfile + CI (Postgres service runs the proof)",
+          ],
+        },
+      ],
+      description:
+        "A reservation is one transaction: idempotency guard, inventory decrement via the chosen strategy, then a HELD order row. The atomic conditional UPDATE is the default — its WHERE clause is the guard, so no read-modify-write race exists. Baskets acquire rows in a single global order (sorted by SKU) so concurrent carts can't form a lock cycle.",
+    },
+    keyMetrics: [
+      {
+        label: "Oversells",
+        value: "0",
+        description:
+          "500 concurrent buyers vs 50 units — exactly 50 win, proven for all 3 strategies",
+      },
+      {
+        label: "Throughput",
+        value: "~4,200/s",
+        description:
+          "Reservations/sec on a single hot row (local Postgres benchmark, median of 3)",
+      },
+      {
+        label: "Tests",
+        value: "11 passing",
+        description:
+          "Concurrency, idempotency, deadlock-safe baskets, lifecycle — vs real Postgres",
+      },
+    ],
+    features: [
+      "Never oversells: a property test fires 500 concurrent buyers at 50 units and asserts exactly 50 win, zero negative stock",
+      "Three benchmarked concurrency strategies (pessimistic / optimistic / atomic) behind one interface",
+      "Idempotent placement: the same key fired 100× concurrently reserves exactly once",
+      "Deadlock-safe multi-item baskets: 100 baskets locking two SKUs in opposite order, 0 deadlocks",
+      "Reservation lifecycle with TTL holds + background expiry sweeper (FOR UPDATE SKIP LOCKED)",
+      "Prometheus /metrics + CI that runs the proof on a Postgres service container",
+    ],
+    techStack: [
+      "Language: TypeScript (strict)",
+      "Database: PostgreSQL 16",
+      "Data access: Drizzle (schema + migrations + typed reads) + raw SQL on the lock path",
+      "Server: Fastify, Zod",
+      "Observability: prom-client (Prometheus)",
+      "Tests: Vitest (11, against real Postgres)",
+      "Infra: Docker, GitHub Actions CI with a Postgres service",
+    ],
+    problem:
+      "Quick-commerce lives and dies on inventory correctness: when 500 people tap “buy” on the last 50 units at once, a naïve read-check-write oversells. Most demos hand-wave this by running a single process and claiming it scales.",
+    solution:
+      "A real reservation engine where the no-oversell guarantee is proven, not claimed — 500 concurrent buyers, exactly the available quantity wins, asserted for three different concurrency-control strategies that are benchmarked head-to-head so the trade-offs are measured, not guessed.",
+    challengesSolved:
+      "The most interesting problem was deadlock-safe basket reservation. Reserving several SKUs atomically invites deadlocks: cart A locks milk then eggs while cart B locks eggs then milk, and Postgres aborts one. Acquiring rows in a single global order (sorted by SKU) makes a lock cycle impossible — the test fires 100 baskets locking the same two SKUs in opposite order with zero deadlocks. The other key call was keeping raw SQL on the hot path: Drizzle owns the schema and migrations, but the FOR UPDATE / conditional-atomic / version-CAS locking is hand-written, because an ORM hides exactly the behaviour the project exists to demonstrate.",
+  },
+  {
     id: "eduscale",
     title: "EduScale",
     description:
