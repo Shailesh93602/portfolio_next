@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 interface Props {
@@ -32,7 +33,7 @@ export default function Error({ error, reset }: Props) {
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
           <Button onClick={reset}>Try Again</Button>
           <Button variant="outline" asChild>
-            <a href="/">Go Home</a>
+            <Link href="/">Go Home</Link>
           </Button>
         </div>
       </div>

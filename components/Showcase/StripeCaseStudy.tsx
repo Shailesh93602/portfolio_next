@@ -1,5 +1,10 @@
 "use client";
 
+/* eslint-disable jsx-a11y/no-noninteractive-tabindex --
+   The scrollable code blocks and the wide sequence diagram intentionally use
+   tabIndex={0} so keyboard-only users can focus and scroll them. Each has an
+   aria-label. This is the recommended pattern for scrollable regions. */
+
 import React from "react";
 import { motion } from "framer-motion";
 
