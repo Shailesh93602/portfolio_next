@@ -23,7 +23,14 @@ import { dirname, resolve } from "node:path";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECTS_TS = resolve(__dirname, "..", "constants", "projects.ts");
 
-const TIMEOUT_MS = 15_000;
+// Render free-tier apps spin down when idle and cold-start in 30–60s, so the
+// first request after a quiet period is slow (this cron is partly what wakes
+// them). Use a generous per-attempt timeout and retry: the first attempt warms
+// the dyno, a later one confirms it's actually serving.
+const TIMEOUT_MS = 30_000;
+const RETRIES = 2;
+const RETRY_DELAY_MS = 5_000;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /**
  * URLs allowed to 404 without failing the script.
@@ -33,9 +40,23 @@ const TIMEOUT_MS = 15_000;
  * Leaving an entry here for too long defeats the purpose of the check,
  * so treat this as a 7-day maximum.
  */
-const KNOWN_PRIVATE = new Set([
-  "https://github.com/Shailesh93602/khatago",
-]);
+const KNOWN_PRIVATE = new Set(["https://github.com/Shailesh93602/khatago"]);
+
+/**
+ * Some "live" URLs are APIs whose root path 404s by design (no `GET /` route).
+ * For those, probe a real health endpoint instead of the root. The display URL
+ * stays the public demo link; only the fetched path changes.
+ */
+const HEALTH_PATH = {
+  "https://holdfast-50gt.onrender.com": "/healthz",
+};
+
+function fetchTarget(url) {
+  for (const [base, path] of Object.entries(HEALTH_PATH)) {
+    if (url === base || url === `${base}/`) return base + path;
+  }
+  return url;
+}
 
 /**
  * Parse URLs out of constants/projects.ts by walking the file for
@@ -55,12 +76,20 @@ function parseProjectUrls() {
 
     const liveMatch = line.match(/^\s*live:\s*"(https?:\/\/[^"]+)"/);
     if (liveMatch && currentId) {
-      urls.push({ name: `${currentId} (live)`, url: liveMatch[1], kind: "live" });
+      urls.push({
+        name: `${currentId} (live)`,
+        url: liveMatch[1],
+        kind: "live",
+      });
     }
 
     const githubMatch = line.match(/^\s*github:\s*"(https?:\/\/[^"]+)"/);
     if (githubMatch && currentId) {
-      urls.push({ name: `${currentId} (github)`, url: githubMatch[1], kind: "github" });
+      urls.push({
+        name: `${currentId} (github)`,
+        url: githubMatch[1],
+        kind: "github",
+      });
     }
   }
 
@@ -74,28 +103,50 @@ function parseProjectUrls() {
   return urls;
 }
 
-async function checkUrl(name, url) {
-  const start = Date.now();
+async function attempt(url) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
     const res = await fetch(url, {
       method: "HEAD",
       signal: controller.signal,
       redirect: "follow",
     });
-
+    return { status: res.status, ok: res.status >= 200 && res.status < 300 };
+  } finally {
     clearTimeout(timer);
-    const ms = Date.now() - start;
-    const ok = res.status >= 200 && res.status < 300;
-
-    return { name, url, status: res.status, ms, ok };
-  } catch (err) {
-    const ms = Date.now() - start;
-    const message = err instanceof Error ? err.message : String(err);
-    return { name, url, status: 0, ms, ok: false, error: message };
   }
+}
+
+async function checkUrl(name, url) {
+  const start = Date.now();
+  const target = fetchTarget(url);
+  let lastErr;
+  for (let i = 0; i <= RETRIES; i++) {
+    try {
+      const { status, ok } = await attempt(target);
+      // A 2xx on any attempt is a pass. A definite non-2xx (e.g. 404) is final
+      // — no point retrying a real error.
+      if (
+        ok ||
+        (status >= 400 && status < 500 && status !== 408 && status !== 429)
+      ) {
+        return { name, url, status, ms: Date.now() - start, ok };
+      }
+      lastErr = `HTTP ${status}`;
+    } catch (err) {
+      lastErr = err instanceof Error ? err.message : String(err);
+    }
+    if (i < RETRIES) await sleep(RETRY_DELAY_MS);
+  }
+  return {
+    name,
+    url,
+    status: 0,
+    ms: Date.now() - start,
+    ok: false,
+    error: lastErr,
+  };
 }
 
 const URLS = parseProjectUrls();
@@ -146,5 +197,7 @@ if (failed.length > 0) {
   }
   process.exit(1);
 } else {
-  console.log(`\nAll ${results.length - allowedFailed.length} non-allow-listed URLs healthy.`);
+  console.log(
+    `\nAll ${results.length - allowedFailed.length} non-allow-listed URLs healthy.`
+  );
 }
