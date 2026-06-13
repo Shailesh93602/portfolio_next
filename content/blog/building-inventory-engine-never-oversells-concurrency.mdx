@@ -1,0 +1,115 @@
+---
+title: "Building an Inventory Engine That Never Oversells Under Concurrency"
+subtitle: "How I designed Holdfast — a reservation engine that holds the no-oversell guarantee even when 500 buyers race for the last 50 units"
+description: "A deep dive into concurrency control for inventory: the read-then-write race that causes overselling, three database strategies to prevent it (atomic conditional update, pessimistic locking, optimistic versioning), deadlock-safe multi-item baskets, idempotent placement, hot-SKU sharding, and a chaos test that proves it fails closed."
+image: "/Images/portfolio1.png"
+date: "2026-06-13"
+readTime: "13 min read"
+featured: true
+tags:
+  - "Concurrency"
+  - "PostgreSQL"
+  - "Distributed Systems"
+  - "System Design"
+  - "Backend"
+  - "Idempotency"
+  - "Quick Commerce"
+  - "Node.js"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "Shaileshbhai"
+  - "Shaileshbhai Chaudhari"
+  - "Shailesh"
+  - "inventory concurrency"
+  - "prevent overselling"
+  - "PostgreSQL row locking"
+  - "optimistic vs pessimistic locking"
+  - "idempotency key"
+  - "deadlock prevention"
+  - "hot SKU sharding"
+  - "reservation system design"
+  - "quick commerce backend"
+---
+
+<div class="tldr">
+<strong>TL;DR:</strong> Overselling is a read-then-write race. I built Holdfast, a reservation engine that prevents it three ways (atomic conditional update, pessimistic <code>FOR UPDATE</code>, optimistic version CAS), keeps multi-item baskets deadlock-free by locking SKUs in a fixed order, makes placement idempotent with a unique key, shards hot SKUs to beat single-row contention, and proves it all with a chaos test that kills transactions mid-flight. Live demo + repo at the end.
+</div>
+
+<h2>Why overselling is harder than it looks</h2>
+
+<p>Hello everyone! I'm <strong>Shailesh Chaudhari</strong>, a backend engineer. I kept seeing the same bug in inventory code: under real concurrency, two buyers both get the "last" unit. So I built <strong>Holdfast</strong> — a small, focused reservation engine whose entire job is to <em>never oversell</em>, and to prove it.</p>
+
+<p>The naive version looks innocent:</p>
+
+<pre><code>// reserve one unit — DON'T do this
+const item = await db.query("SELECT available FROM inventory WHERE sku = $1", [sku]);
+if (item.available >= qty) {
+  await db.query("UPDATE inventory SET available = available - $1 WHERE sku = $2", [qty, sku]);
+}
+</code></pre>
+
+<p>With one user, fine. With 500 users hitting it at once, it's broken. Two requests both <code>SELECT</code> "1 available", both pass the <code>if</code>, both <code>UPDATE</code>, and now you've sold 2 units of 1. The check and the write are two separate steps, and anything can happen between them. This is a classic <strong>read-then-write race</strong>, and it's the core correctness problem in quick-commerce, ticketing, and flash sales.</p>
+
+<h2>Strategy 1 — Atomic conditional update (the default)</h2>
+
+<p>The fix is to make the check and the decrement a single atomic statement, so the database does the guarding:</p>
+
+<pre><code>UPDATE inventory
+SET available = available - $qty
+WHERE sku = $1 AND available &gt;= $qty;   -- 0 rows changed = not enough stock
+</code></pre>
+
+<p>The <code>WHERE available &gt;= $qty</code> clause <em>is</em> the guard. There's no separate read, no window for a race. If the row count is 0, there wasn't enough — return out-of-stock. I also add a database <code>CHECK (available &gt;= 0)</code> as a backstop, so even a bug aborts the transaction instead of going negative.</p>
+
+<p>This is the default in Holdfast: one statement, no application-side read, no lock held open. It's simple and it's correct.</p>
+
+<h2>Strategy 2 &amp; 3 — when you need locking or versioning</h2>
+
+<p>The atomic update handles a single quantity column. But sometimes you need to read more state, decide, and write back. Two more strategies cover that:</p>
+
+<ul>
+<li><strong>Pessimistic (<code>SELECT … FOR UPDATE</code>):</strong> lock the row, then decrement. Other transactions wait. Simple, and it serializes the hot row cleanly.</li>
+<li><strong>Optimistic (version CAS):</strong> read a <code>version</code> column, then <code>UPDATE … WHERE version = $v</code>. If someone else changed it first, 0 rows match and you retry. No locks held; great when conflicts are <em>rare</em>.</li>
+</ul>
+
+<p>Which is best? I didn't guess — I benchmarked them against real PostgreSQL. On a single hot row (all buyers, one SKU), pessimistic and atomic win (~4,200 reservations/sec) because they serialize efficiently; optimistic is slowest there because it averages two attempts per success (it retries the lost races). Optimistic's advantage is the <em>opposite</em> workload — contention spread across many rows, where conflicts are rare and you avoid holding locks. <strong>The lesson: pick the strategy for your contention shape, and measure.</strong></p>
+
+<h2>The hard part: multi-item baskets without deadlocks</h2>
+
+<p>A real cart reserves several SKUs at once, all-or-nothing. The trap is <strong>deadlock</strong>: cart A locks milk then waits for eggs; cart B locks eggs then waits for milk. Each holds one and waits for the other forever, and the database has to abort one.</p>
+
+<p>The fix is elegant: <strong>always acquire rows in one fixed global order — sorted by SKU.</strong> If every basket grabs shared SKUs in the same sequence, no lock cycle can form. I have a test that fires 100 baskets locking the same two SKUs in opposite order and asserts <strong>zero deadlocks</strong> with a consistent ledger. Any out-of-stock line rolls the whole basket back.</p>
+
+<h2>Placing an order exactly once (idempotency)</h2>
+
+<p>Networks retry. A user double-clicks. A mobile client resends on a flaky connection. Without protection, one intent becomes two reservations. Holdfast accepts an <code>Idempotency-Key</code> with each request, enforced by a <code>UNIQUE</code> constraint:</p>
+
+<pre><code>orders (id, idempotency_key UNIQUE, ...)
+</code></pre>
+
+<p>The reservation runs in one transaction. If a retry arrives with the same key, the insert collides with the unique constraint, the whole transaction (including the decrement) rolls back, and we return the original order. Proven with 100 concurrent identical requests producing <strong>exactly one</strong> reservation. This is the same pattern Stripe uses for payment idempotency keys — applied to inventory.</p>
+
+<h2>Scaling the hot SKU</h2>
+
+<p>One viral product is one inventory row, which is one lock, which is your throughput ceiling. The standard fix is to <strong>shard the stock</strong>: split a SKU's quantity across N sub-rows, decrement a random shard, and fall back through the others if one is empty. Now you have N locks instead of one. I benchmarked this in Holdfast — throughput climbed roughly 3.5× at 16 shards before plateauing on the database itself (about 49,000 reservations/sec). For extreme drops, the next step is reserving in Redis with periodic reconciliation to the database, but that's only worth the added complexity once you've proven you need it.</p>
+
+<h2>Proving it fails closed (the chaos test)</h2>
+
+<p>Claiming "no oversell" is easy. Proving it under failure is the interesting part. Holdfast has a <strong>chaos test</strong> that kills PostgreSQL backends mid-transaction while buyers race. The guarantee that has to hold: when a transaction dies, it rolls back — no phantom stock, no partial reservation, the ledger stays consistent. The system <em>fails closed</em>: under stress it refuses orders rather than risk overselling. In quick-commerce, a refused order is a minor annoyance; an oversold one is a cancelled order and a lost customer.</p>
+
+<h2>Stack &amp; honest notes</h2>
+
+<p>Holdfast is TypeScript on Fastify, with a deliberate hybrid data layer: <strong>Drizzle ORM</strong> owns the schema, migrations, and ordinary reads (type-safe and model-driven), while the reservation hot path is <strong>raw SQL</strong> — because the whole point is the explicit locking, which an ORM's query builder hides, and interactive ORM transactions get flaky under heavy concurrency. "ORM for productivity, raw SQL where correctness and performance demand it" is how production teams actually work. There's Prometheus metrics, a Docker deploy that self-seeds, and 14 tests against real PostgreSQL.</p>
+
+<p>Two honest caveats: the throughput numbers are a single-machine local benchmark — treat them as relative, not absolute. And Holdfast is the reservation <em>core</em>, not a full store; payments live in separate demos by design. Every claim here is backed by a test or a benchmark you can run yourself.</p>
+
+<h2>Try it</h2>
+
+<p>The engine is live and open source. Fire concurrent requests at it and watch it hold the line:</p>
+
+<ul>
+<li><strong>Live demo:</strong> <a href="https://holdfast-50gt.onrender.com">holdfast-50gt.onrender.com</a></li>
+<li><strong>Source:</strong> <a href="https://github.com/Shailesh93602/holdfast">github.com/Shailesh93602/holdfast</a></li>
+</ul>
+
+<p>If you're building anything that touches stock, money, or limited capacity under concurrency, these patterns — atomic guards, fixed lock ordering, idempotency keys, and failing closed — are the ones that keep you out of trouble. Thanks for reading!</p>
