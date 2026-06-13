@@ -19,8 +19,8 @@ describe("BLOG_SLUGS", () => {
     expect(Array.isArray(BLOG_SLUGS)).toBe(true);
   });
 
-  it("has 18 entries", () => {
-    expect(BLOG_SLUGS).toHaveLength(18);
+  it("has 19 entries", () => {
+    expect(BLOG_SLUGS).toHaveLength(19);
   });
 
   it("contains only non-empty strings", () => {

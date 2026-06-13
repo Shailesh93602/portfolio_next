@@ -1,0 +1,102 @@
+---
+title: "Production RAG That Says \"I Don't Know\" Instead of Hallucinating"
+subtitle: "The boring, reliable parts most RAG demos skip — a refusal guardrail, idempotent ingestion, retries, and an eval harness — built into Grounded"
+description: "Most RAG demos look great until real users hit them, then they hallucinate, re-embed everything on every deploy, and you have no way to tell if a prompt change made things worse. Here's how I built Grounded to do the reliable parts right: a retrieval-score guardrail that refuses to answer, content-hash idempotent ingestion, retry-with-backoff, cited answers, and a CI eval harness."
+image: "/Images/portfolio1.png"
+date: "2026-06-13"
+readTime: "12 min read"
+featured: true
+tags:
+  - "RAG"
+  - "AI Engineering"
+  - "LLM"
+  - "pgvector"
+  - "Reliability"
+  - "PostgreSQL"
+  - "Backend"
+  - "Evaluation"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "Shaileshbhai"
+  - "Shaileshbhai Chaudhari"
+  - "Shailesh"
+  - "production RAG"
+  - "RAG hallucination guardrail"
+  - "RAG that says I don't know"
+  - "pgvector retrieval"
+  - "idempotent embedding ingestion"
+  - "LLM eval harness"
+  - "retrieval augmented generation"
+  - "AI reliability engineering"
+---
+
+<div class="tldr">
+<strong>TL;DR:</strong> A RAG demo proves it <em>can</em> answer. Production is about what it does when it <em>can't</em> — and whether you'd notice if it got worse. Grounded does four things demos skip: a retrieval-score guardrail that refuses instead of guessing, content-hash idempotent ingestion (stop paying to re-embed), retry-with-backoff that fails fast on 4xx, and a CI eval harness. It runs offline with no API key. Repo at the end.
+</div>
+
+<h2>Why most RAG breaks in production</h2>
+
+<p>Hello everyone! I'm <strong>Shailesh Chaudhari</strong>, a backend engineer. Retrieval-augmented generation is easy to demo and hard to ship. The demo answers your three test questions beautifully. Then real users arrive and it confidently makes things up, your embedding bill balloons because every deploy re-embeds the whole corpus, and a prompt tweak silently makes retrieval worse with no alarm. I built <strong>Grounded</strong> — a small, readable RAG starter — to get the boring, reliable parts right. Here are the four that matter most.</p>
+
+<h2>1. The "I don't know" guardrail</h2>
+
+<p>The single most important reliability feature is knowing when <em>not</em> to answer. The naive pipeline retrieves some chunks and stuffs them into the prompt no matter how irrelevant they are — so an off-topic question gets a confident, wrong answer built from unrelated context.</p>
+
+<p>Grounded gates on the retrieval score. In the <code>ask</code> pipeline: embed the question, query the store for the top-k chunks, and look at the best similarity score:</p>
+
+<pre><code>const top = retrieved[0];
+if (!top || top.score &lt; minScore) {
+  return { answer: REFUSAL, citations: [], grounded: false };
+}
+// only now do we call the LLM
+</code></pre>
+
+<p>If nothing clears the threshold, it returns a fixed refusal and <strong>never even calls the model</strong>. The system prompt also says "answer only from context, say you don't know otherwise" — but I don't rely on the prompt alone. The retrieval-score gate is the hard guarantee; the prompt is defense-in-depth. A model can be talked out of a prompt instruction; it can't answer from context it was never given.</p>
+
+<h2>2. Idempotent ingestion (stop re-embedding everything)</h2>
+
+<p>Embeddings cost money and time per call. Naive ingestion re-embeds the entire corpus on every run, so every deploy burns API spend re-creating vectors that didn't change. Grounded hashes each chunk's content and only embeds what's new:</p>
+
+<pre><code>const chunks = chunkDoc(doc);
+const existing = await store.existingHashes(doc.id);
+const fresh = chunks.filter((c) =&gt; !existing.has(c.contentHash));
+// embed only `fresh`; prune chunks that no longer exist
+</code></pre>
+
+<p>Re-ingesting unchanged docs becomes a near-no-op (<code>embedded: 0</code>). Chunks that were deleted from a document get pruned. This is the same idempotency discipline you'd apply to payments or a reservation system — applied to embedding spend.</p>
+
+<h2>3. Resilience: retry, but fail fast on 4xx</h2>
+
+<p>LLM and embedding APIs are flaky. Grounded wraps calls in exponential backoff <em>with jitter</em>, but the important decision is <strong>what's retryable</strong>:</p>
+
+<pre><code>function isRetryable(err) {
+  if (err.code === "ECONNRESET" || err.code === "ETIMEDOUT") return true;
+  const s = err.status;
+  return typeof s === "number" ? (s === 429 || s &gt;= 500) : true;
+}
+</code></pre>
+
+<p>Network blips and <code>429</code>/<code>5xx</code> get retried. A <code>4xx</code> (bad request, auth failure) fails immediately — retrying a 400 just hammers the API and delays the inevitable. Jitter avoids a thundering herd of synchronized retries. This is unglamorous and it's exactly what keeps a feature up under real load.</p>
+
+<h2>4. An eval harness so you catch regressions</h2>
+
+<p>"Did my prompt change make things better or worse?" is unanswerable without measurement, and most teams ship blind. Grounded ships a labelled Q&amp;A set scored by the pipeline — checking retrieval, answer quality, and crucially the <strong>refusal cases</strong> (off-topic questions must return <code>grounded: false</code>). It runs in CI, so a change that quietly breaks retrieval fails the build instead of reaching users. This is the regression test suite for your LLM feature.</p>
+
+<h2>Cited answers, and an honest design choice</h2>
+
+<p>Every answer carries citations built from the chunks that were actually retrieved (source, chunk id, score, snippet) — not whatever the model typed — so there's a real audit trail. And the whole thing is <strong>offline-testable</strong>: the embedder, vector store, and LLM are interfaces chosen by env. The default is a deterministic hash embedder + an in-memory store, so the tests and the eval run with no API key and no database. Production swaps in OpenAI embeddings + <strong>pgvector</strong> on Postgres.</p>
+
+<p>A bug worth sharing: the offline guardrail once had a false positive — with a small 256-dim hash embedder, hash collisions let an off-topic question score above the threshold, so it answered when it should have refused. The fix was to make the offline embedder more discriminative (4096 dims + stopword filtering). The lesson: <em>a guardrail is only as good as the signal it gates on.</em> I also hit the classic pgvector gotcha — the native binary is tied to a Postgres major version (built for pg17, wouldn't load on pg16) — which is exactly why retrieval sits behind a <code>VectorStore</code> interface: dev and CI use the in-memory store, production uses pgvector, and an infra mismatch never blocks development.</p>
+
+<h2>Try it</h2>
+
+<p>It runs in 30 seconds with no setup:</p>
+
+<pre><code>npm install &amp;&amp; npm start   # offline: in-memory store + extractive answers
+</code></pre>
+
+<ul>
+<li><strong>Source:</strong> <a href="https://github.com/Shailesh93602/grounded">github.com/Shailesh93602/grounded</a></li>
+</ul>
+
+<p>If you're adding AI to a product, the question that actually matters isn't "can it answer" — it's "what does it do when it shouldn't, and will you know if it regresses." Build those in from the start. Thanks for reading!</p>

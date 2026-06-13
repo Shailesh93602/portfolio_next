@@ -69,6 +69,7 @@ export const BLOG_SLUGS: string[] = [
   "getting-started-shadcn-ui-modern-react-applications",
   "best-practices-api-development-express-nestjs",
   "building-inventory-engine-never-oversells-concurrency",
+  "production-rag-that-says-i-dont-know",
   // DRAFTS — uncomment each slug after filling in [FILL IN:] placeholders in content/blog/<slug>.mdx
   // "eduscale-redis-distributed-locks-real-time",
   // "postgres-rbac-eduscale-permissions",
