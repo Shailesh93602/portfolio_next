@@ -119,7 +119,7 @@ export const projects: Project[] = [
       },
       {
         label: "Tests",
-        value: "12 passing",
+        value: "14 passing",
         description:
           "Concurrency, idempotency, deadlock-safe baskets, lifecycle, chaos — vs real Postgres",
       },
