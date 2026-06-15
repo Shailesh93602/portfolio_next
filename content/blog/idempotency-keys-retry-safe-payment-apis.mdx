@@ -1,0 +1,177 @@
+---
+title: "Idempotency Keys: Making Money-Moving Endpoints Safe to Retry"
+subtitle: "Networks retry, users double-click, webhooks redeliver — here's the pattern that turns 'maybe charged twice' into 'charged exactly once', and the small library I built to prove it"
+description: "A practical deep dive into idempotency keys for payment and write APIs: why retries cause double-charges, the claim-run-complete protocol that collapses concurrent retries to one execution, fail-fast vs wait-and-replay, releasing the key on failure, the fingerprint-mismatch guard Stripe uses, TTLs, and where the one atomic step really lives. Built around idempotency-kit, a zero-dependency TypeScript library."
+image: "/Images/portfolio1.png"
+date: "2026-06-15"
+readTime: "11 min read"
+featured: true
+tags:
+  - "Idempotency"
+  - "Payments"
+  - "Distributed Systems"
+  - "System Design"
+  - "Backend"
+  - "Stripe"
+  - "Reliability"
+  - "Node.js"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "Shaileshbhai"
+  - "Shaileshbhai Chaudhari"
+  - "Shailesh"
+  - "idempotency key"
+  - "idempotent API"
+  - "retry-safe payments"
+  - "Stripe idempotency"
+  - "exactly once"
+  - "prevent double charge"
+  - "webhook idempotency"
+  - "at-most-once execution"
+  - "distributed systems reliability"
+  - "payment API design"
+---
+
+<div class="tldr">
+<strong>TL;DR:</strong> Any endpoint that moves money or creates a resource will eventually be called twice for one intent — a network retry, a double-click, a redelivered webhook. The fix is an <em>idempotency key</em>: a client-supplied id that lets the server run the operation <strong>at most once</strong> and replay the stored result on every repeat. The subtle parts are concurrency (two retries arriving at the same instant), releasing the key when the operation fails, and rejecting a key reused for a <em>different</em> request. I packaged the whole pattern into <a href="https://github.com/Shailesh93602/idempotency-kit">idempotency-kit</a>, a zero-dependency TypeScript library — this post walks through the design.
+</div>
+
+<h2>The bug that hides until production traffic</h2>
+
+<p>Hello everyone! I'm <strong>Shailesh Chaudhari</strong>, a backend engineer. Here's a charge endpoint that looks completely fine:</p>
+
+<pre><code>app.post("/charge", async (req, res) =&gt; {
+  const charge = await psp.charge(req.body); // call the payment provider
+  await db.orders.insert({ chargeId: charge.id });
+  res.json(charge);
+});
+</code></pre>
+
+<p>It works in every test. Then it ships, and a week later a customer is charged twice for one order. Nobody wrote a bug — the network did. The client sent the request, the charge went through, and the <em>response</em> got lost on the way back. The client's HTTP library, seeing no response, did the sensible thing: it retried. The server, having no memory of the first call, charged again.</p>
+
+<p>This is not an edge case you can avoid. Mobile clients retry on flaky connections. Load balancers retry on timeouts. Users double-click "Pay". Payment providers redeliver webhooks until you return a 2xx — sometimes more than once even after you do. <strong>At-least-once delivery is the default of the internet.</strong> If your write endpoint isn't safe to call twice, it's a question of <em>when</em>, not <em>if</em>.</p>
+
+<h2>The idea: an idempotency key</h2>
+
+<p>An <strong>idempotency key</strong> is a unique id the client generates per intent (a UUID is fine) and sends with the request, usually as an <code>Idempotency-Key</code> header. The contract on the server is:</p>
+
+<ul>
+<li>First time I see this key: run the operation, store the result against the key, return it.</li>
+<li>Every later time I see the same key: <strong>do not run again</strong> — return the stored result.</li>
+</ul>
+
+<p>One intent, one execution, no matter how many times the request arrives. This is exactly how Stripe's <code>Idempotency-Key</code> works, and the same exactly-once idea behind the reservation engine I wrote about in <a href="/blog/building-inventory-engine-never-oversells-concurrency">Holdfast</a> — there enforced with a <code>UNIQUE</code> constraint on the order key.</p>
+
+<p>The naive implementation is a check-then-act, and it has the same flaw as the double charge:</p>
+
+<pre><code>// DON'T do this — it has a race
+const seen = await store.get(key);
+if (seen) return seen.result;
+const result = await run();
+await store.save(key, result);
+</code></pre>
+
+<p>Two retries arriving at the same instant both <code>get</code> nothing, both pass the <code>if</code>, both <code>run()</code>. We're back to a double charge — now with extra steps. The check and the write have to be a single atomic operation. That one realization shapes the entire design.</p>
+
+<h2>The protocol: claim → run → complete</h2>
+
+<p>The pattern that actually holds under concurrency splits the work into three store operations, where <strong>claim</strong> is the only one that must be atomic:</p>
+
+<ul>
+<li><strong>claim(key):</strong> atomically insert an <code>in_progress</code> record <em>if the key is free</em>. Returns "you own it" to exactly one caller; everyone else gets the existing record. In Redis this is a <code>SET key value NX</code>; in SQL it's an <code>INSERT</code> that trips a unique constraint.</li>
+<li><strong>complete(key, result):</strong> the owner runs the operation, then stores the serialized result and flips the record to <code>completed</code>.</li>
+<li><strong>release(key):</strong> if the operation throws, drop the <code>in_progress</code> claim so a later retry can try again.</li>
+</ul>
+
+<p>Here is the core of <a href="https://github.com/Shailesh93602/idempotency-kit">idempotency-kit</a>, lightly trimmed:</p>
+
+<pre><code>const existing = await store.claim(key, now());
+
+if (existing === null) {
+  // We won the claim — we own execution.
+  try {
+    const value = await fn();
+    await store.complete(key, serialize(value), now());
+    return { value, replayed: false };
+  } catch (err) {
+    await store.release(key); // transient failure shouldn't poison the key
+    throw err;
+  }
+}
+
+if (existing.status === "completed") {
+  return { value: deserialize(existing.result), replayed: true };
+}
+// else: someone else holds an in_progress claim (see below)
+</code></pre>
+
+<p>Because <code>claim</code> is atomic, two simultaneous retries can't both win. One gets <code>null</code> and runs; the other gets the <code>in_progress</code> record and knows not to. The race is gone — not because the application code is clever, but because the one operation that must be atomic was pushed down to where atomicity is cheap and guaranteed.</p>
+
+<h2>What about the retry that arrives mid-flight?</h2>
+
+<p>The interesting case is the loser of the claim: a second request whose key is held by an <code>in_progress</code> claim that hasn't finished yet. There's no stored result to replay. You have two honest options, and the right one depends on the caller:</p>
+
+<ul>
+<li><strong>Fail fast.</strong> Return a 409 Conflict ("a request with this key is already in progress"). The client can retry later. This is the safe default and what Stripe does — it never blocks a connection waiting.</li>
+<li><strong>Wait and replay.</strong> Poll briefly for the winner to finish, then return its result. Nicer for the caller, but it holds a connection open, so it needs a tight bound.</li>
+</ul>
+
+<p>The library makes this a one-line choice — default is fail-fast; opt into waiting with <code>waitRetries</code>:</p>
+
+<pre><code>await withIdempotency(key, fn, { store, waitRetries: 10, waitIntervalMs: 100 });
+</code></pre>
+
+<h2>The detail everyone forgets: releasing on failure</h2>
+
+<p>Picture this: the operation fails — the payment provider times out, the database is briefly down. If you <em>completed</em> the key anyway, or simply left the <code>in_progress</code> claim sitting there, every future retry with that key would replay a failure or be told "already in progress" forever. The user's legitimate retry can never succeed. The key is <strong>poisoned</strong>.</p>
+
+<p>That's why the <code>catch</code> block above calls <code>release</code>. A <em>transient</em> failure must free the key so the next attempt gets a clean shot. This is the difference between "idempotent" and "idempotent and actually usable". It's also the line most homegrown implementations miss, because it only bites when something downstream is already broken — exactly when you most need retries to work.</p>
+
+<h2>The guard Stripe ships and most clones don't: fingerprint mismatch</h2>
+
+<p>Here's a nastier failure. A client reuses an idempotency key for a <em>different</em> request — maybe it generates keys too coarsely, maybe it's a plain bug. Request one: charge $10. Request two, same key: charge $99. A naive cache happily replays the $10 result for the $99 request. No error, no double charge — just a <strong>silently wrong answer</strong>, which is worse, because nobody notices until reconciliation.</p>
+
+<p>Stripe guards against this: reuse a key with different parameters and you get a <code>400</code>, not a replay. To do the same, store a <strong>fingerprint</strong> of the request payload alongside the key, and compare on every hit:</p>
+
+<pre><code>await withIdempotency(key, () =&gt; psp.charge(req.body), {
+  store,
+  fingerprint: fingerprint(req.body), // canonical hash of the payload
+});
+// → throws IdempotencyFingerprintMismatchError if the key was first
+//   used with a different body. Translate that to a 400.
+</code></pre>
+
+<p>The fingerprint has to be <strong>canonical</strong>: <code>{ amount, currency }</code> and <code>{ currency, amount }</code> are the same request, so key order can't change the hash. In the library I sort object keys recursively before hashing, recurse into nested objects and arrays, and deliberately avoid <code>node:crypto</code> so the same function runs on the edge, Deno, or a browser. It's a guard against accidental reuse, not an adversary — a fast non-cryptographic hash is the right tool.</p>
+
+<p>One subtlety I only caught because a test caught it: the fingerprint must survive the <code>in_progress → completed</code> transition. My first version stored it on <code>claim</code> and then <em>overwrote</em> the record on <code>complete</code>, dropping it — so the mismatch check silently stopped working after the first call finished. The test that reused a key with a different payload <em>after</em> completion went red, and that's the whole point of writing the test that asserts the outcome rather than the one that asserts "it returned something".</p>
+
+<h2>Keys don't live forever (TTL)</h2>
+
+<p>Stored results can't accumulate without bound. Stripe expires idempotency keys after 24 hours, and that's a sensible default: long enough to cover any realistic retry storm, short enough that the store doesn't grow forever. After the TTL the key is free again. The trade-off is real — a retry that arrives <em>after</em> expiry will execute as a fresh request — so the window should comfortably exceed your longest retry path (including a payment provider's webhook redelivery schedule, which can span hours).</p>
+
+<h2>Where the atomicity actually lives</h2>
+
+<p>The thing I want to leave you with is an architecture point, not a payments point. Notice that none of the logic above is hard <em>except</em> the atomic <code>claim</code>. So that's the only thing the storage layer is responsible for. Everything else — the fail-fast-vs-wait policy, serialization, the fingerprint comparison, releasing on error — is plain, testable application code that doesn't care whether it's running over an in-memory map, Redis, or Postgres.</p>
+
+<p>That's why the library defines a tiny store interface and ships an in-memory implementation for tests, and why moving to a distributed setup means writing one small adapter — a <code>SET NX</code> for the claim, nothing else changes:</p>
+
+<pre><code>interface IdempotencyStore {
+  claim(key, now, fingerprint?): Promise&lt;Record | null&gt;; // atomic insert-if-absent
+  complete(key, result, now): Promise&lt;void&gt;;
+  release(key): Promise&lt;void&gt;;
+  get(key): Promise&lt;Record | null&gt;;
+}
+</code></pre>
+
+<p>"Push the one operation that must be atomic down to the layer that can guarantee it, and keep everything above it boring" is the same principle behind Holdfast's reservation path. Get that boundary right and the concurrency stops being scary.</p>
+
+<h2>Try it</h2>
+
+<p>The library is open source, fully typed, zero-dependency, and offline-testable (the clock is injectable, so tests are deterministic — no <code>sleep</code>, no real network):</p>
+
+<ul>
+<li><strong>Source:</strong> <a href="https://github.com/Shailesh93602/idempotency-kit">github.com/Shailesh93602/idempotency-kit</a></li>
+<li><strong>Related read:</strong> <a href="/blog/building-inventory-engine-never-oversells-concurrency">Building an inventory engine that never oversells under concurrency</a></li>
+</ul>
+
+<p>If you're building anything that charges a card, sends a message, or creates a resource on a <code>POST</code>, make it idempotent before it ships — not after the first double-charge ticket. Claim atomically, replay on repeat, release on failure, reject mismatched reuse, and expire on a TTL. Thanks for reading!</p>
