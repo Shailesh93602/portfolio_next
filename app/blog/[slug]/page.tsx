@@ -87,7 +87,10 @@ export default async function Page({ params }: Props) {
   // Strip HTML for word-count — Google uses wordCount + timeRequired as
   // ranking signals for in-depth articles, and AI summarizers use them to
   // decide how much of the post to quote.
-  const plain = post.content.replaceAll(/<[^>]+>/g, " ").replaceAll(/\s+/g, " ").trim();
+  const plain = post.content
+    .replaceAll(/<[^>]+>/g, " ")
+    .replaceAll(/\s+/g, " ")
+    .trim();
   const wordCount = plain ? plain.split(" ").length : 0;
   // ISO 8601 duration — readTime in frontmatter is "16 min read"; extract digits.
   const readMin = Number.parseInt(post.readTime?.match(/\d+/)?.[0] || "5", 10);
@@ -159,7 +162,7 @@ export default async function Page({ params }: Props) {
 
         <BlogLayout post={post}>
           <div
-            className="prose prose-invert prose-lg max-w-none"
+            className="prose prose-lg max-w-none dark:prose-invert"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
         </BlogLayout>

@@ -19,6 +19,15 @@
     --primary: 265 89% 55%;
     --primary-foreground: 0 0% 100%;
 
+    /* Solid purple surface token (buttons / badges / pills that carry text
+       ON TOP of the fill). Kept dark enough that white text clears WCAG AA
+       4.5:1 in BOTH themes — `--primary` itself is tuned for use AS text on
+       the page background, which pulls the opposite direction, so the two
+       roles are deliberately decoupled. Light value matches the old primary
+       so button/badge shades are visually unchanged in light mode. */
+    --primary-solid: 265 89% 55%;
+    --primary-solid-foreground: 0 0% 100%;
+
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 222 47% 11%;
 
@@ -62,8 +71,18 @@
     --popover: 222 47% 11%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 265 89% 65%;
+    /* Bumped 65% -> 72% so `text-primary` clears AA 4.5:1 on the dark canvas
+       (was 4.36:1) AND on the faint `bg-primary/10` chip tint used app-wide
+       (purple-on-purple composites lower, ~4.3:1 at 68%). White text never
+       sits on raw `--primary` in dark mode — those surfaces use
+       `--primary-solid` below. */
+    --primary: 265 89% 72%;
     --primary-foreground: 0 0% 98%;
+
+    /* Darker than `--primary` so white text on the fill clears AA (7:1) in
+       dark mode. See the light-mode note above. */
+    --primary-solid: 265 89% 50%;
+    --primary-solid-foreground: 0 0% 100%;
 
     --secondary: 217 32.6% 17.5%;
     --secondary-foreground: 0 0% 98%;

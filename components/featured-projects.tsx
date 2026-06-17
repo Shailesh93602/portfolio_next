@@ -48,7 +48,7 @@ export function FeaturedProjects() {
 
                   <div className="absolute left-8 top-8 flex flex-col gap-3">
                     <div className="flex gap-2">
-                      <span className="rounded-full bg-primary px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-2xl">
+                      <span className="rounded-full bg-primary-solid px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-2xl">
                         Featured
                       </span>
                       <span className="rounded-full border border-white/10 bg-black/60 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-2xl backdrop-blur-xl">

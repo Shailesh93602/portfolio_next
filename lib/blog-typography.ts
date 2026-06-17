@@ -53,11 +53,20 @@ const blogTypography = plugin(function ({ addComponents, theme }: PluginAPI) {
       // Code Blocks
       pre: {
         background: "hsl(var(--card))",
+        // Explicit foreground so code text pairs with the card background in
+        // BOTH themes. Without this the @tailwindcss/typography base rule
+        // colors `pre code` a light slate (intended for its own dark pre-bg),
+        // which lands as light-on-white here and fails WCAG AA contrast.
+        color: "hsl(var(--foreground))",
         border: "1px solid hsl(var(--border))",
         "border-radius": theme("borderRadius.lg"),
         padding: "1.25rem",
         margin: "1.5rem 0",
         "overflow-x": "auto",
+      },
+      "pre code": {
+        color: "inherit",
+        background: "transparent",
       },
       code: {
         "font-family": theme("fontFamily.mono"),

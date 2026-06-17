@@ -50,12 +50,12 @@ export default function HomeContent({ featuredPosts }: Props) {
               lives here. Wrapping in framer-motion delays paint by ~2.6s
               while the bundle hydrates and the opacity:0 → 1 transition
               runs. CSS-only fade keeps Lighthouse perf above 90. */}
-          <div className="motion-safe:animate-[fade-in-up_0.5s_ease-out] space-y-6 lg:w-1/2">
+          <div className="space-y-6 motion-safe:animate-[fade-in-up_0.5s_ease-out] lg:w-1/2">
             <div className="space-y-2">
               <Badge variant="outline" className="text-sm font-medium">
                 Available for hire · Open to part-time & freelance
               </Badge>
-              <h1 className="text-foreground text-4xl font-bold lg:text-6xl">
+              <h1 className="text-4xl font-bold text-foreground lg:text-6xl">
                 Hi, I&apos;m Shailesh Chaudhari
               </h1>
               <h2 className="bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-2xl font-semibold leading-tight text-transparent sm:text-3xl lg:text-3xl">
@@ -63,16 +63,16 @@ export default function HomeContent({ featuredPosts }: Props) {
               </h2>
             </div>
 
-            <p className="text-muted-foreground text-lg leading-relaxed">
-              ~2.5 years in the industry. Currently at ContextQA working on
-              the backend of our core QA-automation product — test execution
-              engine, VNC streaming, and multi-cloud browser orchestration
-              across Playwright / WebdriverIO / LambdaTest. Comfortable across
-              the stack from my EsparkBiz client-project days, but I go deep
-              on backend systems: distributed locks (Redlock), real-time
-              pub/sub (Socket.io + Redis adapter), webhook idempotency (SETNX),
-              AI pipelines (Gemini function-calling). Targeting backend,
-              platform, or developer-tooling roles.
+            <p className="text-lg leading-relaxed text-muted-foreground">
+              ~2.5 years in the industry. Currently at ContextQA working on the
+              backend of our core QA-automation product — test execution engine,
+              VNC streaming, and multi-cloud browser orchestration across
+              Playwright / WebdriverIO / LambdaTest. Comfortable across the
+              stack from my EsparkBiz client-project days, but I go deep on
+              backend systems: distributed locks (Redlock), real-time pub/sub
+              (Socket.io + Redis adapter), webhook idempotency (SETNX), AI
+              pipelines (Gemini function-calling). Targeting backend, platform,
+              or developer-tooling roles.
             </p>
 
             <div className="flex flex-wrap gap-2">
@@ -158,7 +158,7 @@ export default function HomeContent({ featuredPosts }: Props) {
             </div>
           </div>
 
-          <div className="motion-safe:animate-[fade-in-scale_0.5s_ease-out] flex justify-center lg:w-1/2 lg:justify-end">
+          <div className="flex justify-center motion-safe:animate-[fade-in-scale_0.5s_ease-out] lg:w-1/2 lg:justify-end">
             <div className="relative h-72 w-72 overflow-hidden rounded-full lg:h-[500px] lg:w-[500px]">
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/20 to-purple-600/20 blur-3xl" />
               <Image
@@ -184,10 +184,10 @@ export default function HomeContent({ featuredPosts }: Props) {
           transition={{ duration: 0.5 }}
           className="mb-10 text-center"
         >
-          <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary/70">
+          <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary">
             Side projects
           </p>
-          <h2 className="text-foreground text-3xl font-bold lg:text-4xl">
+          <h2 className="text-3xl font-bold text-foreground lg:text-4xl">
             Things I&apos;m building to learn
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
@@ -240,7 +240,7 @@ export default function HomeContent({ featuredPosts }: Props) {
                     {card.tag}
                   </span>
                 </div>
-                <h3 className="text-foreground mb-3 text-xl font-bold transition-colors group-hover:text-primary">
+                <h3 className="mb-3 text-xl font-bold text-foreground transition-colors group-hover:text-primary">
                   {card.title}
                 </h3>
                 <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
@@ -269,10 +269,10 @@ export default function HomeContent({ featuredPosts }: Props) {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mb-12 text-center"
         >
-          <h2 className="text-foreground mb-4 text-3xl font-bold lg:text-4xl">
+          <h2 className="mb-4 text-3xl font-bold text-foreground lg:text-4xl">
             Featured Articles
           </h2>
-          <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
             Dive into my latest insights on software development,
             problem-solving, and career growth.
           </p>
@@ -297,10 +297,10 @@ export default function HomeContent({ featuredPosts }: Props) {
                       {post.readTime}
                     </span>
                   </div>
-                  <h3 className="text-foreground mb-3 line-clamp-2 text-xl font-semibold transition-colors group-hover:text-primary">
+                  <h3 className="mb-3 line-clamp-2 text-xl font-semibold text-foreground transition-colors group-hover:text-primary">
                     {post.title}
                   </h3>
-                  <p className="text-muted-foreground mb-4 line-clamp-3 text-sm">
+                  <p className="mb-4 line-clamp-3 text-sm text-muted-foreground">
                     {post.description}
                   </p>
                   <div className="flex flex-wrap gap-1">
