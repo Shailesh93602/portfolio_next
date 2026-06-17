@@ -1,14 +1,21 @@
 /** @type {import('@lhci/cli').LhciConfig} */
 //
-// Lighthouse CI runs on every PR + daily cron. We collect both desktop
-// AND mobile runs (recruiters at Vercel check mobile scores too) and
-// enforce:
+// Lighthouse CI runs on every PR against the production server the workflow
+// starts (`npm run build` + `npm run start` on :3000) and enforces:
 //   - aggregate category scores (perf warn, a11y/best-practices/SEO error)
 //   - numeric Web Vitals budgets (LCP / INP / CLS / TBT) matching the
 //     target-company bar from the 2026-04-19 recruiter review
 //
-// To add a new URL: put it in BOTH the desktop and mobile collect blocks.
-// To relax a budget: change the maxNumericValue in the assertions block.
+// `collect` MUST be a single object. It was previously an array of two
+// blocks (desktop + mobile); lhci does not support an array there, so it
+// silently ignored `url`, auto-detected `./public` as a staticDistDir, and
+// served an index-less folder — every run died with NO_FCP and never audited
+// the real app. lhci can't run two form factors in one autorun, so we audit
+// the desktop preset (which matches the budgets below); a mobile pass would
+// need a separate workflow/matrix job.
+//
+// To add a new URL: add it to URLS. To relax a budget: change the
+// maxNumericValue in the assertions block.
 
 const URLS = [
   "http://localhost:3000/",
@@ -35,34 +42,16 @@ const webVitalsBudgets = {
 
 module.exports = {
   ci: {
-    collect: [
-      {
-        url: URLS,
-        numberOfRuns: 1,
-        settings: {
-          preset: "desktop",
-          throttlingMethod: "simulate",
-        },
+    collect: {
+      // Explicit URLs (the running :3000 server) — keeps lhci from
+      // auto-detecting ./public as a staticDistDir.
+      url: URLS,
+      numberOfRuns: 1,
+      settings: {
+        preset: "desktop",
+        throttlingMethod: "simulate",
       },
-      {
-        url: URLS,
-        numberOfRuns: 1,
-        settings: {
-          // Lighthouse default mobile preset — matches Vercel Speed
-          // Insights dashboard and Google PageSpeed mobile reports.
-          preset: undefined,
-          throttlingMethod: "simulate",
-          formFactor: "mobile",
-          screenEmulation: {
-            mobile: true,
-            width: 390,
-            height: 844,
-            deviceScaleFactor: 2,
-            disabled: false,
-          },
-        },
-      },
-    ],
+    },
     assert: {
       preset: "lighthouse:no-pwa",
       assertions: {
