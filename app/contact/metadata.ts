@@ -4,6 +4,13 @@ import { PROFILE } from "@/lib/profile";
 
 const contactTitle = `Contact ${PROFILE.name.full}`;
 
+// True 1200×630 social card (the shailesh.webp portrait pillar-boxes).
+const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(
+  contactTitle
+)}&type=page&description=${encodeURIComponent(
+  "Available for part-time and freelance work — remote-friendly"
+)}`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: contactTitle,
@@ -43,7 +50,7 @@ export const metadata: Metadata = {
       "Available for part-time and freelance work. Next.js, Node.js, TypeScript, real-time systems. Remote-friendly.",
     images: [
       {
-        url: "/Images/shailesh.webp",
+        url: ogImageUrl,
         width: 1200,
         height: 630,
         alt: "Shailesh Chaudhari Profile",
@@ -55,7 +62,7 @@ export const metadata: Metadata = {
     title: "Contact Shailesh Chaudhari",
     description:
       "Available for part-time and freelance Next.js / Node.js work. Remote, async-friendly.",
-    images: ["/Images/shailesh.webp"],
+    images: [ogImageUrl],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,
   },

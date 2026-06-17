@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 
+// True 1200×630 social card (the shailesh.webp portrait pillar-boxes).
+const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(
+  "Projects — Shailesh Chaudhari"
+)}&type=page&description=${encodeURIComponent(
+  "Production projects across EdTech, developer tooling, AI, and SaaS"
+)}`;
+
 export const metadata: Metadata = {
   title: "Projects — Shailesh Chaudhari",
   description:
@@ -41,7 +48,7 @@ export const metadata: Metadata = {
       "5 production projects spanning EdTech, developer tooling, AI, and SaaS. Real-time systems, Chrome extensions, and full-stack web apps.",
     images: [
       {
-        url: "/Images/shailesh.webp",
+        url: ogImageUrl,
         width: 1200,
         height: 630,
         alt: "Shailesh Chaudhari Portfolio",
@@ -53,7 +60,7 @@ export const metadata: Metadata = {
     title: "Projects — Shailesh Chaudhari",
     description:
       "Real-time platforms, AI tools, Chrome extensions, and SaaS apps. All built and shipped.",
-    images: ["/Images/shailesh.webp"],
+    images: [ogImageUrl],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,
   },

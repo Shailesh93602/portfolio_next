@@ -34,7 +34,13 @@ export function BlogCard({
       <Link href={`/blog/${slug}`}>
         <Card className="bg-background overflow-hidden transition-shadow duration-300 hover:shadow-lg">
           <div className="relative h-48">
-            <Image src={image} alt={title} fill className="object-cover" />
+            <Image
+              src={image}
+              alt={title}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover"
+            />
           </div>
           <CardContent className="p-6">
             <div className="mb-4 flex items-center gap-2">
@@ -43,6 +49,7 @@ export function BlogCard({
                   src={author.avatar}
                   alt={author.name}
                   fill
+                  sizes="32px"
                   className="object-cover"
                 />
               </div>

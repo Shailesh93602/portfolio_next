@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 
+// True 1200×630 social card (the shailesh.webp portrait pillar-boxes).
+const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(
+  "Coding Stats — Shailesh Chaudhari"
+)}&type=page&description=${encodeURIComponent(
+  "GitHub heatmap, LeetCode progress, GFG Institute Rank 1"
+)}`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Coding Stats — Shailesh Chaudhari",
@@ -41,7 +48,7 @@ export const metadata: Metadata = {
       "GitHub contributions, LeetCode stats, and competitive programming achievements. Institute Rank 1 on GeeksforGeeks.",
     images: [
       {
-        url: "/Images/shailesh.webp",
+        url: ogImageUrl,
         width: 1200,
         height: 630,
         alt: "Shailesh Chaudhari Statistics",
@@ -52,7 +59,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Coding Stats — Shailesh Chaudhari",
     description: "GitHub heatmap, LeetCode progress, GFG Institute Rank 1.",
-    images: ["/Images/shailesh.webp"],
+    images: [ogImageUrl],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,
   },

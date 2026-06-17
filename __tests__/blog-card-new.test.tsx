@@ -95,6 +95,21 @@ describe("BlogCard (blog/blog-card.tsx)", () => {
     expect(img).toBeInTheDocument();
   });
 
+  // POR-2: every `fill` image must declare `sizes` so next/image generates a
+  // right-sized srcset (no oversized fetches, avoids layout-shift on load).
+  it("declares responsive `sizes` on the hero image", () => {
+    render(<BlogCard post={mockPost} index={0} />);
+    const img = screen.getByAltText("Redis Distributed Locks");
+    expect(img).toHaveAttribute("sizes");
+    expect(img.getAttribute("sizes")).toMatch(/vw|px/);
+  });
+
+  it("declares fixed `sizes` on the author avatar", () => {
+    render(<BlogCard post={mockPost} index={0} />);
+    const avatar = screen.getByAltText("Shailesh Chaudhari");
+    expect(avatar).toHaveAttribute("sizes", "40px");
+  });
+
   it("uses fallback image when no image provided", () => {
     const postNoImage = { ...mockPost, image: undefined };
     render(<BlogCard post={postNoImage} index={0} />);

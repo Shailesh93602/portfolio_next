@@ -10,6 +10,12 @@ const descriptionOg = `${PROFILE.role.title} based in ${PROFILE.location.display
 
 const descriptionTwitter = `${PROFILE.role.title} at ${PROFILE.role.company}. ${PROFILE.education.degree} from ${PROFILE.education.institutionShort}, ${PROFILE.education.year}. Backend-focused full-stack — distributed systems, real-time, webhook idempotency.`;
 
+// True 1200×630 card via the dynamic OG route. The shailesh.webp portrait
+// (615×614) is fine as a favicon but pillar-boxes when declared as 1200×630.
+const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(
+  titleTag
+)}&type=page&description=${encodeURIComponent(descriptionOg)}`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: titleTag,
@@ -24,7 +30,7 @@ export const metadata: Metadata = {
     siteName: META_DEFAULTS.siteName,
     images: [
       {
-        url: "/Images/shailesh.webp",
+        url: ogImageUrl,
         width: 1200,
         height: 630,
         alt: PROFILE.name.full,
@@ -37,7 +43,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: titleTag,
     description: descriptionTwitter,
-    images: ["/Images/shailesh.webp"],
+    images: [ogImageUrl],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,
   },
