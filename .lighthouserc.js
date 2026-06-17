@@ -53,7 +53,10 @@ module.exports = {
       },
     },
     assert: {
-      preset: "lighthouse:no-pwa",
+      // No `lighthouse:no-pwa` preset: it asserts hundreds of granular audits
+      // (unused-javascript, errors-in-console, legacy-javascript, …) at error
+      // level — noise that isn't what this gate is for. We enforce exactly the
+      // documented intent: aggregate category scores + Web Vitals budgets.
       assertions: {
         ...categoryAssertions,
         ...webVitalsBudgets,
