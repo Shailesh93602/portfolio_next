@@ -42,7 +42,7 @@ export function BlogLayout({ children, post }: BlogLayoutProps) {
       <div className="container mx-auto px-4 py-12 md:py-20">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr,320px]">
           <article
-            className="prose prose-invert duration-600 max-w-none transition-all ease-out"
+            className="duration-600 prose max-w-none transition-all ease-out dark:prose-invert"
             aria-labelledby="post-title"
           >
             <header className="mb-12 space-y-6">

@@ -71,6 +71,7 @@ export default function AuthorBox({
               href={author.social.twitter}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={`${author.name} on Twitter`}
               className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
             >
               <TwitterIcon className="h-5 w-5" />
@@ -81,6 +82,7 @@ export default function AuthorBox({
               href={author.social.github}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={`${author.name} on GitHub`}
               className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
             >
               <GithubIcon className="h-5 w-5" />
@@ -91,6 +93,7 @@ export default function AuthorBox({
               href={author.social.linkedin}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={`${author.name} on LinkedIn`}
               className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
             >
               <LinkedinIcon className="h-5 w-5" />

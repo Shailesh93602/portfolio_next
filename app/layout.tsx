@@ -109,7 +109,10 @@ export default function RootLayout({
         {/* IndieWeb / rel=me — proves the social profiles belong to the same
             person, used by Mastodon for verification ticks and by IndieAuth. */}
         <link rel="me" href="https://github.com/Shailesh93602" />
-        <link rel="me" href="https://www.linkedin.com/in/shaileshbhaichaudhari" />
+        <link
+          rel="me"
+          href="https://www.linkedin.com/in/shaileshbhaichaudhari"
+        />
         <link rel="me" href="https://twitter.com/ShaileshWork" />
         <link rel="me" href="mailto:shailesh93602@gmail.com" />
         {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
@@ -310,7 +313,7 @@ export default function RootLayout({
           >
             <a
               href="#main-content"
-              className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:shadow-lg"
+              className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-md focus:bg-primary-solid focus:px-4 focus:py-2 focus:text-primary-solid-foreground focus:shadow-lg"
             >
               Skip to main content
             </a>

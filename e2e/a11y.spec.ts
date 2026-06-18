@@ -30,6 +30,9 @@ const ROUTES = [
   "/portfolio/redis-battle-demo",
   "/contact",
   "/blogs",
+  // A representative blog post — exercises the prose body, code blocks and
+  // the author/share box (raw-HTML rendered content the listing pages skip).
+  "/blog/building-inventory-engine-never-oversells-concurrency",
   "/statistics",
 ];
 
@@ -55,12 +58,11 @@ test.describe("WCAG 2.1 AA — axe-core scan across public routes", () => {
 
         const results = await new AxeBuilder({ page })
           .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
-          // Skip rules that have known false-positives on framer-motion
-          // animated containers + color-contrast on gradient backgrounds
-          // (handled visually instead).
-          .disableRules([
-            "color-contrast", // covered by manual review + Lighthouse a11y score
-          ])
+          // color-contrast is now ENFORCED (POR-1): the purple brand was
+          // decoupled into `--primary` (tuned for text/accents on the page
+          // background) and `--primary-solid` (dark enough for white text on
+          // buttons/badges) so both directions clear AA. Re-add a rule here
+          // only with a written justification.
           .analyze();
 
         // Group violations by impact for friendlier CI output
@@ -71,25 +73,29 @@ test.describe("WCAG 2.1 AA — axe-core scan across public routes", () => {
           (v) => v.impact === "moderate"
         );
 
-        expect.soft(
-          serious.map((v) => ({
-            id: v.id,
-            impact: v.impact,
-            help: v.help,
-            nodes: v.nodes.length,
-          })),
-          `serious/critical violations on ${route} (${theme})`
-        ).toEqual([]);
+        expect
+          .soft(
+            serious.map((v) => ({
+              id: v.id,
+              impact: v.impact,
+              help: v.help,
+              nodes: v.nodes.length,
+            })),
+            `serious/critical violations on ${route} (${theme})`
+          )
+          .toEqual([]);
 
-        expect.soft(
-          moderate.map((v) => ({
-            id: v.id,
-            impact: v.impact,
-            help: v.help,
-            nodes: v.nodes.length,
-          })),
-          `moderate violations on ${route} (${theme})`
-        ).toEqual([]);
+        expect
+          .soft(
+            moderate.map((v) => ({
+              id: v.id,
+              impact: v.impact,
+              help: v.help,
+              nodes: v.nodes.length,
+            })),
+            `moderate violations on ${route} (${theme})`
+          )
+          .toEqual([]);
 
         // Hard fail only on critical/serious — moderate are surfaced
         // as soft failures (visible in report, don't block merge yet)

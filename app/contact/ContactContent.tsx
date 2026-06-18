@@ -57,7 +57,7 @@ const InputField: React.FC<InputFieldProps> = ({
     <div className="mb-4">
       <label
         htmlFor={name}
-        className="text-foreground mb-2 block text-sm font-medium"
+        className="mb-2 block text-sm font-medium text-foreground"
       >
         {label}
       </label>
@@ -67,7 +67,7 @@ const InputField: React.FC<InputFieldProps> = ({
         aria-invalid={error ? "true" : undefined}
         aria-describedby={error ? errorId : undefined}
         {...register(name, rules)}
-        className={`bg-background text-foreground w-full rounded-md border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary ${
+        className={`w-full rounded-md border bg-background px-4 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary ${
           error ? "border-red-500" : "border-gray-700"
         }`}
       />
@@ -366,7 +366,7 @@ export const ContactContent: React.FC = () => {
                 type="submit"
                 size="lg"
                 disabled={isSubmitting}
-                className="w-full bg-primary text-white hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full bg-primary-solid text-white hover:bg-primary-solid/90 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSubmitting ? "Processing..." : "Send Message"}
               </Button>
@@ -384,8 +384,8 @@ export const ContactContent: React.FC = () => {
                 <span className="text-lg">✅</span>{" "}
                 <span className="font-semibold">Message sent.</span> I&apos;ll
                 reply from{" "}
-                <span className="font-medium">{CONTACT_INFO.EMAIL}</span>{" "}
-                within a day or two.
+                <span className="font-medium">{CONTACT_INFO.EMAIL}</span> within
+                a day or two.
               </div>
             )}
             {submitStatus === "success-fallback" && (
@@ -429,7 +429,10 @@ export const ContactContent: React.FC = () => {
               <a
                 href={`mailto:${CONTACT_INFO.EMAIL}`}
                 className="font-medium text-primary hover:underline"
-              >{CONTACT_INFO.EMAIL}</a>.
+              >
+                {CONTACT_INFO.EMAIL}
+              </a>
+              .
             </p>
           </form>
         </motion.div>

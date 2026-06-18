@@ -63,7 +63,7 @@ export default function ProjectDetailContent({ project }: Props) {
             >
               <Link
                 href="/portfolio"
-                className="mb-4 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-primary/80 transition-colors hover:text-primary"
+                className="mb-4 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-primary transition-colors hover:text-primary/80"
               >
                 <ArrowLeftIcon className="h-4 w-4" />
                 Featured Project
@@ -444,17 +444,17 @@ export default function ProjectDetailContent({ project }: Props) {
           {project.incidents && project.incidents.length > 0 && (
             <section className="space-y-12">
               <div className="mx-auto mb-12 max-w-3xl space-y-4 text-center">
-                <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary/80">
+                <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">
                   Incidents &amp; fixes
                 </p>
                 <h2 className="text-4xl font-black uppercase italic tracking-tight md:text-5xl">
                   Real bugs, real fixes
                 </h2>
                 <p className="text-lg leading-relaxed text-muted-foreground">
-                  The case-study sections above cover what the system does
-                  well. These are the times it didn&apos;t — what broke, what
-                  I got wrong on the first hypothesis, and how we confirmed
-                  the fix held.
+                  The case-study sections above cover what the system does well.
+                  These are the times it didn&apos;t — what broke, what I got
+                  wrong on the first hypothesis, and how we confirmed the fix
+                  held.
                 </p>
               </div>
 
@@ -502,7 +502,7 @@ export default function ProjectDetailContent({ project }: Props) {
                         </p>
                       </div>
                       <div className="space-y-2">
-                        <p className="text-xs font-black uppercase tracking-widest text-primary/70">
+                        <p className="text-xs font-black uppercase tracking-widest text-primary">
                           Confirmed by
                         </p>
                         <p className="leading-relaxed text-muted-foreground">
@@ -703,7 +703,7 @@ export default function ProjectDetailContent({ project }: Props) {
                     >
                       <div className="flex items-start gap-3">
                         <CheckIcon className="mt-0.5 h-5 w-5 text-primary opacity-50 transition-opacity group-hover:opacity-100" />
-                        <span className="group-hover:text-foreground text-muted-foreground transition-colors">
+                        <span className="text-muted-foreground transition-colors group-hover:text-foreground">
                           {feature}
                         </span>
                       </div>
