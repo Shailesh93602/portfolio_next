@@ -93,7 +93,7 @@ describe("Navbar", () => {
     expect(logoLink).toHaveAttribute("href", "/");
   });
 
-  it("renders Home, Statistics, and Hire Me links", () => {
+  it("renders Home, Statistics, and Services links", () => {
     render(<Navbar />);
     // Both desktop and mobile — at least one occurrence each
     expect(
@@ -102,8 +102,8 @@ describe("Navbar", () => {
     expect(
       screen.getAllByRole("link", { name: /statistics/i }).length
     ).toBeGreaterThanOrEqual(1);
-    expect(
-      screen.getAllByRole("link", { name: /hire me/i }).length
-    ).toBeGreaterThanOrEqual(1);
+    const services = screen.getAllByRole("link", { name: /^services$/i });
+    expect(services.length).toBeGreaterThanOrEqual(1);
+    expect(services[0]).toHaveAttribute("href", "/services");
   });
 });

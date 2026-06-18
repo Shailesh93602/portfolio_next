@@ -1,7 +1,7 @@
 import { permanentRedirect } from "next/navigation";
 
-// /hire-me 404d. Nav links to /hire. Manual-URL guesses land here;
-// permanent-redirect to the canonical route.
+// /hire-me 404d, then redirected to /hire. /services is now canonical, so
+// point straight there to avoid a redirect chain.
 export default function HireMeRedirect(): never {
-  permanentRedirect("/hire");
+  permanentRedirect("/services");
 }

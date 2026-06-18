@@ -104,15 +104,19 @@ test.describe("Navigation", () => {
     await expect(page).toHaveTitle(/Coding Stats/i);
   });
 
-  test("hire page loads with correct resume link", async ({ page }) => {
+  test("services page loads with a contact CTA", async ({ page }) => {
+    await page.goto("/services");
+    await expect(page).toHaveTitle(/Services/i);
+    const contactCta = page.getByRole("link", {
+      name: /start a conversation/i,
+    });
+    await expect(contactCta).toBeVisible();
+    await expect(contactCta).toHaveAttribute("href", "/contact");
+  });
+
+  test("/hire permanently redirects to /services", async ({ page }) => {
     await page.goto("/hire");
-    await expect(page).toHaveTitle(/Hire/i);
-    const resumeLink = page.getByRole("link", { name: /resume/i });
-    await expect(resumeLink).toBeVisible();
-    await expect(resumeLink).toHaveAttribute(
-      "href",
-      "/Shailesh_Chaudhari_Resume.pdf"
-    );
+    await expect(page).toHaveURL(/\/services$/);
   });
 
   test("skip-to-main link is present in DOM", async ({ page }) => {
