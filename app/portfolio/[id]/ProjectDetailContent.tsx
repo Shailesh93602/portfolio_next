@@ -49,6 +49,7 @@ export default function ProjectDetailContent({ project }: Props) {
             src={project.image}
             alt={project.title}
             fill
+            sizes="100vw"
             className="scale-105 object-cover brightness-[0.3]"
             priority
           />
@@ -292,6 +293,7 @@ export default function ProjectDetailContent({ project }: Props) {
                               alt={showcase.title}
                               fill
                               unoptimized
+                              sizes="(max-width: 1024px) 100vw, 66vw"
                               className="object-cover transition-transform duration-1000 hover:scale-[1.02]"
                             />
                           )}
@@ -342,6 +344,7 @@ export default function ProjectDetailContent({ project }: Props) {
                           src={img}
                           alt={`${project.title} screenshot ${idx + 1}`}
                           fill
+                          sizes="(max-width: 768px) 100vw, 50vw"
                           className="object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                       )}
@@ -559,6 +562,7 @@ export default function ProjectDetailContent({ project }: Props) {
           src={project.image}
           alt={project.title}
           fill
+          sizes="100vw"
           className="object-cover brightness-[0.4]"
           priority
         />

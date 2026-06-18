@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 
+// True 1200×630 social card (the shailesh.webp portrait pillar-boxes).
+const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(
+  "Blog — Shailesh Chaudhari"
+)}&type=page&description=${encodeURIComponent(
+  "Technical writing on Next.js, Node.js, and production engineering"
+)}`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Blog — Shailesh Chaudhari",
@@ -54,7 +61,7 @@ export const metadata: Metadata = {
     siteName: META_DEFAULTS.siteName,
     images: [
       {
-        url: "/Images/shailesh.webp",
+        url: ogImageUrl,
         width: 1200,
         height: 630,
         alt: "Shailesh Chaudhari Blog",
@@ -67,7 +74,7 @@ export const metadata: Metadata = {
     title: "Blog — Shailesh Chaudhari",
     description:
       "Technical articles on Next.js, NestJS, DSA, and real lessons from production engineering.",
-    images: ["/Images/shailesh.webp"],
+    images: [ogImageUrl],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,
   },

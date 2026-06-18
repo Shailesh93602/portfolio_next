@@ -72,6 +72,7 @@ export default function ThemeComparison({
               src={theme === "dark" ? darkImage : lightImage}
               alt={`${title} in ${theme} mode`}
               fill
+              sizes="(max-width: 1024px) 100vw, 66vw"
               className="object-cover"
             />
           </motion.div>
