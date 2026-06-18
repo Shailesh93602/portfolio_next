@@ -88,6 +88,33 @@ describe("Project constants", () => {
     expect(eduscale).toBeDefined();
     expect(eduscale?.live).toBeTruthy();
   });
+
+  it("every github/live link is a valid https URL", () => {
+    projects.forEach((p) => {
+      if (p.github) expect(p.github).toMatch(/^https:\/\//);
+      if (p.live) expect(p.live).toMatch(/^https:\/\//);
+    });
+  });
+
+  it("Holdfast reports its real test count (15) consistently", () => {
+    const holdfast = projects.find((p) => p.id === "holdfast");
+    expect(holdfast).toBeDefined();
+    const tests = holdfast?.keyMetrics?.find((m) => m.label === "Tests");
+    expect(tests?.value).toBe("15 passing");
+    // techStack line must agree with the keyMetric (no stale 12/14 claim)
+    expect(holdfast?.techStack?.some((t) => /Vitest \(15,/.test(t))).toBe(true);
+    expect(holdfast?.techStack?.some((t) => /Vitest \(1[24],/.test(t))).toBe(
+      false
+    );
+  });
+
+  it("open-source library lead-magnets are present with github links", () => {
+    ["grounded", "idempotency-kit", "promptproof"].forEach((id) => {
+      const lib = projects.find((p) => p.id === id);
+      expect(lib).toBeDefined();
+      expect(lib?.github).toBe(`https://github.com/Shailesh93602/${id}`);
+    });
+  });
 });
 
 describe("Link constants", () => {
