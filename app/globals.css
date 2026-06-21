@@ -39,6 +39,13 @@
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
+    /* `--destructive` (above) is tuned as a button/badge BACKGROUND with
+       near-white foreground on top. When the showcase pages use red as
+       TEXT on the page background (e.g. "The Problem" headings, anti-pattern
+       labels) that value only clears ~3.5:1 — under WCAG AA. `--destructive-accent`
+       is the text-tuned red (mirrors the --primary / --primary-solid split from
+       POR-1): dark enough here for ≥4.5:1 on light surfaces. */
+    --destructive-accent: 0 74% 42%;
 
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
@@ -95,6 +102,9 @@
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
+    /* Text-tuned red for dark surfaces — light enough for ≥4.5:1 on the dark
+       card/background. See the light-theme note above. */
+    --destructive-accent: 0 91% 71%;
 
     --border: 217 32.6% 17.5%;
     --input: 217 32.6% 17.5%;

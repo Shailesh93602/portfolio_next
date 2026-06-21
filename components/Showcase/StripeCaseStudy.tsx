@@ -149,8 +149,11 @@ const GLOW_BOTTOM =
 const GLOW_DESTRUCT =
   "pointer-events-none absolute -right-24 -bottom-24 h-72 w-72 rounded-full bg-destructive/10 blur-[120px]";
 const LABEL = "text-xs font-black uppercase tracking-[0.3em] text-primary";
+// A terminal-style code block. Pinned to a solid dark surface + light text in
+// BOTH themes — `bg-black/40` blended with the light-theme card to a muddy
+// mid-gray (#999) under which `text-muted-foreground` only read ~2:1 (WCAG AA fail).
 const CODE_BOX =
-  "overflow-x-auto rounded-xl border border-white/5 bg-black/40 p-4 font-mono text-xs leading-relaxed text-muted-foreground";
+  "overflow-x-auto rounded-xl border border-white/10 bg-zinc-900 p-4 font-mono text-xs leading-relaxed text-zinc-200";
 const REVEAL = {
   initial: { opacity: 0, y: 12 },
   whileInView: { opacity: 1, y: 0 },
@@ -445,10 +448,10 @@ redis> TTL stripe:event:evt_abc123
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6">
               <div className="mb-4 flex items-center justify-between">
-                <p className="text-xs font-bold uppercase tracking-widest text-destructive">
+                <p className="text-xs font-bold uppercase tracking-widest text-destructive-accent">
                   Naive retry (wrong)
                 </p>
-                <span className="rounded-full border border-destructive/30 bg-destructive/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-destructive">
+                <span className="rounded-full border border-destructive/30 bg-destructive/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest text-destructive-accent">
                   anti-pattern
                 </span>
               </div>
@@ -472,7 +475,7 @@ throw new Error("out of retries");`}
                   "Missing idempotency key means each retry could double charge.",
                 ].map((line) => (
                   <li key={line} className="flex gap-2">
-                    <span className="text-destructive">&bull;</span>
+                    <span className="text-destructive-accent">&bull;</span>
                     <span>{line}</span>
                   </li>
                 ))}

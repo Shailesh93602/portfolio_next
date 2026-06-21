@@ -28,6 +28,7 @@ const ROUTES = [
   "/portfolio/khatago",
   "/portfolio/stripe-payments-demo",
   "/portfolio/redis-battle-demo",
+  "/now",
   "/contact",
   "/blogs",
   // A representative blog post — exercises the prose body, code blocks and
@@ -45,6 +46,38 @@ async function setTheme(page: Page, theme: "light" | "dark") {
   await page.reload({ waitUntil: "networkidle" });
   // Give next-themes a moment to apply the class before axe scans
   await page.waitForTimeout(200);
+  await settleAnimations(page);
+}
+
+/**
+ * Force every framer-motion fade/slide-in to its final resting state before
+ * axe scans. Without this, axe occasionally samples a card mid-fade: the
+ * partially-transparent element blends with the white page so a `text-white`
+ * badge on `--primary-solid` reads as a lighter purple (#ad77f7 ≈ 3.1:1)
+ * and trips a *flaky* serious color-contrast failure — even though the badge
+ * clears AA (≥4.5:1) once opacity hits 1. Settling first removes the flake
+ * without masking any genuine at-rest contrast regression.
+ */
+async function settleAnimations(page: Page) {
+  await page.addStyleTag({
+    content: `
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-delay: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+        transition-delay: 0.001ms !important;
+      }
+    `,
+  });
+  await page.evaluate(() => {
+    document.querySelectorAll<HTMLElement>("[style]").forEach((el) => {
+      if (el.style.opacity && Number(el.style.opacity) < 1)
+        el.style.opacity = "1";
+      if (el.style.transform && el.style.transform !== "none")
+        el.style.transform = "none";
+    });
+  });
+  await page.waitForTimeout(150);
 }
 
 test.describe("WCAG 2.1 AA — axe-core scan across public routes", () => {
