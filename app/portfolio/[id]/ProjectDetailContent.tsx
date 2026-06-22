@@ -156,9 +156,9 @@ export default function ProjectDetailContent({ project }: Props) {
               >
                 <div className="mb-2 flex items-center gap-3">
                   <div className="rounded-lg bg-destructive/10 p-2">
-                    <StarIcon className="h-5 w-5 rotate-45 text-destructive" />
+                    <StarIcon className="h-5 w-5 rotate-45 text-destructive-accent" />
                   </div>
-                  <h3 className="text-2xl font-bold text-destructive">
+                  <h3 className="text-2xl font-bold text-destructive-accent">
                     The Problem
                   </h3>
                 </div>
@@ -481,7 +481,7 @@ export default function ProjectDetailContent({ project }: Props) {
                     </header>
                     <div className="grid gap-10 px-8 py-8 md:grid-cols-2">
                       <div className="space-y-2">
-                        <p className="text-xs font-black uppercase tracking-widest text-destructive/80">
+                        <p className="text-xs font-black uppercase tracking-widest text-destructive-accent">
                           Symptom
                         </p>
                         <p className="leading-relaxed text-foreground">
@@ -630,9 +630,9 @@ export default function ProjectDetailContent({ project }: Props) {
               >
                 <div className="mb-2 flex items-center gap-3">
                   <div className="rounded-lg bg-destructive/10 p-2">
-                    <StarIcon className="h-5 w-5 rotate-45 text-destructive" />
+                    <StarIcon className="h-5 w-5 rotate-45 text-destructive-accent" />
                   </div>
-                  <h3 className="text-2xl font-bold text-destructive">
+                  <h3 className="text-2xl font-bold text-destructive-accent">
                     The Problem
                   </h3>
                 </div>
