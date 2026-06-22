@@ -15,7 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9, images: [`${SITE_URL}/Images/shailesh.webp`] },
     { url: `${SITE_URL}/contact`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.6, images: [ogFor("/contact")] },
     { url: `${SITE_URL}/portfolio`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.95, images: [ogFor("/portfolio")] },
-    { url: `${SITE_URL}/hire`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9, images: [ogFor("/hire")] },
+    { url: `${SITE_URL}/services`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9, images: [ogFor("/services")] },
     { url: `${SITE_URL}/statistics`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7, images: [ogFor("/statistics")] },
     { url: `${SITE_URL}/now`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7, images: [ogFor("/now")] },
   ];

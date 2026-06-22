@@ -50,7 +50,7 @@ const pages = [
   { name: "blogs", path: "/blogs" },
   { name: "contact", path: "/contact" },
   { name: "statistics", path: "/statistics" },
-  { name: "hire", path: "/hire" },
+  { name: "services", path: "/services" },
 ];
 
 // Cover every band from iPhone-SE class (320) up to a 24" desktop

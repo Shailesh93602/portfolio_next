@@ -22,7 +22,7 @@ const ROUTES = [
   "/blogs",
   "/blog/best-practices-api-development-express-nestjs",
   "/contact",
-  "/hire",
+  "/services",
   "/now",
   "/statistics",
 ];
