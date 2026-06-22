@@ -32,8 +32,8 @@ export const metadata: Metadata = {
   },
 };
 
-// Updated: 2026-04-30
-const lastUpdated = "April 30, 2026";
+// Updated: 2026-06-18
+const lastUpdated = "June 18, 2026";
 
 const breadcrumbSchema = {
   "@context": "https://schema.org",
@@ -98,10 +98,25 @@ export default function NowPage() {
           <li className="flex gap-3">
             <span aria-hidden className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
             <span>
-              <strong className="font-semibold text-foreground">SEO / GEO / AEO sweep</strong>{" "}
-              across every public project — favicons, OG images, JSON-LD,
-              FAQ schema, llms.txt for AI crawlers. The infrastructure work
-              behind landing in the right results when recruiters search.
+              <strong className="font-semibold text-foreground">Open-source reliability libraries:</strong>{" "}
+              shipping small, well-tested production-pattern starters —{" "}
+              <strong className="font-semibold text-foreground">Grounded</strong>{" "}
+              (a RAG starter with cited answers + an &quot;I don&apos;t know&quot;
+              guardrail),{" "}
+              <strong className="font-semibold text-foreground">idempotency-kit</strong>{" "}
+              (at-most-once writes + sliding-window rate limiting), and{" "}
+              <strong className="font-semibold text-foreground">promptproof</strong>{" "}
+              (an LLM eval + regression-diff kit). All zero-dependency or
+              offline-testable, published on GitHub.
+            </span>
+          </li>
+          <li className="flex gap-3">
+            <span aria-hidden className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+            <span>
+              <strong className="font-semibold text-foreground">Holdfast:</strong>{" "}
+              an inventory reservation engine that never oversells under
+              concurrency — three locking strategies benchmarked against real
+              Postgres, proven by tests. Live on Render.
             </span>
           </li>
           <li className="flex gap-3">

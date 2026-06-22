@@ -119,9 +119,9 @@ export const projects: Project[] = [
       },
       {
         label: "Tests",
-        value: "14 passing",
+        value: "15 passing",
         description:
-          "Concurrency, idempotency, deadlock-safe baskets, lifecycle, chaos — vs real Postgres",
+          "Concurrency, idempotency, deadlock-safe baskets, sharding, lifecycle, chaos — vs real Postgres",
       },
     ],
     features: [
@@ -139,7 +139,7 @@ export const projects: Project[] = [
       "Data access: Drizzle (schema + migrations + typed reads) + raw SQL on the lock path",
       "Server: Fastify, Zod",
       "Observability: prom-client (Prometheus)",
-      "Tests: Vitest (12, against real Postgres)",
+      "Tests: Vitest (15, against real Postgres)",
       "Infra: Docker, GitHub Actions CI with a Postgres service",
     ],
     problem:
@@ -899,6 +899,215 @@ export const projects: Project[] = [
       "Two genuinely separate Node.js processes sharing one Redis. The Redlock race is real: one instance wins, one loses. The browser shows which one won each tick. The Prometheus metrics show the counts accumulate correctly across both instances.",
     challengesSolved:
       "The key insight was using retryCount: 0 on Redlock. With retries enabled, both instances queue up for the lock, and when the tick interval fires again before the queue drains, you get multiple ticks per interval — exactly the race condition you're trying to prevent. Zero retries means: if you didn't win this tick, you skip it. Clean, exactly-once semantics at the cost of occasional missed ticks under high contention.",
+  },
+  {
+    id: "grounded",
+    title: "Grounded — Production RAG Starter",
+    description:
+      "A RAG starter that answers only from your sources, cites them, and says “I don't know” instead of hallucinating. Idempotent ingestion (content-hash dedup), retries with backoff, and an eval harness that catches regressions in CI. Runs fully offline — no API key or database required.",
+    image: "/Images/portfolio1.png",
+    tags: [
+      "TypeScript",
+      "RAG",
+      "Fastify",
+      "PostgreSQL",
+      "pgvector",
+      "OpenAI",
+      "Idempotency",
+      "Vitest",
+    ],
+    github: "https://github.com/Shailesh93602/grounded",
+    detailedDescription:
+      "Grounded is the boring, reliable parts of a RAG system done right, in a codebase small enough to read in 20 minutes. Every answer cites the source chunks it used; if retrieval returns nothing relevant, it refuses (`grounded: false`) instead of guessing. Ingestion is idempotent — chunks are content-hashed so re-ingesting only embeds new or changed content, eliminating wasted API spend on every deploy. Transient embedding/LLM errors retry with backoff while 4xx fail fast. A labelled Q&A eval harness scores retrieval and answers so a prompt or model change can't silently regress quality in CI. Embedder, vector store, and LLM are all swappable via env — the default runs with an in-memory store and extractive answers, so the whole thing is testable offline with no API key and no database.",
+    architecture: {
+      layers: [
+        {
+          name: "API",
+          items: [
+            "Fastify: POST /ingest, POST /ask",
+            "Cited answers — every response references its source chunks",
+            "“I don't know” guardrail when retrieval is empty",
+          ],
+        },
+        {
+          name: "Ingestion",
+          items: [
+            "Content-hash dedup → embed only new/changed chunks (idempotent)",
+            "Retry with backoff on transient errors; 4xx fail fast",
+          ],
+        },
+        {
+          name: "Retrieval & Eval",
+          items: [
+            "pgvector cosine similarity (in-memory store for offline mode)",
+            "Eval harness scores retrieval + answers on a labelled set",
+          ],
+        },
+        {
+          name: "Pluggable",
+          items: [
+            "Embedder / store / LLM swappable via env",
+            "Default: no API key, no DB — fully offline-testable",
+          ],
+        },
+      ],
+      description:
+        "An ask request retrieves the top-k chunks, refuses if nothing clears the relevance bar, otherwise composes a cited answer. Ingestion is a near-no-op on unchanged content thanks to content-hash dedup. The eval harness runs the same path against a labelled set so regressions surface in CI.",
+    },
+    features: [
+      "Cited answers — every response references the exact source chunks it used",
+      "“I don't know” guardrail — refuses instead of hallucinating when nothing relevant is retrieved",
+      "Idempotent ingestion — content-hash dedup means re-ingesting only embeds new/changed chunks",
+      "Retries with backoff on transient API errors; 4xx fail fast",
+      "Eval harness scores retrieval + answers so prompt/model changes can't silently regress in CI",
+      "Provider/store-agnostic and offline-testable — default runs with no API key and no database",
+    ],
+    techStack: [
+      "Language: TypeScript",
+      "Server: Fastify",
+      "Vector store: PostgreSQL + pgvector (in-memory fallback for offline mode)",
+      "LLM/embeddings: OpenAI (swappable via env)",
+      "Tests: Vitest (10, offline — no API key/DB)",
+    ],
+    problem:
+      "Most RAG demos look great until real users hit them: they hallucinate when the answer isn't in the corpus, re-embed everything on every deploy, double-charge on retries, and give you no way to tell whether a prompt change made retrieval quality worse.",
+    solution:
+      "A small, readable starter that does the reliable parts properly: grounded cited answers with an explicit refusal path, content-hash idempotent ingestion, retry policy that distinguishes transient from fatal, and an eval harness that turns 'did this change make things worse?' into a CI signal instead of a vibe.",
+    challengesSolved:
+      "The interesting design call was making the whole pipeline runnable with zero external dependencies so it's genuinely testable in CI: an in-memory vector store and an extractive answerer stand in for the real embedder/LLM behind the same interface, so the guardrail, citation, and idempotency logic are all exercised offline. The other was idempotent ingestion — hashing chunk content (not just document IDs) so an edited document re-embeds only the chunks that actually changed, which is what keeps re-ingestion cheap.",
+  },
+  {
+    id: "idempotency-kit",
+    title: "idempotency-kit",
+    description:
+      "Zero-dependency toolkit that makes write endpoints retry-safe and abuse-resistant: an at-most-once idempotency wrapper (the Stripe Idempotency-Key pattern) plus a sliding-window rate limiter, both over a pluggable async store. Deterministic and fully offline-testable.",
+    image: "/Images/portfolio1.png",
+    tags: [
+      "TypeScript",
+      "Idempotency",
+      "Rate Limiting",
+      "Zero-dependency",
+      "ESM",
+      "Vitest",
+    ],
+    github: "https://github.com/Shailesh93602/idempotency-kit",
+    detailedDescription:
+      "idempotency-kit packages two primitives every write API eventually needs. `withIdempotency` runs an operation at most once per key — the Stripe Idempotency-Key pattern — so client double-clicks, network retries, and webhook redeliveries don't charge, send, or create twice. A fingerprint guard rejects an idempotency key that's reused for a different request body, catching a class of client bugs. `RateLimiter` is a sliding-window limiter (smoother than fixed windows — no boundary bursts). Both run on a tiny pluggable async Store: an in-memory store ships in the box, and the one operation that must be atomic lives in the store (a SETNX / Lua script in Redis) rather than smeared across application code, so swapping to a distributed store changes nothing above it. Zero runtime dependencies, fully typed ESM, and deterministic — the clock is injectable, so tests need no real time or network.",
+    architecture: {
+      layers: [
+        {
+          name: "Idempotency",
+          items: [
+            "withIdempotency — at-most-once per key",
+            "Fingerprint guard rejects key reuse with a different request",
+            "Replay returns the original result (`replayed: true`)",
+          ],
+        },
+        {
+          name: "Rate limiting",
+          items: [
+            "Sliding-window RateLimiter (no fixed-window boundary bursts)",
+            "Injectable clock — deterministic in tests",
+          ],
+        },
+        {
+          name: "Store",
+          items: [
+            "Tiny pluggable async Store interface",
+            "In-memory store included; Redis/Postgres implement the same interface",
+            "The atomic op (SETNX / Lua) lives in the store, not app code",
+          ],
+        },
+      ],
+      description:
+        "Application code calls the two primitives; correctness-critical atomicity is delegated to the store. The in-memory store makes everything testable offline; a Redis store makes it distributed with no changes above the store boundary.",
+    },
+    features: [
+      "withIdempotency — at-most-once execution per key (Stripe Idempotency-Key pattern)",
+      "Fingerprint guard — rejects an idempotency key reused for a different request body",
+      "Sliding-window rate limiter — smoother than fixed windows, no boundary bursts",
+      "Pluggable async store — in-memory included; Redis/Postgres via the same interface",
+      "Zero runtime dependencies, fully typed ESM",
+      "Deterministic and offline-testable — inject the clock, no real time or network",
+    ],
+    techStack: [
+      "Language: TypeScript (ESM, fully typed)",
+      "Dependencies: none at runtime",
+      "Store: in-memory included; Redis/Postgres pluggable",
+      "Tests: Vitest (13, deterministic/offline)",
+    ],
+    problem:
+      "Networks retry, clients double-click, and webhooks redeliver — so any write endpoint that isn't explicitly idempotent will eventually charge, send, or create something twice. Teams re-solve this badly in app code (non-atomic check-then-write races) and reach for a fixed-window rate limiter that lets bursts through at the window boundary.",
+    solution:
+      "Two small, correct primitives behind a pluggable store: an at-most-once idempotency wrapper with a fingerprint guard, and a sliding-window rate limiter. The single operation that must be atomic is isolated in the store (SETNX/Lua in Redis), so the rest is plain, testable code and the same API works in-memory or distributed.",
+    challengesSolved:
+      "The key correctness decision was confining atomicity to the store boundary: the check-then-write that must not race is a single store operation (a SETNX or Lua script in Redis), so application code can't accidentally introduce a window between the check and the write. Making the clock injectable was the other deliberate choice — sliding-window expiry and idempotency TTLs are time-dependent, and a real clock makes those tests flaky, so the whole kit is deterministic and runs offline in CI.",
+  },
+  {
+    id: "promptproof",
+    title: "promptproof",
+    description:
+      "Zero-dependency LLM eval + regression-diff kit. Define eval cases, grade outputs, save a baseline, and fail CI on any pass→fail. Graders for exact / includes / regex / JSON-shape / token-overlap, plus bring-your-own. Runs offline — no API key needed to test the harness.",
+    image: "/Images/portfolio1.png",
+    tags: [
+      "TypeScript",
+      "LLM Eval",
+      "Regression Testing",
+      "CI",
+      "Zero-dependency",
+      "Vitest",
+    ],
+    github: "https://github.com/Shailesh93602/promptproof",
+    detailedDescription:
+      "promptproof is the small, boring tool that stops a prompt change from quietly breaking three things you weren't looking at. You define eval cases (input + expected + graders), run the suite, and save a baseline; on every change it diffs the new run against the baseline and gives a straight answer to 'did this make things worse?' — as a list of pass→fail regressions, not a feeling. It ships graders for exact match, substring includes, regex (with negate), JSON-shape, and an offline token-overlap scorer, and you can add your own in one function. The harness itself has zero runtime dependencies and runs offline in CI — you bring your model behind a single function, so testing the tool needs no API key.",
+    architecture: {
+      layers: [
+        {
+          name: "Suite",
+          items: [
+            "Cases: input + expected + graders",
+            "runSuite() executes a case against your model function",
+          ],
+        },
+        {
+          name: "Graders",
+          items: [
+            "exact, includes, regex (with negate), jsonShape",
+            "offline token-overlap scorer",
+            "bring-your-own grader in one function",
+          ],
+        },
+        {
+          name: "Regression diff",
+          items: [
+            "Save a baseline run",
+            "Diff new run vs baseline → fail CI on any pass→fail",
+          ],
+        },
+      ],
+      description:
+        "Cases run through graders to a pass/fail per case; a saved baseline turns the next run into a diff. The point isn't a score — it's catching the specific cases that regressed, which is what fails the build.",
+    },
+    features: [
+      "Regression diffing — save a baseline, fail the build on any pass→fail",
+      "Graders included: exact, includes, regex (negate), JSON-shape, token-overlap",
+      "Bring-your-own grader and model — each in one function",
+      "Zero runtime dependencies — one small library + a CLI",
+      "Runs offline in CI — no API key needed to test the harness itself",
+      "TypeScript, ESM, fully typed",
+    ],
+    techStack: [
+      "Language: TypeScript (ESM, fully typed)",
+      "Dependencies: none at runtime (library + CLI)",
+      "Graders: exact / includes / regex / jsonShape / token-overlap / custom",
+      "Tests: Vitest (21, offline)",
+    ],
+    problem:
+      "You change a prompt to fix one thing and three others quietly break — and you find out from a customer. LLM output is non-deterministic enough that ad-hoc manual checks miss regressions, and most teams have no baseline to diff against, so 'is this better or worse?' stays a vibe.",
+    solution:
+      "A tiny eval harness built around regression diffing: define cases, grade outputs with included or custom graders, save a baseline, and on every change get the list of cases that went pass→fail. Zero dependencies and offline-runnable so it drops into CI, with your model behind one function.",
+    challengesSolved:
+      "The deliberate design choice was making the harness testable without a model: graders and the diff engine are pure, and the model is a single injectable function, so promptproof's own test suite runs fully offline with no API key. The token-overlap grader exists for the same reason — a dependency-free, deterministic way to score free-text similarity in CI when you don't want to call a model just to test the tooling.",
   },
   {
     id: "stripe-payments-demo",
