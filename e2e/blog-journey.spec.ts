@@ -55,6 +55,10 @@ test.describe("Blog journey", () => {
     page,
     request,
   }) => {
+    // ~20 posts: fan the checks out rather than walking them serially, and give
+    // the test room — a serial loop inside the 30s default timed out on a
+    // machine that was running another Playwright suite at the same time.
+    test.setTimeout(90_000);
     await page.goto("/blogs", { waitUntil: "networkidle" });
     const hrefs = await page.$$eval('a[href^="/blog/"]', (as) => [
       ...new Set(
@@ -63,11 +67,15 @@ test.describe("Blog journey", () => {
     ]);
     expect(hrefs.length).toBeGreaterThan(0);
 
-    const broken: string[] = [];
-    for (const href of hrefs) {
-      const res = await request.get(href);
-      if (res.status() !== 200) broken.push(`${res.status()} ${href}`);
-    }
+    const results = await Promise.all(
+      hrefs.map(async (href) => ({
+        href,
+        status: (await request.get(href)).status(),
+      }))
+    );
+    const broken = results
+      .filter((r) => r.status !== 200)
+      .map((r) => `${r.status} ${r.href}`);
     expect(broken, "blog cards pointing at non-200 pages").toEqual([]);
 
     // Every published slug should be reachable from the listing — a post that

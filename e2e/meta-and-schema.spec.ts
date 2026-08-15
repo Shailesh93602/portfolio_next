@@ -109,6 +109,8 @@ test.describe("Every route carries a complete head", () => {
 
 test.describe("Canonicals are self-referencing and unique", () => {
   test("no two routes share a canonical or a title", async ({ request }) => {
+    // Walks every route serially; the 30s default is not enough under load.
+    test.setTimeout(180_000);
     const seenCanonical = new Map<string, string>();
     const seenTitle = new Map<string, string>();
     const canonicalMismatch: string[] = [];
@@ -195,6 +197,8 @@ test.describe("Sitemap and robots agree with what is actually servable", () => {
   test("every sitemap URL resolves to a 200 on this build", async ({
     request,
   }) => {
+    // Walks every route serially; the 30s default is not enough under load.
+    test.setTimeout(120_000);
     const res = await request.get("/sitemap.xml");
     expect(res.status()).toBe(200);
     const xml = await res.text();

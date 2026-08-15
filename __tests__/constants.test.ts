@@ -123,8 +123,9 @@ describe("Project constants", () => {
       project.keyMetrics?.forEach((metric) => {
         const total = metric.value.match(/^(\d+)\s*tests?$/i)?.[1];
         if (!total) return;
-        const parts = [...metric.description.matchAll(/\((\d+)\)/g)].map((m) =>
-          Number(m[1])
+        const parts = Array.from(
+          metric.description.matchAll(/\((\d+)\)/g),
+          (m) => Number(m[1])
         );
         if (parts.length < 2) return;
         const sum = parts.reduce((a, b) => a + b, 0);

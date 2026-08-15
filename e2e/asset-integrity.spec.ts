@@ -312,6 +312,8 @@ test.describe("Site icons + downloadable assets", () => {
 
 test.describe("Route inventory", () => {
   test("every derived route returns 200", async ({ request }) => {
+    // Walks every route serially; the 30s default is not enough under load.
+    test.setTimeout(120_000);
     const failures: string[] = [];
     for (const route of ALL_ROUTES) {
       const res = await request.get(route, { maxRedirects: 0 });
