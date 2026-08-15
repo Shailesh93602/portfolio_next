@@ -104,16 +104,16 @@ Developer intelligence dashboard:
 
 ### KhataGO
 **Live:** https://khatago.vercel.app/
-**Stack:** Next.js, TypeScript, Prisma, PostgreSQL (Supabase), Gemini AI, WhatsApp Cloud API, Redis, Bull Queues, i18next, Node.js, Express.js
+**Stack:** Next.js, TypeScript, Prisma, PostgreSQL (Supabase), Gemini AI, WhatsApp Cloud API, i18next, Node.js
 **Note:** Source code is private.
 
 WhatsApp-first AI accounting platform for Indian SMBs:
 
 **Technical depth:**
-- **WhatsApp webhook deduplication:** Meta sends duplicate events. Each incoming message ID is hashed and checked against a Redis TTL window before processing — duplicates dropped in <1ms.
+- **WhatsApp webhook idempotency (no cache):** Meta delivers at least once. The WhatsApp message id is a unique column, so a duplicate insert fails at the database; processing then begins with a conditional UPDATE flipping aiStatus PENDING→PROCESSING only if it is still PENDING. Zero rows changed means another delivery already claimed it, so concurrent redeliveries produce exactly one Gemini run and one ledger write — and idempotency can never drift from the audit row the way a separate cache can.
 - **Gemini AI OCR pipeline:** WhatsApp image URL → download to buffer → Gemini Vision API → structured JSON (merchant, amount, date, line items) → ledger transaction. Error handling for low-confidence extractions.
 - **Tally XML export:** Generates TALLYMESSAGE XML vouchers for accountants. Non-trivial: Tally requires specific date format, ledger name lookup from master data, and precise GST field structure. Wrong XML silently fails to import.
-- **Bull queues:** All three operations (webhook processing, OCR, XML generation) are decoupled via Bull so the WhatsApp bot responds immediately (<500ms) while processing happens asynchronously.
+- **Fast webhook ack:** The handler persists the message and returns to Meta immediately, then runs the Gemini work after the response — so a burst of deliveries never times out the webhook, without introducing a queue broker.
 - **i18next:** Full UI in English, Hindi, and Gujarati.
 
 ---

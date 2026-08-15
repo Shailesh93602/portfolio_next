@@ -25,7 +25,7 @@ Live:
 
 - [EduScale](https://eduscale.vercel.app/): Real-time engineering learning platform with 1v1 coding battles. Backend uses @socket.io/redis-adapter (horizontal Socket.io scaling), redlock (distributed locks preventing duplicate battle starts), opossum (circuit breaker around code execution), prom-client (Prometheus /metrics), Bull queues. Stack: Next.js 15, React 19, TypeScript, Node.js, Express, Prisma, PostgreSQL, Redis, Supabase Auth.
 - [DevTrack](https://daily-dev-track.vercel.app): Developer productivity dashboard. Supabase Realtime postgres_changes subscription on daily_logs for live activity feed + sub-second multi-tab sync. Stack: Next.js, TypeScript, Prisma, PostgreSQL, Supabase Realtime, Recharts.
-- [KhataGO](https://khatago.vercel.app/): WhatsApp-first AI accounting for Indian SMBs. WhatsApp Business webhook with Redis deduplication, Gemini AI function-calling for receipt OCR → structured transactions + receivables management. Stack: Next.js, Gemini AI SDK, WhatsApp Cloud API, PostgreSQL (Prisma), Redis, i18n (en/hi/gu).
+- [KhataGO](https://khatago.vercel.app/): WhatsApp-first AI accounting for Indian SMBs. WhatsApp Business webhook with DB-enforced idempotency (unique message id + an atomic PENDING→PROCESSING claim, no cache in the path), Gemini AI function-calling for receipt OCR → structured transactions + receivables management. Stack: Next.js, Gemini AI SDK, WhatsApp Cloud API, PostgreSQL (Prisma), i18n (en/hi/gu).
 
 Open-source / demo:
 
