@@ -33,14 +33,31 @@ const RETRY_DELAY_MS = 5_000;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /**
- * URLs allowed to 404 without failing the script.
- * Typically private GitHub repos that are pending a public-flip —
- * remove entries here as each repo goes public.
+ * URLs allowed to 404 without failing the script — private GitHub repos
+ * pending a public-flip.
  *
- * Leaving an entry here for too long defeats the purpose of the check,
- * so treat this as a 7-day maximum.
+ * Each entry carries an EXPIRY. A grace period that never ends is just a
+ * silenced alarm: the khatago entry sat here for ~6 weeks while the
+ * recruiter-facing Repository link 404'd and this check reported green every
+ * day. Past its expiry an entry stops being a free pass and fails the run, so
+ * the decision (flip the repo public, or drop the link from projects.ts) comes
+ * back to the surface instead of rotting.
  */
-const KNOWN_PRIVATE = new Set(["https://github.com/Shailesh93602/khatago"]);
+const KNOWN_PRIVATE = new Map([
+  [
+    "https://github.com/Shailesh93602/khatago",
+    { until: "2026-08-29", note: "flip public or remove the link" },
+  ],
+]);
+
+const today = new Date().toISOString().slice(0, 10);
+
+/** An allow-list entry only counts while it hasn't expired. */
+function allowance(url) {
+  const entry = KNOWN_PRIVATE.get(url);
+  if (!entry) return null;
+  return { ...entry, expired: today > entry.until };
+}
 
 /**
  * Some "live" URLs are APIs whose root path 404s by design (no `GET /` route).
@@ -165,11 +182,17 @@ function statusIcon(ok, allowed) {
 }
 
 for (const r of results) {
-  const allowed = KNOWN_PRIVATE.has(r.url);
+  const grace = allowance(r.url);
+  const allowed = Boolean(grace) && !grace.expired;
   const icon = statusIcon(r.ok, allowed);
   const statusStr = r.status > 0 ? String(r.status) : "ERR";
   const nameCol = r.name.padEnd(maxName + 2);
-  const suffix = !r.ok && allowed ? "  (allowed: pending public-flip)" : "";
+  let suffix = "";
+  if (!r.ok && grace) {
+    suffix = grace.expired
+      ? `  (grace expired ${grace.until} — ${grace.note})`
+      : `  (allowed until ${grace.until}: pending public-flip)`;
+  }
   const line = `${icon}  ${nameCol} ${statusStr.padEnd(6)} ${r.ms}ms  ${r.url}${suffix}`;
   if (r.ok || allowed) {
     console.log(line);
@@ -180,8 +203,13 @@ for (const r of results) {
 
 console.log("─".repeat(70));
 
-const failed = results.filter((r) => !r.ok && !KNOWN_PRIVATE.has(r.url));
-const allowedFailed = results.filter((r) => !r.ok && KNOWN_PRIVATE.has(r.url));
+const stillAllowed = (r) => {
+  const grace = allowance(r.url);
+  return Boolean(grace) && !grace.expired;
+};
+
+const failed = results.filter((r) => !r.ok && !stillAllowed(r));
+const allowedFailed = results.filter((r) => !r.ok && stillAllowed(r));
 
 if (allowedFailed.length > 0) {
   console.log(

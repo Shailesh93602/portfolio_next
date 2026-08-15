@@ -670,13 +670,12 @@ export const projects: Project[] = [
       "Function-calling",
       "i18n",
       "Node.js",
-      "Redis",
       "Webhook Idempotency",
     ],
     live: "https://khatago.vercel.app/",
     github: "https://github.com/Shailesh93602/khatago",
     detailedDescription:
-      "KhataGO is a WhatsApp-first bookkeeping platform for Indian MSMEs. The backend is a reconciliation pipeline: Meta webhooks arrive with at-least-once delivery, a Redis-backed idempotency guard drops duplicates, Gemini 2.0 Flash with function-calling parses both text ('Sold 500 to Ram') and receipt images (OCR → structured JSON with merchant/amount/date/line items) into 8 tool calls — create_transaction, create_receivable, record_payment_received, get_party_ledger, send_payment_reminder, and others — each mapped to a Prisma write. Results flow back to the user over WhatsApp; a CA portal exports Tally-ready XML vouchers for month-end close.",
+      "KhataGO is a WhatsApp-first bookkeeping platform for Indian MSMEs. The backend is a reconciliation pipeline: Meta webhooks arrive with at-least-once delivery, and idempotency is enforced in Postgres rather than a cache — a unique constraint on the WhatsApp message id rejects duplicate deliveries, and a conditional UPDATE (PENDING→PROCESSING) atomically claims each message so concurrent redeliveries produce exactly one Gemini run instead of a double ledger write. Gemini 2.0 Flash with function-calling parses both text ('Sold 500 to Ram') and receipt images (OCR → structured JSON with merchant/amount/date/line items) into 10 tool calls — create_transaction, create_receivable, record_payment_received, get_party_ledger, send_payment_reminder, and others — each mapped to a Prisma write. Results flow back to the user over WhatsApp; a CA portal exports Tally-ready XML vouchers for month-end close.",
     architecture: {
       layers: [
         {
@@ -684,7 +683,7 @@ export const projects: Project[] = [
           items: [
             "WhatsApp Cloud API webhook (Meta)",
             "HMAC verify + x-hub-signature check",
-            "Redis-backed dedup (message-id hash, TTL window)",
+            "DB-enforced dedup (unique waMessageId) + atomic PENDING→PROCESSING claim",
           ],
         },
         {
@@ -719,14 +718,14 @@ export const projects: Project[] = [
     },
     keyMetrics: [
       {
-        label: "Ingress dedup",
-        value: "< 1ms",
+        label: "Duplicate webhooks",
+        value: "0 double-writes",
         description:
-          "Redis-backed message-id hash lookup drops duplicate Meta webhooks before any LLM call",
+          "Unique waMessageId + an atomic PENDING→PROCESSING claim drop Meta's redeliveries before any LLM call",
       },
       {
         label: "Tool calls",
-        value: "8",
+        value: "10",
         description:
           "Gemini function-calling surface: transactions, receivables, payments, ledgers, reminders",
       },
@@ -748,7 +747,7 @@ export const projects: Project[] = [
     techStack: [
       "Frontend: Next.js (App Router), React, Tailwind CSS, Recharts, i18next",
       "Backend: Node.js, Express (TypeScript), Prisma ORM, PostgreSQL",
-      "AI & Messaging: Google Gemini AI, WhatsApp Cloud API, Redis/Bull Queues",
+      "AI & Messaging: Google Gemini AI (function-calling + Vision OCR), WhatsApp Cloud API",
       "Infrastructure: Supabase (Auth & Real-time), Vercel",
     ],
     problem:
@@ -756,7 +755,7 @@ export const projects: Project[] = [
     solution:
       "A 'zero-learning-curve' platform that works where the user already is: WhatsApp. By combining the simplicity of chat with the power of AI, KhataGO makes business accounting as easy as sending a message.",
     challengesSolved:
-      "Meta's WhatsApp Cloud API sends duplicate webhook events. The deduplication layer hashes the incoming message ID and checks a Redis TTL window before processing — duplicate events are dropped in under 1ms. The Gemini AI OCR pipeline downloads the WhatsApp image URL, sends it to Gemini Vision, and maps the extracted JSON (merchant, amount, date, line items) to a ledger transaction. Tally XML export is non-trivial: Tally's voucher schema requires specific date formatting, ledger name lookups, and GST field structure — wrong XML silently fails to import. Bull queues decouple all three operations so the WhatsApp bot responds immediately while processing happens in the background.",
+      "Meta's WhatsApp Cloud API delivers at least once, so the same message arrives twice — and an LLM call is expensive enough that deduplicating after it is too late. Idempotency lives in Postgres instead of a cache: the message id is a unique column, so a duplicate insert fails at the DB, and processing starts with a conditional UPDATE that flips aiStatus PENDING→PROCESSING only if it is still PENDING. If that update changes zero rows, another delivery already claimed the message and this one exits — concurrent redeliveries yield exactly one Gemini run and one ledger write, with no cache to fall out of sync with the audit row. The webhook acknowledges Meta immediately and the AI work runs after the response, so a burst never times out the handler. The Gemini OCR pipeline downloads the WhatsApp image, sends it to Gemini Vision, and maps the extracted JSON (merchant, amount, date, line items) to a ledger transaction. Tally XML export is the fiddly part: the voucher schema needs specific date formatting, ledger name lookups, and GST field structure — wrong XML silently fails to import, so it is covered by 19 unit tests.",
     userFlow: [
       {
         step: "Onboarding",
