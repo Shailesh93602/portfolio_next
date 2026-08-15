@@ -40,7 +40,7 @@ export interface Project {
   incidents?: Incident[];
 }
 
-export const projects: Project[] = [
+const rawProjects: Project[] = [
   {
     id: "holdfast",
     title: "Holdfast — Inventory Reservation Engine",
@@ -1278,3 +1278,33 @@ export const projects: Project[] = [
       "Razorpay's signing scheme is subtly different from Stripe's in two ways that bite: (1) Razorpay signs the raw body only, while Stripe prepends a timestamp — if you copy-paste the Stripe verifier and just swap the header name, the HMAC will fail on every payload. (2) Razorpay uses a DIFFERENT secret for the Checkout.js client-callback verification (the pair-secret of KEY_ID) vs the webhook signature (a separate webhook secret generated per endpoint). Confusing the two is the most common integration bug. The demo makes both secret boundaries explicit in code comments and tests each path separately.",
   },
 ];
+
+/**
+ * Projects that never had a real screenshot all pointed at this one generic
+ * code-editor image, so 9 of 13 cards on /portfolio rendered identically — and
+ * the flagship's "screenshot" was an unrelated CSS snippet (`.myform { width:
+ * 400px … }`), which reads as "this backend engine is a stylesheet".
+ *
+ * Same treatment the blog got in #12: fall back to a branded per-project cover
+ * from the OG image generator (title + description on the site gradient)
+ * instead of repeating one placeholder. Drop a real screenshot into
+ * `image` and it takes precedence automatically.
+ *
+ * To revert: export `rawProjects` directly.
+ */
+const PLACEHOLDER_COVER = "/Images/portfolio1.png";
+
+function generatedCover(title: string, description: string): string {
+  const params = new URLSearchParams({ title, type: "project" });
+  if (description) params.set("description", description.slice(0, 120));
+  return `/api/og?${params.toString()}`;
+}
+
+export const projects: Project[] = rawProjects.map((project) =>
+  !project.image || project.image === PLACEHOLDER_COVER
+    ? {
+        ...project,
+        image: generatedCover(project.title, project.description),
+      }
+    : project
+);

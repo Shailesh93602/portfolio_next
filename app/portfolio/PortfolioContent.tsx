@@ -188,7 +188,17 @@ export function PortfolioContent() {
                             alt={project.title}
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            // Real screenshots crop happily; a branded /api/og
+                            // cover carries the project name as *text*, and the
+                            // narrow (non-showcase) slot is 1.6:1 against the
+                            // card's 1.9:1 — object-cover sliced the first
+                            // letter off five titles. Letterboxing is invisible
+                            // against the dark card.
+                            className={`transition-transform duration-700 group-hover:scale-105 ${
+                              project.image.startsWith("/api/og")
+                                ? "object-contain"
+                                : "object-cover"
+                            }`}
                           />
                           {isShowcase && (
                             <div className="absolute left-6 top-6">

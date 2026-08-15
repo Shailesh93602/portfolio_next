@@ -72,7 +72,7 @@ public/        # Static assets and images
 | `npm run type-check`    | TypeScript strict check                  |
 | `npm run format`        | Prettier (writes)                        |
 | `npm run analyze`       | Bundle analysis (ANALYZE=true build)     |
-| `npm test`              | Jest unit tests (268 tests, 28 suites)   |
+| `npm test`              | Jest unit tests (270 tests, 28 suites)   |
 | `npm run test:coverage` | Jest with coverage report                |
 | `npm run test:e2e`      | Playwright E2E (requires running server) |
 | `npm run test:e2e:ui`   | Playwright with UI mode                  |

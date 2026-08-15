@@ -24,7 +24,7 @@ npm run type-check      # tsc --noEmit
 npm run format          # Prettier (writes)
 npm run format:check    # Prettier (CI check, read-only)
 
-npm test                # Jest unit tests (currently 268 tests, 28 suites)
+npm test                # Jest unit tests (currently 270 tests, 28 suites)
 npm run test:watch      # Jest watch mode
 npm run test:coverage   # Jest with coverage report
 npm run test:e2e        # Playwright (needs dev/prod server running)
@@ -136,7 +136,7 @@ public/
 
 ## Testing
 
-- **Unit tests** (`__tests__/`): 268 tests across 28 suites. Covers API routes (statistics, contact), blog functions, components (BlogCard, ProjectCard, EducationSection, KeyMetrics), utils, constants. Run with `npm test`.
+- **Unit tests** (`__tests__/`): 270 tests across 28 suites. Covers API routes (statistics, contact), blog functions, components (BlogCard, ProjectCard, EducationSection, KeyMetrics), utils, constants. Run with `npm test`.
 - **E2E** (`e2e/`):
   - `routes.ts` — **not a spec.** Derives the route inventory (static + `/portfolio/<id>` from `constants/projects.ts` + `/blog/<slug>` from `BLOG_SLUGS`) so adding a project or post automatically widens the asset / SEO gates.
   - `navigation.spec.ts` — desktop + mobile nav sanity

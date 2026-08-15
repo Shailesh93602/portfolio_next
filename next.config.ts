@@ -17,6 +17,13 @@ const baseConfig: NextConfig = {
         hostname: "**",
       },
     ],
+    // Local images are blocked from carrying a query string unless allow-listed,
+    // and both the per-post and the per-project branded covers are rendered by
+    // `/api/og?title=…`. Without the first entry the build fails at prerender
+    // with "using a query string which is not configured in localPatterns".
+    // The second entry keeps every other local path (/Images/**, /projects/**)
+    // working — listing `localPatterns` at all opts everything into the allow-list.
+    localPatterns: [{ pathname: "/api/og", search: "**" }, { pathname: "/**" }],
     formats: ["image/avif", "image/webp"],
   },
   typescript: {
