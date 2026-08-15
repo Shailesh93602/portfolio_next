@@ -45,6 +45,9 @@ export function BlogCard({ post, index }: BlogCardProps) {
   // Use a neutral project/preview image as the fallback for post previews so
   // the author's personal photo isn't used as a blog preview image.
   const imageSrc = post.image ?? "/Images/portfolio1.png";
+  // Generated OG covers (/api/og?...) are already final PNGs — skip the image
+  // optimizer (Next also blocks query-string srcs unless allow-listed).
+  const isGeneratedCover = imageSrc.startsWith("/api/og");
   const avatarSrc = post.author?.avatar ?? "/Images/shailesh.webp";
 
   return (
@@ -78,6 +81,7 @@ export function BlogCard({ post, index }: BlogCardProps) {
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="object-cover transition-transform duration-500 group-hover:scale-110"
+              unoptimized={isGeneratedCover}
             />
             {post.tags && post.tags.length > 0 && (
               <div className="absolute bottom-4 left-4 z-20 flex gap-2">

@@ -77,18 +77,37 @@ export const BLOG_SLUGS: string[] = [
   // "khatago-webhook-deduplication-receipt-pipeline",
 ];
 
+// Posts that never had a real cover historically all point at this shared
+// placeholder. Treat it (and an empty value) as "no cover" so we render a
+// branded, per-post OG image instead of the same generic screenshot 24×.
+const PLACEHOLDER_COVER = "/Images/portfolio1.png";
+
+/** Branded per-post cover via the OG image generator (title + gradient). */
+function generatedCover(title: string, description: string): string {
+  const params = new URLSearchParams({ title, type: "blog" });
+  if (description) params.set("description", description);
+  return `/api/og?${params.toString()}`;
+}
+
 function loadPost(slug: string): BlogPost | null {
   try {
     const filePath = join(process.cwd(), "content", "blog", `${slug}.mdx`);
     const raw = readFileSync(filePath, "utf8");
     const { data, content } = matter(raw);
+    const title = data.title ?? "";
+    const description = data.description ?? "";
+    const rawImage = data.image ?? "";
+    const image =
+      !rawImage || rawImage === PLACEHOLDER_COVER
+        ? generatedCover(title || slug, description)
+        : rawImage;
     return {
       slug,
-      title: data.title ?? "",
+      title,
       subtitle: data.subtitle,
-      description: data.description ?? "",
+      description,
       content,
-      image: data.image ?? "",
+      image,
       author: BLOG_AUTHOR,
       date: data.date ?? "",
       readTime: data.readTime ?? "",
