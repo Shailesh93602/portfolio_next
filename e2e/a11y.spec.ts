@@ -1,5 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { PROJECT_ROUTES, STATIC_ROUTES } from "./routes";
 
 /**
  * WCAG 2.1 AA accessibility gate.
@@ -19,22 +20,17 @@ import AxeBuilder from "@axe-core/playwright";
  *     before they ship.
  */
 
+// Derived from the app's own data (see e2e/routes.ts) rather than hand-listed:
+// the previous list covered 5 of the 13 project pages, so a contrast or
+// landmark regression on any of the other 8 shipped unchecked. Blog posts all
+// share one template, so three representatives cover the prose body, code
+// blocks and the author/share box.
 const ROUTES = [
-  "/",
-  "/about",
-  "/portfolio",
-  "/portfolio/eduscale",
-  "/portfolio/devtrack",
-  "/portfolio/khatago",
-  "/portfolio/stripe-payments-demo",
-  "/portfolio/redis-battle-demo",
-  "/now",
-  "/contact",
-  "/blogs",
-  // A representative blog post — exercises the prose body, code blocks and
-  // the author/share box (raw-HTML rendered content the listing pages skip).
+  ...STATIC_ROUTES,
+  ...PROJECT_ROUTES,
   "/blog/building-inventory-engine-never-oversells-concurrency",
-  "/statistics",
+  "/blog/solving-700-dsa-problems",
+  "/blog/introduction-to-nestjs-for-backend-development",
 ];
 
 const THEMES: Array<"light" | "dark"> = ["light", "dark"];

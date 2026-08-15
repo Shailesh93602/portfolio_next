@@ -14,10 +14,13 @@ const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: {
-    default: `${BLOG_AUTHOR.name} | ${META_DEFAULTS.siteName}`,
-    template: `%s | ${META_DEFAULTS.siteName}`,
-  },
+  // NO `template` here on purpose. Every page (and both dynamic routes)
+  // already brands its own title, so a `%s | <siteName>` template appended the
+  // brand a SECOND time — e.g. "…Algorithm Mastery | Shailesh Chaudhari's Blog
+  // | Shailesh Chaudhari's Blog" (124 chars, truncated to nonsense in Google).
+  // `default` still covers any page that ships without its own title.
+  // Guarded by e2e/meta-and-schema.spec.ts ("brand appears at most once").
+  title: `${BLOG_AUTHOR.name} | ${META_DEFAULTS.siteName}`,
   description: META_DEFAULTS.description,
   keywords: [
     "Full Stack Developer",

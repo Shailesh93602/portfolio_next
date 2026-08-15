@@ -43,6 +43,8 @@ export const metadata: Metadata = {
     "GitHub Metrics",
   ],
   openGraph: {
+    type: "website",
+    url: `${SITE_URL}/statistics`,
     title: "Coding Stats — Shailesh Chaudhari",
     description:
       "GitHub contributions, LeetCode stats, and competitive programming achievements. Institute Rank 1 on GeeksforGeeks.",
@@ -62,9 +64,5 @@ export const metadata: Metadata = {
     images: [ogImageUrl],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,
-  },
-  icons: {
-    icon: "/Images/shailesh.webp",
-    apple: "/Images/shailesh.webp",
   },
 };

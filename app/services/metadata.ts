@@ -18,6 +18,7 @@ export const metadata: Metadata = {
     canonical: `${SITE_URL}/services`,
   },
   openGraph: {
+    type: "website",
     title: "Services — Shailesh Chaudhari",
     description:
       "Full-stack web apps, real-time systems, and AI integrations. Next.js, Node.js, TypeScript. Remote, async-friendly.",

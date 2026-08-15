@@ -19,6 +19,8 @@ const ROUTES = [
   "/about",
   "/portfolio",
   "/portfolio/holdfast",
+  "/portfolio/eduscale",
+  "/portfolio/khatago",
   "/blogs",
   "/blog/best-practices-api-development-express-nestjs",
   "/contact",
@@ -42,7 +44,7 @@ async function shoot(
   browser: import("@playwright/test").Browser,
   route: string,
   theme: "light" | "dark",
-  onlyViewports?: string[],
+  onlyViewports?: string[]
 ) {
   for (const vp of VIEWPORTS) {
     if (onlyViewports && !onlyViewports.includes(vp.name)) continue;
@@ -71,8 +73,12 @@ async function shoot(
         failedRequests.push(`${r.status()} ${u.split("?")[0]}`);
     });
 
-    await page.goto(route, { waitUntil: "load", timeout: 30000 }).catch(() => {});
-    await page.waitForLoadState("networkidle", { timeout: 8000 }).catch(() => {});
+    await page
+      .goto(route, { waitUntil: "load", timeout: 30000 })
+      .catch(() => {});
+    await page
+      .waitForLoadState("networkidle", { timeout: 8000 })
+      .catch(() => {});
     await page
       .evaluate(async () => {
         const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -111,12 +117,14 @@ async function shoot(
 test("capture all pages", async ({ browser }) => {
   test.setTimeout(900000);
   fs.mkdirSync(OUT, { recursive: true });
+  // Both viewports in BOTH themes: dark-mode mobile is where contrast and
+  // overflow regressions hid before, because the old pass only shot dark at
+  // desktop width.
   for (const r of ROUTES) await shoot(browser, r, "light");
-  // Dark-mode pass (desktop) for every page.
-  for (const r of ROUTES) await shoot(browser, r, "dark", ["desktop"]);
+  for (const r of ROUTES) await shoot(browser, r, "dark");
   fs.writeFileSync(
     path.join(OUT, "manifest.json"),
-    JSON.stringify(manifest, null, 2),
+    JSON.stringify(manifest, null, 2)
   );
   for (const c of manifest) {
     if (c.errors.length || c.failedRequests.length) {

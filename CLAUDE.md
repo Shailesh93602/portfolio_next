@@ -24,7 +24,7 @@ npm run type-check      # tsc --noEmit
 npm run format          # Prettier (writes)
 npm run format:check    # Prettier (CI check, read-only)
 
-npm test                # Jest unit tests (currently 247 tests, 24 suites)
+npm test                # Jest unit tests (currently 268 tests, 28 suites)
 npm run test:watch      # Jest watch mode
 npm run test:coverage   # Jest with coverage report
 npm run test:e2e        # Playwright (needs dev/prod server running)
@@ -136,16 +136,31 @@ public/
 
 ## Testing
 
-- **Unit tests** (`__tests__/`): 247 tests across 24 suites. Covers API routes (statistics, contact), blog functions, components (BlogCard, ProjectCard, EducationSection, KeyMetrics), utils, constants. Run with `npm test`.
+- **Unit tests** (`__tests__/`): 268 tests across 28 suites. Covers API routes (statistics, contact), blog functions, components (BlogCard, ProjectCard, EducationSection, KeyMetrics), utils, constants. Run with `npm test`.
 - **E2E** (`e2e/`):
+  - `routes.ts` — **not a spec.** Derives the route inventory (static + `/portfolio/<id>` from `constants/projects.ts` + `/blog/<slug>` from `BLOG_SLUGS`) so adding a project or post automatically widens the asset / SEO gates.
   - `navigation.spec.ts` — desktop + mobile nav sanity
   - `portfolio-detail.spec.ts` — showcase + fallback project details
   - `blog.spec.ts` — blog listing + post navigation
-  - `seo.spec.ts` — schema, meta tags, sitemap
+  - `seo.spec.ts` — hand-picked schema blocks
+  - `a11y.spec.ts` — axe WCAG 2 A/AA on every route × light + dark
   - `screenshots.spec.ts` — full-page screenshots generator (not a test, artifact-only)
+  - `ux-capture.spec.ts` — visual audit harness: every page at 1440 + 390 in **both** themes → `/tmp/portfolio-ux/` (artifact-only, reviewed by eye)
   - `api-endpoints.spec.ts` — API route sanity
-  - `console-and-links.spec.ts` — **broken-links + console-error gate** — 11 pages × 0 errors required. Whitelists benign third-party noise (GA, Vercel Insights, Sentry). Runs against local `next start`.
+  - `console-and-links.spec.ts` — **broken-links + console-error gate** — 11 pages × 0 errors required. Whitelists benign third-party noise (GA, Vercel Insights, Sentry).
+  - `asset-integrity.spec.ts` — **every route** × 0 console errors / 0 failed requests, every `<img>` decoded with non-zero intrinsic size, og+twitter images resolve to real bytes, icons + manifest + the resume PDF (asserts `%PDF-` magic bytes), and the legacy `/hire` `/hire-me` `/blog` redirects.
+  - `recruiter-journey.spec.ts` — land → hero → portfolio → case study → live demo + repo popups → resume download.
+  - `blog-journey.spec.ts` — listing → post → MDX rendered as HTML → RSS well-formedness → per-post OG image → BlogPosting JSON-LD.
+  - `contact-form.spec.ts` — real validation copy, server-side Zod validation, and the 503 + `fallback:"mailto"` path (the default behaviour with no `RESEND_API_KEY`).
+  - `statistics-fallback.spec.ts` — snapshot renders in the SSR HTML and survives an upstream 504 / a 12s hang.
+  - `meta-and-schema.spec.ts` — per-route title/description/canonical/og:type, **brand appears at most once in `<title>`**, unique canonicals + titles, valid JSON-LD, sitemap ↔ robots ↔ servable-routes consistency.
 - `e2e/` tests require a running server; CI does `npm run start` after `npm run build`.
+- **Pin the port.** Port 3000 is often taken by another app on this machine, which silently points the whole suite at the wrong site. Run the gates against a production build:
+  ```bash
+  npm run build && npx next start -p 3230
+  PLAYWRIGHT_NO_SERVER=1 PLAYWRIGHT_PORT=3230 npx playwright test --project=chromium
+  ```
+  `PLAYWRIGHT_PORT` drives both `baseURL` and the auto-started dev server; `PLAYWRIGHT_NO_SERVER=1` tells Playwright you started the server yourself.
 
 ## Conventions
 

@@ -72,7 +72,7 @@ WHERE sku = $1 AND available &gt;= $qty;   -- 0 rows changed = not enough stock
 <li><strong>Optimistic (version CAS):</strong> read a <code>version</code> column, then <code>UPDATE … WHERE version = $v</code>. If someone else changed it first, 0 rows match and you retry. No locks held; great when conflicts are <em>rare</em>.</li>
 </ul>
 
-<p>Which is best? I didn't guess — I benchmarked them against real PostgreSQL. On a single hot row (all buyers, one SKU), pessimistic and atomic win (~4,200 reservations/sec) because they serialize efficiently; optimistic is slowest there because it averages two attempts per success (it retries the lost races). Optimistic's advantage is the <em>opposite</em> workload — contention spread across many rows, where conflicts are rare and you avoid holding locks. <strong>The lesson: pick the strategy for your contention shape, and measure.</strong></p>
+<p>Which is best? I didn't guess — I benchmarked them against real PostgreSQL. On a single hot row (all buyers, one SKU), pessimistic and atomic win (~3,600-3,650 reservations/sec) because they serialize efficiently; optimistic is slowest there because it averages two attempts per success (it retries the lost races). Optimistic's advantage is the <em>opposite</em> workload — contention spread across many rows, where conflicts are rare and you avoid holding locks. <strong>The lesson: pick the strategy for your contention shape, and measure.</strong></p>
 
 <h2>The hard part: multi-item baskets without deadlocks</h2>
 
@@ -99,7 +99,7 @@ WHERE sku = $1 AND available &gt;= $qty;   -- 0 rows changed = not enough stock
 
 <h2>Stack &amp; honest notes</h2>
 
-<p>Holdfast is TypeScript on Fastify, with a deliberate hybrid data layer: <strong>Drizzle ORM</strong> owns the schema, migrations, and ordinary reads (type-safe and model-driven), while the reservation hot path is <strong>raw SQL</strong> — because the whole point is the explicit locking, which an ORM's query builder hides, and interactive ORM transactions get flaky under heavy concurrency. "ORM for productivity, raw SQL where correctness and performance demand it" is how production teams actually work. There's Prometheus metrics, a Docker deploy that self-seeds, and 14 tests against real PostgreSQL.</p>
+<p>Holdfast is TypeScript on Fastify, with a deliberate hybrid data layer: <strong>Drizzle ORM</strong> owns the schema, migrations, and ordinary reads (type-safe and model-driven), while the reservation hot path is <strong>raw SQL</strong> — because the whole point is the explicit locking, which an ORM's query builder hides, and interactive ORM transactions get flaky under heavy concurrency. "ORM for productivity, raw SQL where correctness and performance demand it" is how production teams actually work. There's Prometheus metrics, a Docker deploy that self-seeds, and 18 tests against real PostgreSQL.</p>
 
 <p>Two honest caveats: the throughput numbers are a single-machine local benchmark — treat them as relative, not absolute. And Holdfast is the reservation <em>core</em>, not a full store; payments live in separate demos by design. Every claim here is backed by a test or a benchmark you can run yourself.</p>
 

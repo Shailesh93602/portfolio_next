@@ -24,7 +24,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const title = `${project.title} | Shailesh Chaudhary`;
+  // "Chaudhari", not "Chaudhary" — this string is the <title>, og:title and
+  // twitter:title of every project page, i.e. the spelling a recruiter sees
+  // in Google and in a shared link preview.
+  const title = `${project.title} | Shailesh Chaudhari`;
   const description = project.description;
   const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(project.title)}&type=project&description=${encodeURIComponent(description.slice(0, 120))}`;
 

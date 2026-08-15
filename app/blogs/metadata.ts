@@ -80,8 +80,4 @@ export const metadata: Metadata = {
   },
   category: "Technology",
   classification: "Web Development Blog",
-  icons: {
-    icon: "/Images/shailesh.webp",
-    apple: "/Images/shailesh.webp",
-  },
 };

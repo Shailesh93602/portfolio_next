@@ -28,7 +28,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getPostData(slug);
   if (!post) return {};
 
-  const title = `${post.title} | Shailesh Chaudhari's Blog`;
+  // Short brand suffix: post titles here run 45-70 chars on their own, and
+  // Google only renders ~60. "| Shailesh Chaudhari" keeps the personal-brand
+  // signal without pushing the whole tag past the point of truncation.
+  const title = `${post.title} | Shailesh Chaudhari`;
   const description = `${post.description} Written by Shailesh Chaudhari, Full-Stack Developer and Software Engineer.`;
 
   return {
