@@ -63,10 +63,11 @@ function allowance(url) {
  * Some "live" URLs are APIs whose root path 404s by design (no `GET /` route).
  * For those, probe a real health endpoint instead of the root. The display URL
  * stays the public demo link; only the fetched path changes.
+ *
+ * Empty right now — the one entry was Holdfast's `/healthz`, and Holdfast is no
+ * longer featured. Kept because the next API-shaped project will need it.
  */
-const HEALTH_PATH = {
-  "https://holdfast-50gt.onrender.com": "/healthz",
-};
+const HEALTH_PATH = {};
 
 function fetchTarget(url) {
   for (const [base, path] of Object.entries(HEALTH_PATH)) {

@@ -18,7 +18,6 @@ const ROUTES = [
   "/",
   "/about",
   "/portfolio",
-  "/portfolio/holdfast",
   "/portfolio/eduscale",
   "/portfolio/khatago",
   "/blogs",

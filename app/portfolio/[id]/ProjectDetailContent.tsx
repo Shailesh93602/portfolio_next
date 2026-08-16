@@ -19,7 +19,6 @@ import { fadeIn } from "@/lib/animations";
 import ArchitectureDiagram from "@/components/Showcase/ArchitectureDiagram";
 import KeyMetrics from "@/components/Showcase/KeyMetrics";
 import ThemeComparison from "@/components/Showcase/ThemeComparison";
-import StripeCaseStudy from "@/components/Showcase/StripeCaseStudy";
 
 import { Badge } from "@/components/ui/badge";
 
@@ -437,12 +436,6 @@ export default function ProjectDetailContent({ project }: Props) {
               </div>
             </div>
           </section>
-
-          {project.id === "stripe-payments-demo" && (
-            <section className="py-4">
-              <StripeCaseStudy />
-            </section>
-          )}
 
           {/* Incidents — real bugs + fixes, shown when the project has any */}
           {project.incidents && project.incidents.length > 0 && (
