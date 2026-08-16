@@ -199,12 +199,12 @@ export default function HomeContent({ featuredPosts }: Props) {
         <div className="grid gap-6 md:grid-cols-3">
           {[
             {
-              tag: "stripe-payments-demo",
-              title: "Webhook idempotency patterns",
+              tag: "khatago",
+              title: "Webhook idempotency, in production",
               proof:
-                "Demo project exploring Stripe webhook handling: Redis SETNX on event IDs with a 24h dedup window, exponential backoff retry that skips 4xx, and 61 tests including a 25-way concurrent duplicate race against real Redis.",
-              href: "/portfolio/stripe-payments-demo",
-              cta: "See the Stripe demo",
+                "WhatsApp-first bookkeeping. Meta delivers at least once, so idempotency is enforced in Postgres — a unique message id plus an atomic PENDING→PROCESSING claim. Proven under a real race: 8 simultaneous deliveries of the same message produce exactly one ledger write.",
+              href: "/portfolio/khatago",
+              cta: "See how KhataGO works",
             },
             {
               tag: "eduscale",

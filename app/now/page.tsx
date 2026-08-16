@@ -67,28 +67,40 @@ export default function NowPage() {
             rel="noreferrer"
           >
             Now page
-          </a>
-          {" "}— a single source of truth for what I&apos;m actively working on
-          this month, beyond the project portfolio. Recruiters and friends
-          asking &quot;what are you up to&quot; get a current answer instead of
-          a months-old LinkedIn post.
+          </a>{" "}
+          — a single source of truth for what I&apos;m actively working on this
+          month, beyond the project portfolio. Recruiters and friends asking
+          &quot;what are you up to&quot; get a current answer instead of a
+          months-old LinkedIn post.
         </p>
 
         <h2 className="mt-12 text-2xl font-bold">At work — ContextQA</h2>
         <ul className="mt-4 space-y-3 text-base leading-relaxed text-muted-foreground sm:text-lg">
           <li className="flex gap-3">
-            <span aria-hidden className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+            <span
+              aria-hidden
+              className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
+            />
             <span>
-              <strong className="font-semibold text-foreground">Test execution engine:</strong>{" "}
+              <strong className="font-semibold text-foreground">
+                Test execution engine:
+              </strong>{" "}
               backend work on the QA-automation orchestrator — Playwright /
-              WebdriverIO / LambdaTest job scheduling, retry semantics, artifact collection.
+              WebdriverIO / LambdaTest job scheduling, retry semantics, artifact
+              collection.
             </span>
           </li>
           <li className="flex gap-3">
-            <span aria-hidden className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+            <span
+              aria-hidden
+              className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
+            />
             <span>
-              <strong className="font-semibold text-foreground">VNC streaming:</strong>{" "}
-              piping live test sessions from headless browsers to the dashboard for visual debugging.
+              <strong className="font-semibold text-foreground">
+                VNC streaming:
+              </strong>{" "}
+              piping live test sessions from headless browsers to the dashboard
+              for visual debugging.
             </span>
           </li>
         </ul>
@@ -96,42 +108,40 @@ export default function NowPage() {
         <h2 className="mt-12 text-2xl font-bold">On the side</h2>
         <ul className="mt-4 space-y-3 text-base leading-relaxed text-muted-foreground sm:text-lg">
           <li className="flex gap-3">
-            <span aria-hidden className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+            <span
+              aria-hidden
+              className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
+            />
             <span>
-              <strong className="font-semibold text-foreground">Open-source reliability libraries:</strong>{" "}
+              <strong className="font-semibold text-foreground">
+                Open-source reliability libraries:
+              </strong>{" "}
               shipping small, well-tested production-pattern starters —{" "}
-              <strong className="font-semibold text-foreground">Grounded</strong>{" "}
-              (a RAG starter with cited answers + an &quot;I don&apos;t know&quot;
-              guardrail),{" "}
-              <strong className="font-semibold text-foreground">idempotency-kit</strong>{" "}
+              <strong className="font-semibold text-foreground">
+                Grounded
+              </strong>{" "}
+              (a RAG starter with cited answers + an &quot;I don&apos;t
+              know&quot; guardrail),{" "}
+              <strong className="font-semibold text-foreground">
+                idempotency-kit
+              </strong>{" "}
               (at-most-once writes + sliding-window rate limiting), and{" "}
-              <strong className="font-semibold text-foreground">promptproof</strong>{" "}
+              <strong className="font-semibold text-foreground">
+                promptproof
+              </strong>{" "}
               (an LLM eval + regression-diff kit). All zero-dependency or
               offline-testable, published on GitHub.
             </span>
           </li>
           <li className="flex gap-3">
-            <span aria-hidden className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+            <span
+              aria-hidden
+              className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
+            />
             <span>
-              <strong className="font-semibold text-foreground">Holdfast:</strong>{" "}
-              an inventory reservation engine that never oversells under
-              concurrency — three locking strategies benchmarked against real
-              Postgres, proven by tests. Live on Render.
-            </span>
-          </li>
-          <li className="flex gap-3">
-            <span aria-hidden className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-            <span>
-              <strong className="font-semibold text-foreground">razorpay-patterns-demo:</strong>{" "}
-              India-accessible sibling of stripe-payments-demo. Phase 1 (HMAC
-              + idempotency) live; Phase 2 (BillingAccount + subscriptions)
-              merged into KhataGO.
-            </span>
-          </li>
-          <li className="flex gap-3">
-            <span aria-hidden className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-            <span>
-              <strong className="font-semibold text-foreground">Open to part-time / freelance:</strong>{" "}
+              <strong className="font-semibold text-foreground">
+                Open to part-time / freelance:
+              </strong>{" "}
               particularly distributed systems, payment infrastructure,
               real-time platforms, AI-pipeline backends. Targeting Stripe,
               Vercel, Supabase as next employer.
@@ -143,19 +153,28 @@ export default function NowPage() {
         <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
           Distributed systems patterns from{" "}
           <em>Designing Data-Intensive Applications</em>; Stripe / Square
-          engineering blogs on idempotency and webhook design; the Vercel
-          edge runtime docs to better understand the constraints my Vercel-deployed
+          engineering blogs on idempotency and webhook design; the Vercel edge
+          runtime docs to better understand the constraints my Vercel-deployed
           NestJS apps run under.
         </p>
 
         <div className="mt-16 flex flex-wrap gap-4 border-t pt-8">
-          <Link href="/portfolio" className="underline underline-offset-4 hover:text-primary">
+          <Link
+            href="/portfolio"
+            className="underline underline-offset-4 hover:text-primary"
+          >
             See the projects →
           </Link>
-          <Link href="/blogs" className="underline underline-offset-4 hover:text-primary">
+          <Link
+            href="/blogs"
+            className="underline underline-offset-4 hover:text-primary"
+          >
             Read the blog →
           </Link>
-          <Link href="/contact" className="underline underline-offset-4 hover:text-primary">
+          <Link
+            href="/contact"
+            className="underline underline-offset-4 hover:text-primary"
+          >
             Get in touch →
           </Link>
         </div>

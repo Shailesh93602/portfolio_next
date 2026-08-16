@@ -10,7 +10,7 @@ Stack: Next.js 16 + Turbopack, TypeScript (strict), Tailwind CSS, shadcn/ui, fra
 
 - Owner is a Software Engineer at **ContextQA** working on the **backend of their core QA-automation product** (test execution engine, VNC streaming, Playwright / WebdriverIO / LambdaTest orchestration). First 2-3 months at ContextQA were Chrome extensions (Vibe Testing + AxeTos) — current work is the core product backend.
 - Previously ~2 years at EsparkBiz (intern Jan 2024 – Aug 2024; Software Engineer Aug 2024 – Jul 2025). Shipped 3 client projects end-to-end.
-- Targeting **Stripe / Vercel / Supabase** as next employer.
+- Targeting **Tier-1 companies, Salesforce specifically**, at MTS level.
 - **Honesty bar:** never claim specific PR counts, never claim "payments infrastructure engineer" title, never say Chrome extensions are the current work. See MANUAL.md for full rules.
 
 ## Key commands
@@ -74,7 +74,6 @@ components/
     ArchitectureDiagram.tsx  # Layered architecture visualization (lucide icons per layer)
     KeyMetrics.tsx           # 3-card metric grid used on showcase project detail pages
     ThemeComparison.tsx      # Light/dark image toggle for project screenshots
-    StripeCaseStudy.tsx      # Stripe deep-dive: SVG sequence diagram + Redis before/after + 4xx-retry-trap panel (mounted conditionally on /portfolio/stripe-payments-demo)
   ExperienceSection, EducationSection, SkillsSection, Achievements, HobbiesSection
   stats-charts.tsx      # Dynamic import (ssr:false) — recharts
   github-contribution-heatmap.tsx
@@ -101,7 +100,7 @@ lib/
   utils.ts                    # cn() utility
 
 scripts/
-  check-live-urls.mjs            # Daily URL health check (GitHub Actions). 5 URLs — portfolio + 3 Supabase projects + redis-battle-demo on Render.
+  check-live-urls.mjs            # Daily URL health check (GitHub Actions). Reads every `live`/`github` URL out of constants/projects.ts, so it widens automatically when a project is added. KNOWN_PRIVATE entries carry an expiry.
   generate-blog-manifest.mjs     # Runs as postbuild; reads content/blog/ → writes data/blog-manifest.json
   migrate-blog.mjs               # One-time script: extracted blog posts from old blog-data.ts
 
@@ -120,13 +119,13 @@ public/
 
 ## Environment variables
 
-| Variable                               | Required | Purpose                                                                                 |
-| -------------------------------------- | -------- | --------------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_GA_MEASUREMENT_ID`        | Optional | Google Analytics (skipped if unset)                                                     |
-| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Optional | Google Search Console meta tag                                                          |
-| `GITHUB_TOKEN`                         | Optional | GitHub API rate limit (statistics page)                                                 |
+| Variable                               | Required | Purpose                                                                                                                          |
+| -------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID`        | Optional | Google Analytics (skipped if unset)                                                                                              |
+| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Optional | Google Search Console meta tag                                                                                                   |
+| `GITHUB_TOKEN`                         | Optional | GitHub API rate limit (statistics page)                                                                                          |
 | `RESEND_API_KEY`                       | Optional | Enables /api/contact real email send. Without it the endpoint returns 503 + fallback:"mailto" and the UI falls back to `mailto:` |
-| `RESEND_FROM`                          | Optional | Custom `From` header (requires verified Resend domain). Defaults to `onboarding@resend.dev`                                       |
+| `RESEND_FROM`                          | Optional | Custom `From` header (requires verified Resend domain). Defaults to `onboarding@resend.dev`                                      |
 
 ## Theming
 
@@ -183,7 +182,6 @@ public/
 
 - This portfolio is deployed on Vercel. The 3 Supabase-backed projects (KhataGO, DevTrack, EduScale/Frontend) each own `/api/cron/keepalive` + `vercel.json` cron at `0 9 * * *`. Each does a real DB query (Prisma `SELECT NOW()` / Supabase `auth.getSession()`).
 - EduScale Backend has its own Vercel cron at `/api/v1/health` which pings Redis + Postgres + Bull daily at 09:00 UTC (keeps Upstash Redis unpaused).
-- Render-hosted `redis-battle-demo` is kept alive via the [url-health-check.yml](.github/workflows/url-health-check.yml) GitHub Action (daily GET wakes Render free tier which reconnects to Upstash).
 - Secret convention: cron endpoints in the sibling repos (KhataGO, DevTrack, EduScale) gate on `Authorization: Bearer $CRON_SECRET`. Add `CRON_SECRET` in each of those projects' Vercel env (Production) before redeploying. **This portfolio repo has no cron routes of its own** — the mention is here so future-me doesn't add an unprotected one by accident.
 
 ## Known gotchas
@@ -191,7 +189,7 @@ public/
 - `PortfolioSkeleton.tsx` (loading.tsx target) **MUST** have `"use client"` — framer-motion imports without it crash SSG.
 - `data/blog-manifest.json` + `data/statistics-snapshot.json` are generated artifacts — listed in `.prettierignore`. If Prettier touches them, the `format:check` CI step fails.
 - The `KeyMetrics` / `ArchitectureDiagram` / `ThemeComparison` components are already direct imports (not `next/dynamic`) — `next/dynamic` with `ssr:false` inside a "use client" component also triggers the Turbopack SSG bug.
-- Stripe test webhook bodies must be read via `await req.text()` — do NOT JSON-parse first. The HMAC verify depends on the raw bytes exactly as Stripe signed them.
+- **Scope (locked 2026-08-15):** the featured set is **KhataGO, EduScale and this portfolio**, plus the ContextQA work (Vibe Testing, AxeTos) and the OSS libraries. Demo projects — holdfast, redis-battle-demo, stripe-payments-demo, razorpay-patterns-demo — were **removed** on the owner's call: a demo app is not a resume item, and anything worth showing should live inside a real project instead. Do not re-add them.
 
 ## Related docs (external — NOT tracked in this repo)
 

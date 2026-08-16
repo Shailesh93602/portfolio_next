@@ -133,22 +133,6 @@ Natural language queries like "where is the payment retry logic?" return ranked 
 
 ---
 
-### redis-battle-demo
-**GitHub:** https://github.com/Shailesh93602/redis-battle-demo
-**Stack:** Node.js, Express.js, Socket.io, @socket.io/redis-adapter, Redlock, Redis, Docker Compose
-
-Standalone proof-of-concept extracting the core distributed real-time engine from EduScale into a runnable demo:
-
-**Architecture:**
-- Two Redis clients: `pubClient` and `subClient` — separate clients required by `@socket.io/redis-adapter` for pub/sub isolation
-- `@socket.io/redis-adapter`: All Socket.io room state synchronized through Redis; multiple server instances share a single socket namespace
-- `Redlock` (retryCount:0): the mutex is keyed on the tick epoch (`battle:tick:lock:{floor(now/2000)}`) and deliberately never released, so exactly one instance emits `server_tick` per 2s window regardless of timer phase offset. An earlier version locked one fixed key and released it straight after emitting, which excluded nothing — 12 of 34 measured windows had both instances emit
-- `docker-compose.yml`: Single-command startup for Redis + demo server
-- `public/index.html`: Browser UI showing live tick events and which server instance won the lock
-
-Demonstrates the core concurrency problem in real-time multiplayer: without the distributed lock, two horizontally-scaled instances both emit the tick → clients receive duplicate events.
-
----
 
 ### CareerGlyph (WIP)
 **Stack:** NestJS, TypeScript, Prisma, PostgreSQL, Swagger/OpenAPI

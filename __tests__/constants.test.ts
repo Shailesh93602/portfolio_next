@@ -96,22 +96,6 @@ describe("Project constants", () => {
     });
   });
 
-  // Verified 2026-08-15 by running `npm test` in ~/Desktop/Coding/Development/
-  // holdfast against a migrated local Postgres: "Test Files 7 passed, Tests 18
-  // passed". Previous claims were 15 here, 14 in the repo README and 14 in the
-  // blog post — three different numbers for one suite.
-  it("Holdfast reports its real test count (18) consistently", () => {
-    const holdfast = projects.find((p) => p.id === "holdfast");
-    expect(holdfast).toBeDefined();
-    const tests = holdfast?.keyMetrics?.find((m) => m.label === "Tests");
-    expect(tests?.value).toBe("18 passing");
-    // techStack line must agree with the keyMetric (no stale 12/14/15 claim)
-    expect(holdfast?.techStack?.some((t) => /Vitest — 18 core/.test(t))).toBe(
-      true
-    );
-    expect(holdfast?.techStack?.some((t) => /\(1[245],/.test(t))).toBe(false);
-  });
-
   // A portfolio's whole value is that its numbers are true. Three separate
   // entries here have shipped a test count that disagreed with the repo, and
   // two shipped a breakdown whose parts did not add up to the total it was

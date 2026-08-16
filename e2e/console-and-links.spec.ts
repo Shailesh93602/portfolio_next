@@ -22,8 +22,6 @@ const ROUTES = [
   "/portfolio/eduscale",
   "/portfolio/devtrack",
   "/portfolio/khatago",
-  "/portfolio/stripe-payments-demo",
-  "/portfolio/redis-battle-demo",
   "/contact",
   "/blogs",
   "/statistics",
