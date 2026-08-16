@@ -102,52 +102,69 @@ export default function Navbar() {
       {/* `inert` when closed removes the whole subtree from the focus order —
           prevents axe aria-hidden-focus failures that used to fire because the
           close button + nav links remained tab-reachable inside an aria-hidden region. */}
-      <div
-        className={`fixed inset-0 z-[999] flex h-[100vh] transform flex-col border-l border-border/40 bg-background/95 backdrop-blur-sm transition-transform duration-300 ease-out md:hidden ${
-          menuOpen
-            ? "translate-x-0 opacity-100"
-            : "pointer-events-none translate-x-full opacity-0"
-        }`}
-        aria-hidden={!menuOpen}
-        inert={!menuOpen}
-      >
-        <div className="flex items-center justify-between border-b px-6 py-5">
-          <Link
-            href="/"
-            className="text-gradient text-xl font-bold"
-            onClick={closeMenu}
-          >
-            <span>SC</span>
-          </Link>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={closeMenu}
-            aria-label="Close menu"
-            className="hover:bg-muted"
-          >
-            <XIcon className="h-6 w-6" />
-          </Button>
+      {/* The drawer sits inside a fixed, viewport-sized clipping wrapper.
+
+          Why the wrapper exists: the drawer is parked at `translate-x-full` when
+          closed, i.e. exactly one viewport to the right. A `position: fixed`
+          element is attached to the viewport rather than to any ancestor, so no
+          amount of `overflow-x: clip` on html/body could clip it — and the
+          document's scrollWidth came out at exactly 2x the viewport, which made
+          every page on the site swipe sideways on a phone.
+
+          Making the wrapper `fixed` and the drawer `absolute` inside it means
+          the wrapper is now the drawer's containing block, so `overflow-x: clip`
+          on the wrapper actually contains it. The slide transition is unchanged.
+
+          `pointer-events-none` on the wrapper with `pointer-events-auto` on the
+          open drawer keeps the rest of the page clickable through it. */}
+      <div className="pointer-events-none fixed inset-0 z-[999] overflow-x-clip md:hidden">
+        <div
+          className={`absolute inset-0 flex h-full transform flex-col border-l border-border/40 bg-background/95 backdrop-blur-sm transition-transform duration-300 ease-out ${
+            menuOpen
+              ? "pointer-events-auto translate-x-0 opacity-100"
+              : "pointer-events-none translate-x-full opacity-0"
+          }`}
+          aria-hidden={!menuOpen}
+          inert={!menuOpen}
+        >
+          <div className="flex items-center justify-between border-b px-6 py-5">
+            <Link
+              href="/"
+              className="text-gradient text-xl font-bold"
+              onClick={closeMenu}
+            >
+              <span>SC</span>
+            </Link>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={closeMenu}
+              aria-label="Close menu"
+              className="hover:bg-muted"
+            >
+              <XIcon className="h-6 w-6" />
+            </Button>
+          </div>
+          <nav className="flex flex-1 items-center justify-center">
+            <ul className="w-full space-y-6 px-6">
+              {navigation.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors ${
+                      isActive(item.href)
+                        ? "font-bold text-primary"
+                        : "text-foreground hover:bg-muted/80 hover:text-primary"
+                    }`}
+                    onClick={closeMenu}
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
-        <nav className="flex flex-1 items-center justify-center">
-          <ul className="w-full space-y-6 px-6">
-            {navigation.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={`block rounded-lg px-4 py-3 text-base font-medium transition-colors ${
-                    isActive(item.href)
-                      ? "font-bold text-primary"
-                      : "text-foreground hover:bg-muted/80 hover:text-primary"
-                  }`}
-                  onClick={closeMenu}
-                >
-                  {item.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
       </div>
     </nav>
   );

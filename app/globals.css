@@ -131,15 +131,37 @@
   * {
     @apply border-border;
   }
+  /* Horizontal-scroll containment.
+   *
+   * The mobile nav drawer is `fixed inset-0` translated to `translate-x-full`
+   * when closed, so it sits exactly one viewport to the right. That makes the
+   * document scrollWidth exactly 2x the viewport and every page swipes sideways
+   * on a phone.
+   *
+   * This used to be `overflow-x: clip` on `body` ALONE, and it silently did
+   * nothing — computed style on the live page read `overflow-x: visible`. The
+   * reason is a CSS rule that is easy to miss: when `html` has
+   * `overflow: visible`, the BODY's overflow is propagated to the viewport, and
+   * body's own used value becomes `visible`. So the declaration was applying to
+   * an element that had been told to stop honouring it.
+   *
+   * Setting it on `html` too gives the viewport a real clipping context.
+   *
+   * `clip`, not `hidden`, on purpose: `hidden` makes the element a scroll
+   * container, which breaks `position: sticky` on the navbar and changes what
+   * `scrollIntoView` does. `clip` clips without creating a scrollport.
+   *
+   * Guarded by e2e/mobile-overflow.spec.ts — asserts scrollWidth never exceeds
+   * the viewport on any route at 390px, so this cannot silently regress again.
+   */
+  html {
+    overflow-x: clip;
+  }
   body {
     @apply bg-background text-foreground;
     font-feature-settings:
       "rlig" 1,
       "calt" 1;
-    /* The mobile nav drawer lives at translate-x-full off-screen when closed,
-       which technically extends document scrollWidth past viewport on mobile.
-       overflow-x: clip keeps the drawer's transition intact while preventing
-       horizontal page scroll. */
     overflow-x: clip;
   }
 }
