@@ -47,8 +47,4 @@ export const metadata: Metadata = {
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,
   },
-  icons: {
-    icon: "/Images/shailesh.webp",
-    apple: "/Images/shailesh.webp",
-  },
 };

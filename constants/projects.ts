@@ -40,7 +40,7 @@ export interface Project {
   incidents?: Incident[];
 }
 
-export const projects: Project[] = [
+const rawProjects: Project[] = [
   {
     id: "holdfast",
     title: "Holdfast — Inventory Reservation Engine",
@@ -113,13 +113,13 @@ export const projects: Project[] = [
       },
       {
         label: "Throughput",
-        value: "~4,200/s",
+        value: "~3,600/s",
         description:
-          "Reservations/sec on a single hot row (local Postgres benchmark, median of 3)",
+          "Atomic strategy on a single hot row (local Postgres, median of 3). Pessimistic ~3,650/s, optimistic ~2,800/s — the repo README publishes all three.",
       },
       {
         label: "Tests",
-        value: "15 passing",
+        value: "18 passing",
         description:
           "Concurrency, idempotency, deadlock-safe baskets, sharding, lifecycle, chaos — vs real Postgres",
       },
@@ -139,7 +139,7 @@ export const projects: Project[] = [
       "Data access: Drizzle (schema + migrations + typed reads) + raw SQL on the lock path",
       "Server: Fastify, Zod",
       "Observability: prom-client (Prometheus)",
-      "Tests: Vitest (15, against real Postgres)",
+      "Tests: Vitest — 18 core tests against real Postgres, plus separate e2e and UI suites",
       "Infra: Docker, GitHub Actions CI with a Postgres service",
     ],
     problem:
@@ -168,7 +168,6 @@ export const projects: Project[] = [
       "@socket.io/redis-adapter",
       "Redlock",
       "Redis",
-      "Bull Queues",
       "Circuit Breaker",
       "Prometheus",
       "Node.js",
@@ -176,13 +175,13 @@ export const projects: Project[] = [
     live: "https://eduscale.vercel.app/",
     github: "https://github.com/Shailesh93602/devscale",
     detailedDescription:
-      "A production-grade EdTech platform built around a distributed real-time engine. The backend uses @socket.io/redis-adapter for horizontal Socket.io scaling across multiple Node.js instances, redlock (Redlock algorithm) for distributed locking to prevent race conditions in battle state writes, opossum for circuit-breaker protection on external services, prom-client exposing a Prometheus /metrics endpoint, and Bull queues for reliable background job processing. Frontend is Next.js 15 App Router with Redux Toolkit.",
+      "An EdTech platform built around a distributed real-time engine. The backend uses @socket.io/redis-adapter for horizontal Socket.io scaling across multiple Node.js instances, redlock for distributed locking on the battle start / submit-answer / complete paths, opossum as a circuit breaker around the remote code-execution service (Judge0), prom-client exposing a Prometheus /metrics endpoint, and Bull queues for email delivery with a dead-letter queue. Frontend is Next.js 16 App Router with Redux Toolkit.",
     architecture: {
       layers: [
         {
           name: "Frontend",
           items: [
-            "Next.js 15 (App Router)",
+            "Next.js 16 (App Router)",
             "React 19",
             "Tailwind CSS",
             "Framer Motion",
@@ -203,15 +202,15 @@ export const projects: Project[] = [
         {
           name: "Infrastructure",
           items: [
-            "Redis Cluster (adapter + locks + cache)",
-            "Bull Queues (background jobs)",
+            "Redis (adapter + Redlock + cache + rate limiting)",
+            "Bull queue + dead-letter queue for email delivery",
             "Supabase Auth",
             "Vercel / AWS",
           ],
         },
       ],
       description:
-        "Distributed real-time architecture: Socket.io rooms backed by Redis cluster adapter for multi-instance scaling. Redlock prevents duplicate battle-start race conditions. Circuit breaker wraps the code-execution service. Prometheus metrics on /metrics for observability.",
+        "Distributed real-time architecture: Socket.io rooms backed by the Redis adapter for multi-instance scaling. Redlock guards the battle start, answer-submit and battle-complete paths against concurrent writes. An opossum circuit breaker wraps the Judge0 code-execution call. prom-client exposes request-duration, active-connection and memory metrics on /metrics.",
     },
     keyMetrics: [
       {
@@ -224,7 +223,7 @@ export const projects: Project[] = [
         label: "Concurrency",
         value: "Redlock",
         description:
-          "Distributed lock prevents duplicate battle starts across horizontally-scaled instances",
+          "Distributed lock on the battle start / submit-answer / complete paths, so horizontally-scaled instances can't double-write them",
       },
       {
         label: "Resilience",
@@ -266,15 +265,15 @@ export const projects: Project[] = [
     techStack: [
       "Frontend: Next.js 15 (App Router), React 19, Tailwind CSS, Framer Motion, Redux Toolkit, Zustand",
       "Backend: Node.js, Express.js (TypeScript), Prisma ORM, PostgreSQL",
-      "Real-time & AI: Socket.io, Redis, Bull Queues for background tasks, Supabase Auth",
-      "Developer Experience: Swagger/OpenAPI, Playwright E2E testing, Husky",
+      "Real-time: Socket.io + @socket.io/redis-adapter, Redis, Redlock, Bull (email queue + DLQ), Supabase Auth",
+      "Developer Experience: Swagger/OpenAPI, Playwright E2E testing",
     ],
     problem:
       "Engineering education is often disjointed, with students moving between static roadmaps, isolated coding editors, and scattered community forums. This lack of integration leads to poor progress tracking and a higher dropout rate during self-paced learning.",
     solution:
       "A unified Engineering Learning Platform (SaaS) that seamlessly integrates structured curriculum with interactive coding tools and real-time social competition. EduScale provides a 'single source of truth' for the student's entire technical journey.",
     challengesSolved:
-      "The hardest problem was preventing race conditions when two users simultaneously start the same battle. The fix: redlock (Redlock algorithm over Redis) acquires a distributed lock before any battle state write, preventing duplicate battle creation. Socket.io horizontal scaling uses @socket.io/redis-adapter so any Node.js instance can broadcast to any room. opossum circuit breaker wraps the remote code-execution service — when it trips, battles degrade gracefully instead of hanging. prom-client exposes active-battle count, queue depth, and p99 latency on /metrics.",
+      "The hardest problem was preventing race conditions when two users simultaneously start the same battle. The fix: redlock acquires a distributed lock (fail-fast, retryCount 0) around the battle start, submit-answer and complete handlers, so two instances can't both drive the same transition. Socket.io horizontal scaling uses @socket.io/redis-adapter with two independent ioredis connections — pub and sub have to be separate clients or a long-running write on the pub connection stalls the subscriber. opossum wraps the Judge0 code-execution call so a slow or failing executor degrades the battle instead of hanging it.",
     showcases: [
       {
         title: "Unified User Dashboard",
@@ -303,28 +302,6 @@ export const projects: Project[] = [
           "A competitive arena powered by WebSockets, allowing real-time multiplayer coding showdowns with live leaderboards.",
         imageDark: "/Images/eduscale/battle_dark.png",
         imageLight: "/Images/eduscale/battle_light.png",
-      },
-    ],
-    incidents: [
-      {
-        title: "Duplicate battles on tournament Saturday",
-        symptom:
-          "First public tournament. Within the first couple of hours we had a handful of battles where two rooms got created for the same pairing — both players saw a 'Battle starting' modal, joined two parallel games, and wondered which one was real.",
-        hypothesis:
-          "My first guess was a WebSocket reconnect race on shaky mobile networks. I spent an hour on that theory before realizing reconnects were behaving correctly. The real culprit showed up in the handler-duration histogram: our start-battle path had a long tail around 2.3–2.6s when the Postgres replica was under load, and the Redlock TTL was 2 seconds. Lock was expiring mid-handler, second request would grab its own lock, two rooms.",
-        fix: "Bumped the TTL to 8 seconds and added Redlock auto-renewal — a 500ms heartbeat that calls `lock.extend()` while the handler runs. Also added a `handler_duration_seconds` Prometheus histogram so we'd notice next time a handler started creeping toward the lock TTL. The code change was small, but the habit of 'always measure before you pick a TTL' was the real takeaway.",
-        confirmed:
-          "The duplicate-battle counter stayed at 0 through the next tournament. The new histogram also surfaced two slow paths (a missing join index and a chatty N+1 in the ranking query) — neither had been loud enough to matter on their own, but both were already halfway to the old TTL.",
-      },
-      {
-        title: "Split rooms across Node instances",
-        symptom:
-          "Stress test on a 3-instance deploy. Roughly one in fifteen battles, both players could type but neither saw the other's cursor. Every packet was acked, nothing in the logs, just… silence across the wire.",
-        hypothesis:
-          "I was sure it was a room-name collision or a sticky-session issue at the load balancer. Neither held up. The giveaway was tailing the Redis MONITOR during a failed battle — the pub channel got the broadcast but the sub channel on the other instance wasn't receiving it.",
-        fix: "@socket.io/redis-adapter needs two independent ioredis clients — one for `pub`, one for `sub`. I'd wired both to the same connection, assuming Redis pipelining would handle it. Under load, a long-running write would block the sub from draining. Split into two clients (one-line diff) and it was done. Embarrassing, but exactly what the Socket.io docs say on page one.",
-        confirmed:
-          "Zero split-room reports across the next ~40 tournaments. Added a pub/sub latency gauge (`redis_pubsub_roundtrip_ms`) so a regression would be visible on the dashboard instead of in a user DM.",
       },
     ],
   },
@@ -381,9 +358,10 @@ export const projects: Project[] = [
     },
     keyMetrics: [
       {
-        label: "Dashboard Latency",
-        value: "< 300ms",
-        description: "Parallelized data aggregation and in-memory scoring",
+        label: "Dashboard queries",
+        value: "9 in parallel",
+        description:
+          "One Promise.all fan-out instead of a serial waterfall, with the scoring done in memory",
       },
       {
         label: "Pattern Intelligence",
@@ -392,8 +370,9 @@ export const projects: Project[] = [
       },
       {
         label: "Data Integrity",
-        value: "100%",
-        description: "Atomic transactions for multi-entity tracking",
+        value: "$transaction",
+        description:
+          "Multi-entity writes (projects, milestones) go through Prisma interactive transactions",
       },
     ],
     userFlow: [
@@ -427,8 +406,8 @@ export const projects: Project[] = [
       "Dynamic Insights: AI-driven observational feedback on streak milestones and activity trends.",
     ],
     techStack: [
-      "Frontend: Next.js 15, React 19, Tailwind CSS v4, Lucide React, Shadcn UI, Recharts",
-      "Backend: Next.js Server Actions, Prisma ORM, PostgreSQL (via Supabase)",
+      "Frontend: Next.js 16, React 19, Tailwind CSS v4, Lucide React, Shadcn UI, Recharts",
+      "Backend: Next.js route handlers (19 API routes) + a server action for auth, Prisma ORM, PostgreSQL (via Supabase)",
       "Services: Scoping Engine, Pattern Intelligence Service, Streak Manager, Recommendation Logic",
       "Dev Tools: Playwright E2E Testing, ESLint, Prettier",
     ],
@@ -437,7 +416,7 @@ export const projects: Project[] = [
     solution:
       "DevTrack solves this by providing a unified intelligence layer. It doesn't just record data; it analyzes it using a proprietary scoring and recommendation engine to guide developers toward their technical goals.",
     challengesSolved:
-      "The core challenge was building a real-time analytics suite that remains performant as the number of logged activities grows. I implemented a modular service architecture that uses Promise.all for database fetching and handles complex aggregations in-memory before reaching the client.",
+      "The core challenge was building a real-time analytics suite that stays responsive as the number of logged activities grows. The dashboard needs nine independent aggregates, so a modular service layer issues them as one Promise.all fan-out rather than a serial waterfall and does the composite scoring in memory before anything reaches the client. The live activity feed is a Supabase Realtime postgres_changes subscription on daily_logs filtered to the current user, so multi-tab sync costs nothing in polling.",
     showcases: [
       {
         title: "Intelligence Dashboard",
@@ -819,8 +798,8 @@ export const projects: Project[] = [
       "Redis Pub/Sub",
       "Prometheus",
       "prom-client",
-      "Docker",
-      "TypeScript",
+      "Docker Compose",
+      "JavaScript",
     ],
     github: "https://github.com/Shailesh93602/redis-battle-demo",
     live: "https://redis-battle-demo.onrender.com/",
@@ -839,9 +818,10 @@ export const projects: Project[] = [
         {
           name: "Distributed Coordination",
           items: [
-            "Redlock algorithm (retryCount: 0)",
-            "Redis SET NX for distributed mutex",
-            "1,500ms lock TTL — less than 2,000ms tick interval",
+            "Redlock algorithm (retryCount: 0) — fail fast, never queue",
+            "Lock key names the tick epoch: battle:tick:lock:{floor(now/2000)}",
+            "The winner never releases — the epoch expires on its own TTL",
+            "Epoch derived from Redis TIME, so instances can't disagree on the window",
           ],
         },
         {
@@ -859,15 +839,15 @@ export const projects: Project[] = [
     keyMetrics: [
       {
         label: "Test Coverage",
-        value: "48 tests",
+        value: "62 tests",
         description:
-          "Config, Redlock, Socket events, Redis adapter, HTTP endpoints",
+          "Config, Redlock, socket events, HTTP endpoints, plus a two-instance tick-race integration test that asserts exactly one emit per window",
       },
       {
-        label: "Lock TTL",
-        value: "≤1.5s",
+        label: "Exclusion unit",
+        value: "Tick epoch",
         description:
-          "Redlock TTL shorter than tick interval — guarantees release before next race",
+          "The lock names the 2s window, not a fixed key — so a phase-offset second instance maps to the same epoch and loses it",
       },
       {
         label: "Metrics",
@@ -879,10 +859,10 @@ export const projects: Project[] = [
     features: [
       "Live distributed lock visualization: which instance won each tick, updated in real time",
       "Redis Pub/Sub bridge: Socket.io rooms work correctly across multiple Node.js processes",
-      "Redlock (retryCount: 0) — fails fast if lock is held, no queue buildup",
+      "Redlock (retryCount: 0) — fails fast if the epoch is claimed, no queue buildup",
       "Prometheus /metrics endpoint — production-observable from day one",
       "GET /health returns instance ID, uptime, room/client counts",
-      "48 unit tests covering all distributed patterns and HTTP endpoints",
+      "62 tests covering the distributed patterns, HTTP endpoints, and a real two-instance tick race",
     ],
     techStack: [
       "Runtime: Node.js, Express",
@@ -890,14 +870,14 @@ export const projects: Project[] = [
       "Distributed locking: Redlock (Redis SET NX)",
       "Observability: prom-client (Prometheus), /health endpoint",
       "Infrastructure: Redis, Docker Compose",
-      "Tests: Jest, 48 tests",
+      "Tests: Jest, 62 tests",
     ],
     problem:
       "Demonstrating distributed systems patterns (leader election, exactly-once processing, cross-process pub/sub) is hard without infrastructure overhead. Most demos fake it — they run a single process and claim horizontal scaling.",
     solution:
       "Two genuinely separate Node.js processes sharing one Redis. The Redlock race is real: one instance wins, one loses. The browser shows which one won each tick. The Prometheus metrics show the counts accumulate correctly across both instances.",
     challengesSolved:
-      "The key insight was using retryCount: 0 on Redlock. With retries enabled, both instances queue up for the lock, and when the tick interval fires again before the queue drains, you get multiple ticks per interval — exactly the race condition you're trying to prevent. Zero retries means: if you didn't win this tick, you skip it. Clean, exactly-once semantics at the cost of occasional missed ticks under high contention.",
+      "The first version looked correct and wasn't. It raced for one fixed key and released the lock in a `finally` immediately after emitting, so the mutex was only held for the millisecond the emit took. Two instances run independent 2s timers with an arbitrary phase offset, so the second one's attempt landed after the release and won too: measured over 40 seconds against one Redis, 12 of 34 tick windows had both instances emit, with gaps as small as 3ms. The unit of exclusion has to be the tick window, so the lock key now names it — `battle:tick:lock:{floor(now / 2000)}` — and is deliberately never released, because releasing re-opens the epoch to whichever timer fires next. `now` comes from Redis TIME rather than each host's clock so the instances can't disagree about which window they are in. The trade-off is explicit: if a tick handler throws, that epoch stays claimed and the tick is dropped — for a heartbeat, missing one beats emitting two.",
   },
   {
     id: "grounded",
@@ -966,7 +946,7 @@ export const projects: Project[] = [
       "Server: Fastify",
       "Vector store: PostgreSQL + pgvector (in-memory fallback for offline mode)",
       "LLM/embeddings: OpenAI (swappable via env)",
-      "Tests: Vitest (10, offline — no API key/DB)",
+      "Tests: Vitest — 50 tests; 41 run offline with no API key or DB, the 9 pgvector tests skip unless Postgres is up",
     ],
     problem:
       "Most RAG demos look great until real users hit them: they hallucinate when the answer isn't in the corpus, re-embed everything on every deploy, double-charge on retries, and give you no way to tell whether a prompt change made retrieval quality worse.",
@@ -1033,7 +1013,7 @@ export const projects: Project[] = [
       "Language: TypeScript (ESM, fully typed)",
       "Dependencies: none at runtime",
       "Store: in-memory included; Redis/Postgres pluggable",
-      "Tests: Vitest (13, deterministic/offline)",
+      "Tests: Vitest (22, deterministic/offline)",
     ],
     problem:
       "Networks retry, clients double-click, and webhooks redeliver — so any write endpoint that isn't explicitly idempotent will eventually charge, send, or create something twice. Teams re-solve this badly in app code (non-atomic check-then-write races) and reach for a fixed-window rate limiter that lets bursts through at the window boundary.",
@@ -1099,7 +1079,7 @@ export const projects: Project[] = [
       "Language: TypeScript (ESM, fully typed)",
       "Dependencies: none at runtime (library + CLI)",
       "Graders: exact / includes / regex / jsonShape / token-overlap / custom",
-      "Tests: Vitest (21, offline)",
+      "Tests: Vitest (27, offline)",
     ],
     problem:
       "You change a prompt to fix one thing and three others quietly break — and you find out from a customer. LLM output is non-deterministic enough that ad-hoc manual checks miss regressions, and most teams have no baseline to diff against, so 'is this better or worse?' stays a vibe.",
@@ -1112,7 +1092,7 @@ export const projects: Project[] = [
     id: "stripe-payments-demo",
     title: "Stripe Payments Demo",
     description:
-      "Production-grade Stripe integration: webhook signature verification, Redis SETNX idempotency guard against duplicate event delivery, and payment intent creation with exponential-backoff retry. 29 tests covering exactly-once semantics, non-retryable 4xx errors, and concurrent duplicate suppression.",
+      "Production-grade Stripe integration: webhook signature verification, Redis SETNX idempotency guard against duplicate event delivery, and payment intent creation with exponential-backoff retry. 61 tests covering exactly-once semantics, non-retryable 4xx errors, and a real concurrent-duplicate race against Redis.",
     image: "/Images/portfolio1.png",
     github: "https://github.com/Shailesh93602/stripe-payments-demo",
     live: "https://stripe-payments-demo-eight.vercel.app",
@@ -1140,7 +1120,7 @@ export const projects: Project[] = [
           name: "Idempotency (Redis)",
           items: [
             "Redis SETNX (SET NX EX) — atomic check-then-write in one command",
-            "24-hour TTL covers Stripe's 7-day retry window",
+            "24-hour TTL — a bounded dedup window, not full coverage of Stripe's retry schedule (~3 days in live mode)",
             "Key namespace: stripe:event:{eventId}",
           ],
         },
@@ -1159,9 +1139,9 @@ export const projects: Project[] = [
     keyMetrics: [
       {
         label: "Test Suite",
-        value: "29 tests",
+        value: "61 tests",
         description:
-          "idempotency (9) + webhook (8) + payments (5) + retry (6) + app (5)",
+          "7 suites: idempotency, webhook verify, webhook route vs real Redis, retry policy, retry timing, payments, app",
       },
       {
         label: "Idempotency",
@@ -1182,19 +1162,19 @@ export const projects: Project[] = [
       "Payment intent creation with caller-supplied idempotency key — safe to retry from client",
       "Exponential backoff retry with jitter — handles Stripe 500s without thundering herd",
       "4xx errors (card decline, invalid request) fail fast — no wasted retry attempts",
-      "29 tests including concurrent duplicate simulation and partial failure scenarios",
+      "61 tests, including a 25-way concurrent duplicate race run against a real Redis rather than a mock",
     ],
     techStack: [
       "Runtime: Node.js 18, TypeScript",
       "Web: Express 4",
       "Payments: Stripe SDK v14 (2023-10-16 API version)",
       "Idempotency: ioredis (SETNX)",
-      "Tests: Jest + Supertest — 29 tests, 80%+ coverage",
+      "Tests: Jest + Supertest — 61 tests, 80%+ coverage threshold enforced",
     ],
     problem:
       "Stripe delivers webhooks at-least-once — the same payment_intent.succeeded event can arrive 3–5 times during retries. Without an idempotency guard, each delivery triggers a fulfillment action (email, inventory update, DB write), causing duplicate orders and corrupted state.",
     solution:
-      "Redis SETNX on the event ID: the first delivery writes the key and processes. All subsequent deliveries hit the existing key and return 200 immediately without reprocessing. 24-hour TTL covers Stripe's full retry window. Payment intent creation uses a caller-supplied idempotency key, so double-clicks or network retries never create duplicate charges.",
+      "Redis SETNX on the event ID: the first delivery writes the key and processes. All subsequent deliveries hit the existing key and return 200 immediately without reprocessing. The 24-hour TTL is a deliberate trade-off: it covers the overwhelming majority of retries in exchange for bounded key growth, and the README is explicit that a retry landing after expiry will be processed again. Payment intent creation uses a caller-supplied idempotency key, so double-clicks or network retries never create duplicate charges.",
     challengesSolved:
       "The non-obvious design decision was the retry policy for payment creation: retrying on 4xx (card decline, bad idempotency key) is harmful — Stripe will return the same error every time. The retry logic checks `statusCode >= 500` and treats all other errors as non-retryable. Network errors (no statusCode) are retried because they're transient. Jitter (0–25% of the exponential delay) prevents multiple failing payments from hitting Stripe simultaneously after a 5xx burst.",
   },
@@ -1202,7 +1182,7 @@ export const projects: Project[] = [
     id: "razorpay-patterns-demo",
     title: "Razorpay Patterns Demo",
     description:
-      "India-accessible sibling of stripe-payments-demo. Razorpay Standard Checkout end-to-end with webhook HMAC verification, Redis SETNX idempotency, exponential-backoff retry, and client-callback signature verification. 30 tests, live /demo page with Razorpay Checkout.js modal.",
+      "India-accessible sibling of stripe-payments-demo. Razorpay Standard Checkout end-to-end with webhook HMAC verification, Redis SETNX idempotency, exponential-backoff retry, and client-callback signature verification. 69 tests, live /demo page with Razorpay Checkout.js modal.",
     image: "/Images/portfolio1.png",
     github: "https://github.com/Shailesh93602/razorpay-patterns-demo",
     live: "https://razorpay-patterns-demo.vercel.app",
@@ -1248,7 +1228,7 @@ export const projects: Project[] = [
           items: [
             "Exponential backoff + 0–25% jitter on 5xx / network",
             "4xx (invalid amount, duplicate receipt, auth) fail fast",
-            "Shared helpers with stripe-payments-demo — identical retry policy",
+            "Same retry rules as stripe-payments-demo, re-implemented per repo (max delay 4s here vs 5s there) — the repos share no package",
           ],
         },
       ],
@@ -1258,9 +1238,9 @@ export const projects: Project[] = [
     keyMetrics: [
       {
         label: "Test Suite",
-        value: "30 tests",
+        value: "69 tests",
         description:
-          "signature verify (8) + retry (7) + webhook verify (6) + event-id extract (7) + helpers",
+          "6 suites: client signature verify, webhook verify, idempotency, retry policy, and two route-level integration suites against real Redis",
       },
       {
         label: "Client verify",
@@ -1280,14 +1260,14 @@ export const projects: Project[] = [
       "Client-callback signature verification — HMAC-SHA256(order_id|payment_id) with KEY_SECRET, constant-time compare",
       "Async webhook receiver with HMAC verification + SETNX idempotency guard, 24h TTL",
       "Exponential-backoff retry on order creation (5xx / network retry; 4xx fail fast)",
-      "Interactive /demo page — test card 4111 1111 1111 1111, see full 4-step flow live in browser",
-      "30 unit tests across 3 suites — signature verification, retry policy, event-id extraction",
+      "Interactive /demo page — domestic INR test cards (Razorpay test accounts reject the international 4111… number), full 4-step flow live in the browser",
+      "69 tests across 6 suites — signature verification, retry policy, idempotency keying, and route-level integration against real Redis",
     ],
     techStack: [
       "Runtime: Node.js 20, TypeScript, Next.js 16 App Router",
       "Payments: razorpay SDK v2",
       "Idempotency: ioredis (SETNX), Upstash Redis in prod",
-      "Tests: Jest + ts-jest — 30 tests passing",
+      "Tests: Jest + ts-jest — 69 tests passing",
     ],
     problem:
       "Stripe is invite-only in India, so Indian developers can't build production Stripe integrations locally. Razorpay is the India-accessible equivalent and uses nearly identical patterns — webhook HMAC signing, idempotency on event IDs, subscription + order APIs. Without a reference implementation, every integration rediscovers the same footguns: missing raw body reads that break HMAC verification, no dedup on at-least-once webhook delivery, naive retry on 4xx that spams the gateway with guaranteed-to-fail requests.",
@@ -1297,3 +1277,33 @@ export const projects: Project[] = [
       "Razorpay's signing scheme is subtly different from Stripe's in two ways that bite: (1) Razorpay signs the raw body only, while Stripe prepends a timestamp — if you copy-paste the Stripe verifier and just swap the header name, the HMAC will fail on every payload. (2) Razorpay uses a DIFFERENT secret for the Checkout.js client-callback verification (the pair-secret of KEY_ID) vs the webhook signature (a separate webhook secret generated per endpoint). Confusing the two is the most common integration bug. The demo makes both secret boundaries explicit in code comments and tests each path separately.",
   },
 ];
+
+/**
+ * Projects that never had a real screenshot all pointed at this one generic
+ * code-editor image, so 9 of 13 cards on /portfolio rendered identically — and
+ * the flagship's "screenshot" was an unrelated CSS snippet (`.myform { width:
+ * 400px … }`), which reads as "this backend engine is a stylesheet".
+ *
+ * Same treatment the blog got in #12: fall back to a branded per-project cover
+ * from the OG image generator (title + description on the site gradient)
+ * instead of repeating one placeholder. Drop a real screenshot into
+ * `image` and it takes precedence automatically.
+ *
+ * To revert: export `rawProjects` directly.
+ */
+const PLACEHOLDER_COVER = "/Images/portfolio1.png";
+
+function generatedCover(title: string, description: string): string {
+  const params = new URLSearchParams({ title, type: "project" });
+  if (description) params.set("description", description.slice(0, 120));
+  return `/api/og?${params.toString()}`;
+}
+
+export const projects: Project[] = rawProjects.map((project) =>
+  !project.image || project.image === PLACEHOLDER_COVER
+    ? {
+        ...project,
+        image: generatedCover(project.title, project.description),
+      }
+    : project
+);

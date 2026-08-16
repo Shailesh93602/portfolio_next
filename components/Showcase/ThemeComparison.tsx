@@ -8,13 +8,22 @@ import { MoonIcon, SunIcon } from "lucide-react";
 interface Props {
   lightImage: string;
   darkImage: string;
+  /** Rendered as a heading above the toggle. Pass "" to hide it. */
   title: string;
+  /**
+   * Alt text for the screenshot. Required because the project detail page
+   * renders its own heading and passes `title=""` — without this the alt
+   * collapsed to " in dark mode" (a leading space and no subject) on every
+   * showcase image of the two biggest case studies.
+   */
+  alt: string;
 }
 
 export default function ThemeComparison({
   lightImage,
   darkImage,
   title,
+  alt,
 }: Props) {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
 
@@ -70,7 +79,7 @@ export default function ThemeComparison({
           >
             <Image
               src={theme === "dark" ? darkImage : lightImage}
-              alt={`${title} in ${theme} mode`}
+              alt={`${alt} — ${theme} mode`}
               fill
               sizes="(max-width: 1024px) 100vw, 66vw"
               className="object-cover"

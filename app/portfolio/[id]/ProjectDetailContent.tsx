@@ -279,6 +279,7 @@ export default function ProjectDetailContent({ project }: Props) {
                           {showcase.imageDark && showcase.imageLight ? (
                             <ThemeComparison
                               title=""
+                              alt={`${project.title} — ${showcase.title}`}
                               darkImage={showcase.imageDark}
                               lightImage={showcase.imageLight}
                             />

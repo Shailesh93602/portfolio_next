@@ -1,5 +1,14 @@
 import { defineConfig, devices } from "@playwright/test";
 
+// Port 3000 is frequently occupied by another app on a dev machine, which
+// silently points the whole suite at the wrong site (every assertion then
+// fails for the wrong reason). Pin the target explicitly:
+//   PLAYWRIGHT_PORT=3230 npx playwright test
+// and the config drives both the baseURL and the auto-started dev server
+// from the same value, so they can never drift apart.
+const PORT = process.env.PLAYWRIGHT_PORT ?? "3000";
+const BASE_URL = process.env.PLAYWRIGHT_BASE_URL ?? `http://localhost:${PORT}`;
+
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
@@ -8,7 +17,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: process.env.CI ? "github" : "list",
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: BASE_URL,
     trace: "on-first-retry",
     screenshot: "only-on-failure",
   },
@@ -22,10 +31,15 @@ export default defineConfig({
       use: { ...devices["Pixel 5"] },
     },
   ],
-  webServer: {
-    command: "npm run dev",
-    url: "http://localhost:3000",
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000,
-  },
+  // Set PLAYWRIGHT_NO_SERVER=1 when you have already started the server
+  // yourself (e.g. `next start -p 3230` against a production build) — the
+  // asset + a11y gates should run against the prod build, not `next dev`.
+  webServer: process.env.PLAYWRIGHT_NO_SERVER
+    ? undefined
+    : {
+        command: `npm run dev -- -p ${PORT}`,
+        url: BASE_URL,
+        reuseExistingServer: !process.env.CI,
+        timeout: 120000,
+      },
 });

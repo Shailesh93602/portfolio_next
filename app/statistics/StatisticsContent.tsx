@@ -96,8 +96,6 @@ export function StatisticsContent({
 }: {
   initialData?: InitialStatsPayload;
 } = {}) {
-  const [showTimeoutMessage, setShowTimeoutMessage] = React.useState(false);
-
   const { data: stats, error } = useQuery({
     queryKey: ["stats"],
     queryFn: async () => {
@@ -109,6 +107,13 @@ export function StatisticsContent({
     // the SSR HTML. The client still refetches in the background after
     // staleTime elapses.
     initialData: initialData as unknown as undefined,
+    // Without this the page was permanently frozen on the committed snapshot:
+    // TanStack Query dates un-timestamped `initialData` as "now", so a 5-minute
+    // staleTime made it fresh on mount and /api/statistics was never called at
+    // all (verified: 0 requests in 6s on a loaded page). Marking the snapshot as
+    // already-stale keeps the SSR HTML full of real numbers while letting the
+    // background refetch actually run and replace them with live ones.
+    initialDataUpdatedAt: 0,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 2,
     retryDelay: 1000,
@@ -117,18 +122,12 @@ export function StatisticsContent({
   // We have a snapshot available from the server when initialData is provided,
   // so don't show a loading spinner — recruiters (and crawlers) should see
   // real stats in the initial HTML, not "Loading...".
+  // NOTE: `page.tsx` always passes the committed snapshot, so in practice this
+  // is always false and the branch below is a defensive fallback only. There
+  // used to be a `showTimeoutMessage` state here with a 10s timer that set it —
+  // but it was only ever rendered inside this same `isLoading` block, so the
+  // timer ran on every visit to paint a message that could never appear.
   const isLoading = !stats && !initialData;
-
-  // Show timeout message after 10 seconds
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      if (isLoading) {
-        setShowTimeoutMessage(true);
-      }
-    }, 10000);
-
-    return () => clearTimeout(timer);
-  }, [isLoading]);
 
   // Transform GitHub contributions data for heatmap
   const contributionHeatmapData = React.useMemo(() => {
@@ -231,19 +230,14 @@ export function StatisticsContent({
               This may take a few moments as we fetch data from multiple
               platforms.
             </p>
-            {showTimeoutMessage && (
-              <div className="mt-4 rounded-md border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-800 dark:bg-yellow-900/20">
-                <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                  ⏰ Taking longer than expected? The external APIs might be
-                  slow. Please wait...
-                </p>
-              </div>
-            )}
           </div>
         )}
 
-        {/* Error State */}
-        {error && (
+        {/* Error State — only when we have nothing to show. A failed background
+            refetch while the snapshot is on screen is not a user-facing error:
+            painting "❌ Error loading statistics" above a page full of correct
+            numbers is worse than saying nothing. */}
+        {error && !stats && (
           <div className="py-16 text-center transition-opacity duration-500">
             <div className="inline-flex items-center gap-3 text-red-500">
               <span>❌ Error loading statistics</span>

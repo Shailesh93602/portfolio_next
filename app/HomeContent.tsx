@@ -202,7 +202,7 @@ export default function HomeContent({ featuredPosts }: Props) {
               tag: "stripe-payments-demo",
               title: "Webhook idempotency patterns",
               proof:
-                "Demo project exploring Stripe webhook handling: Redis SETNX on event IDs with 24h TTL, exponential backoff retry that skips 4xx, and 29 tests covering the duplicate-delivery edge cases.",
+                "Demo project exploring Stripe webhook handling: Redis SETNX on event IDs with a 24h dedup window, exponential backoff retry that skips 4xx, and 61 tests including a 25-way concurrent duplicate race against real Redis.",
               href: "/portfolio/stripe-payments-demo",
               cta: "See the Stripe demo",
             },

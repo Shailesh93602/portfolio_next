@@ -73,19 +73,19 @@ Owned authentication module end-to-end on Garage Management System team project 
 ### EduScale
 **Live:** https://eduscale.vercel.app/
 **GitHub:** https://github.com/Shailesh93602/devscale
-**Stack:** Next.js 15, React 19, TypeScript, Tailwind CSS, Prisma, PostgreSQL, Supabase, Socket.io, @socket.io/redis-adapter, redlock, opossum, prom-client, Bull, Redis, Node.js, Express.js
+**Stack:** Next.js 16, React 19, TypeScript, Tailwind CSS, Prisma, PostgreSQL, Supabase, Socket.io, @socket.io/redis-adapter, redlock, opossum, prom-client, Bull, Redis, Node.js, Express.js
 
 Premium engineering learning platform with a production-grade distributed real-time engine:
 
 **Architecture:**
 - `@socket.io/redis-adapter`: Socket.io cluster adapter for horizontal scaling across multiple Node.js instances. All instances share room state via Redis.
-- `redlock` (Redlock algorithm): Distributed lock manager preventing race conditions when two users simultaneously attempt to start the same battle. Lock is acquired before any battle state write.
+- `redlock` (Redlock algorithm): Distributed lock manager preventing race conditions when two users simultaneously attempt to start the same battle. The lock guards the battle start, submit-answer and complete handlers.
 - `opossum`: Circuit breaker wrapping the remote code-execution service. When the breaker trips (threshold exceeded), battles degrade gracefully rather than hanging.
-- `prom-client`: Prometheus client exposing `/metrics` endpoint with active battle count, queue depth, and request latency histograms.
-- `bull` queues: Reliable background job processing for code execution, result fan-out, and leaderboard updates.
+- `prom-client`: Prometheus client exposing a `/metrics` endpoint with a request-duration histogram, an active-connection gauge and a memory gauge (plus Node default metrics).
+- `bull` queues: background email delivery with a dead-letter queue for failed sends.
 - `winston`: Structured logging with correlation IDs across distributed operations.
 
-**Features:** Dynamic Career Roadmaps, Real-time Battle Zone (<200ms sync), multi-language code execution, Community Forum, Placement preparation tracks, gamification.
+**Features:** Dynamic Career Roadmaps, real-time Battle Zone over Socket.io, multi-language code execution via Judge0, Community Forum, placement-preparation tracks, gamification.
 
 ---
 
@@ -98,7 +98,7 @@ Developer intelligence dashboard:
 - Developer Scoring System (0–100 composite based on consistency, DSA depth, project productivity)
 - Pattern Analysis detecting strongest/weakest problem-solving areas
 - Prescriptive Recommendations engine suggesting high-yield daily tasks
-- Visual Analytics: interactive Recharts, activity heatmaps, difficulty distribution (<300ms latency via Promise.all parallelization)
+- Visual Analytics: interactive Recharts, activity heatmaps, difficulty distribution (nine dashboard aggregates issued as one Promise.all fan-out)
 
 ---
 
@@ -120,12 +120,12 @@ WhatsApp-first AI accounting platform for Indian SMBs:
 
 ### CodeSenseiSearch
 **GitHub:** https://github.com/Shailesh93602/CodeSenseiSearch
-**Stack:** NestJS, TypeScript, PostgreSQL, pgvector, OpenAI Embeddings API
+**Stack:** pnpm monorepo (Next.js + NestJS), TypeScript, PostgreSQL, pgvector, Gemini text-embedding-004, BullMQ
 
-AI-powered semantic code search engine (Phase 7 complete — full pipeline working):
+AI-powered semantic code search engine (Phase 1 complete, Phase 2 in progress — the ingestion → embedding → retrieval pipeline is scaffolded but not yet wired end to end):
 
 **Architecture:**
-- **Ingestion:** Source files → function/class-level chunker (not fixed line counts) → OpenAI embeddings → pgvector storage
+- **Ingestion:** Source files → AST-aware function/class-level chunker (not fixed line counts) → Gemini embeddings → pgvector storage
 - **Search:** Natural language query → embedding → cosine similarity ranking → ranked file+line results
 - **Key insight:** Chunking at function/class boundaries keeps semantic units intact. Fixed-size chunking splits logic mid-function, producing noisy embeddings.
 
@@ -142,7 +142,7 @@ Standalone proof-of-concept extracting the core distributed real-time engine fro
 **Architecture:**
 - Two Redis clients: `pubClient` and `subClient` — separate clients required by `@socket.io/redis-adapter` for pub/sub isolation
 - `@socket.io/redis-adapter`: All Socket.io room state synchronized through Redis; multiple server instances share a single socket namespace
-- `Redlock` (retryCount:0): Distributed mutex on `battles:tick:lock` prevents two server instances from simultaneously emitting `server_tick`. Non-blocking — if lock is held, the tryTick silently skips rather than queuing
+- `Redlock` (retryCount:0): the mutex is keyed on the tick epoch (`battle:tick:lock:{floor(now/2000)}`) and deliberately never released, so exactly one instance emits `server_tick` per 2s window regardless of timer phase offset. An earlier version locked one fixed key and released it straight after emitting, which excluded nothing — 12 of 34 measured windows had both instances emit
 - `docker-compose.yml`: Single-command startup for Redis + demo server
 - `public/index.html`: Browser UI showing live tick events and which server instance won the lock
 
@@ -208,7 +208,7 @@ Professional WCAG accessibility testing suite:
 
 **Infrastructure:** Docker, AWS (S3), Vercel, CI/CD, GitHub Actions
 
-**Testing:** Playwright E2E, Jest, Chrome Extension APIs
+**Testing:** Playwright E2E, Jest, Vitest, axe-core accessibility scans, Chrome Extension APIs
 
 **Specialized:** WCAG Accessibility (A/AA/AAA), WhatsApp Business API, Tally XML, OAuth, Stripe, i18n, Chrome Extensions
 

@@ -45,6 +45,8 @@ export const metadata: Metadata = {
     "India Web Developer",
   ],
   openGraph: {
+    type: "website",
+    url: `${SITE_URL}/contact`,
     title: "Contact Shailesh Chaudhari",
     description:
       "Available for part-time and freelance work. Next.js, Node.js, TypeScript, real-time systems. Remote-friendly.",
@@ -65,9 +67,5 @@ export const metadata: Metadata = {
     images: [ogImageUrl],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,
-  },
-  icons: {
-    icon: "/Images/shailesh.webp",
-    apple: "/Images/shailesh.webp",
   },
 };

@@ -96,16 +96,69 @@ describe("Project constants", () => {
     });
   });
 
-  it("Holdfast reports its real test count (15) consistently", () => {
+  // Verified 2026-08-15 by running `npm test` in ~/Desktop/Coding/Development/
+  // holdfast against a migrated local Postgres: "Test Files 7 passed, Tests 18
+  // passed". Previous claims were 15 here, 14 in the repo README and 14 in the
+  // blog post — three different numbers for one suite.
+  it("Holdfast reports its real test count (18) consistently", () => {
     const holdfast = projects.find((p) => p.id === "holdfast");
     expect(holdfast).toBeDefined();
     const tests = holdfast?.keyMetrics?.find((m) => m.label === "Tests");
-    expect(tests?.value).toBe("15 passing");
-    // techStack line must agree with the keyMetric (no stale 12/14 claim)
-    expect(holdfast?.techStack?.some((t) => /Vitest \(15,/.test(t))).toBe(true);
-    expect(holdfast?.techStack?.some((t) => /Vitest \(1[24],/.test(t))).toBe(
-      false
+    expect(tests?.value).toBe("18 passing");
+    // techStack line must agree with the keyMetric (no stale 12/14/15 claim)
+    expect(holdfast?.techStack?.some((t) => /Vitest — 18 core/.test(t))).toBe(
+      true
     );
+    expect(holdfast?.techStack?.some((t) => /\(1[245],/.test(t))).toBe(false);
+  });
+
+  // A portfolio's whole value is that its numbers are true. Three separate
+  // entries here have shipped a test count that disagreed with the repo, and
+  // two shipped a breakdown whose parts did not add up to the total it was
+  // printed next to (stripe: "29 tests — 9+8+5+6+5", which is 33). This guard
+  // catches the second class mechanically.
+  it("no keyMetric prints a breakdown that contradicts its own total", () => {
+    const mismatches: string[] = [];
+    projects.forEach((project) => {
+      project.keyMetrics?.forEach((metric) => {
+        const total = metric.value.match(/^(\d+)\s*tests?$/i)?.[1];
+        if (!total) return;
+        const parts = Array.from(
+          metric.description.matchAll(/\((\d+)\)/g),
+          (m) => Number(m[1])
+        );
+        if (parts.length < 2) return;
+        const sum = parts.reduce((a, b) => a + b, 0);
+        if (sum !== Number(total)) {
+          mismatches.push(
+            `${project.id}: "${metric.value}" but the breakdown sums to ${sum}`
+          );
+        }
+      });
+    });
+    expect(mismatches).toEqual([]);
+  });
+
+  // Every test count that appears in a keyMetric must appear identically in the
+  // techStack line for the same project — they are read by different people in
+  // different places and drifted apart repeatedly.
+  it("keyMetric test counts agree with the techStack line", () => {
+    const mismatches: string[] = [];
+    projects.forEach((project) => {
+      const metric = project.keyMetrics?.find((m) =>
+        /^\d+\s*tests?$/i.test(m.value)
+      );
+      if (!metric) return;
+      const count = metric.value.match(/\d+/)![0];
+      const techLine = project.techStack?.find((t) => /^Tests?:/i.test(t));
+      if (!techLine) return;
+      if (!techLine.includes(count)) {
+        mismatches.push(
+          `${project.id}: keyMetric says ${count}, techStack says "${techLine}"`
+        );
+      }
+    });
+    expect(mismatches).toEqual([]);
   });
 
   it("open-source library lead-magnets are present with github links", () => {

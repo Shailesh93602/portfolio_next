@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
 import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
+import { projects } from "@/constants/projects";
+
+// Derived, never hard-coded: this description used to claim "5 production
+// projects" and list five that no longer matched the page (it omitted the
+// flagship, Holdfast). Counting the real array keeps the meta honest when a
+// project is added or removed.
+const projectCount = projects.length;
 
 // True 1200×630 social card (the shailesh.webp portrait pillar-boxes).
 const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(
@@ -10,8 +17,7 @@ const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(
 
 export const metadata: Metadata = {
   title: "Projects — Shailesh Chaudhari",
-  description:
-    "5 production projects: EduScale (real-time coding battles with Redis), DevTrack (developer analytics), KhataGO (WhatsApp + Gemini AI accounting), Vibe Testing (AI web testing extension), AxeTos (WCAG accessibility extension).",
+  description: `${projectCount} engineering projects with the internals written up: Holdfast (inventory reservation engine that never oversells under concurrency), EduScale (real-time coding battles on Redis), KhataGO (WhatsApp + Gemini AI accounting), DevTrack (developer analytics), plus payments, RAG and idempotency reference implementations.`,
   alternates: {
     canonical: `${SITE_URL}/portfolio`,
   },
@@ -43,9 +49,10 @@ export const metadata: Metadata = {
     "Web Applications",
   ],
   openGraph: {
+    type: "website",
+    url: `${SITE_URL}/portfolio`,
     title: "Projects — Shailesh Chaudhari",
-    description:
-      "5 production projects spanning EdTech, developer tooling, AI, and SaaS. Real-time systems, Chrome extensions, and full-stack web apps.",
+    description: `${projectCount} engineering projects spanning concurrency, real-time systems, payments, AI pipelines and developer tooling — each written up with its architecture and trade-offs.`,
     images: [
       {
         url: ogImageUrl,
@@ -63,9 +70,5 @@ export const metadata: Metadata = {
     images: [ogImageUrl],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,
-  },
-  icons: {
-    icon: "/Images/shailesh.webp",
-    apple: "/Images/shailesh.webp",
   },
 };
