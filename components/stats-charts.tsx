@@ -122,32 +122,38 @@ export function StatsCharts({
                       >
                         <stop
                           offset="5%"
-                          stopColor="var(--color-primary)"
+                          stopColor="hsl(var(--primary))"
                           stopOpacity={0.8}
                         />
                         <stop
                           offset="95%"
-                          stopColor="var(--color-primary)"
+                          stopColor="hsl(var(--primary))"
                           stopOpacity={0}
                         />
                       </linearGradient>
                     </defs>
                     <XAxis
                       dataKey="date"
-                      tick={{ fontSize: 12 }}
+                      tick={{
+                        fontSize: 12,
+                        fill: "hsl(var(--muted-foreground))",
+                      }}
                       interval={30}
                       tickFormatter={(value) => format(new Date(value), "MMM")}
-                      stroke="var(--color-muted-foreground)"
+                      stroke="hsl(var(--muted-foreground))"
                     />
                     <YAxis
-                      tick={{ fontSize: 12 }}
-                      stroke="var(--color-muted-foreground)"
+                      tick={{
+                        fontSize: 12,
+                        fill: "hsl(var(--muted-foreground))",
+                      }}
+                      stroke="hsl(var(--muted-foreground))"
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Area
                       type="monotone"
                       dataKey="count"
-                      stroke="var(--color-primary)"
+                      stroke="hsl(var(--primary))"
                       strokeWidth={2}
                       fillOpacity={1}
                       fill="url(#colorCount)"
@@ -190,9 +196,18 @@ export function StatsCharts({
                   outerRadius={80}
                   paddingAngle={5}
                   dataKey="value"
-                  label={({ name, percent }) =>
-                    `${name} ${(percent * 100).toFixed(0)}%`
-                  }
+                  // No outer labels, deliberately.
+                  //
+                  // They rendered outside an 80px-radius donut inside a 250px
+                  // box, so on a 390px viewport the left and right labels were
+                  // clipped by the container. They also inherited the SVG
+                  // default fill (black), which is invisible on the dark
+                  // canvas — `stroke` on a chart element colours the line, not
+                  // the text.
+                  //
+                  // The legend below carries name, count AND percentage, is
+                  // laid out by flow rather than by angle, and therefore cannot
+                  // clip at any width.
                   labelLine={false}
                   isAnimationActive={false}
                   rootTabIndex={-1}
@@ -214,8 +229,8 @@ export function StatsCharts({
                 <Tooltip
                   formatter={(value) => [`${value} problems`, "Count"]}
                   contentStyle={{
-                    background: "var(--color-card)",
-                    border: "1px solid var(--color-border)",
+                    background: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
                   }}
                 />
                 <Legend
@@ -223,10 +238,15 @@ export function StatsCharts({
                   height={36}
                   formatter={(value, entry, index) => {
                     const item = problemStatsData[index];
+                    const pct =
+                      totalProblems > 0
+                        ? Math.round((item.value / totalProblems) * 100)
+                        : 0;
                     return (
-                      <span className="text-sm">
+                      <span className="text-sm text-foreground">
                         {value}:{" "}
-                        <span className="font-medium">{item.value}</span>
+                        <span className="font-medium">{item.value}</span>{" "}
+                        <span className="text-muted-foreground">({pct}%)</span>
                       </span>
                     );
                   }}
