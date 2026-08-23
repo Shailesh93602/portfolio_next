@@ -676,6 +676,78 @@ const rawProjects: Project[] = [
     ],
   },
   {
+    id: "ballast",
+    title: "BALLAST",
+    description:
+      "A deterministic simulation of a multi-tenant session control plane: per-tenant parallel caps, a rolling credit window, and leases over a substrate that lies. The whole execution is a pure function of one integer seed, so any failure replays byte-identically. Correctness comes from invariants, a reference oracle, mechanical mutation testing, and a shrinker that verifies its own output.",
+    image: "/Images/portfolio1.png",
+    tags: [
+      "TypeScript",
+      "Deterministic Simulation",
+      "Distributed Systems",
+      "Property Testing",
+      "Mutation Testing",
+      "Zero-dependency",
+    ],
+    github: "https://github.com/Shailesh93602/ballast",
+    detailedDescription:
+      "BALLAST models the admission problem shared by every multi-tenant platform: each tenant has a cap on concurrent work and a quota per window, capacity is finite and pre-warmed, and workers can stop responding without stopping. It is one process, zero external dependencies — no Docker, no browsers, no network — and every run is reproducible from a single integer seed. That determinism is the point: a concurrency bug that replays byte-identically is just a bug, and it is the irreproducibility that makes these systems hard. Getting there required a seeded xoshiro256** PRNG with independent substreams, rejection sampling so bounded draws are unbiased, an event queue keyed (vtime, seq) so equal-time events are totally ordered, and no unordered iteration anywhere — Map and Object.keys order leaks insertion order into results. Correctness is judged four ways that fail differently: eight invariants checked after every event, a reference oracle written to a deliberately different shape (zero incremental state, recompute from history), mechanical mutation testing to catch tests that assert nothing, and a delta-debugging shrinker that verifies its own output is still a failure, still minimal, and stable.",
+    architecture: {
+      layers: [
+        {
+          name: "Determinism spine",
+          items: [
+            "Seeded xoshiro256** PRNG with independent substreams",
+            "Rejection sampling — no modulo bias in bounded draws",
+            "Event queue keyed (vtime, seq) — equal-time events totally ordered",
+            "One module owns sorted iteration; nothing else may iterate a Map",
+          ],
+        },
+        {
+          name: "Control plane",
+          items: [
+            "Per-tenant cap AND a global pool bound — separate invariants",
+            "The cap predicate lives inside the mutation, not before it",
+            "Leases with fencing tokens; a stale release is refused, not applied",
+            "Replay log: credits decrement on acknowledgement, never on send",
+          ],
+        },
+        {
+          name: "Oracle",
+          items: [
+            "8 invariants checked after every event",
+            "Reference implementation with zero incremental state",
+            "Mechanical mutation harness over the policy layer",
+            "ddmin shrinker that verifies its own output",
+          ],
+        },
+      ],
+      description:
+        "The determinism spine makes every run reproducible; the control plane is the system under test; the oracle judges it four independent ways, because a test suite that fails only one way is a suite that agrees with itself.",
+    },
+    features: [
+      "Every run is a pure function of one integer seed — byte-identical across a fresh process",
+      "Per-tenant caps do not bound the pool: both limits are checked, as separate invariants",
+      "Fencing tokens exclude a stale holder that comes back after its lease expired",
+      "Reference oracle written to a different shape, so it is unlikely to share a bug",
+      "Mutation testing — coverage says a line ran; a surviving mutant says nothing checked it",
+      "Shrinker reduces a 10,000-event failure and then verifies the reduction",
+      "38 semantic ambiguities decided in writing BEFORE the policy code — git history as proof",
+    ],
+    techStack: [
+      "Language: TypeScript (ESM, strict)",
+      "Dependencies: none at runtime — typescript, eslint, prettier and vitest only",
+      "Tests: Vitest (147)",
+      "Verification: invariants + reference oracle + mutation testing + shrinker",
+    ],
+    problem:
+      "Multi-tenant admission control fails in ways that ordinary tests do not reach. A tenant can exceed its cap; every tenant can be under its cap while the shared pool overflows, because caps sum above capacity; a worker can hold a slot forever after dying; and an at-least-once completion channel can apply an effect twice. All four are timing-dependent, so the bug that matters is the one that does not reproduce.",
+    solution:
+      "Remove the timing. A virtual clock, a seeded PRNG and a total order on equal-time events make the entire execution a pure function of one seed, so any failure replays exactly. On top of that, four independent checks that fail differently — invariants, a reference oracle of a deliberately different shape, mechanical mutation testing, and a self-verifying shrinker. The hardest problems turned out to be definitional rather than technical, so thirty-eight semantic ambiguities were written down and decided before any policy code existed — three of them are still open questions rather than settled ones, and are marked as such.",
+    challengesSolved:
+      'The suite found six real bugs, and about as many were in the checker as in the implementation — which was the most useful thing it taught. One invariant fired on correctly-refused stale releases because the checker was consuming the control plane\'s own account of what it had done; a checker that trusts the thing it is checking is not a checker, so it now records accepted-release facts and judges those. A differential divergence exposed a spec gap rather than a code defect: nothing had ever said whether completion releases the slot. Another came from a definition — the reference used a status map to mean "was claimed", but cancel inserts a status even for a rejected admission, so rejected-then-cancelled runs were billed for credit they never spent. Mutation testing found two pieces of dead code no behavioural test could see, including a double-release branch that was unreachable because the flag guarding it was never set to true. The deeper lesson is written into the design: an ambiguity resolved silently propagates identically into both the implementation and the reference oracle, and the differential test is then structurally blind to it.',
+  },
+  {
     id: "grounded",
     title: "Grounded — Production RAG Starter",
     description:
