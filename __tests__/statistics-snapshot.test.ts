@@ -30,8 +30,16 @@ describe("getStatisticsSnapshot", () => {
         forks: 1,
         followers: 5,
         languages: [{ name: "TypeScript", percentage: 60, color: "#3178c6" }],
-        currentStreak: { count: 9, startDate: "2026-04-10", endDate: "2026-04-18" },
-        longestStreak: { count: 42, startDate: "2025-01-01", endDate: "2025-02-11" },
+        currentStreak: {
+          count: 9,
+          startDate: "2026-04-10",
+          endDate: "2026-04-18",
+        },
+        longestStreak: {
+          count: 42,
+          startDate: "2025-01-01",
+          endDate: "2025-02-11",
+        },
         totalCommits: 4758,
         totalPRs: 120,
         totalIssues: 40,
@@ -65,9 +73,7 @@ describe("getStatisticsSnapshot", () => {
   });
 
   it("caches after first read — subsequent calls do not re-read the file", () => {
-    readFileSync.mockReturnValue(
-      JSON.stringify({ github: {}, leetcode: {} })
-    );
+    readFileSync.mockReturnValue(JSON.stringify({ github: {}, leetcode: {} }));
 
     const { getStatisticsSnapshot } = loadFreshModule();
     getStatisticsSnapshot();

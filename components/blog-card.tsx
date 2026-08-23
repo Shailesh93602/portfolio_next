@@ -32,7 +32,7 @@ export function BlogCard({
   return (
     <div className="transition-transform duration-500 ease-out will-change-transform">
       <Link href={`/blog/${slug}`}>
-        <Card className="bg-background overflow-hidden transition-shadow duration-300 hover:shadow-lg">
+        <Card className="overflow-hidden bg-background transition-shadow duration-300 hover:shadow-lg">
           <div className="relative h-48">
             <Image
               src={image}
@@ -56,14 +56,14 @@ export function BlogCard({
               <span className="text-foreground">{author.name}</span>
             </div>
 
-            <h3 className="text-foreground mb-2 text-xl font-semibold">
+            <h3 className="mb-2 text-xl font-semibold text-foreground">
               {title}
             </h3>
-            <p className="text-muted-foreground mb-4 line-clamp-2">
+            <p className="mb-4 line-clamp-2 text-muted-foreground">
               {description}
             </p>
 
-            <div className="text-muted-foreground mb-4 flex items-center gap-4">
+            <div className="mb-4 flex items-center gap-4 text-muted-foreground">
               <div className="flex items-center gap-1">
                 <CalendarIcon className="h-4 w-4" />
                 <span className="text-sm">

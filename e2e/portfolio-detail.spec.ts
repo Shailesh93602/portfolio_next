@@ -21,9 +21,7 @@ test.describe("Portfolio Detail", () => {
     // contains "eduscale" (live URL, GitHub, etc). And scroll the card
     // into view — on mobile the tag-filter chips above otherwise
     // intercept pointer events when Playwright auto-scrolls.
-    const eduscaleLink = page
-      .locator('a[href="/portfolio/eduscale"]')
-      .first();
+    const eduscaleLink = page.locator('a[href="/portfolio/eduscale"]').first();
 
     if ((await eduscaleLink.count()) > 0) {
       await eduscaleLink.scrollIntoViewIfNeeded();

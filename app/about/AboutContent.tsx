@@ -62,7 +62,7 @@ export default function AboutContent() {
               </h2> */}
               <motion.p
                 variants={itemVariants}
-                className="text-muted-foreground text-lg leading-relaxed"
+                className="text-lg leading-relaxed text-muted-foreground"
               >
                 I&apos;m a Software Engineer from Patan, Gujarat, currently
                 based in Ahmedabad. At ContextQA I work on the backend of our
@@ -96,7 +96,7 @@ export default function AboutContent() {
                   <HobbiesSection />
                   <motion.blockquote
                     variants={itemVariants}
-                    className="text-muted-foreground my-8 border-l-4 border-primary py-4 pl-6 text-lg italic"
+                    className="my-8 border-l-4 border-primary py-4 pl-6 text-lg italic text-muted-foreground"
                   >
                     &quot;Code is like humor. When you have to explain it,
                     it&apos;s bad.&quot;
@@ -111,7 +111,7 @@ export default function AboutContent() {
               onClick={() => setShowFullContent(!showFullContent)}
               aria-expanded={showFullContent}
             >
-              <span className="text-foreground mr-2 text-lg font-semibold">
+              <span className="mr-2 text-lg font-semibold text-foreground">
                 {showFullContent ? "Show Less" : "Show More"}
               </span>
               {showFullContent ? (

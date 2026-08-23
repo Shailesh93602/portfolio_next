@@ -31,7 +31,7 @@ export default function AchievementsSection() {
 
   return (
     <motion.div variants={itemVariants}>
-      <h3 className="text-foreground mb-6 flex items-center text-2xl font-semibold">
+      <h3 className="mb-6 flex items-center text-2xl font-semibold text-foreground">
         <TrophyIcon className="mr-2 h-6 w-6 text-primary" />
         Achievements
       </h3>
@@ -49,7 +49,7 @@ export default function AchievementsSection() {
               <div className="flex items-start">
                 {getIcon(achievement.iconName)}
                 <div>
-                  <h4 className="text-foreground text-lg font-semibold">
+                  <h4 className="text-lg font-semibold text-foreground">
                     {achievement.title}
                   </h4>
                   <p className="text-muted-foreground">

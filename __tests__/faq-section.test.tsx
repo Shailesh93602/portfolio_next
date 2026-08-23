@@ -16,7 +16,7 @@ describe("FAQSection", () => {
   it("renders the section heading", () => {
     render(<FAQSection items={sample} />);
     expect(
-      screen.getByRole("heading", { name: /frequently asked questions/i }),
+      screen.getByRole("heading", { name: /frequently asked questions/i })
     ).toBeInTheDocument();
   });
 

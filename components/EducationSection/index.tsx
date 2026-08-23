@@ -8,7 +8,7 @@ import { education, itemVariants } from "@/constants";
 export function EducationSection() {
   return (
     <motion.div variants={itemVariants}>
-      <h3 className="text-foreground mb-8 flex items-center text-2xl font-semibold">
+      <h3 className="mb-8 flex items-center text-2xl font-semibold text-foreground">
         <GraduationCapIcon className="mr-3 h-7 w-7 text-primary" />
         Education
       </h3>
@@ -65,7 +65,7 @@ export function EducationSection() {
                       {edu.highlights.map((h, i) => (
                         <li
                           key={i}
-                          className="text-muted-foreground flex items-start text-sm leading-relaxed"
+                          className="flex items-start text-sm leading-relaxed text-muted-foreground"
                         >
                           <span className="mr-2 mt-1 text-primary">•</span>
                           {h}

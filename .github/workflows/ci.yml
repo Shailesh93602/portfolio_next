@@ -28,6 +28,13 @@ jobs:
       - name: Lint
         run: npx eslint . --ext .ts,.tsx
 
+      # Formatting is checked in CI because it does not hold otherwise. This
+      # step was added after 26 files had drifted out of Prettier style: the
+      # scripts existed, nothing ran them, and the diff noise landed in
+      # unrelated reviews. A check that is not enforced is a suggestion.
+      - name: Format check
+        run: npm run format:check
+
       - name: Unit tests
         run: npm test -- --ci --coverage
 
