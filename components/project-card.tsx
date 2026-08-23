@@ -29,7 +29,7 @@ export function ProjectCard({
 }: ProjectCardProps) {
   return (
     <div className="transition-transform duration-500 ease-out will-change-transform">
-      <Card className="bg-background overflow-hidden transition-shadow duration-300 hover:shadow-lg">
+      <Card className="overflow-hidden bg-background transition-shadow duration-300 hover:shadow-lg">
         <div className="relative h-48">
           <Image
             src={image}
@@ -41,10 +41,10 @@ export function ProjectCard({
           />
         </div>
         <CardContent className="p-6">
-          <h3 className="text-foreground mb-2 text-xl font-semibold">
+          <h3 className="mb-2 text-xl font-semibold text-foreground">
             {title}
           </h3>
-          <p className="text-muted-foreground mb-4">{description}</p>
+          <p className="mb-4 text-muted-foreground">{description}</p>
 
           <div className="mb-4 flex flex-wrap gap-2">
             {tags.map((tag, index) => (

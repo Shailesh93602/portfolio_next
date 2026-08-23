@@ -41,8 +41,7 @@ export const PROFILE = {
     country: "India",
     // Canonical one-line string for metadata "addressLocality / addressRegion"
     displayShort: "Ahmedabad, Gujarat, India",
-    displayLong:
-      "Based in Ahmedabad, Gujarat, India — originally from Patan",
+    displayLong: "Based in Ahmedabad, Gujarat, India — originally from Patan",
   },
 
   education: {

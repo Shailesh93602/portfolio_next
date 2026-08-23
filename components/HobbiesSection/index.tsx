@@ -31,7 +31,7 @@ export function HobbiesSection() {
 
   return (
     <motion.div variants={itemVariants}>
-      <h3 className="text-foreground mb-6 flex items-center text-2xl font-semibold">
+      <h3 className="mb-6 flex items-center text-2xl font-semibold text-foreground">
         <HeartIcon className="mr-2 h-6 w-6 text-primary" />
         Hobbies
       </h3>
@@ -42,7 +42,7 @@ export function HobbiesSection() {
               <div className="flex items-center space-x-4">
                 {hobby.icon}
                 <div>
-                  <h4 className="text-foreground text-lg font-semibold">
+                  <h4 className="text-lg font-semibold text-foreground">
                     {hobby.title}
                   </h4>
                   <p className="text-muted-foreground">{hobby.description}</p>

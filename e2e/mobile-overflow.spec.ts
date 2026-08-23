@@ -29,7 +29,9 @@ test.describe("mobile: no horizontal scroll", () => {
   test.use({ viewport: MOBILE });
 
   for (const route of ALL_ROUTES) {
-    test(`${route} does not scroll sideways at ${MOBILE.width}px`, async ({ page }) => {
+    test(`${route} does not scroll sideways at ${MOBILE.width}px`, async ({
+      page,
+    }) => {
       await page.goto(route, { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("networkidle").catch(() => {});
 
@@ -48,13 +50,13 @@ test.describe("mobile: no horizontal scroll", () => {
 
       expect(
         result.scrolledX,
-        `page scrolled ${result.scrolledX}px sideways — a user can swipe the layout off-screen`,
+        `page scrolled ${result.scrolledX}px sideways — a user can swipe the layout off-screen`
       ).toBe(0);
 
       // 1px of slack for sub-pixel rounding on fractional layouts.
       expect(
         result.scrollWidth,
-        `scrollWidth ${result.scrollWidth} exceeds viewport ${result.viewportWidth}`,
+        `scrollWidth ${result.scrollWidth} exceeds viewport ${result.viewportWidth}`
       ).toBeLessThanOrEqual(result.viewportWidth + 1);
     });
   }
@@ -68,7 +70,10 @@ test.describe("mobile: no horizontal scroll", () => {
     await expect(openButton).toBeVisible();
     await openButton.click();
 
-    const drawerLink = page.getByRole("link", { name: "Portfolio", exact: true });
+    const drawerLink = page.getByRole("link", {
+      name: "Portfolio",
+      exact: true,
+    });
     await expect(drawerLink).toBeVisible();
 
     await page.getByRole("button", { name: /close menu/i }).click();
@@ -81,6 +86,8 @@ test.describe("mobile: no horizontal scroll", () => {
       window.scrollTo(0, 0);
       return x;
     });
-    expect(scrolledX, "closing the drawer reintroduced horizontal scroll").toBe(0);
+    expect(scrolledX, "closing the drawer reintroduced horizontal scroll").toBe(
+      0
+    );
   });
 });

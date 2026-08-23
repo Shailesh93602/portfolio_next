@@ -140,4 +140,3 @@ describe("useBlogPosts", () => {
     expect(secondUrl).toContain("search=redis");
   });
 });
-

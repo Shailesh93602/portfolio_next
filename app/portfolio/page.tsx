@@ -48,7 +48,9 @@ export default function Projects() {
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqToSchema(faqItems)) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(faqToSchema(faqItems)),
+        }}
       />
       <PortfolioContent />
       <FAQSection

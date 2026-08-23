@@ -10,14 +10,62 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const ogFor = (path: string) =>
     `${SITE_URL}/api/og?title=${encodeURIComponent("Shailesh Chaudhari")}&type=page&description=${encodeURIComponent(path)}`;
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: `${SITE_URL}/`, lastModified: new Date(), changeFrequency: "weekly", priority: 1, images: [`${SITE_URL}/Images/shailesh.webp`] },
-    { url: `${SITE_URL}/blogs`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9, images: [ogFor("/blogs")] },
-    { url: `${SITE_URL}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9, images: [`${SITE_URL}/Images/shailesh.webp`] },
-    { url: `${SITE_URL}/contact`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.6, images: [ogFor("/contact")] },
-    { url: `${SITE_URL}/portfolio`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.95, images: [ogFor("/portfolio")] },
-    { url: `${SITE_URL}/services`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9, images: [ogFor("/services")] },
-    { url: `${SITE_URL}/statistics`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7, images: [ogFor("/statistics")] },
-    { url: `${SITE_URL}/now`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7, images: [ogFor("/now")] },
+    {
+      url: `${SITE_URL}/`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 1,
+      images: [`${SITE_URL}/Images/shailesh.webp`],
+    },
+    {
+      url: `${SITE_URL}/blogs`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9,
+      images: [ogFor("/blogs")],
+    },
+    {
+      url: `${SITE_URL}/about`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+      images: [`${SITE_URL}/Images/shailesh.webp`],
+    },
+    {
+      url: `${SITE_URL}/contact`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.6,
+      images: [ogFor("/contact")],
+    },
+    {
+      url: `${SITE_URL}/portfolio`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.95,
+      images: [ogFor("/portfolio")],
+    },
+    {
+      url: `${SITE_URL}/services`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+      images: [ogFor("/services")],
+    },
+    {
+      url: `${SITE_URL}/statistics`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.7,
+      images: [ogFor("/statistics")],
+    },
+    {
+      url: `${SITE_URL}/now`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+      images: [ogFor("/now")],
+    },
   ];
 
   // Dynamic blog post routes — `images` is a Google Discover ranking signal

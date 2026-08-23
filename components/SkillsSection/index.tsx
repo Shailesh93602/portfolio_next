@@ -56,7 +56,7 @@ export default function SkillsSection() {
 
   return (
     <motion.div variants={itemVariants}>
-      <h3 className="text-foreground mb-6 flex items-center text-2xl font-semibold">
+      <h3 className="mb-6 flex items-center text-2xl font-semibold text-foreground">
         <CodeIcon className="mr-2 h-6 w-6 text-primary" />
         Skills
       </h3>
@@ -64,7 +64,7 @@ export default function SkillsSection() {
         {skills.map((skillCategory, index) => (
           <Card key={index} className="bg-background">
             <CardContent className="p-4">
-              <h4 className="text-foreground mb-4 text-lg font-semibold">
+              <h4 className="mb-4 text-lg font-semibold text-foreground">
                 {skillCategory.category}
               </h4>
               <div className="flex flex-wrap gap-2">
@@ -72,7 +72,7 @@ export default function SkillsSection() {
                   <motion.span
                     key={skillIndex}
                     whileHover={{ scale: 1.05 }}
-                    className="text-muted-foreground rounded-full border border-border bg-muted px-3 py-1 transition-colors duration-200 hover:bg-primary/10 hover:text-primary"
+                    className="rounded-full border border-border bg-muted px-3 py-1 text-muted-foreground transition-colors duration-200 hover:bg-primary/10 hover:text-primary"
                   >
                     {skill.name}
                   </motion.span>
