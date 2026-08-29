@@ -1,0 +1,102 @@
+{
+  "name": "Shailesh Chaudhari",
+  "title": "Software Engineer - Backend and Distributed Systems",
+  "contact": {
+    "email": "shailesh93602@gmail.com",
+    "phone": "+91 9313026530",
+    "github": "github.com/Shailesh93602",
+    "linkedin": "linkedin.com/in/shaileshbhai-chaudhari",
+    "portfolio": "shaileshchaudhari.vercel.app"
+  },
+  "summary": "Software Engineer with 2.5+ years building backend and distributed systems: multi-tenant test-execution infrastructure, idempotent webhook pipelines, and real-time platforms. Works in TypeScript and Node.js with PostgreSQL, Redis, and Docker. Strong focus on correctness: concurrency control, deterministic testing, and verification that asserts real outcomes.",
+  "experience": [
+    {
+      "title": "Software Engineer",
+      "company": "ContextQA",
+      "start": "Jul 2025",
+      "end": "Present",
+      "bullets": [
+        "Build the backend of the core QA-automation platform: a test-execution engine orchestrating concurrent runs across Playwright, WebdriverIO, and LambdaTest; VNC streaming for live browser-session debugging; and the REST APIs driving run history, assertions, and artifacts.",
+        "Shipped 2 Chrome extensions in the first months: Vibe Testing (AI-assisted UI testing with real-time log streaming over WebSockets) and AxeTos (accessibility auditing against WCAG A/AA/AAA with automated fix suggestions). Both shipped and still in use."
+      ]
+    },
+    {
+      "title": "Software Developer",
+      "company": "eSparkBiz Technologies",
+      "start": "Aug 2024",
+      "end": "Jul 2025",
+      "bullets": [
+        "Delivered 3 simultaneous client products full-stack (EdTech scheduling, sign-language e-learning, corporate LMS), all on schedule with zero production incidents.",
+        "Integrated a third-party scheduling API with a Python/CPLEX optimization service; synchronized large datasets and built a real-time calendar UI backed by AWS S3 file workflows."
+      ]
+    },
+    {
+      "title": "Software Developer Intern",
+      "company": "eSparkBiz Technologies",
+      "start": "Jan 2024",
+      "end": "Aug 2024",
+      "bullets": [
+        "Built REST APIs and Next.js/NestJS front-ends with authentication and role-based access control (RBAC); integrated Stripe payments and Supabase authentication."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "KhataGO",
+      "tagline": "WhatsApp-first bookkeeping for Indian MSMEs",
+      "links": ["khatago.vercel.app"],
+      "bullets": [
+        "Idempotency-guarded reconciliation pipeline: Meta webhook to database-enforced deduplication to LLM function-calling to ledger writes to Tally XML export. Exactly-once effects over an at-least-once delivery channel, enforced by a unique constraint rather than a distributed lock; 8 simultaneous deliveries of the same message produce exactly one ledger write.",
+        "Containerized (Docker) polling worker over a PostgreSQL-backed queue with an atomic claim, exponential backoff with jitter, and a dead-letter queue (DLQ) with audited replay."
+      ]
+    },
+    {
+      "name": "BALLAST",
+      "tagline": "deterministic simulation of a multi-tenant session control plane",
+      "links": ["github.com/Shailesh93602/ballast"],
+      "bullets": [
+        "Per-tenant concurrency caps, quota windows, and leases over an unreliable substrate; every run is a pure function of one integer seed and replays byte-identically, verified across 1,000 seeds.",
+        "Verified 4 independent ways: 8 invariants, a reference oracle, mutation testing (100 of 116 mutants killed), and a self-verifying shrinker. Found 6 real bugs, half of them in the checker rather than the implementation.",
+        "Measured 3 concurrency-control strategies for a flash sale against a real PostgreSQL under 200 concurrent buyers: read-then-write oversold 200 of 5 units; conditional update and optimistic versioning each sold exactly 5."
+      ]
+    },
+    {
+      "name": "EduScale",
+      "tagline": "real-time coding battles across multiple Node.js instances",
+      "links": ["eduscale.vercel.app", "github.com/Shailesh93602/DevScale"],
+      "bullets": [
+        "Cross-instance coordination across 2+ Node.js server instances for real-time battles: Socket.io Redis adapter for pub/sub, Redlock distributed mutex for battle start, per-key circuit breakers around LLM calls, and Prometheus metrics."
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "label": "Languages",
+      "items": "TypeScript, JavaScript, SQL, C++"
+    },
+    {
+      "label": "Backend",
+      "items": "Node.js, Express.js, NestJS, Next.js, REST APIs, Socket.io, Prisma ORM"
+    },
+    {
+      "label": "Databases",
+      "items": "PostgreSQL, Redis, MongoDB (relational and non-relational)"
+    },
+    {
+      "label": "Infrastructure",
+      "items": "Docker, Docker Compose, GitHub Actions (CI/CD), Vercel, Supabase, AWS S3"
+    },
+    {
+      "label": "Reliability patterns",
+      "items": "idempotency, concurrency control, distributed locks, message queues and dead-letter queues, circuit breakers, mutation and property-based testing"
+    }
+  ],
+  "education": [
+    "B.E. in Information Technology, Gujarat, India - 2020 to 2024 - CGPA 7.99/10"
+  ],
+  "achievements": [
+    "Institute Rank 1 on GeeksforGeeks",
+    "700+ problems solved on CodeChef; 5-star C++ rating on HackerRank",
+    "Finalist, New India Vibrant Hackathon 2023"
+  ]
+}
