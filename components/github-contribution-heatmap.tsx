@@ -72,7 +72,27 @@ export function GitHubContributionHeatmap({
           </p>
         </div>
         <CardContent className="p-0">
-          <div className="overflow-x-auto pb-2">
+          {/*
+            tabIndex + role + label, because this scrolls.
+            A region that scrolls but holds no focusable children cannot be
+            reached by keyboard at all — a keyboard-only user can see that the
+            heatmap is cut off and has no way to move it. That is WCAG 2.1.1
+            (Keyboard), and axe reports it as `scrollable-region-focusable`.
+            Making it focusable is the remedy axe itself recommends: arrow keys
+            then scroll it like any other focusable scroll container.
+
+            It only overflows at narrow widths, which is why the desktop-only
+            run missed it and CI's mobile project did not.
+
+            The label matters as much as the tabIndex: landing on an unnamed
+            focus stop announces nothing, which trades one barrier for another.
+          */}
+          <div
+            className="overflow-x-auto pb-2"
+            tabIndex={0}
+            role="region"
+            aria-label="GitHub contribution heatmap, scrollable horizontally"
+          >
             <div className="flex flex-col gap-2">
               <div className="mb-2 flex justify-between text-xs font-medium text-foreground">
                 <span>Less</span>
