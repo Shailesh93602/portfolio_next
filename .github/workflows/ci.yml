@@ -45,3 +45,51 @@ jobs:
           name: coverage
           path: coverage/
           retention-days: 7
+
+  # ── Accessibility ──────────────────────────────────────────────────────────
+  #
+  # e2e/a11y.spec.ts already scanned every public route with axe-core, pinned to
+  # WCAG 2.1 AA, in BOTH themes. Nothing ran it.
+  #
+  # That is the worse version of having no standard: the standard was right, and
+  # it only ran when somebody remembered. `__tests__/a11y.test.tsx` (jest-axe on
+  # three components) did run, which made the gap easy to miss — component-level
+  # coverage is not page-level coverage, and contrast, landmarks and heading
+  # order only exist on a rendered page.
+  #
+  # This portfolio is the artefact a recruiter opens first. An a11y regression
+  # here is visible to exactly the audience it is written for.
+  a11y:
+    name: Accessibility — WCAG 2.1 AA
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Chromium only. These axe rules are about markup, contrast, names and
+      # heading order — none differ by engine, so more browsers would multiply
+      # the runtime to re-confirm the same answer. The spec drives mobile and
+      # desktop viewports itself, which is the axis that actually changes.
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run the WCAG sweep
+        run: npx playwright test e2e/a11y.spec.ts
+
+      - name: Upload the report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a11y-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
