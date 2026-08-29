@@ -409,7 +409,7 @@ const rawProjects: Project[] = [
     solution:
       "A high-performance Chrome extension that leverages AI agents to capture live browser state and perform complex UI tests. It provides detailed reports with prioritized bugs and actionable fix suggestions.",
     challengesSolved:
-      "Architecting a real-time, bi-directional communication bridge between the browser extension and a remote testing engine while ensuring sub-200ms latency for live log streaming and visual state updates. Shipped in production during my first 2-3 months at ContextQA.",
+      "Architecting a real-time, bi-directional communication bridge between the browser extension and a remote testing engine, streaming live execution logs and visual state back to the browser as a run progresses. Shipped in production during my first 2-3 months at ContextQA.",
     gallery: [
       "/Images/vibe_testing/full_report.png",
       "/Images/vibe_testing/live_execution_with_steps_and_screenshots.png",
