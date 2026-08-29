@@ -17,7 +17,8 @@
     "lint": "eslint . --ext .ts,.tsx",
     "type-check": "tsc --noEmit",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "check:claims": "node scripts/check-project-claims.mjs"
   },
   "dependencies": {
     "@octokit/rest": "^21.1.1",
