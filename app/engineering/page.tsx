@@ -1,0 +1,220 @@
+import type { Metadata } from "next";
+
+import { SITE_URL } from "@/lib/blog-constants";
+
+const TITLE = "How I verify — Shailesh Chaudhari";
+const DESCRIPTION =
+  "Real bugs found in my own production code, and why each one looked correct. Deterministic simulation, mutation testing, and the difference between a passing test and a proven outcome.";
+
+export const metadata: Metadata = {
+  title: TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: `${SITE_URL}/engineering` },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: `${SITE_URL}/engineering`,
+    type: "website",
+    images: [
+      {
+        url: `${SITE_URL}/api/og?title=${encodeURIComponent("How I verify")}&type=page&description=${encodeURIComponent("Real bugs, and why each looked correct")}`,
+        width: 1200,
+        height: 630,
+        alt: TITLE,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    creator: "@ShaileshWork",
+  },
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "How I verify",
+      item: `${SITE_URL}/engineering`,
+    },
+  ],
+};
+
+interface Finding {
+  readonly title: string;
+  readonly looked: string;
+  readonly was: string;
+  readonly lesson: string;
+  readonly where: string;
+  readonly href: string;
+}
+
+/**
+ * Every entry links to the write-up in the repo it came from. Nothing here is
+ * a claim the reader has to take on trust — the point of the page is that it is
+ * all checkable.
+ */
+const findings: readonly Finding[] = [
+  {
+    title: "A test that asserted nothing for months",
+    looked:
+      "A green integration test scraping a rendered invoice for its GST figures.",
+    was: "An i18n change split one text node into several, so React inserted HTML comment separators into the markup. The probe matched nothing, and a missing value read as zero — the test read the tax as zero against a stored ₹152.54.",
+    lesson:
+      "A test that reaches through a framework's rendered output is coupled to that framework's rendering decisions, and it fails silently by matching nothing.",
+    where: "KhataGO",
+    href: "https://github.com/Shailesh93602/KhataGO/blob/main/FINDINGS.md",
+  },
+  {
+    title: "A lock with no way out of it",
+    looked:
+      "A correct atomic claim: one conditional UPDATE, two concurrent deliveries, only one winner.",
+    was: "There was no path back out. A process that died mid-run left the record claimed forever, and nothing could distinguish an abandoned claim from one still legitimately running.",
+    lesson:
+      "Mutual exclusion and liveness are different properties. Passing tests for the first say nothing about the second — a lock without an expiry is a deadlock waiting for a crash.",
+    where: "KhataGO",
+    href: "https://github.com/Shailesh93602/KhataGO/blob/main/FINDINGS.md",
+  },
+  {
+    title: "An idempotency guard that was not one",
+    looked:
+      "Documented as idempotent, and idempotent in every sequential test.",
+    was: "A read-then-write with no unique constraint behind it. Two concurrent requests both missed the read and both made a paid LLM call. The tell was already in the code — it ordered results by date, which only matters if duplicates can exist.",
+    lesson:
+      "Code that copes with a condition is evidence someone knew it could happen. Prevent it at the constraint, and let the read be a fast path.",
+    where: "EduScale",
+    href: "https://github.com/Shailesh93602/EduScale/blob/main/FINDINGS.md",
+  },
+  {
+    title: "A safety guard whose allow-list matched production",
+    looked:
+      "A guard I had just written to stop tests touching the production database.",
+    was: 'I allow-listed the database name "postgres" because it is the default for a CI container. Production is also named "postgres" — so the check would have waved it straight through.',
+    lesson:
+      "An allow-list whose most permissive entry matches the thing you are guarding against is not an allow-list. This one is mine, found the same week I wrote it.",
+    where: "EduScale",
+    href: "https://github.com/Shailesh93602/EduScale/blob/main/FINDINGS.md",
+  },
+  {
+    title: "Migrations that never ran",
+    looked:
+      "A build script that generates the database client on every deploy.",
+    was: "Generating the client rebuilds types from the schema; it never touches the database. Deploys shipped code whose types knew about columns that did not exist. One repo had four unapplied migrations in production.",
+    lesson:
+      "Before making every deploy run migrations I checked what production's migration table actually contained, and found rows with no matching files. Reproducing that drift locally first is the only reason the fix did not break every deploy.",
+    where: "KhataGO + EduScale",
+    href: "https://github.com/Shailesh93602/KhataGO/blob/main/FINDINGS.md",
+  },
+  {
+    title: "Six bugs, half of them in the checker",
+    looked: "A verification harness finding bugs in the system under test.",
+    was: "As many of them were in the harness. One invariant fired on correctly-refused operations because the checker was consuming the system's own account of what it had done — a checker that trusts the thing it is checking is not a checker.",
+    lesson:
+      "The most useful thing deterministic simulation taught me was to distrust the oracle as much as the implementation.",
+    where: "BALLAST",
+    href: "https://github.com/Shailesh93602/ballast/blob/main/docs/LEDGER.md",
+  },
+];
+
+export default function EngineeringPage() {
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <div className="container mx-auto max-w-3xl px-4 py-12 md:py-16">
+        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          How I verify
+        </h1>
+
+        <p className="mt-6 text-base leading-relaxed text-muted-foreground sm:text-lg">
+          Anyone can ship a feature now. What is harder — and what I think is
+          actually worth showing — is catching the thing that is subtly wrong
+          with code that already compiles, already passes its tests, and already
+          got reviewed.
+        </p>
+
+        <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+          These are real defects from my own production code. Several are
+          mistakes I made myself and found later. Every one links to the
+          write-up in the repo it came from, so none of it has to be taken on
+          trust.
+        </p>
+
+        <div className="mt-12 space-y-10">
+          {findings.map((finding) => (
+            <article
+              key={finding.title}
+              className="border-l-2 border-primary/30 pl-5"
+            >
+              <div className="mb-1 text-xs uppercase tracking-wider text-muted-foreground">
+                {finding.where}
+              </div>
+              <h2 className="text-xl font-semibold tracking-tight">
+                {finding.title}
+              </h2>
+
+              <dl className="mt-4 space-y-3 text-sm leading-relaxed sm:text-base">
+                <div>
+                  <dt className="font-medium text-muted-foreground">
+                    What it looked like
+                  </dt>
+                  <dd className="mt-1">{finding.looked}</dd>
+                </div>
+                <div>
+                  <dt className="font-medium text-muted-foreground">
+                    What it actually did
+                  </dt>
+                  <dd className="mt-1">{finding.was}</dd>
+                </div>
+                <div>
+                  <dt className="font-medium text-muted-foreground">
+                    What it taught me
+                  </dt>
+                  <dd className="mt-1">{finding.lesson}</dd>
+                </div>
+              </dl>
+
+              <a
+                href={finding.href}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-4 inline-block text-sm underline underline-offset-4 hover:text-primary"
+              >
+                Read the full write-up →
+              </a>
+            </article>
+          ))}
+        </div>
+
+        <section className="mt-16 border-t pt-10">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            The thing they have in common
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+            Most of these were invisible to the type system and to the test
+            suite, and several looked <em>more</em> correct in their broken form
+            than the fix does. A lock with no expiry looks simpler than one that
+            handles staleness. A build step that generates a database client
+            looks like it handles the database.
+          </p>
+          <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+            What found them was not a tool. It was asking, of code that was
+            already passing:{" "}
+            <strong className="text-foreground">
+              what would have to be true for this to be wrong, and is anything
+              checking that?
+            </strong>
+          </p>
+        </section>
+      </div>
+    </>
+  );
+}

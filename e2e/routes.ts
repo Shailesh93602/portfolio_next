@@ -17,6 +17,7 @@ export const STATIC_ROUTES = [
   "/blogs",
   "/contact",
   "/services",
+  "/engineering",
   "/now",
   "/statistics",
 ] as const;

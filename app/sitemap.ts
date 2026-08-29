@@ -53,6 +53,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       images: [ogFor("/services")],
     },
     {
+      url: `${SITE_URL}/engineering`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+      images: [ogFor("/engineering")],
+    },
+    {
       url: `${SITE_URL}/statistics`,
       lastModified: new Date(),
       changeFrequency: "weekly",
