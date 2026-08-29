@@ -147,8 +147,8 @@ export default function EngineeringPage() {
         <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
           These are real defects from my own production code. Several are
           mistakes I made myself and found later. Every one links to a public
-          write-up — the repo it came from, or the blog post that tells the
-          full story — so none of it has to be taken on trust.
+          write-up — the repo it came from, or the blog post that tells the full
+          story — so none of it has to be taken on trust.
         </p>
 
         <div className="mt-12 space-y-10">
