@@ -58,3 +58,9 @@ quality-*.md
 /TODO.md
 /PLAN.md
 /drafts/
+
+# Lighthouse CI run artifacts — generated HTML/JSON reports, several MB per run.
+# `assertion-results.json` was tracked, so every local `lhci autorun` produced a
+# spurious diff on a file nobody reads: CI uploads its own reports to temporary
+# public storage and the pass/fail is the workflow's exit code, not this file.
+.lighthouseci/
