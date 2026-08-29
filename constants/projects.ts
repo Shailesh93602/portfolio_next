@@ -732,12 +732,13 @@ const rawProjects: Project[] = [
       "Reference oracle written to a different shape, so it is unlikely to share a bug",
       "Mutation testing — coverage says a line ran; a surviving mutant says nothing checked it",
       "Shrinker reduces a 10,000-event failure and then verifies the reduction",
+      "A flash-sale arm: three never-oversell strategies, where the naive one provably oversells",
       "38 semantic ambiguities decided in writing BEFORE the policy code — git history as proof",
     ],
     techStack: [
       "Language: TypeScript (ESM, strict)",
       "Dependencies: none at runtime — typescript, eslint, prettier and vitest only",
-      "Tests: Vitest (147)",
+      "Tests: Vitest (182)",
       "Verification: invariants + reference oracle + mutation testing + shrinker",
     ],
     problem:
@@ -745,7 +746,7 @@ const rawProjects: Project[] = [
     solution:
       "Remove the timing. A virtual clock, a seeded PRNG and a total order on equal-time events make the entire execution a pure function of one seed, so any failure replays exactly. On top of that, four independent checks that fail differently — invariants, a reference oracle of a deliberately different shape, mechanical mutation testing, and a self-verifying shrinker. The hardest problems turned out to be definitional rather than technical, so thirty-eight semantic ambiguities were written down and decided before any policy code existed — three of them are still open questions rather than settled ones, and are marked as such.",
     challengesSolved:
-      'The suite found six real bugs, and about as many were in the checker as in the implementation — which was the most useful thing it taught. One invariant fired on correctly-refused stale releases because the checker was consuming the control plane\'s own account of what it had done; a checker that trusts the thing it is checking is not a checker, so it now records accepted-release facts and judges those. A differential divergence exposed a spec gap rather than a code defect: nothing had ever said whether completion releases the slot. Another came from a definition — the reference used a status map to mean "was claimed", but cancel inserts a status even for a rejected admission, so rejected-then-cancelled runs were billed for credit they never spent. Mutation testing found two pieces of dead code no behavioural test could see, including a double-release branch that was unreachable because the flag guarding it was never set to true. The deeper lesson is written into the design: an ambiguity resolved silently propagates identically into both the implementation and the reference oracle, and the differential test is then structurally blind to it.',
+      'The suite found eight real bugs, and about as many were in the checker as in the implementation — which was the most useful thing it taught. One invariant fired on correctly-refused stale releases because the checker was consuming the control plane\'s own account of what it had done; a checker that trusts the thing it is checking is not a checker, so it now records accepted-release facts and judges those. A differential divergence exposed a spec gap rather than a code defect: nothing had ever said whether completion releases the slot. Another came from a definition — the reference used a status map to mean "was claimed", but cancel inserts a status even for a rejected admission, so rejected-then-cancelled runs were billed for credit they never spent. Mutation testing found two pieces of dead code no behavioural test could see, including a double-release branch that was unreachable because the flag guarding it was never set to true. The deeper lesson is written into the design: an ambiguity resolved silently propagates identically into both the implementation and the reference oracle, and the differential test is then structurally blind to it. Two later findings were about the harness rather than the system: the mutation runner judged a mutant killed whenever the suite failed, so with an already-failing suite it reported a flawless 100% while real survivors went unrecorded — the number that should have raised an alarm was the reassuring one, and it now refuses to run against a red baseline. And a retry-limit branch I had written turned out to be unreachable, because contention in the model stopped after the first attempt; a reachability probe over every input shape confirmed it never fired, so the model was made to sustain contention rather than the branch being deleted.',
   },
   {
     id: "grounded",
