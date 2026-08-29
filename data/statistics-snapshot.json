@@ -3674,22 +3674,22 @@
     ]
   },
   "leetcode": {
-    "totalSolved": 614,
+    "totalSolved": 615,
     "totalSubmissions": [
       {
         "difficulty": "All",
-        "count": 619,
-        "submissions": 1294
+        "count": 620,
+        "submissions": 1325
       },
       {
         "difficulty": "Easy",
-        "count": 187,
-        "submissions": 480
+        "count": 186,
+        "submissions": 488
       },
       {
         "difficulty": "Medium",
-        "count": 347,
-        "submissions": 652
+        "count": 349,
+        "submissions": 675
       },
       {
         "difficulty": "Hard",
@@ -3697,102 +3697,17 @@
         "submissions": 162
       }
     ],
-    "totalQuestions": 3906,
-    "easySolved": 185,
-    "totalEasy": 938,
-    "mediumSolved": 344,
-    "totalMedium": 2044,
+    "totalQuestions": 4033,
+    "easySolved": 184,
+    "totalEasy": 961,
+    "mediumSolved": 346,
+    "totalMedium": 2105,
     "hardSolved": 85,
-    "totalHard": 924,
-    "ranking": 119025,
-    "contributionPoint": 638,
+    "totalHard": 967,
+    "ranking": 131831,
+    "contributionPoint": 666,
     "reputation": 1,
     "submissionCalendar": {
-      "1745193600": 5,
-      "1745280000": 5,
-      "1745366400": 5,
-      "1745452800": 5,
-      "1745539200": 5,
-      "1745625600": 5,
-      "1745712000": 5,
-      "1745798400": 5,
-      "1745884800": 5,
-      "1745971200": 5,
-      "1746057600": 5,
-      "1746144000": 5,
-      "1746230400": 5,
-      "1746316800": 5,
-      "1746403200": 5,
-      "1746489600": 5,
-      "1746576000": 5,
-      "1746662400": 5,
-      "1746748800": 5,
-      "1746835200": 5,
-      "1746921600": 5,
-      "1747008000": 5,
-      "1747094400": 5,
-      "1747180800": 5,
-      "1747267200": 5,
-      "1747353600": 5,
-      "1747440000": 5,
-      "1747526400": 5,
-      "1747612800": 5,
-      "1747699200": 5,
-      "1747785600": 5,
-      "1747872000": 5,
-      "1747958400": 10,
-      "1748044800": 5,
-      "1748131200": 25,
-      "1748217600": 5,
-      "1748304000": 5,
-      "1748390400": 5,
-      "1748476800": 5,
-      "1748563200": 5,
-      "1748649600": 5,
-      "1748736000": 5,
-      "1748822400": 5,
-      "1748908800": 5,
-      "1748995200": 5,
-      "1749081600": 5,
-      "1749168000": 5,
-      "1749254400": 10,
-      "1749340800": 5,
-      "1749427200": 5,
-      "1749513600": 5,
-      "1749600000": 5,
-      "1749686400": 5,
-      "1749772800": 5,
-      "1749859200": 5,
-      "1749945600": 5,
-      "1750032000": 5,
-      "1750118400": 5,
-      "1750204800": 5,
-      "1750291200": 5,
-      "1750377600": 5,
-      "1750464000": 10,
-      "1750550400": 5,
-      "1750636800": 5,
-      "1750723200": 5,
-      "1750809600": 5,
-      "1750896000": 5,
-      "1750982400": 5,
-      "1751068800": 5,
-      "1751155200": 5,
-      "1751241600": 5,
-      "1751328000": 5,
-      "1751414400": 5,
-      "1751500800": 5,
-      "1751587200": 5,
-      "1751673600": 5,
-      "1751760000": 5,
-      "1751846400": 5,
-      "1751932800": 5,
-      "1752019200": 5,
-      "1752105600": 5,
-      "1752278400": 20,
-      "1752364800": 5,
-      "1752451200": 5,
-      "1752537600": 15,
       "1761436800": 5,
       "1766275200": 5,
       "1773446400": 160,
@@ -3804,61 +3719,106 @@
       "1774051200": 60,
       "1774137600": 25,
       "1774224000": 10,
-      "1774310400": 35
+      "1774310400": 35,
+      "1785542400": 45,
+      "1785715200": 5,
+      "1786320000": 30,
+      "1786924800": 45,
+      "1787702400": 30
     },
     "recentSubmissions": [
       {
-        "title": "Valid Parentheses",
-        "titleSlug": "valid-parentheses",
-        "timestamp": "1774371192",
+        "title": "LRU Cache",
+        "titleSlug": "lru-cache",
+        "timestamp": "1787737108",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
-        "title": "Valid Parentheses",
-        "titleSlug": "valid-parentheses",
-        "timestamp": "1774371144",
-        "statusDisplay": "Runtime Error",
-        "lang": "cpp",
-        "__typename": "SubmissionDumpNode"
-      },
-      {
-        "title": "Contains Duplicate",
-        "titleSlug": "contains-duplicate",
-        "timestamp": "1774370707",
+        "title": "LRU Cache",
+        "titleSlug": "lru-cache",
+        "timestamp": "1787737046",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
-        "title": "Contains Duplicate",
-        "titleSlug": "contains-duplicate",
-        "timestamp": "1774370667",
+        "title": "LRU Cache",
+        "titleSlug": "lru-cache",
+        "timestamp": "1787736997",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
-        "title": "Contains Duplicate",
-        "titleSlug": "contains-duplicate",
-        "timestamp": "1774370494",
+        "title": "LRU Cache",
+        "titleSlug": "lru-cache",
+        "timestamp": "1787736792",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
-        "title": "Best Time to Buy and Sell Stock",
-        "titleSlug": "best-time-to-buy-and-sell-stock",
-        "timestamp": "1774369803",
+        "title": "Longest Consecutive Sequence",
+        "titleSlug": "longest-consecutive-sequence",
+        "timestamp": "1787733127",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
-        "title": "Two Sum",
-        "titleSlug": "two-sum",
-        "timestamp": "1774369625",
+        "title": "Longest Consecutive Sequence",
+        "titleSlug": "longest-consecutive-sequence",
+        "timestamp": "1787733063",
+        "statusDisplay": "Time Limit Exceeded",
+        "lang": "cpp",
+        "__typename": "SubmissionDumpNode"
+      },
+      {
+        "title": "3Sum",
+        "titleSlug": "3sum",
+        "timestamp": "1786956356",
+        "statusDisplay": "Accepted",
+        "lang": "cpp",
+        "__typename": "SubmissionDumpNode"
+      },
+      {
+        "title": "3Sum",
+        "titleSlug": "3sum",
+        "timestamp": "1786955963",
+        "statusDisplay": "Wrong Answer",
+        "lang": "cpp",
+        "__typename": "SubmissionDumpNode"
+      },
+      {
+        "title": "3Sum",
+        "titleSlug": "3sum",
+        "timestamp": "1786955807",
+        "statusDisplay": "Wrong Answer",
+        "lang": "cpp",
+        "__typename": "SubmissionDumpNode"
+      },
+      {
+        "title": "Top K Frequent Elements",
+        "titleSlug": "top-k-frequent-elements",
+        "timestamp": "1786954286",
+        "statusDisplay": "Accepted",
+        "lang": "cpp",
+        "__typename": "SubmissionDumpNode"
+      },
+      {
+        "title": "Kth Largest Element in an Array",
+        "titleSlug": "kth-largest-element-in-an-array",
+        "timestamp": "1786949900",
+        "statusDisplay": "Accepted",
+        "lang": "cpp",
+        "__typename": "SubmissionDumpNode"
+      },
+      {
+        "title": "Kth Largest Element in an Array",
+        "titleSlug": "kth-largest-element-in-an-array",
+        "timestamp": "1786947798",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
@@ -3866,15 +3826,7 @@
       {
         "title": "Merge Intervals",
         "titleSlug": "merge-intervals",
-        "timestamp": "1774281518",
-        "statusDisplay": "Accepted",
-        "lang": "cpp",
-        "__typename": "SubmissionDumpNode"
-      },
-      {
-        "title": "Minimum Size Subarray Sum",
-        "titleSlug": "minimum-size-subarray-sum",
-        "timestamp": "1774281001",
+        "timestamp": "1786945567",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
@@ -3882,39 +3834,31 @@
       {
         "title": "Merge Intervals",
         "titleSlug": "merge-intervals",
-        "timestamp": "1774197605",
+        "timestamp": "1786945357",
+        "statusDisplay": "Wrong Answer",
+        "lang": "cpp",
+        "__typename": "SubmissionDumpNode"
+      },
+      {
+        "title": "Product of Array Except Self",
+        "titleSlug": "product-of-array-except-self",
+        "timestamp": "1786944383",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
-        "title": "Merge Intervals",
-        "titleSlug": "merge-intervals",
-        "timestamp": "1774197371",
+        "title": "Product of Array Except Self",
+        "titleSlug": "product-of-array-except-self",
+        "timestamp": "1786378639",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
-        "title": "Candy",
-        "titleSlug": "candy",
-        "timestamp": "1774183740",
-        "statusDisplay": "Accepted",
-        "lang": "cpp",
-        "__typename": "SubmissionDumpNode"
-      },
-      {
-        "title": "Find Peak Element",
-        "titleSlug": "find-peak-element",
-        "timestamp": "1774160672",
-        "statusDisplay": "Accepted",
-        "lang": "cpp",
-        "__typename": "SubmissionDumpNode"
-      },
-      {
-        "title": "Find All Numbers Disappeared in an Array",
-        "titleSlug": "find-all-numbers-disappeared-in-an-array",
-        "timestamp": "1774157487",
+        "title": "Product of Array Except Self",
+        "titleSlug": "product-of-array-except-self",
+        "timestamp": "1786375394",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
@@ -3922,61 +3866,37 @@
       {
         "title": "Longest Substring Without Repeating Characters",
         "titleSlug": "longest-substring-without-repeating-characters",
-        "timestamp": "1774102290",
+        "timestamp": "1786368978",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
-        "title": "Minimum Size Subarray Sum",
-        "titleSlug": "minimum-size-subarray-sum",
-        "timestamp": "1774100849",
-        "statusDisplay": "Accepted",
-        "lang": "cpp",
-        "__typename": "SubmissionDumpNode"
-      },
-      {
-        "title": "Partition Labels",
-        "titleSlug": "partition-labels",
-        "timestamp": "1774097148",
-        "statusDisplay": "Accepted",
-        "lang": "cpp",
-        "__typename": "SubmissionDumpNode"
-      },
-      {
-        "title": "Partition Labels",
-        "titleSlug": "partition-labels",
-        "timestamp": "1774097077",
+        "title": "Longest Substring Without Repeating Characters",
+        "titleSlug": "longest-substring-without-repeating-characters",
+        "timestamp": "1786368951",
         "statusDisplay": "Wrong Answer",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
-        "title": "Next Greater Element II",
-        "titleSlug": "next-greater-element-ii",
-        "timestamp": "1774090704",
-        "statusDisplay": "Accepted",
-        "lang": "cpp",
-        "__typename": "SubmissionDumpNode"
-      },
-      {
-        "title": "3Sum Closest",
-        "titleSlug": "3sum-closest",
-        "timestamp": "1774074455",
-        "statusDisplay": "Accepted",
+        "title": "Longest Substring Without Repeating Characters",
+        "titleSlug": "longest-substring-without-repeating-characters",
+        "timestamp": "1786368549",
+        "statusDisplay": "Wrong Answer",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       }
     ],
     "currentStreak": {
       "count": 0,
-      "startDate": "2026-04-20",
-      "endDate": "2026-04-20"
+      "startDate": "2026-08-29",
+      "endDate": "2026-08-29"
     },
     "longestStreak": {
-      "count": 81,
-      "startDate": "2025-04-21",
-      "endDate": "2025-07-10"
+      "count": 6,
+      "startDate": "2026-03-14",
+      "endDate": "2026-03-19"
     },
     "activeYears": [
       2022,
@@ -3985,8 +3905,8 @@
       2025,
       2026
     ],
-    "totalActiveDays": 10,
+    "totalActiveDays": 15,
     "dccBadges": []
   },
-  "lastUpdated": "2026-04-20"
+  "lastUpdated": "2026-08-29"
 }
