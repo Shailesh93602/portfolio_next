@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Shailesh Chaudhari — Resume</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 11mm 13mm;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Helvetica Neue", Arial, sans-serif;
+        font-size: 9.4pt;
+        line-height: 1.38;
+        color: #1a1a1a;
+      }
+      h1 {
+        font-size: 17pt;
+        letter-spacing: 0.5px;
+      }
+      .sub {
+        font-size: 9.6pt;
+        color: #333;
+        margin-top: 2px;
+      }
+      .contact {
+        font-size: 8.8pt;
+        color: #444;
+        margin-top: 4px;
+      }
+      .contact a {
+        color: #0b57a4;
+        text-decoration: none;
+      }
+      h2 {
+        font-size: 10.2pt;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        border-bottom: 1.2px solid #222;
+        padding-bottom: 2px;
+        margin: 10px 0 5px;
+      }
+      .role {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-top: 6px;
+      }
+      .role b {
+        font-size: 9.8pt;
+      }
+      .role .co {
+        color: #0b57a4;
+        font-weight: 600;
+      }
+      .dates {
+        font-size: 8.6pt;
+        color: #555;
+        white-space: nowrap;
+      }
+      ul {
+        margin: 2px 0 0 14px;
+      }
+      li {
+        margin-bottom: 2px;
+      }
+      .proj {
+        margin-top: 5px;
+      }
+      .proj b a {
+        color: #1a1a1a;
+        text-decoration: none;
+      }
+      .proj .links {
+        font-size: 8.4pt;
+      }
+      .proj .links a {
+        color: #0b57a4;
+        text-decoration: none;
+      }
+      .tag {
+        color: #555;
+        font-size: 8.6pt;
+      }
+      .cols {
+        display: flex;
+        gap: 16px;
+      }
+      .cols > div {
+        flex: 1;
+      }
+      .skills li {
+        margin-bottom: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Shailesh Chaudhari</h1>
+    <div class="sub">Software Engineer — backend &amp; distributed systems</div>
+    <div class="contact">
+      <a href="mailto:shailesh93602@gmail.com">shailesh93602@gmail.com</a> · +91
+      93130 26530 ·
+      <a href="https://github.com/Shailesh93602">github.com/Shailesh93602</a> ·
+      <a href="https://linkedin.com/in/shaileshbhai-chaudhari"
+        >linkedin.com/in/shaileshbhai-chaudhari</a
+      >
+      ·
+      <a href="https://shaileshchaudhari.vercel.app"
+        >shaileshchaudhari.vercel.app</a
+      >
+    </div>
+
+    <h2>Experience</h2>
+
+    <div class="role">
+      <span><b>Software Engineer</b> · <span class="co">ContextQA</span></span
+      ><span class="dates">Jul 2025 – Present</span>
+    </div>
+    <ul>
+      <li>
+        Backend of the core QA-automation platform: the test-execution engine
+        orchestrating runs across Playwright, WebdriverIO and LambdaTest; VNC
+        streaming for live browser-session debugging; and the APIs driving run
+        history, assertions and artifacts.
+      </li>
+      <li>
+        Shipped two Chrome extensions in the first months — Vibe Testing
+        (AI-assisted UI testing with real-time log streaming over WebSockets)
+        and AxeTos (WCAG A/AA/AAA auditing with automated fix suggestions). Both
+        shipped and still in use.
+      </li>
+    </ul>
+
+    <div class="role">
+      <span
+        ><b>Software Developer</b> ·
+        <span class="co">eSparkBiz Technologies</span></span
+      ><span class="dates">Aug 2024 – Jul 2025</span>
+    </div>
+    <ul>
+      <li>
+        Full-stack across three simultaneous client products (EdTech scheduling,
+        sign-language e-learning, corporate LMS); all three delivered on
+        schedule with no production incidents.
+      </li>
+      <li>
+        Integrated a third-party scheduling API with a Python/CPLEX optimization
+        service; synchronized large datasets and built a real-time calendar UI
+        with S3 file workflows.
+      </li>
+    </ul>
+
+    <div class="role">
+      <span
+        ><b>Software Developer Intern</b> ·
+        <span class="co">eSparkBiz Technologies</span></span
+      ><span class="dates">Jan 2024 – Aug 2024</span>
+    </div>
+    <ul>
+      <li>
+        Built RESTful APIs and Next.js/NestJS front-ends with authentication and
+        role-based access control; integrated Stripe and Supabase.
+      </li>
+    </ul>
+
+    <h2>Projects</h2>
+
+    <div class="proj">
+      <b>KhataGO</b> —
+      <span class="tag">WhatsApp-first bookkeeping for Indian MSMEs</span>
+      <span class="links"
+        >· <a href="https://khatago.vercel.app">khatago.vercel.app</a></span
+      >
+      <ul>
+        <li>
+          Idempotency-guarded reconciliation pipeline: Meta webhook →
+          DB-enforced dedup → LLM function-calling → ledger writes → Tally XML
+          export. Exactly-once effects over an at-least-once channel, enforced
+          by a unique constraint rather than a distributed lock.
+        </li>
+        <li>
+          Containerized polling worker over a Postgres-backed queue (atomic
+          PENDING→PROCESSING claim), with a dead-letter queue and audited
+          replay.
+        </li>
+      </ul>
+    </div>
+
+    <div class="proj">
+      <b>BALLAST</b> —
+      <span class="tag"
+        >deterministic simulation of a multi-tenant session control plane</span
+      >
+      <span class="links"
+        >·
+        <a href="https://github.com/Shailesh93602/ballast"
+          >github.com/Shailesh93602/ballast</a
+        ></span
+      >
+      <ul>
+        <li>
+          Per-tenant concurrency caps, quota windows, and leases over an
+          unreliable substrate — the entire run a pure function of one integer
+          seed. Verified with 8 invariants, a reference oracle, and mutation
+          testing; found 6 real bugs, as many in the checker as in the
+          implementation.
+        </li>
+      </ul>
+    </div>
+
+    <div class="proj">
+      <b>EduScale</b> —
+      <span class="tag"
+        >real-time coding battles across multiple Node instances</span
+      >
+      <span class="links"
+        >· <a href="https://eduscale.vercel.app">eduscale.vercel.app</a> ·
+        <a href="https://github.com/Shailesh93602/DevScale"
+          >github.com/Shailesh93602/DevScale</a
+        ></span
+      >
+      <ul>
+        <li>
+          Socket.io Redis adapter for cross-instance events, Redlock
+          battle-start mutex, per-key circuit breakers around LLM calls,
+          Prometheus metrics.
+        </li>
+      </ul>
+    </div>
+
+    <div class="cols">
+      <div>
+        <h2>Skills</h2>
+        <ul class="skills">
+          <li><b>Languages:</b> TypeScript, JavaScript, SQL, C++</li>
+          <li><b>Backend:</b> Node.js, Express, NestJS, Next.js, Prisma</li>
+          <li><b>Data:</b> PostgreSQL, Redis, MongoDB</li>
+          <li><b>Infra:</b> Docker, GitHub Actions, Vercel, Supabase</li>
+          <li>
+            <b>Patterns:</b> idempotency, concurrency control, queues/DLQ,
+            Socket.io at scale, mutation &amp; property-based testing
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h2>Education &amp; Achievements</h2>
+        <ul class="skills">
+          <li>
+            <b>B.E. Information Technology</b>, Gujarat — 2020–2024 · CGPA
+            7.99/10
+          </li>
+          <li>Institute Rank 1 — GeeksforGeeks</li>
+          <li>700+ problems solved on CodeChef · 5★ C++ on HackerRank</li>
+          <li>Finalist — New India Vibrant Hackathon 2023</li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>
