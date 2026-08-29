@@ -125,11 +125,16 @@ test("capture all pages", async ({ browser }) => {
     path.join(OUT, "manifest.json"),
     JSON.stringify(manifest, null, 2)
   );
+  // console.warn, not console.log. These lines only fire when a route actually
+  // had console errors or failed requests, so "warn" is what they are — and it
+  // is the level the lint rule allows, because the rule bans casual logging
+  // rather than deliberate reporting. Matching the level to the meaning is the
+  // fix; an eslint-disable would only have hidden the mismatch.
   for (const c of manifest) {
     if (c.errors.length || c.failedRequests.length) {
-      console.log(`[UX] ${c.route} (${c.viewport}/${c.theme})`);
-      c.errors.slice(0, 3).forEach((e) => console.log(`     ${e}`));
-      c.failedRequests.slice(0, 3).forEach((f) => console.log(`     ${f}`));
+      console.warn(`[UX] ${c.route} (${c.viewport}/${c.theme})`);
+      c.errors.slice(0, 3).forEach((e) => console.warn(`     ${e}`));
+      c.failedRequests.slice(0, 3).forEach((f) => console.warn(`     ${f}`));
     }
   }
 });
