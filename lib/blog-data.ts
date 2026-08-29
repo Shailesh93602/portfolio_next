@@ -51,6 +51,7 @@ export const BLOG_AUTHOR = {
 
 // Slugs in publication order — add new slugs here when adding posts.
 export const BLOG_SLUGS: string[] = [
+  "khatago-webhook-deduplication-receipt-pipeline",
   "mutation-score-was-100-percent-because-tests-were-broken",
   "introduction-to-nestjs-for-backend-development",
   "how-to-use-nextjs-for-seo-friendly-web-apps",
