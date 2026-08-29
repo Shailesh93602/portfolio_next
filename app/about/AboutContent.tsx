@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { ChevronUpIcon, ChevronDownIcon } from "@/components/icons";
 import { itemVariants } from "@/constants";
 import { ExperienceSection } from "@/components/ExperienceSection";
@@ -94,12 +95,28 @@ export default function AboutContent() {
                   <AchievementsSection />
                   <SkillsSection />
                   <HobbiesSection />
+                  {/* Replaced a borrowed aphorism ("Code is like humor...")
+                      that implied the opposite of what he does — explaining his
+                      work carefully is the thing he is best at. This says what
+                      he actually values, in his own words, and links to the
+                      evidence rather than asking to be taken on faith. */}
                   <motion.blockquote
                     variants={itemVariants}
-                    className="my-8 border-l-4 border-primary py-4 pl-6 text-lg italic text-muted-foreground"
+                    className="my-8 border-l-4 border-primary py-4 pl-6 text-lg text-muted-foreground"
                   >
-                    &quot;Code is like humor. When you have to explain it,
-                    it&apos;s bad.&quot;
+                    <p className="italic">
+                      &quot;I would rather ship something I can prove is correct
+                      than something that looks clever. Almost every bug I am
+                      proud of finding was in code that already compiled,
+                      already passed its tests, and had already been
+                      reviewed.&quot;
+                    </p>
+                    <Link
+                      href="/engineering"
+                      className="mt-3 inline-block text-base not-italic underline underline-offset-4 hover:text-primary"
+                    >
+                      Six of them, and why each one looked correct &rarr;
+                    </Link>
                   </motion.blockquote>
                 </>
               )}
