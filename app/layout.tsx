@@ -262,7 +262,17 @@ export default function RootLayout({
                   "@type": "SoftwareSourceCode",
                   name: "EduScale",
                   description:
-                    "Real-time engineering learning platform with coding battles, Redis pub/sub, and <200ms sync latency",
+                    // The "<200ms sync latency" that used to be here was never
+                    // measured. EduScale's own loadtest/README.md exists, in its
+                    // words, "to replace unverified claims in the portfolio" and
+                    // warns that "fake '<200ms' claims get caught" — and its
+                    // results table still reads _tbd_.
+                    //
+                    // A number in schema.org data is a claim made to search
+                    // engines and AI crawlers. Describing the architecture is
+                    // true and needs no benchmark; the latency figure can come
+                    // back the day the load test produces one.
+                    "Real-time engineering learning platform with coding battles over WebSockets, horizontally scaled with a Redis pub/sub adapter",
                   url: "https://eduscale.vercel.app/",
                   codeRepository: "https://github.com/Shailesh93602/devscale",
                   programmingLanguage: ["TypeScript", "JavaScript"],
