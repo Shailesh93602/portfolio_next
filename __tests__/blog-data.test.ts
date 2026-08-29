@@ -60,6 +60,26 @@ describe("BLOG_SLUGS", () => {
     expect(finishedButUnpublished).toEqual([]);
   });
 
+  // The complementary direction, which the assertion above does NOT cover.
+  //
+  // That one catches a finished post nobody can read — an absence, and the
+  // less costly of the two. This catches the opposite and worse case: a post
+  // that IS published while still carrying literal TODO markers, which a
+  // visitor reads as unfinished work shipped by someone who did not check.
+  //
+  // Three drafts sit in this directory right now with 9, 13 and 18 TODOs. All
+  // three are correctly unlisted. Publishing one is a single line in
+  // BLOG_SLUGS, and nothing else would have stopped it.
+  it("no published post still contains TODO markers", () => {
+    const unfinishedButPublished = BLOG_SLUGS.filter((slug) => {
+      const path = join(BLOG_DIR, `${slug}.mdx`);
+      if (!existsSync(path)) return false; // a separate assertion's job
+      return readFileSync(path, "utf8").includes("TODO");
+    });
+
+    expect(unfinishedButPublished).toEqual([]);
+  });
+
   it("contains only non-empty strings", () => {
     BLOG_SLUGS.forEach((slug) => {
       expect(typeof slug).toBe("string");
