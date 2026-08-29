@@ -165,7 +165,11 @@ export function FeaturedProjects() {
                   >
                     <Link href={`/portfolio/${project.id}`}>Details</Link>
                   </Button>
-                  {project.github && (
+                  {/* A private repo gets no icon here. On a compact card there
+                      is no room to explain why, and a disabled-looking button a
+                      visitor cannot use is worse than its absence — the detail
+                      page says "Private repository" where there IS room. */}
+                  {project.github && !project.githubPrivate && (
                     <Button
                       variant="outline"
                       size="sm"

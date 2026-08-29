@@ -85,7 +85,12 @@ export default async function ProjectPage({ params }: Props) {
     operatingSystem: "Web",
     url: project.live || `${SITE_URL}/portfolio/${id}`,
     image: ogImageUrl,
-    ...(project.github ? { codeRepository: project.github } : {}),
+    // A private repo is excluded: `codeRepository` is a public claim in
+    // structured data, and pointing search engines and AI crawlers at a URL
+    // that 404s is worse than omitting the field.
+    ...(project.github && !project.githubPrivate
+      ? { codeRepository: project.github }
+      : {}),
     author: { "@id": `${SITE_URL}/#person` },
     creator: { "@id": `${SITE_URL}/#person` },
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

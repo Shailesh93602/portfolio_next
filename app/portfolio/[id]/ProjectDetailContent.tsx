@@ -101,22 +101,33 @@ export default function ProjectDetailContent({ project }: Props) {
                     </a>
                   </Button>
                 )}
-                {project.github && (
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="lg"
-                    className="h-14 rounded-full border-white/10 bg-white/5 px-8 text-lg font-bold text-white hover:bg-white/10"
-                  >
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                {project.github &&
+                  (project.githubPrivate ? (
+                    // A private repo would 404. Saying so is better than a
+                    // broken link AND better than silently omitting it — an
+                    // absent repo button reads as "there is no code".
+                    <span
+                      className="inline-flex h-14 items-center rounded-full border border-white/10 bg-white/5 px-8 text-lg font-bold text-white/60"
+                      title="This repository is private"
                     >
-                      <GithubIcon className="mr-2 h-5 w-5" /> Repository
-                    </a>
-                  </Button>
-                )}
+                      <GithubIcon className="mr-2 h-5 w-5" /> Private repository
+                    </span>
+                  ) : (
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="lg"
+                      className="h-14 rounded-full border-white/10 bg-white/5 px-8 text-lg font-bold text-white hover:bg-white/10"
+                    >
+                      <a
+                        href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <GithubIcon className="mr-2 h-5 w-5" /> Repository
+                      </a>
+                    </Button>
+                  ))}
               </div>
             </motion.div>
           </div>
@@ -739,21 +750,30 @@ export default function ProjectDetailContent({ project }: Props) {
             >
               <h3 className="mb-6 text-xl font-bold">Quick Actions</h3>
               <div className="space-y-4">
-                {project.github && (
-                  <Button
-                    asChild
-                    className="h-12 w-full justify-start text-base"
-                  >
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                {project.github &&
+                  (project.githubPrivate ? (
+                    <div
+                      className="flex h-12 w-full items-center justify-start rounded-md border border-dashed px-4 text-base text-muted-foreground"
+                      title="This repository is private"
                     >
                       <GithubIcon className="mr-3 h-5 w-5" />
-                      View Source
-                    </a>
-                  </Button>
-                )}
+                      Private repository
+                    </div>
+                  ) : (
+                    <Button
+                      asChild
+                      className="h-12 w-full justify-start text-base"
+                    >
+                      <a
+                        href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <GithubIcon className="mr-3 h-5 w-5" />
+                        View Source
+                      </a>
+                    </Button>
+                  ))}
                 {project.live && (
                   <Button
                     asChild

@@ -274,7 +274,9 @@ export default function RootLayout({
                   description:
                     "WhatsApp-first AI accounting platform using Gemini AI for OCR and natural language processing",
                   url: "https://khatago.vercel.app/",
-                  codeRepository: "https://github.com/Shailesh93602/khatago",
+                  // No `codeRepository`: the repo is private, and advertising a
+                  // URL that 404s to search engines and AI crawlers is worse
+                  // than omitting the field. Restore it when the repo is public.
                   programmingLanguage: ["TypeScript"],
                   runtimePlatform: "Next.js",
                 },
