@@ -1,0 +1,48 @@
+# Project Claim Check
+#
+# Verifies the NUMBERS this portfolio states about other repositories against
+# what those repositories currently say.
+#
+# Complements url-health-check.yml, which catches links that rot. Numbers rot
+# the same way and nothing was watching them — and that is the worse case: a
+# dead link announces itself with a 404, while a stale number keeps looking
+# authoritative.
+#
+# Every false claim ever found on this portfolio started as a true one. The
+# BALLAST entry said "Vitest (147)", accurate when written and wrong four merges
+# later. This is the check that would have caught it the next morning.
+
+name: Project Claim Check
+
+on:
+  schedule:
+    # Daily at 10:30 UTC, half an hour after the URL health check so the two
+    # failures arrive separately and are not mistaken for one incident.
+    - cron: "30 10 * * *"
+  workflow_dispatch: {}
+  # Also on PRs that touch the claims themselves — the fastest possible
+  # feedback is at the moment someone edits a number.
+  pull_request:
+    paths:
+      - "constants/projects.ts"
+      - "scripts/check-project-claims.mjs"
+
+permissions:
+  contents: read
+
+jobs:
+  claims:
+    name: Claims match upstream
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # No install: the script uses only node builtins and fetch, on purpose.
+      # A claim checker that needs a dependency tree is one more thing that can
+      # break and stop reporting.
+      - name: Verify claims against upstream repos
+        run: node scripts/check-project-claims.mjs

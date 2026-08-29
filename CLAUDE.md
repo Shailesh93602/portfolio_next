@@ -101,11 +101,13 @@ lib/
 
 scripts/
   check-live-urls.mjs            # Daily URL health check (GitHub Actions). Reads every `live`/`github` URL out of constants/projects.ts, so it widens automatically when a project is added. KNOWN_PRIVATE entries carry an expiry.
+  check-project-claims.mjs       # Daily CLAIM check. Verifies the NUMBERS projects.ts states about other repos against those repos. Every false claim here started as a true one — "Vitest (147)" was right when written and wrong four merges later. Fetches at a resolved SHA, never at `main`: raw.githubusercontent's CDN serves stale objects for minutes after a push, which made an earlier version flaky exactly when it mattered.
   generate-blog-manifest.mjs     # Runs as postbuild; reads content/blog/ → writes data/blog-manifest.json
   migrate-blog.mjs               # One-time script: extracted blog posts from old blog-data.ts
 
 .github/workflows/
   url-health-check.yml       # Daily 10:00 UTC cron runs check-live-urls.mjs
+  claim-check.yml            # Daily 10:30 UTC + on PRs touching constants/projects.ts. Runs check-project-claims.mjs.
   (Supabase keepalive workflow DELETED — replaced by per-project Vercel crons inside KhataGO + DevTrack + EduScale/Frontend)
 
 public/
