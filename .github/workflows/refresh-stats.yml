@@ -1,0 +1,53 @@
+# Statistics Snapshot Refresh
+#
+# data/statistics-snapshot.json is what /statistics serves when the live GitHub
+# and LeetCode APIs time out. Nothing regenerated it, so it had been frozen
+# since 2026-04-20 — over four months — and presented as current.
+#
+# A stale fallback is not a crisis. It is a slow one: it gets more wrong every
+# week and nothing announces it.
+#
+# Weekly rather than daily on purpose. These numbers move slowly, a commit per
+# day would be noise in the history, and every run spends GitHub API quota that
+# the /statistics page itself needs.
+
+name: Refresh Statistics Snapshot
+
+on:
+  schedule:
+    # Sundays, 06:00 UTC — well away from the 10:00/10:30 health and claim
+    # checks, so three separate failures never look like one incident.
+    - cron: "0 6 * * 0"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    name: Refresh snapshot from the live endpoint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # No install: the script uses only node builtins and fetch. A maintenance
+      # job that needs a dependency tree is one more thing that can break and
+      # stop reporting.
+      - name: Refresh snapshot
+        run: node scripts/refresh-statistics-snapshot.mjs
+
+      - name: Commit if it changed
+        run: |
+          if git diff --quiet -- data/statistics-snapshot.json; then
+            echo "No change — nothing to commit."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/statistics-snapshot.json
+          git commit -m "chore(stats): refresh statistics snapshot"
+          git push

@@ -18,7 +18,8 @@
     "type-check": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check:claims": "node scripts/check-project-claims.mjs"
+    "check:claims": "node scripts/check-project-claims.mjs",
+    "refresh:stats": "node scripts/refresh-statistics-snapshot.mjs"
   },
   "dependencies": {
     "@octokit/rest": "^21.1.1",
