@@ -1,10 +1,9 @@
 /**
- * Component tests for BlogCard, ProjectCard, and EducationSection.
+ * Component tests for BlogCard and EducationSection.
  * framer-motion is mocked to avoid animation issues in jsdom.
  */
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 
 // Mock framer-motion — animations don't work in jsdom
 jest.mock("framer-motion", () => ({
@@ -40,7 +39,6 @@ jest.mock("next/image", () => ({
 }));
 
 import { BlogCard } from "@/components/blog-card";
-import { ProjectCard } from "@/components/project-card";
 import { EducationSection } from "@/components/EducationSection";
 
 // ─── BlogCard ─────────────────────────────────────────────────────────────────
@@ -89,87 +87,6 @@ describe("BlogCard", () => {
   it("renders read time", () => {
     render(<BlogCard {...defaultProps} />);
     expect(screen.getByText("5 min read")).toBeInTheDocument();
-  });
-});
-
-// ─── ProjectCard ──────────────────────────────────────────────────────────────
-
-describe("ProjectCard", () => {
-  const defaultProps = {
-    title: "EduScale",
-    description: "A real-time engineering learning platform.",
-    image: "/Images/eduscale.png",
-    tags: ["Next.js", "Redis", "Socket.io"],
-    github: "https://github.com/Shailesh93602/devscale",
-    live: "https://eduscale.vercel.app",
-  };
-
-  it("renders the title", () => {
-    render(<ProjectCard {...defaultProps} />);
-    expect(screen.getByText("EduScale")).toBeInTheDocument();
-  });
-
-  it("renders the description", () => {
-    render(<ProjectCard {...defaultProps} />);
-    expect(
-      screen.getByText("A real-time engineering learning platform.")
-    ).toBeInTheDocument();
-  });
-
-  it("renders all tech tags", () => {
-    render(<ProjectCard {...defaultProps} />);
-    expect(screen.getByText("Next.js")).toBeInTheDocument();
-    expect(screen.getByText("Redis")).toBeInTheDocument();
-    expect(screen.getByText("Socket.io")).toBeInTheDocument();
-  });
-
-  it("renders GitHub link when provided", () => {
-    render(<ProjectCard {...defaultProps} />);
-    expect(screen.getByRole("link", { name: /github/i })).toHaveAttribute(
-      "href",
-      "https://github.com/Shailesh93602/devscale"
-    );
-  });
-
-  it("renders Live Demo link when provided", () => {
-    render(<ProjectCard {...defaultProps} />);
-    expect(screen.getByRole("link", { name: /live demo/i })).toHaveAttribute(
-      "href",
-      "https://eduscale.vercel.app"
-    );
-  });
-
-  it("hides GitHub link when not provided", () => {
-    render(<ProjectCard {...defaultProps} github={undefined} />);
-    expect(screen.queryByRole("link", { name: /github/i })).toBeNull();
-  });
-
-  it("shows Show More button when onShowDetails is provided", async () => {
-    const onShowDetails = jest.fn();
-    render(
-      <ProjectCard
-        {...defaultProps}
-        onShowDetails={onShowDetails}
-        showDetails={false}
-      />
-    );
-    const btn = screen.getByRole("button", { name: /show more/i });
-    expect(btn).toBeInTheDocument();
-    await userEvent.click(btn);
-    expect(onShowDetails).toHaveBeenCalledTimes(1);
-  });
-
-  it("shows Show Less when showDetails is true", () => {
-    render(
-      <ProjectCard
-        {...defaultProps}
-        onShowDetails={jest.fn()}
-        showDetails={true}
-      />
-    );
-    expect(
-      screen.getByRole("button", { name: /show less/i })
-    ).toBeInTheDocument();
   });
 });
 

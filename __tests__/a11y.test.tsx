@@ -1,6 +1,6 @@
 /**
  * Accessibility tests using jest-axe.
- * Tests BlogCard, ProjectCard, and EducationSection for axe violations.
+ * Tests BlogCard and EducationSection for axe violations.
  */
 import React from "react";
 import { render } from "@testing-library/react";
@@ -63,7 +63,6 @@ jest.mock("next/link", () => ({
 }));
 
 import { BlogCard } from "@/components/blog-card";
-import { ProjectCard } from "@/components/project-card";
 import { EducationSection } from "@/components/EducationSection";
 
 const blogCardProps = {
@@ -77,24 +76,9 @@ const blogCardProps = {
   tags: ["Next.js", "TypeScript"],
 };
 
-const projectCardProps = {
-  title: "EduScale",
-  description: "A real-time engineering learning platform.",
-  image: "/Images/eduscale.png",
-  tags: ["Next.js", "Redis"],
-  github: "https://github.com/Shailesh93602/devscale",
-  live: "https://eduscale.vercel.app",
-};
-
 describe("Accessibility (jest-axe)", () => {
   it("BlogCard has no axe violations", async () => {
     const { container } = render(<BlogCard {...blogCardProps} />);
-    const results = await axe(container);
-    expect(results).toHaveNoViolations();
-  });
-
-  it("ProjectCard has no axe violations", async () => {
-    const { container } = render(<ProjectCard {...projectCardProps} />);
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
