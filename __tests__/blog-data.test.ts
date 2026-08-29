@@ -4,6 +4,9 @@
  * Uses real MDX files on disk (no fs mock needed).
  */
 
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+
 import {
   BLOG_SLUGS,
   blogPosts,
@@ -14,13 +17,47 @@ import {
   getPostsByTag,
 } from "@/lib/blog-data";
 
+const BLOG_DIR = join(process.cwd(), "content", "blog");
+
 describe("BLOG_SLUGS", () => {
   it("is an array of strings", () => {
     expect(Array.isArray(BLOG_SLUGS)).toBe(true);
   });
 
-  it("has 20 entries", () => {
-    expect(BLOG_SLUGS).toHaveLength(20);
+  // Was `toHaveLength(20)`. A hardcoded count fails every time a post is added
+  // and passes for every bug that matters — it cannot tell a missing post from
+  // a miscounted one. Replaced with the correspondence that actually breaks
+  // things: a slug without a file is a 404, and a file without a slug is a post
+  // that silently never appears on the site.
+  it("has an MDX file for every slug", () => {
+    const missing = BLOG_SLUGS.filter(
+      (slug) => !existsSync(join(BLOG_DIR, `${slug}.mdx`))
+    );
+    expect(missing).toEqual([]);
+  });
+
+  // An MDX file missing from BLOG_SLUGS is invisible on the site. That is
+  // sometimes deliberate — there are unfinished drafts here, each still full of
+  // literal TODO markers — and sometimes it is a finished post someone forgot
+  // to list, which nobody would ever notice, because the symptom is the absence
+  // of something.
+  //
+  // So the assertion is not "no orphans". It is that every orphan is visibly
+  // UNFINISHED. A draft riddled with TODOs explains its own absence; one
+  // without them is a finished post nobody can read.
+  it("every unpublished MDX file is a visibly unfinished draft", () => {
+    const onDisk = readdirSync(BLOG_DIR)
+      .filter((f) => f.endsWith(".mdx"))
+      .map((f) => f.replace(/\.mdx$/, ""));
+
+    const finishedButUnpublished = onDisk
+      .filter((slug) => !BLOG_SLUGS.includes(slug))
+      .filter((slug) => {
+        const body = readFileSync(join(BLOG_DIR, `${slug}.mdx`), "utf8");
+        return !body.includes("TODO");
+      });
+
+    expect(finishedButUnpublished).toEqual([]);
   });
 
   it("contains only non-empty strings", () => {

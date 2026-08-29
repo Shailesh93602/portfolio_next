@@ -64,6 +64,10 @@
     "date": "2026-06-15"
   },
   {
+    "slug": "mutation-score-was-100-percent-because-tests-were-broken",
+    "date": "2026-08-23"
+  },
+  {
     "slug": "nextjs-isr-edge-caching-performance",
     "date": "2026-07-01"
   },
