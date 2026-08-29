@@ -134,25 +134,6 @@ Natural language queries like "where is the payment retry logic?" return ranked 
 ---
 
 
-### CareerGlyph (WIP)
-**Stack:** NestJS, TypeScript, Prisma, PostgreSQL, Swagger/OpenAPI
-
-Developer identity platform — portable profile showing skills, projects, and endorsements. NestJS monorepo under `apps/backend/`:
-
-**Prisma schema:**
-- `Developer`: id, username (unique), name, bio, avatarUrl, isPublic, skills, projects, endorsementsGiven
-- `Skill`: id, name, category (SkillCategory enum: FRONTEND/BACKEND/DATABASE/DEVOPS/OTHER), level (SkillLevel enum: BEGINNER/INTERMEDIATE/ADVANCED/EXPERT), endorsements
-- `Project`: id, title, description, techStack (String[]), liveUrl, githubUrl, featured
-- `Endorsement`: id, skill, giver — `@@unique([skillId, giverId])` prevents duplicate endorsements
-- Cascading deletes on Skill/Project/Endorsement when Developer is deleted
-
-**API:**
-- `GET /profile/:username`: Returns developer with skills+endorsementCounts+projects. Throws 404 for unknown usernames and private profiles (isPublic=false). Swagger-annotated with `@ApiOperation`, `@ApiParam`, `@ApiResponse`.
-- `@Global() DatabaseModule` exports `PrismaService` — single shared connection pool across all modules
-- Seed file: sample developer, 3 skills (TypeScript/ADVANCED, React/ADVANCED, NestJS/INTERMEDIATE), 2 projects, 1 endorsement
-
----
-
 ### Vibe Testing (ContextQA — proprietary)
 **Stack:** Chrome Extension, Python AI Agent, Node.js, Socket.io, WebSockets, TypeScript, Manifest V3
 **Role:** shipped during first 2-3 months at ContextQA (2025)

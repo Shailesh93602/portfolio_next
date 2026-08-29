@@ -75,7 +75,7 @@ const rawProjects: Project[] = [
     live: "https://eduscale.vercel.app/",
     github: "https://github.com/Shailesh93602/devscale",
     detailedDescription:
-      "An EdTech platform built around a distributed real-time engine. The backend uses @socket.io/redis-adapter for horizontal Socket.io scaling across multiple Node.js instances, redlock for distributed locking on the battle start / submit-answer / complete paths, opossum as a circuit breaker around the remote code-execution service (Judge0), prom-client exposing a Prometheus /metrics endpoint, and Bull queues for email delivery with a dead-letter queue. Frontend is Next.js 16 App Router with Redux Toolkit.",
+      "An EdTech platform built around a distributed real-time engine. The backend uses @socket.io/redis-adapter for horizontal Socket.io scaling across multiple Node.js instances, redlock for distributed locking on the battle start / submit-answer / complete paths, opossum as a circuit breaker around the remote code-execution service (Judge0), prom-client exposing a Prometheus /metrics endpoint, and Bull queues for email delivery with a dead-letter queue. Frontend is Next.js 16 App Router with Redux Toolkit. The AI layer (code review, tutor, pgvector-backed recommendations) runs on each user's OWN provider key rather than a shared one — encrypted at rest with AES-256-GCM, with the model-fallback cooldowns and the circuit breaker partitioned per key so one tenant's exhausted quota or bad credential cannot degrade another's.",
     architecture: {
       layers: [
         {
@@ -131,6 +131,12 @@ const rawProjects: Project[] = [
         description:
           "opossum around code execution + Redis-backed rate limiting with in-memory fallback",
       },
+      {
+        label: "Tenant isolation",
+        value: "Per-key blast radius",
+        description:
+          "Users bring their own LLM key. Model cooldowns and the AI circuit breaker are partitioned per key, so one user's exhausted quota or invalid credential cannot degrade anyone else's — verified by mutation testing, not just by a passing suite",
+      },
     ],
     userFlow: [
       {
@@ -161,6 +167,7 @@ const rawProjects: Project[] = [
       "Community Forum: Robust discussion platform for peer learning and resource sharing.",
       "Placement Ready: Curated specialized tracks for interview preparation and technical skill assessments.",
       "Gamified Learning: Achievement badges, streak systems, and global leaderboards to drive engagement.",
+      "Bring-your-own AI keys: users supply their own Gemini key, stored AES-256-GCM encrypted at rest, so nobody's usage is billed to a shared credential.",
     ],
     techStack: [
       "Frontend: Next.js 15 (App Router), React 19, Tailwind CSS, Framer Motion, Redux Toolkit, Zustand",
@@ -617,6 +624,12 @@ const rawProjects: Project[] = [
         description:
           "Full i18n across English, Hindi, and Gujarati for both UI and bot responses",
       },
+      {
+        label: "Credential storage",
+        value: "AES-256-GCM",
+        description:
+          "Users bring their own Gemini key, encrypted at rest with authenticated encryption and a random IV per write. No read path returns it — not even to the person who saved it",
+      },
     ],
     features: [
       "Natural Language WhatsApp Bot: Record sales, purchases, and expenses like you talk.",
@@ -625,6 +638,7 @@ const rawProjects: Project[] = [
       "Dynamic i18n Engine: Full UI in 3+ languages (English, Hindi, Gujarati).",
       "Financial Analytics: Real-time charts for sales, purchases, and net profit trends.",
       "Zero-App Footprint: Manage your entire business accounting without ever leaving WhatsApp.",
+      "Bring-your-own AI key: add your own Gemini key in Settings, encrypted at rest, removable at any time.",
     ],
     techStack: [
       "Frontend: Next.js (App Router), React, Tailwind CSS, Recharts, i18next",

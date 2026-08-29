@@ -29,7 +29,6 @@ Live:
 
 Open source:
 
-- [CareerGlyph](https://github.com/Shailesh93602/careerglyph): Developer identity platform replacing static resumes. NestJS monorepo backend (58 tests across 5 suites: JWT auth, skills/projects/endorsements with a compound unique key, rate-limited auth). Next.js 14 frontend with public profile viewer at /[username], TanStack Query optimistic endorsements.
 - [CodeSenseiSearch](https://github.com/Shailesh93602/CodeSenseiSearch): AI-powered semantic code search. NestJS backend with pgvector, AST-aware function/class-level chunking, Gemini embeddings, cosine-similarity ranking. The retrieval pipeline is scaffolded, not yet wired end to end. Natural-language queries return ranked file+line results.
 
 ContextQA Chrome extensions (shipped in first 2-3 months at ContextQA, 2025):
