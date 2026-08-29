@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { SITE_URL } from "@/lib/blog-constants";
 
@@ -193,6 +194,51 @@ export default function EngineeringPage() {
             </article>
           ))}
         </div>
+
+        <section className="mt-16 border-t pt-10">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            Written up at length
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+            Three of these have full write-ups, with the diagnosis rather than
+            just the conclusion.
+          </p>
+          <ul className="mt-5 space-y-3">
+            {[
+              {
+                href: "/blog/a-passing-test-only-proves-the-test-passes",
+                title: "A passing test only proves the test passes",
+                blurb:
+                  "Five cases where a green suite was checking something the running code never did — and the question that finds them.",
+              },
+              {
+                href: "/blog/mutation-score-was-100-percent-because-tests-were-broken",
+                title:
+                  "My mutation score was 100%. That's how I knew something was wrong.",
+                blurb:
+                  "A mutant is killed when the suite fails — so if the suite already fails, every mutant is killed.",
+              },
+              {
+                href: "/blog/khatago-webhook-deduplication-receipt-pipeline",
+                title: "Why we didn't use Redis for webhook deduplication",
+                blurb:
+                  "SETNX splits the claim from the truth. A crash between them leaves the event permanently claimed and unretryable.",
+              },
+            ].map((post) => (
+              <li key={post.href}>
+                <Link
+                  href={post.href}
+                  className="font-medium underline underline-offset-4 hover:text-primary"
+                >
+                  {post.title}
+                </Link>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {post.blurb}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
 
         <section className="mt-16 border-t pt-10">
           <h2 className="text-2xl font-semibold tracking-tight">
