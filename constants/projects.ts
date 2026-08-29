@@ -21,6 +21,14 @@ export interface Project {
   image: string;
   tags: string[];
   github?: string;
+  /**
+   * The repo is private, so `github` would 404 for every visitor.
+   *
+   * Set this instead of deleting the URL: the link is still the right one the
+   * day it goes public, and a visitor is told WHY there is no link rather than
+   * being left to wonder whether the project has any code at all.
+   */
+  githubPrivate?: boolean;
   live?: string;
   detailedDescription?: string;
   features?: string[];
@@ -545,6 +553,9 @@ const rawProjects: Project[] = [
     ],
     live: "https://khatago.vercel.app/",
     github: "https://github.com/Shailesh93602/khatago",
+    // Private repo. Renders as "Private repository" rather than a link that
+    // 404s — the URL stays so flipping it public is a one-line change.
+    githubPrivate: true,
     detailedDescription:
       "KhataGO is a WhatsApp-first bookkeeping platform for Indian MSMEs. The backend is a reconciliation pipeline: Meta webhooks arrive with at-least-once delivery, and idempotency is enforced in Postgres rather than a cache — a unique constraint on the WhatsApp message id rejects duplicate deliveries, and a conditional UPDATE (PENDING→PROCESSING) atomically claims each message so concurrent redeliveries produce exactly one Gemini run instead of a double ledger write. Gemini 2.0 Flash with function-calling parses both text ('Sold 500 to Ram') and receipt images (OCR → structured JSON with merchant/amount/date/line items) into 10 tool calls — create_transaction, create_receivable, record_payment_received, get_party_ledger, send_payment_reminder, and others — each mapped to a Prisma write. Results flow back to the user over WhatsApp; a CA portal exports Tally-ready XML vouchers for month-end close.",
     architecture: {

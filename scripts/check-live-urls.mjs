@@ -43,21 +43,23 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
  * the decision (flip the repo public, or drop the link from projects.ts) comes
  * back to the surface instead of rotting.
  */
-const KNOWN_PRIVATE = new Map([
-  [
-    "https://github.com/Shailesh93602/khatago",
-    { until: "2026-08-29", note: "flip public or remove the link" },
-  ],
-]);
-
-const today = new Date().toISOString().slice(0, 10);
-
-/** An allow-list entry only counts while it hasn't expired. */
-function allowance(url) {
-  const entry = KNOWN_PRIVATE.get(url);
-  if (!entry) return null;
-  return { ...entry, expired: today > entry.until };
-}
+/**
+ * Private repos are declared in constants/projects.ts via `githubPrivate: true`,
+ * not in a second list here.
+ *
+ * This used to be a hand-maintained allow-list with an expiry date, and the
+ * expiry existed for a good reason: a private repo meant a visitor clicked
+ * "Repository" and got a 404, so the state had to be forced to a decision
+ * rather than rotting quietly.
+ *
+ * That is no longer the situation. The portfolio now renders a declared-private
+ * repo as "Private repository" instead of a link, and omits it from the
+ * `codeRepository` structured data. Nothing is broken for a visitor, so failing
+ * a daily build over it would be manufacturing an alarm about a choice.
+ *
+ * It is still REPORTED, distinctly, so the choice stays visible — and because
+ * the flag lives with the URL it describes, the two cannot disagree.
+ */
 
 /**
  * Some "live" URLs are APIs whose root path 404s by design (no `GET /` route).
@@ -108,6 +110,12 @@ function parseProjectUrls() {
         url: githubMatch[1],
         kind: "github",
       });
+    }
+
+    // Applies to the entry just pushed — `githubPrivate` follows `github` in
+    // the object literal.
+    if (/^\s*githubPrivate:\s*true/.test(line) && urls.length > 0) {
+      urls[urls.length - 1].private = true;
     }
   }
 
@@ -169,7 +177,12 @@ async function checkUrl(name, url) {
 
 const URLS = parseProjectUrls();
 const results = await Promise.all(
-  URLS.map(({ name, url }) => checkUrl(name, url))
+  // `private` is carried through from the parsed entry — checkUrl builds a
+  // fresh object, so anything not spread back in here is silently lost.
+  URLS.map(async (entry) => ({
+    ...(await checkUrl(entry.name, entry.url)),
+    private: Boolean(entry.private),
+  }))
 );
 
 const maxName = Math.max(...results.map((r) => r.name.length));
@@ -183,16 +196,17 @@ function statusIcon(ok, allowed) {
 }
 
 for (const r of results) {
-  const grace = allowance(r.url);
-  const allowed = Boolean(grace) && !grace.expired;
+  // A repo declared private in projects.ts is expected to 404 here. That is a
+  // choice, not a defect — the site renders it as "Private repository" rather
+  // than a link, so no visitor ever hits the 404.
+  const allowed = Boolean(r.private);
   const icon = statusIcon(r.ok, allowed);
   const statusStr = r.status > 0 ? String(r.status) : "ERR";
   const nameCol = r.name.padEnd(maxName + 2);
   let suffix = "";
-  if (!r.ok && grace) {
-    suffix = grace.expired
-      ? `  (grace expired ${grace.until} — ${grace.note})`
-      : `  (allowed until ${grace.until}: pending public-flip)`;
+  if (!r.ok && r.private) {
+    suffix =
+      "  (declared private — the site shows no link, so this is expected)";
   }
   const line = `${icon}  ${nameCol} ${statusStr.padEnd(6)} ${r.ms}ms  ${r.url}${suffix}`;
   if (r.ok || allowed) {
@@ -204,17 +218,14 @@ for (const r of results) {
 
 console.log("─".repeat(70));
 
-const stillAllowed = (r) => {
-  const grace = allowance(r.url);
-  return Boolean(grace) && !grace.expired;
-};
+const failed = results.filter((r) => !r.ok && !r.private);
+const privateRepos = results.filter((r) => !r.ok && r.private);
 
-const failed = results.filter((r) => !r.ok && !stillAllowed(r));
-const allowedFailed = results.filter((r) => !r.ok && stillAllowed(r));
-
-if (allowedFailed.length > 0) {
+if (privateRepos.length > 0) {
   console.log(
-    `\n${allowedFailed.length} URL(s) are allow-listed as pending public-flip — trim KNOWN_PRIVATE once each repo is public.`
+    `\n${privateRepos.length} repo(s) are declared private in projects.ts. The site shows ` +
+      `"Private repository" instead of a link, so nothing is broken — remove ` +
+      `\`githubPrivate\` from a project the day its repo goes public.`
   );
 }
 
@@ -227,6 +238,6 @@ if (failed.length > 0) {
   process.exit(1);
 } else {
   console.log(
-    `\nAll ${results.length - allowedFailed.length} non-allow-listed URLs healthy.`
+    `\nAll ${results.length - privateRepos.length} public URLs healthy.`
   );
 }

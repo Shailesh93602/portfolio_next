@@ -32,7 +32,8 @@ const portfolioSchema = {
     url: p.live ?? `${SITE_URL}/portfolio/${p.id}`,
     applicationCategory: "WebApplication",
     operatingSystem: "Web",
-    ...(p.github ? { codeRepository: p.github } : {}),
+    // Excluded when private — see the note in [id]/page.tsx.
+    ...(p.github && !p.githubPrivate ? { codeRepository: p.github } : {}),
     author: { "@id": `${SITE_URL}/#person` },
   })),
 };
