@@ -763,7 +763,7 @@ const rawProjects: Project[] = [
     techStack: [
       "Language: TypeScript (ESM, strict)",
       "Dependencies: none at runtime — typescript, eslint, prettier and vitest only",
-      "Tests: Vitest (186)",
+      "Tests: Vitest (197)",
       "Verification: invariants + reference oracle + mutation testing + shrinker",
     ],
     problem:
