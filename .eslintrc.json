@@ -25,7 +25,23 @@
     // General rules
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "no-debugger": "error",
-    "no-unused-vars": "error"
+    "no-unused-vars": "error",
+
+    // A scrollable region legitimately takes tabIndex.
+    //
+    // The default rule allows only role="tabpanel". But WCAG 2.1.1 requires a
+    // scroll container be reachable from the keyboard — a keyboard-only user
+    // can otherwise see that content is cut off and has no way to move it —
+    // and axe reports the absence as `scrollable-region-focusable`. The two
+    // tools disagree, and axe is the one describing a real barrier.
+    //
+    // `roles` is the rule's own supported escape hatch, so this states the
+    // exception rather than suppressing the rule. It stays narrow: `region`
+    // only, not non-interactive elements in general.
+    "jsx-a11y/no-noninteractive-tabindex": [
+      "error",
+      { "roles": ["tabpanel", "region"] }
+    ]
   },
   "settings": {
     "react": {
