@@ -41,9 +41,9 @@ SKILLS
 - Reliability patterns: idempotency, concurrency control, distributed locks, message queues and dead-letter queues, circuit breakers, RBAC, mutation and property-based testing
 
 EDUCATION
-- B.E. in Information Technology, Gujarat, India - 2020 to 2024 - CGPA 7.99/10
+- B.E. in Information Technology, Government Engineering College, Bhavnagar, Gujarat - 2020 to 2024 - CGPA 7.99/10
 
 ACHIEVEMENTS
-- Institute Rank 1 on GeeksforGeeks
-- 700+ problems solved on CodeChef; 5-star C++ rating on HackerRank
+- Institute Rank 1 on GeeksforGeeks (604+ problems solved); 700+ DSA problems solved across platforms
+- 5-star C++ rating on HackerRank; active on CodeChef and LeetCode
 - Finalist, New India Vibrant Hackathon 2023
