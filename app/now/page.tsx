@@ -140,7 +140,7 @@ export default function NowPage() {
             />
             <span>
               <strong className="font-semibold text-foreground">
-                Open to part-time / freelance:
+                Reach me at:
               </strong>{" "}
               particularly distributed systems, payment infrastructure,
               real-time platforms, AI-pipeline backends. Targeting Stripe,

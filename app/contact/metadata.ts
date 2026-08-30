@@ -8,13 +8,13 @@ const contactTitle = `Contact ${PROFILE.name.full}`;
 const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(
   contactTitle
 )}&type=page&description=${encodeURIComponent(
-  "Available for part-time and freelance work — remote-friendly"
+  "Backend & full-stack engineering — remote-friendly"
 )}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: contactTitle,
-  description: `Get in touch for part-time, freelance, or full-time work. I build in Next.js, Node.js, and TypeScript, and I'm available for remote projects. Based in ${PROFILE.location.displayShort}.`,
+  description: `Get in touch about backend and full-stack engineering. I build in Next.js, Node.js and TypeScript. Based in ${PROFILE.location.displayShort}.`,
   alternates: {
     canonical: `${SITE_URL}/contact`,
   },
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     url: `${SITE_URL}/contact`,
     title: "Contact Shailesh Chaudhari",
     description:
-      "Available for part-time and freelance work. Next.js, Node.js, TypeScript, real-time systems. Remote-friendly.",
+      "Backend and full-stack engineering. Next.js, Node.js, TypeScript, real-time systems. Remote-friendly.",
     images: [
       {
         url: ogImageUrl,
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Contact Shailesh Chaudhari",
     description:
-      "Available for part-time and freelance Next.js / Node.js work. Remote, async-friendly.",
+      "Backend and full-stack engineering in Next.js / Node.js. Remote, async-friendly.",
     images: [ogImageUrl],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,

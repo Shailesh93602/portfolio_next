@@ -22,106 +22,69 @@ seoKeywords:
   - "verifying tests actually work"
 ---
 
-There is a category of bug that survives review, passes CI, and ships — not because nobody tested it, but because the test was checking something other than what the code does.
-
-I have found five of these in my own projects in the last month. They have almost nothing in common technically. They have everything in common in shape.
-
-## 1. A test that imported the module the framework never loaded
-
-A Next.js app had authentication middleware and a test asserting unauthenticated requests to `/admin` were redirected. The test passed. It had passed for months.
-
-The middleware file was at `app/middleware.ts`. **Next.js only loads middleware from the project root or `src/`.** The framework had never executed that file. `/admin` was publicly reachable the entire time.
-
-The test imported the module directly and called the exported function, which worked perfectly — because the function was fine. What was broken was that nothing ever called it.
-
-> A test that imports a module directly is testing the module. Whether the framework loads it is a different question, and one the test cannot see.
-
-## 2. An assertion that silently matched nothing
-
-An integration test scraped a rendered invoice to check the GST arithmetic:
-
-```ts
-const idx = html.search(/>CGST \(/);
-```
-
-An i18n change turned `<span>CGST ({rate}%)</span>` into `<span>{t("cgst")} ({rate}%)</span>`. React inserts `<!-- -->` between adjacent text nodes, so the markup became `>CGST<!-- --> (<!-- -->9<!-- -->%)`.
-
-The probe matched nothing. The scraper returned `null`. The displayed tax was read as **zero against a stored ₹152.54**.
-
-Five tests went red — and **the invoice was correct the whole time.** The bug was entirely in the test.
-
-The confusing part: `Subtotal` kept working. `<span>{t("subtotal")}</span>` has a _single_ child, so React fuses nothing. Only the multi-child rows broke, which made it look like a GST bug rather than a scraping bug.
-
-> A test that reaches through a framework's rendered output is coupled to that framework's rendering decisions. And it fails _silently_, by matching nothing — which reads as "the value is zero", not "I could not find the value."
-
-## 3. 143 tests that could not fail the build
-
-A repository had a CI pipeline running audit, lint, typecheck and build. Thorough-looking. Green badge.
-
-**No test job.** 143 backend tests and 5 frontend tests existed, passed locally, and had no bearing on whether anything merged. A change could break every assertion in the repo and still go green.
-
-This is worse than a failing check, because a failing check is at least visible. This was invisible — the absence of something, which nobody notices.
-
-And wiring it up **found a bug on the first run**: a test failed in CI with `supabaseUrl is required`, because it had been reading config from a local `.env` that CI does not have.
-
-> My claim that those tests were hermetic was true only on the machine that happened to have the configuration. "It passes locally" is a statement about your machine.
-
-## 4. A test that encoded the very bug it should have caught
-
-A distributed-lock test asserted the lock was acquired by checking a mocked `SETNX` returned truthy. The mock returned truthy unconditionally. The test passed against an implementation that had the arguments in the wrong order and would never have acquired anything.
-
-The mock was written from the same misunderstanding as the code. Both were internally consistent and both were wrong.
-
-> When you mock the thing you are testing against, you are testing that your mock agrees with your code. It always does. You wrote both.
-
-## 5. A mutation harness that reported a perfect score
-
-Mutation testing is supposed to be the answer to all of the above. It breaks your code deliberately and checks your tests notice.
-
-Mine reported `165/165 — 100.0%`.
-
-A mutant is judged **killed when the suite fails** with it applied. That mechanism has a corollary: **if the suite already fails, every mutant is killed.** A stale number in a README had three assertions failing, and every subsequent mutant was scored as a kill against an already-red build.
-
-**The number that should have raised an alarm was the reassuring one.** At 83% I would have investigated. At 100% you close the terminal and feel good.
-
-The real score once the suite was green: 84.2%, below my own gate, with genuine survivors to go and fix.
-
-## The shape
-
-Every one of these was **correct under the conditions it was tested in**:
-
-- the middleware function worked; nothing called it
-- the invoice was right; the scraper could not see it
-- the tests passed; nothing ran them
-- the code matched the mock; the mock matched the misunderstanding
-- the mutants died; the suite was already dead
-
-None of them were caught by more tests. Adding a sixth assertion to a suite that is not running does nothing.
-
-## The question that finds them
-
-The habit that catches this class is a single uncomfortable question, asked of things that are already passing:
-
-> **What would this look like if it were broken — and would I be able to tell?**
-
-For the middleware: if it never loaded, would any test fail? _No._ That is the finding, before you even check.
-
-For the scraper: if the selector matched nothing, what would it return? _Zero._ Which is indistinguishable from a real zero. That is the finding.
-
-For CI: if every test failed, would the merge be blocked? _No._
-
-For the mutation harness: what would a broken harness print? _A perfect score._
-
-You do not need to find the bug. You need to notice that **the failure would be invisible** — and then go make it visible.
-
-## Three habits that follow
-
-**Assert on the artifact the runtime actually loads.** Not the module you imported — the deployed route, the built package, the middleware at the path the framework reads. If the test can pass while the shipped thing is broken, it is testing a different program.
-
-**Make a test fail before you trust it.** Stash the fix, run the test, watch it go red, restore. Thirty seconds, and it is the only direct evidence that the test is connected to the behaviour. I do this for every regression test now, and I have caught two that did nothing.
-
-**Prefer assertions that cannot silently degrade.** `expect(rows).toHaveLength(1)` fails loudly if the query is wrong. A scraper returning `null` that coerces to `0` does not. When an assertion can quietly match nothing, add one that checks it found _something_ at all.
-
----
-
-_Each of these is written up with the full diagnosis where it can be read publicly: [EduScale's FINDINGS.md](https://github.com/Shailesh93602/DevScale/blob/main/FINDINGS.md), [BALLAST's ledger](https://github.com/Shailesh93602/ballast/blob/main/docs/LEDGER.md) — where four of nine findings turned out to be in the checker rather than the system under test — and the KhataGO cases in this post and [the webhook write-up](/blog/khatago-webhook-deduplication-receipt-pipeline) (its repository is currently private)._
+<p>There is a category of bug that survives review, passes CI, and ships — not because nobody tested it, but because the test was checking something other than what the code does.</p>
+<p>I have found five of these in my own projects in the last month. They have almost nothing in common technically. They have everything in common in shape.</p>
+<h2>1. A test that imported the module the framework never loaded</h2>
+<p>A Next.js app had authentication middleware and a test asserting unauthenticated requests to <code>/admin</code> were redirected. The test passed. It had passed for months.</p>
+<p>The middleware file was at <code>app/middleware.ts</code>. <strong>Next.js only loads middleware from the project root or <code>src/</code>.</strong> The framework had never executed that file. <code>/admin</code> was publicly reachable the entire time.</p>
+<p>The test imported the module directly and called the exported function, which worked perfectly — because the function was fine. What was broken was that nothing ever called it.</p>
+<blockquote>
+<p>A test that imports a module directly is testing the module. Whether the framework loads it is a different question, and one the test cannot see.</p>
+</blockquote>
+<h2>2. An assertion that silently matched nothing</h2>
+<p>An integration test scraped a rendered invoice to check the GST arithmetic:</p>
+<pre><code class="language-ts">const idx = html.search(/&gt;CGST \(/);
+</code></pre>
+<p>An i18n change turned <code>&lt;span&gt;CGST ({rate}%)&lt;/span&gt;</code> into <code>&lt;span&gt;{t("cgst")} ({rate}%)&lt;/span&gt;</code>. React inserts <code>&lt;!-- --&gt;</code> between adjacent text nodes, so the markup became <code>&gt;CGST&lt;!-- --&gt; (&lt;!-- --&gt;9&lt;!-- --&gt;%)</code>.</p>
+<p>The probe matched nothing. The scraper returned <code>null</code>. The displayed tax was read as <strong>zero against a stored ₹152.54</strong>.</p>
+<p>Five tests went red — and <strong>the invoice was correct the whole time.</strong> The bug was entirely in the test.</p>
+<p>The confusing part: <code>Subtotal</code> kept working. <code>&lt;span&gt;{t("subtotal")}&lt;/span&gt;</code> has a <em>single</em> child, so React fuses nothing. Only the multi-child rows broke, which made it look like a GST bug rather than a scraping bug.</p>
+<blockquote>
+<p>A test that reaches through a framework's rendered output is coupled to that framework's rendering decisions. And it fails <em>silently</em>, by matching nothing — which reads as "the value is zero", not "I could not find the value."</p>
+</blockquote>
+<h2>3. 143 tests that could not fail the build</h2>
+<p>A repository had a CI pipeline running audit, lint, typecheck and build. Thorough-looking. Green badge.</p>
+<p><strong>No test job.</strong> 143 backend tests and 5 frontend tests existed, passed locally, and had no bearing on whether anything merged. A change could break every assertion in the repo and still go green.</p>
+<p>This is worse than a failing check, because a failing check is at least visible. This was invisible — the absence of something, which nobody notices.</p>
+<p>And wiring it up <strong>found a bug on the first run</strong>: a test failed in CI with <code>supabaseUrl is required</code>, because it had been reading config from a local <code>.env</code> that CI does not have.</p>
+<blockquote>
+<p>My claim that those tests were hermetic was true only on the machine that happened to have the configuration. "It passes locally" is a statement about your machine.</p>
+</blockquote>
+<h2>4. A test that encoded the very bug it should have caught</h2>
+<p>A distributed-lock test asserted the lock was acquired by checking a mocked <code>SETNX</code> returned truthy. The mock returned truthy unconditionally. The test passed against an implementation that had the arguments in the wrong order and would never have acquired anything.</p>
+<p>The mock was written from the same misunderstanding as the code. Both were internally consistent and both were wrong.</p>
+<blockquote>
+<p>When you mock the thing you are testing against, you are testing that your mock agrees with your code. It always does. You wrote both.</p>
+</blockquote>
+<h2>5. A mutation harness that reported a perfect score</h2>
+<p>Mutation testing is supposed to be the answer to all of the above. It breaks your code deliberately and checks your tests notice.</p>
+<p>Mine reported <code>165/165 — 100.0%</code>.</p>
+<p>A mutant is judged <strong>killed when the suite fails</strong> with it applied. That mechanism has a corollary: <strong>if the suite already fails, every mutant is killed.</strong> A stale number in a README had three assertions failing, and every subsequent mutant was scored as a kill against an already-red build.</p>
+<p><strong>The number that should have raised an alarm was the reassuring one.</strong> At 83% I would have investigated. At 100% you close the terminal and feel good.</p>
+<p>The real score once the suite was green: 84.2%, below my own gate, with genuine survivors to go and fix.</p>
+<h2>The shape</h2>
+<p>Every one of these was <strong>correct under the conditions it was tested in</strong>:</p>
+<ul>
+<li>the middleware function worked; nothing called it</li>
+<li>the invoice was right; the scraper could not see it</li>
+<li>the tests passed; nothing ran them</li>
+<li>the code matched the mock; the mock matched the misunderstanding</li>
+<li>the mutants died; the suite was already dead</li>
+</ul>
+<p>None of them were caught by more tests. Adding a sixth assertion to a suite that is not running does nothing.</p>
+<h2>The question that finds them</h2>
+<p>The habit that catches this class is a single uncomfortable question, asked of things that are already passing:</p>
+<blockquote>
+<p><strong>What would this look like if it were broken — and would I be able to tell?</strong></p>
+</blockquote>
+<p>For the middleware: if it never loaded, would any test fail? <em>No.</em> That is the finding, before you even check.</p>
+<p>For the scraper: if the selector matched nothing, what would it return? <em>Zero.</em> Which is indistinguishable from a real zero. That is the finding.</p>
+<p>For CI: if every test failed, would the merge be blocked? <em>No.</em></p>
+<p>For the mutation harness: what would a broken harness print? <em>A perfect score.</em></p>
+<p>You do not need to find the bug. You need to notice that <strong>the failure would be invisible</strong> — and then go make it visible.</p>
+<h2>Three habits that follow</h2>
+<p><strong>Assert on the artifact the runtime actually loads.</strong> Not the module you imported — the deployed route, the built package, the middleware at the path the framework reads. If the test can pass while the shipped thing is broken, it is testing a different program.</p>
+<p><strong>Make a test fail before you trust it.</strong> Stash the fix, run the test, watch it go red, restore. Thirty seconds, and it is the only direct evidence that the test is connected to the behaviour. I do this for every regression test now, and I have caught two that did nothing.</p>
+<p><strong>Prefer assertions that cannot silently degrade.</strong> <code>expect(rows).toHaveLength(1)</code> fails loudly if the query is wrong. A scraper returning <code>null</code> that coerces to <code>0</code> does not. When an assertion can quietly match nothing, add one that checks it found <em>something</em> at all.</p>
+<hr>
+<p><em>Each of these is written up with the full diagnosis where it can be read publicly: <a href="https://github.com/Shailesh93602/DevScale/blob/main/FINDINGS.md">EduScale's FINDINGS.md</a>, <a href="https://github.com/Shailesh93602/ballast/blob/main/docs/LEDGER.md">BALLAST's ledger</a> — where four of nine findings turned out to be in the checker rather than the system under test — and the KhataGO cases in this post and <a href="/blog/khatago-webhook-deduplication-receipt-pipeline">the webhook write-up</a> (its repository is currently private).</em></p>

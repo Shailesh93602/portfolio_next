@@ -23,52 +23,32 @@ seoKeywords:
   - "WhatsApp Cloud API webhook"
 ---
 
-Meta's WhatsApp Cloud API will deliver the same webhook more than once. That is documented behaviour, not a bug — if your endpoint is slow to respond, they assume it did not arrive and send it again.
-
-KhataGO turns WhatsApp messages into bookkeeping entries. A duplicate webhook means a duplicate ledger row, which means someone's accounts are wrong. So deduplication is not a nice-to-have; it is the first thing the handler does.
-
-The obvious tool is Redis. `SETNX` the message id, TTL it, skip if the key exists. I wrote that in an early draft of this very post.
-
-**KhataGO has no Redis.** Not "we removed it" — it never had any. `grep -c redis package.json` returns `0`.
-
-Here is why, and what it bought.
-
-## Start with the honest framing
-
-"Exactly-once delivery" does not exist. You cannot have it over a network, and any vendor claiming it is describing something else.
-
-What you can have is **at-least-once delivery with exactly-once effects.** The message may arrive five times; the ledger row is written once.
-
-That reframing matters, because it moves the problem from _"how do I stop duplicates arriving"_ — impossible — to _"how do I make a duplicate arriving harmless"_ — very possible.
-
-## The Redis version, and where it leaks
-
-```js
-const claimed = await redis.set(`wa:${messageId}`, "1", "NX", "EX", 86400);
+<p>Meta's WhatsApp Cloud API will deliver the same webhook more than once. That is documented behaviour, not a bug — if your endpoint is slow to respond, they assume it did not arrive and send it again.</p>
+<p>KhataGO turns WhatsApp messages into bookkeeping entries. A duplicate webhook means a duplicate ledger row, which means someone's accounts are wrong. So deduplication is not a nice-to-have; it is the first thing the handler does.</p>
+<p>The obvious tool is Redis. <code>SETNX</code> the message id, TTL it, skip if the key exists. I wrote that in an early draft of this very post.</p>
+<p><strong>KhataGO has no Redis.</strong> Not "we removed it" — it never had any. <code>grep -c redis package.json</code> returns <code>0</code>.</p>
+<p>Here is why, and what it bought.</p>
+<h2>Start with the honest framing</h2>
+<p>"Exactly-once delivery" does not exist. You cannot have it over a network, and any vendor claiming it is describing something else.</p>
+<p>What you can have is <strong>at-least-once delivery with exactly-once effects.</strong> The message may arrive five times; the ledger row is written once.</p>
+<p>That reframing matters, because it moves the problem from <em>"how do I stop duplicates arriving"</em> — impossible — to <em>"how do I make a duplicate arriving harmless"</em> — very possible.</p>
+<h2>The Redis version, and where it leaks</h2>
+<pre><code class="language-js">const claimed = await redis.set(`wa:${messageId}`, &quot;1&quot;, &quot;NX&quot;, &quot;EX&quot;, 86400);
 if (!claimed) return; // someone already has it
 await processMessage(msg); // ... and now the interesting part
 await db.insert(ledgerRow);
-```
-
-This works. It is a genuine atomic claim, and `NX` is doing real work — a `GET` followed by a `SET` would be a check-then-act race, and two concurrent deliveries could both pass the read.
-
-The problem is not correctness under concurrency. It is that **the claim lives in one system and the truth lives in another.**
-
-Crash between `redis.set` and `db.insert` — process killed, container evicted, deploy mid-flight — and you are left with a key in Redis saying "this message is handled" and no ledger row saying so. The event is now **permanently claimed and never processed**, and it is _unretryable_, because the claim insists the work is done.
-
-To fix that you add a second mechanism: a shorter TTL, a reconciliation job, a status field, something that notices claims that never completed. You are now maintaining consistency between two stores in order to avoid duplicates in one.
-
-## The version we shipped
-
-```prisma
-model WhatsappMessage {
+</code></pre>
+<p>This works. It is a genuine atomic claim, and <code>NX</code> is doing real work — a <code>GET</code> followed by a <code>SET</code> would be a check-then-act race, and two concurrent deliveries could both pass the read.</p>
+<p>The problem is not correctness under concurrency. It is that <strong>the claim lives in one system and the truth lives in another.</strong></p>
+<p>Crash between <code>redis.set</code> and <code>db.insert</code> — process killed, container evicted, deploy mid-flight — and you are left with a key in Redis saying "this message is handled" and no ledger row saying so. The event is now <strong>permanently claimed and never processed</strong>, and it is <em>unretryable</em>, because the claim insists the work is done.</p>
+<p>To fix that you add a second mechanism: a shorter TTL, a reconciliation job, a status field, something that notices claims that never completed. You are now maintaining consistency between two stores in order to avoid duplicates in one.</p>
+<h2>The version we shipped</h2>
+<pre><code class="language-prisma">model WhatsappMessage {
   waMessageId String? @unique   // the entire mechanism
   // ...
 }
-```
-
-```ts
-try {
+</code></pre>
+<pre><code class="language-ts">try {
   return await prisma.whatsappMessage.create({
     data: { waMessageId, ...rest },
   });
@@ -79,90 +59,56 @@ try {
   }
   throw error;
 }
-```
-
-**Insert first, ask questions later.** The database arbitrates. Two concurrent deliveries race to insert; exactly one wins; the loser gets a constraint violation and converges on the winner's row.
-
-There is no window, because there is no read-then-write. And there is no second system to keep in sync — the row that proves the message was seen _is_ the audit record of what was seen. One thing, not two things that must agree.
-
-## Three things this got wrong before it got right
-
-I want to be specific about the failures, because "use a unique constraint" is the easy part and none of these were.
-
-### A duplicate must return 200, not 500
-
-The instinct is that a duplicate is an error, so return an error. This is catastrophic.
-
-Meta reads any non-2xx as _"not delivered"_ and redelivers. So returning 500 on a duplicate produces an **infinite redelivery loop** — every retry hits the duplicate path, returns 500, and triggers another retry.
-
-A 2xx means _"received, do not send this again."_ It does not mean _"I did work."_ Acknowledging a duplicate is telling the truth.
-
-The comment in the code says it plainly, at the point where a reader would otherwise "fix" it:
-
-> _Without that recovery the loser 500s, and Meta treats a non-2xx ack as "not delivered" and redelivers in a loop._
-
-### The fast path is not the guarantee
-
-The handler does a `findUnique` before the `create`. That is a check-then-act, and two concurrent deliveries can both miss it.
-
-That is fine — **it is a fast path, not the guarantee.** It exists to turn the common redelivery case into an update instead of an exception. The unique index is what makes it safe, and the loser of the race is recovered from P2002.
-
-This distinction is worth internalising, because the code _looks_ like a bug to a careful reader. It needs a comment saying "yes, this is a race, and here is why it does not matter" — otherwise someone will eventually "fix" it into something slower and no safer.
-
-### A claim without an expiry is a deadlock waiting for a crash
-
-This is the one I got wrong for months.
-
-The AI processing stage claims each message atomically:
-
-```ts
-updateMany({
-  where: { aiStatus: "PENDING" },
-  data: { aiStatus: "PROCESSING" },
+</code></pre>
+<p><strong>Insert first, ask questions later.</strong> The database arbitrates. Two concurrent deliveries race to insert; exactly one wins; the loser gets a constraint violation and converges on the winner's row.</p>
+<p>There is no window, because there is no read-then-write. And there is no second system to keep in sync — the row that proves the message was seen <em>is</em> the audit record of what was seen. One thing, not two things that must agree.</p>
+<h2>Three things this got wrong before it got right</h2>
+<p>I want to be specific about the failures, because "use a unique constraint" is the easy part and none of these were.</p>
+<h3>A duplicate must return 200, not 500</h3>
+<p>The instinct is that a duplicate is an error, so return an error. This is catastrophic.</p>
+<p>Meta reads any non-2xx as <em>"not delivered"</em> and redelivers. So returning 500 on a duplicate produces an <strong>infinite redelivery loop</strong> — every retry hits the duplicate path, returns 500, and triggers another retry.</p>
+<p>A 2xx means <em>"received, do not send this again."</em> It does not mean <em>"I did work."</em> Acknowledging a duplicate is telling the truth.</p>
+<p>The comment in the code says it plainly, at the point where a reader would otherwise "fix" it:</p>
+<blockquote>
+<p><em>Without that recovery the loser 500s, and Meta treats a non-2xx ack as "not delivered" and redelivers in a loop.</em></p>
+</blockquote>
+<h3>The fast path is not the guarantee</h3>
+<p>The handler does a <code>findUnique</code> before the <code>create</code>. That is a check-then-act, and two concurrent deliveries can both miss it.</p>
+<p>That is fine — <strong>it is a fast path, not the guarantee.</strong> It exists to turn the common redelivery case into an update instead of an exception. The unique index is what makes it safe, and the loser of the race is recovered from P2002.</p>
+<p>This distinction is worth internalising, because the code <em>looks</em> like a bug to a careful reader. It needs a comment saying "yes, this is a race, and here is why it does not matter" — otherwise someone will eventually "fix" it into something slower and no safer.</p>
+<h3>A claim without an expiry is a deadlock waiting for a crash</h3>
+<p>This is the one I got wrong for months.</p>
+<p>The AI processing stage claims each message atomically:</p>
+<pre><code class="language-ts">updateMany({
+  where: { aiStatus: &quot;PENDING&quot; },
+  data: { aiStatus: &quot;PROCESSING&quot; },
 });
-```
-
-Correct mutual exclusion. One conditional UPDATE, two concurrent deliveries, exactly one winner. I was pleased with it.
-
-**It has no way back out.** There is no path from `PROCESSING` to anything except a successful run. So a process that died mid-pipeline left that message in `PROCESSING` **forever**, and nothing could distinguish an abandoned claim from one still legitimately running.
-
-Worse, the work ran inside the framework's "after response" hook. That is the right shape — you must ack fast — but **a framework convenience is not a durability guarantee.** It dies with the invocation, and a multi-turn LLM call can outlive a serverless budget.
-
-The fix is the one every distributed lock eventually needs: a **claim timestamp**, so staleness is detectable, and an **attempt counter**, so a message that fails deterministically dead-letters instead of retrying forever.
-
-```ts
-where: {
+</code></pre>
+<p>Correct mutual exclusion. One conditional UPDATE, two concurrent deliveries, exactly one winner. I was pleased with it.</p>
+<p><strong>It has no way back out.</strong> There is no path from <code>PROCESSING</code> to anything except a successful run. So a process that died mid-pipeline left that message in <code>PROCESSING</code> <strong>forever</strong>, and nothing could distinguish an abandoned claim from one still legitimately running.</p>
+<p>Worse, the work ran inside the framework's "after response" hook. That is the right shape — you must ack fast — but <strong>a framework convenience is not a durability guarantee.</strong> It dies with the invocation, and a multi-turn LLM call can outlive a serverless budget.</p>
+<p>The fix is the one every distributed lock eventually needs: a <strong>claim timestamp</strong>, so staleness is detectable, and an <strong>attempt counter</strong>, so a message that fails deterministically dead-letters instead of retrying forever.</p>
+<pre><code class="language-ts">where: {
   id,
   aiAttempts: { lt: MAX_ATTEMPTS },
   OR: [
-    { aiStatus: "PENDING" },
-    { aiStatus: "PROCESSING", aiClaimedAt: { lt: staleBefore } },
+    { aiStatus: &quot;PENDING&quot; },
+    { aiStatus: &quot;PROCESSING&quot;, aiClaimedAt: { lt: staleBefore } },
   ],
 }
-```
-
-Two ways to win, still one conditional UPDATE. Both predicates stay **inside** the mutation — two concurrent reclaimers both match the WHERE, but Postgres serialises on the row lock and re-evaluates against the updated row, so the loser updates zero rows.
-
-> Mutual exclusion and liveness are different properties. Passing tests for the first tell you nothing about the second.
-
-## When Redis would win
-
-I am not arguing against Redis. I am arguing against reaching for it reflexively.
-
-Use it when the thing you are deduplicating **does not have a durable record anyway** — rate limiting, short-lived nonces, request coalescing. There is no row that wants to exist, so a separate fast store is the natural home and the split-brain problem does not arise.
-
-Use the database when the claim and the record are the same fact. A webhook you must not process twice is _also_ a webhook you want an audit trail for. Storing that once, in one place, with the uniqueness constraint doing double duty, is strictly less machinery.
-
-The version I did not ship needed Redis, a TTL policy, a reconciliation job, and an answer for what happens when the two disagree. The version I did ship needed one word: `@unique`.
-
-## The check that would have caught it
-
-Fire the same signed payload twice **concurrently** and assert **one row and one effect**.
-
-Not that the second call returned 200 — it does that even when it processed twice. Not that the code has a dedup function — it can have one that never runs. **Count the rows.**
-
-That test lives in an integration suite against a real Postgres, because a claim protocol is only meaningfully tested against a database that actually serialises the conditional UPDATE. Mocking that away tests your mock.
-
----
-
-_KhataGO is a WhatsApp-first bookkeeping platform for Indian MSMEs. The bugs above, and several more, are written up on [How I verify](/engineering) — including one where an i18n change silently broke a test that had been asserting nothing for months (its repository is currently private)._
+</code></pre>
+<p>Two ways to win, still one conditional UPDATE. Both predicates stay <strong>inside</strong> the mutation — two concurrent reclaimers both match the WHERE, but Postgres serialises on the row lock and re-evaluates against the updated row, so the loser updates zero rows.</p>
+<blockquote>
+<p>Mutual exclusion and liveness are different properties. Passing tests for the first tell you nothing about the second.</p>
+</blockquote>
+<h2>When Redis would win</h2>
+<p>I am not arguing against Redis. I am arguing against reaching for it reflexively.</p>
+<p>Use it when the thing you are deduplicating <strong>does not have a durable record anyway</strong> — rate limiting, short-lived nonces, request coalescing. There is no row that wants to exist, so a separate fast store is the natural home and the split-brain problem does not arise.</p>
+<p>Use the database when the claim and the record are the same fact. A webhook you must not process twice is <em>also</em> a webhook you want an audit trail for. Storing that once, in one place, with the uniqueness constraint doing double duty, is strictly less machinery.</p>
+<p>The version I did not ship needed Redis, a TTL policy, a reconciliation job, and an answer for what happens when the two disagree. The version I did ship needed one word: <code>@unique</code>.</p>
+<h2>The check that would have caught it</h2>
+<p>Fire the same signed payload twice <strong>concurrently</strong> and assert <strong>one row and one effect</strong>.</p>
+<p>Not that the second call returned 200 — it does that even when it processed twice. Not that the code has a dedup function — it can have one that never runs. <strong>Count the rows.</strong></p>
+<p>That test lives in an integration suite against a real Postgres, because a claim protocol is only meaningfully tested against a database that actually serialises the conditional UPDATE. Mocking that away tests your mock.</p>
+<hr>
+<p><em>KhataGO is a WhatsApp-first bookkeeping platform for Indian MSMEs. The bugs above, and several more, are written up on <a href="/engineering">How I verify</a> — including one where an i18n change silently broke a test that had been asserting nothing for months (its repository is currently private).</em></p>

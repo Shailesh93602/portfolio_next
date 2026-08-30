@@ -220,9 +220,9 @@ export default function RootLayout({
               },
               seeks: {
                 "@type": "Demand",
-                name: "Part-time and freelance backend / full-stack engineering work",
+                name: "Backend and full-stack engineering",
                 description:
-                  "Open to part-time and freelance engagements alongside the ContextQA role. Particular interest in distributed systems, payment infrastructure, real-time platforms, and AI-pipeline backends.",
+                  "Backend and full-stack engineering, with particular interest in distributed systems, payment infrastructure, real-time platforms, and AI-pipeline backends.",
               },
               hasCredential: [
                 {

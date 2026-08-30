@@ -197,6 +197,6 @@ Web Development · Full Stack · Frontend (React, Next.js, Tailwind) · Backend 
 
 ## Availability
 
-Open to part-time, freelance (hourly or project-based) work.
+Backend and full-stack engineering.
 Contact: https://shaileshchaudhari.vercel.app/contact
 Hire page: https://shaileshchaudhari.vercel.app/hire

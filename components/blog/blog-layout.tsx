@@ -41,8 +41,17 @@ export function BlogLayout({ children, post }: BlogLayoutProps) {
     <div className="min-h-screen bg-gradient-to-b from-background to-background/95">
       <div className="container mx-auto px-4 py-12 md:py-20">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr,320px]">
+          {/* min-w-0 is load-bearing, not decoration.
+
+              A grid item's default `min-width: auto` means it refuses to shrink
+              below its content's intrinsic width. A single long code block or
+              unbroken URL in a post therefore widened the whole track: the
+              article measured 613px inside a 390px viewport and every blog post
+              scrolled sideways on a phone. `max-w-none` (needed so prose can
+              fill the desktop column) removes the other brake, which is why
+              this only shows up here. */}
           <article
-            className="duration-600 prose max-w-none transition-all ease-out dark:prose-invert"
+            className="duration-600 prose min-w-0 max-w-none transition-all ease-out dark:prose-invert"
             aria-labelledby="post-title"
           >
             <header className="mb-12 space-y-6">

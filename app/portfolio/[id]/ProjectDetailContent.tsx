@@ -534,7 +534,10 @@ export default function ProjectDetailContent({ project }: Props) {
                 I'm always open to discussing technical implementations, from
                 state management strategies to infrastructure scaling.
               </p>
-              <div className="flex justify-center gap-6 pt-8">
+              {/* flex-wrap: two `size="lg"` buttons with px-10 are ~480px
+                  together, so on a 390px screen the row pushed the page into
+                  horizontal scroll instead of stacking. */}
+              <div className="flex flex-wrap justify-center gap-6 pt-8">
                 <Button
                   asChild
                   size="lg"

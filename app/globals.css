@@ -263,3 +263,55 @@
   outline-offset: 2px;
   border-radius: 4px;
 }
+
+/* ── Blog post content: never widen the page on a phone ──────────────────────
+ *
+ * Found by measuring, not by eye: every blog post had a document scrollWidth of
+ * 629px inside a 390px viewport, so the whole page slid sideways on a phone.
+ *
+ * It was invisible to the usual checks because NO ELEMENT was wider than the
+ * viewport. Long lines inside `pre` (and long unbroken tokens like URLs) paint
+ * OUTSIDE their box when overflow is `visible` — the box stays 358px, the text
+ * spills past it, and `getBoundingClientRect()` reports nothing wrong.
+ * `element.scrollWidth` cannot see it either, because with `overflow: visible`
+ * scrollWidth equals clientWidth. Only the document's own scrollWidth moves.
+ *
+ * Tailwind's `prose` styles the content but does not constrain it, and
+ * `max-w-none` (needed so posts fill the desktop column) removes the other
+ * brake. So the rules have to be explicit.
+ */
+.blog-content pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Inline code and long URLs: break rather than push the column wider. */
+.blog-content :not(pre) > code,
+.blog-content a {
+  overflow-wrap: anywhere;
+}
+
+/* A wide table scrolls itself instead of scrolling the page. */
+.blog-content table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.blog-content img,
+.blog-content video,
+.blog-content iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Tailwind Typography decorates inline <code> with literal backtick characters
+ * via `code::before/::after`. In running prose that reads as a rendering
+ * artifact — "requests to `/admin` were redirected" looks like markdown that
+ * failed to parse, which is exactly the bug that was actually present on three
+ * posts. Removing the pseudo-content leaves the styled chip and drops the
+ * confusion. */
+.prose :where(code):not(:where(pre *))::before,
+.prose :where(code):not(:where(pre *))::after {
+  content: none;
+}

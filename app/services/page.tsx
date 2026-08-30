@@ -84,10 +84,9 @@ export default function ServicesPage() {
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
             I&apos;m {BLOG_AUTHOR.name}, a software engineer who likes building
-            backends that hold up under load. Outside my full-time role I take
-            on a small amount of part-time and freelance work — mostly the
-            things below. TypeScript everywhere, correctness first, shipped in
-            small iterations.
+            backends that hold up under load. These are the kinds of problems I
+            work on, and the way I work on them. TypeScript everywhere,
+            correctness first, shipped in small iterations.
           </p>
 
           <div className="mt-12 grid gap-5 sm:grid-cols-2">
@@ -119,8 +118,8 @@ export default function ServicesPage() {
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
             Remote-first and async-friendly — I share working code early, flag
             blockers fast, and write tests for anything that needs to keep
-            working. Open to fixed-price projects and hourly retainers,
-            part-time alongside my full-time role.
+            working. I share working code early and write tests for anything
+            that needs to keep working.
           </p>
 
           {/* Single strong CTA to /contact so the page never dead-ends. */}
