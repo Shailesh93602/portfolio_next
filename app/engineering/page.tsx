@@ -262,6 +262,62 @@ export default function EngineeringPage() {
             </strong>
           </p>
         </section>
+
+        {/*
+          The site itself as evidence.
+          
+          Every finding above is about someone else's code — including my own
+          past code. This section is the one place the reader can check the
+          claim against the thing they are currently looking at.
+
+          Deliberately no test COUNT and no score: a number in page copy is a
+          chore that fails on every new test and passes for every bug that
+          matters, which is the exact mistake called out in the first finding on
+          this page. The gates themselves are stable facts; the numbers behind
+          them live in CI where they are re-derived rather than asserted.
+        */}
+        <section className="mt-16 border-t pt-10">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            This page, and the site around it
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+            It would be a strange thing to write all of the above on a site that
+            was not held to it. So, on every pull request:
+          </p>
+          <ul className="mt-4 space-y-2 text-base leading-relaxed text-muted-foreground sm:text-lg">
+            <li>
+              •{" "}
+              <strong className="text-foreground">
+                Every route is audited with axe against WCAG 2.1 AA
+              </strong>{" "}
+              — in light and dark, not just the happy theme. Violations fail the
+              build.
+            </li>
+            <li>
+              • <strong className="text-foreground">Performance budgets</strong>{" "}
+              for LCP, CLS and total blocking time fail the build too, rather
+              than being reported and ignored.
+            </li>
+            <li>
+              •{" "}
+              <strong className="text-foreground">
+                A daily job re-checks the claims on this site
+              </strong>{" "}
+              against the repositories they point at. When a number here stops
+              matching its source, it opens as a failure rather than quietly
+              becoming untrue — every false claim it has caught started life as
+              a true one.
+            </li>
+            <li>
+              •{" "}
+              <strong className="text-foreground">
+                A second daily job opens every outbound link
+              </strong>
+              , because a portfolio full of dead links is the cheapest possible
+              way to undermine everything else on it.
+            </li>
+          </ul>
+        </section>
       </div>
     </>
   );
