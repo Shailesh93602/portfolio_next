@@ -3,8 +3,17 @@
 // Lighthouse CI runs on every PR against the production server the workflow
 // starts (`npm run build` + `npm run start` on :3000) and enforces:
 //   - aggregate category scores (perf warn, a11y/best-practices/SEO error)
-//   - numeric Web Vitals budgets (LCP / INP / CLS / TBT) matching the
+//   - numeric Web Vitals budgets (LCP / CLS / TBT) matching the
 //     target-company bar from the 2026-04-19 recruiter review
+//
+// ON INP, AND WHY IT IS NOT ASSERTED HERE. This block used to claim it
+// enforced INP while actually asserting `max-potential-fid` — a lab proxy for
+// FID, which Google RETIRED in March 2024 and replaced with INP. So the
+// documented intent named the current metric and the code enforced the dead
+// one. INP cannot honestly be asserted in this run either: it is measured from
+// real interactions, and a cold Lighthouse navigation performs none, so the
+// audit reports notApplicable. TBT is the accepted lab proxy and is asserted
+// below. Real INP belongs in field data (Vercel Speed Insights / CrUX).
 //
 // `collect` MUST be a single object. It was previously an array of two
 // blocks (desktop + mobile); lhci does not support an array there, so it
@@ -36,8 +45,9 @@ const webVitalsBudgets = {
   // Mobile runs inherit the same budgets — fail fast on any regression.
   "largest-contentful-paint": ["warn", { maxNumericValue: 1800 }],
   "cumulative-layout-shift": ["error", { maxNumericValue: 0.05 }],
+  // The lab stand-in for INP. Not a replacement for field data, but it is the
+  // one number in a cold navigation that moves when interaction latency does.
   "total-blocking-time": ["warn", { maxNumericValue: 200 }],
-  "max-potential-fid": ["warn", { maxNumericValue: 150 }],
 };
 
 module.exports = {
