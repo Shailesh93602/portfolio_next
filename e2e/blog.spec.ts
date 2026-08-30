@@ -35,12 +35,14 @@ test.describe("Blog", () => {
   });
 
   test("blog URL search filter works without crashing", async ({ page }) => {
-    await page.goto("/blogs?q=redis");
-    // Wait for page to load
+    const response = await page.goto("/blogs?q=redis");
+    expect(response!.status()).toBe(200);
     await page.waitForLoadState("networkidle");
-    // No error text should appear
-    await expect(page.locator("body")).not.toContainText("Error");
-    await expect(page.locator("body")).not.toContainText("500");
+    // Assert the OUTCOME (post cards render), not the absence of substrings:
+    // a post description legitimately contains "return 200 and not 500", so
+    // not.toContainText("500") failed on real content, not on a crash.
+    await expect(page.locator('a[href^="/blog/"]').first()).toBeVisible();
+    await expect(page.locator("body")).not.toContainText("Application error");
   });
 
   test("blog page renders tag filter area", async ({ page }) => {
@@ -63,7 +65,7 @@ test.describe("Blog", () => {
       await tagBadge.click();
       // Page should not crash after clicking a tag
       await expect(page.locator("body")).toBeVisible();
-      await expect(page.locator("body")).not.toContainText("Error");
+      await expect(page.locator("body")).not.toContainText("Application error");
     } else {
       // If Next.js tag doesn't exist, just verify the page is still up
       await expect(page.locator("body")).toBeVisible();

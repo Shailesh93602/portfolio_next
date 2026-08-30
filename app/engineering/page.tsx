@@ -57,9 +57,11 @@ interface Finding {
 }
 
 /**
- * Every entry links to the write-up in the repo it came from. Nothing here is
- * a claim the reader has to take on trust — the point of the page is that it is
- * all checkable.
+ * Every entry links to a PUBLIC write-up — the repo's FINDINGS.md when the
+ * repo is public, the blog post telling the same story when it is not
+ * (KhataGO is currently private). The point of the page is that it is all
+ * checkable; a link that 404s for a visitor defeats it. When KhataGO goes
+ * public, point its entries back at its FINDINGS.md.
  */
 const findings: readonly Finding[] = [
   {
@@ -70,7 +72,7 @@ const findings: readonly Finding[] = [
     lesson:
       "A test that reaches through a framework's rendered output is coupled to that framework's rendering decisions, and it fails silently by matching nothing.",
     where: "KhataGO",
-    href: "https://github.com/Shailesh93602/KhataGO/blob/main/FINDINGS.md",
+    href: "/blog/a-passing-test-only-proves-the-test-passes",
   },
   {
     title: "A lock with no way out of it",
@@ -80,7 +82,7 @@ const findings: readonly Finding[] = [
     lesson:
       "Mutual exclusion and liveness are different properties. Passing tests for the first say nothing about the second — a lock without an expiry is a deadlock waiting for a crash.",
     where: "KhataGO",
-    href: "https://github.com/Shailesh93602/KhataGO/blob/main/FINDINGS.md",
+    href: "/blog/khatago-webhook-deduplication-receipt-pipeline",
   },
   {
     title: "An idempotency guard that was not one",
@@ -90,7 +92,7 @@ const findings: readonly Finding[] = [
     lesson:
       "Code that copes with a condition is evidence someone knew it could happen. Prevent it at the constraint, and let the read be a fast path.",
     where: "EduScale",
-    href: "https://github.com/Shailesh93602/EduScale/blob/main/FINDINGS.md",
+    href: "https://github.com/Shailesh93602/DevScale/blob/main/FINDINGS.md",
   },
   {
     title: "A safety guard whose allow-list matched production",
@@ -100,7 +102,7 @@ const findings: readonly Finding[] = [
     lesson:
       "An allow-list whose most permissive entry matches the thing you are guarding against is not an allow-list. This one is mine, found the same week I wrote it.",
     where: "EduScale",
-    href: "https://github.com/Shailesh93602/EduScale/blob/main/FINDINGS.md",
+    href: "https://github.com/Shailesh93602/DevScale/blob/main/FINDINGS.md",
   },
   {
     title: "Migrations that never ran",
@@ -110,7 +112,7 @@ const findings: readonly Finding[] = [
     lesson:
       "Before making every deploy run migrations I checked what production's migration table actually contained, and found rows with no matching files. Reproducing that drift locally first is the only reason the fix did not break every deploy.",
     where: "KhataGO + EduScale",
-    href: "https://github.com/Shailesh93602/KhataGO/blob/main/FINDINGS.md",
+    href: "https://github.com/Shailesh93602/DevScale/blob/main/FINDINGS.md",
   },
   {
     title: "Six bugs, half of them in the checker",
@@ -144,9 +146,9 @@ export default function EngineeringPage() {
 
         <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
           These are real defects from my own production code. Several are
-          mistakes I made myself and found later. Every one links to the
-          write-up in the repo it came from, so none of it has to be taken on
-          trust.
+          mistakes I made myself and found later. Every one links to a public
+          write-up — the repo it came from, or the blog post that tells the full
+          story — so none of it has to be taken on trust.
         </p>
 
         <div className="mt-12 space-y-10">
