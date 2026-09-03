@@ -235,12 +235,16 @@ test.describe("Sitemap and robots agree with what is actually servable", () => {
     expect(txt).toMatch(/User-Agent:\s*\*/i);
     expect(txt).toMatch(/Allow:\s*\//i);
     expect(txt).toContain(`https://${SITE_HOST}/sitemap.xml`);
-    // Nothing indexable should be disallowed on a portfolio.
+    // Nothing indexable should be disallowed on a portfolio. `/api/` is the
+    // one deliberate exception — JSON/POST endpoints with nothing to index —
+    // and app/robots.ts pairs it with an explicit `Allow: /api/og` so the
+    // sitemap's OG images stay fetchable (asserted in __tests__/robots.test.ts).
     const disallows = [...txt.matchAll(/Disallow:\s*(\S*)/gi)].map((m) => m[1]);
     expect(
-      disallows.filter((d) => d && d !== ""),
-      "robots.txt disallows a path"
+      disallows.filter((d) => d && d !== "" && d !== "/api/"),
+      "robots.txt disallows an indexable path"
     ).toEqual([]);
+    expect(txt).toMatch(/Allow:\s*\/api\/og/i);
   });
 
   test("redirect targets are not advertised in the sitemap", async ({

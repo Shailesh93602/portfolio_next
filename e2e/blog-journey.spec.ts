@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { BLOG_ROUTES } from "./routes";
+import { PUBLISHED_BLOG_ROUTES } from "./routes";
 import { blogPosts } from "../lib/blog-data";
 
 /**
@@ -80,7 +80,7 @@ test.describe("Blog journey", () => {
 
     // Every published slug should be reachable from the listing — a post that
     // exists but is never linked is invisible to a human reader.
-    const missing = BLOG_ROUTES.filter((r) => !hrefs.includes(r));
+    const missing = PUBLISHED_BLOG_ROUTES.filter((r) => !hrefs.includes(r));
     expect(missing, "published posts not linked from /blogs").toEqual([]);
   });
 

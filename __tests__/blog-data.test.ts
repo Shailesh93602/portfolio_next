@@ -10,6 +10,7 @@ import { join } from "node:path";
 import {
   BLOG_SLUGS,
   blogPosts,
+  publishedPosts,
   getPostBySlug,
   getRelatedPosts,
   getFeaturedPosts,
@@ -18,6 +19,54 @@ import {
 } from "@/lib/blog-data";
 
 const BLOG_DIR = join(process.cwd(), "content", "blog");
+
+/**
+ * The archive boundary. Seventeen posts dated 2024-09-28 → 2024-10-09 were
+ * written for search traffic; they stay online (URLs keep returning 200, they
+ * stay in the sitemap) but are not surfaced anywhere the site chooses what to
+ * show. Anything dated on or before this is expected to be archived, and
+ * anything after it is expected not to be.
+ */
+const ARCHIVE_CUTOFF = "2024-12-31";
+
+describe("archived posts", () => {
+  it("every 2024 post is archived, and no later post is", () => {
+    const wrong = blogPosts
+      .filter((p) => p.date <= ARCHIVE_CUTOFF !== p.archived)
+      .map((p) => `${p.slug} (${p.date}, archived=${p.archived})`);
+    expect(wrong).toEqual([]);
+  });
+
+  it("archives the 2024 batch, which is a known size", () => {
+    expect(blogPosts.filter((p) => p.archived)).toHaveLength(17);
+  });
+
+  it("archived posts still load by slug (their URLs must keep working)", () => {
+    for (const p of blogPosts.filter((p) => p.archived)) {
+      expect(getPostBySlug(p.slug)).toBeDefined();
+    }
+  });
+
+  it("publishedPosts excludes every archived post and nothing else", () => {
+    expect(publishedPosts.every((p) => !p.archived)).toBe(true);
+    expect(publishedPosts.length + 17).toBe(blogPosts.length);
+  });
+
+  it("featured, tags, by-tag and related never surface an archived post", () => {
+    expect(getFeaturedPosts().some((p) => p.archived)).toBe(false);
+    for (const tag of getAllTags()) {
+      expect(getPostsByTag(tag).some((p) => p.archived)).toBe(false);
+    }
+    for (const p of blogPosts) {
+      expect(getRelatedPosts(p.slug).some((r) => r.archived)).toBe(false);
+    }
+  });
+
+  it("still leaves the blog with something to show", () => {
+    expect(publishedPosts.length).toBeGreaterThanOrEqual(5);
+    expect(getFeaturedPosts().length).toBeGreaterThanOrEqual(3);
+  });
+});
 
 describe("BLOG_SLUGS", () => {
   it("is an array of strings", () => {

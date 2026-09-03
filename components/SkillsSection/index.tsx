@@ -43,7 +43,7 @@ export default function SkillsSection() {
       items: [
         { name: "Git", level: 90 },
         { name: "Docker", level: 80 },
-        { name: "AWS", level: 75 },
+        { name: "AWS S3", level: 75 },
         { name: "CI/CD", level: 80 },
         { name: "Testing", level: 85 },
         { name: "Supabase", level: 75 },

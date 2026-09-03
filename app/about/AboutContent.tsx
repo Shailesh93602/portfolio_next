@@ -10,7 +10,6 @@ import { ExperienceSection } from "@/components/ExperienceSection";
 import { EducationSection } from "@/components/EducationSection";
 import AchievementsSection from "@/components/Achievements";
 import SkillsSection from "@/components/SkillsSection";
-import { HobbiesSection } from "@/components/HobbiesSection";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -66,17 +65,23 @@ export default function AboutContent() {
                 className="text-lg leading-relaxed text-muted-foreground"
               >
                 I&apos;m a Software Engineer from Patan, Gujarat, currently
-                based in Ahmedabad. At ContextQA I work on the backend of our
-                core QA-automation product — test execution engine, VNC
-                streaming, and browser-automation orchestration (Playwright /
-                WebdriverIO / LambdaTest). The first 2-3 months I shipped 2
-                Chrome extensions (Vibe Testing, AxeTos) before moving to the
-                core product. Before ContextQA, I spent ~2 years at eSparkBiz
-                building EdTech, e-commerce, and corporate training platforms
-                end-to-end. On the side I explore distributed systems (Redlock,
-                Socket.io Redis adapter, Prometheus metrics), AI pipelines
-                (Gemini function-calling, OCR), and webhook idempotency
-                patterns. I reach for correctness over convenience.
+                based in Ahmedabad. At ContextQA I work on the Node.js backend
+                of the core QA-automation platform: a test-execution engine that
+                orchestrates concurrent browser and mobile runs across
+                Playwright, WebdriverIO and LambdaTest, live browser-session
+                streaming over WebSockets, the integrations engine (GitHub App,
+                GitLab and Linear OAuth, a Slack bot — made multi-tenant by
+                moving OAuth state into Redis), and a session control plane on
+                GKE with a pre-warmed pod pool, idempotent stop and request
+                trace ids. The first 2-3 months I shipped 2 Chrome extensions
+                (Vibe Testing, AxeTos) before moving to the core product. Before
+                ContextQA, I spent ~2 years at eSparkBiz building EdTech,
+                e-commerce, and corporate training platforms end-to-end. On the
+                side I explore distributed systems (Redlock, Socket.io Redis
+                adapter, Prometheus metrics), deterministic simulation and
+                mutation testing (BALLAST), AI pipelines (Gemini
+                function-calling, OCR), and webhook idempotency patterns. I
+                reach for correctness over convenience.
               </motion.p>
             </div>
 
@@ -94,7 +99,6 @@ export default function AboutContent() {
 
                   <AchievementsSection />
                   <SkillsSection />
-                  <HobbiesSection />
                   {/* Replaced a borrowed aphorism ("Code is like humor...")
                       that implied the opposite of what he does — explaining his
                       work carefully is the thing he is best at. This says what
@@ -115,7 +119,7 @@ export default function AboutContent() {
                       href="/engineering"
                       className="mt-3 inline-block text-base not-italic underline underline-offset-4 hover:text-primary"
                     >
-                      Six of them, and why each one looked correct &rarr;
+                      The full list, and why each one looked correct &rarr;
                     </Link>
                   </motion.blockquote>
                 </>

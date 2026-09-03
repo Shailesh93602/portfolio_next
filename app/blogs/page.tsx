@@ -1,7 +1,7 @@
 export { metadata } from "./metadata";
 import BlogsContent from "./BlogsContent";
 import { SITE_URL, BLOG_AUTHOR } from "@/lib/blog-constants";
-import { blogPosts, getAllTags } from "@/lib/blog-data";
+import { publishedPosts, getAllTags } from "@/lib/blog-data";
 
 const blogListSchema = {
   "@context": "https://schema.org",
@@ -24,7 +24,7 @@ const blogListSchema = {
       },
     ],
   },
-  blogPost: blogPosts.slice(0, 10).map((p) => ({
+  blogPost: publishedPosts.slice(0, 10).map((p) => ({
     "@type": "BlogPosting",
     headline: p.title,
     description: p.description,
@@ -37,7 +37,9 @@ const blogListSchema = {
 
 export default function BlogPage() {
   const allTags = getAllTags();
-  const posts = [...blogPosts];
+  // Archived posts (the 2024 batch) still render at /blog/<slug> and stay in
+  // the sitemap, but they are not what the listing should lead with.
+  const posts = [...publishedPosts];
 
   return (
     <>

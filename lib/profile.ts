@@ -24,7 +24,7 @@ export const PROFILE = {
     company: "ContextQA",
     // Short phrase that describes what he actually does day-to-day.
     focus:
-      "backend of the core QA-automation product — test execution engine, VNC streaming, and browser-automation orchestration across Playwright / WebdriverIO / LambdaTest",
+      "Node.js backend of the core QA-automation platform — a test-execution engine orchestrating Playwright / WebdriverIO / LambdaTest runs, live browser-session streaming over WebSockets, the integrations engine (GitHub, GitLab, Linear, Slack), and the session control plane on GKE",
     positioning: "Full-stack engineer with a backend focus",
     yearsExperience: 2.5,
   },
@@ -67,9 +67,9 @@ export const PROFILE = {
   /**
    * Deliberately NEUTRAL.
    *
-   * This used to advertise "part-time and freelance", which aimed the whole
-   * site at contract work — "part-time software engineer" was even an SEO
-   * keyword. That is the wrong signal for the roles now being targeted.
+   * This used to advertise contract availability, which aimed the whole
+   * site at short-term client work — it was even an SEO keyword. That is the
+   * wrong signal for the roles now being targeted.
    *
    * It is NOT replaced with "open to full-time roles", which would be worse:
    * this is a public page, and announcing availability is announcing a job
@@ -87,10 +87,10 @@ export const PROFILE = {
       "Software Engineer at ContextQA. ~2.5 years building backends and full-stack products across QA tooling, EdTech, SaaS, and payments.",
 
     short:
-      "Software Engineer at ContextQA working on the backend of the core QA-automation product — test execution engine, VNC streaming, and browser-automation orchestration across Playwright, WebdriverIO, and LambdaTest. BE in Information Technology from GEC Bhavnagar (2024).",
+      "Software Engineer at ContextQA working on the Node.js backend of the core QA-automation platform — the test-execution engine (Playwright / WebdriverIO / LambdaTest), live browser-session streaming, the integrations engine and the session control plane on GKE. BE in Information Technology from GEC Bhavnagar (2024).",
 
     medium:
-      "Software Engineer at ContextQA working on the backend of the core QA-automation product — test execution engine, VNC streaming, and browser-automation orchestration across Playwright, WebdriverIO, and LambdaTest. Previously ~2 years at EsparkBiz shipping full-stack client projects end-to-end. Side projects explore distributed systems (Redlock, Socket.io Redis adapter, Prometheus), AI pipelines (Gemini function-calling, OCR), and webhook idempotency patterns. BE in Information Technology from Government Engineering College, Bhavnagar (2024, CGPA 7.99).",
+      "Software Engineer at ContextQA working on the Node.js backend of the core QA-automation platform — the test-execution engine (Playwright / WebdriverIO / LambdaTest), live browser-session streaming over WebSockets, the integrations engine (GitHub, GitLab, Linear, Slack) and the session control plane on GKE. Previously ~2 years at EsparkBiz shipping full-stack client projects end-to-end. Side projects explore distributed systems (Redlock, Socket.io Redis adapter, Prometheus), deterministic simulation and mutation testing (BALLAST), AI pipelines (Gemini function-calling, OCR), and webhook idempotency patterns. BE in Information Technology from Government Engineering College, Bhavnagar (2024, CGPA 7.99).",
   },
 } as const;
 

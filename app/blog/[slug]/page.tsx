@@ -161,6 +161,22 @@ export default async function Page({ params }: Props) {
               Back to Blogs
             </Button>
           </Link>
+          {post.archived && (
+            <p
+              role="note"
+              className="mt-2 max-w-3xl rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground"
+            >
+              <strong className="font-semibold text-foreground">
+                From the archive ({post.date.slice(0, 4)}).
+              </strong>{" "}
+              An early post, kept online for the record. It is not listed on the
+              blog index; the current writing is{" "}
+              <Link href="/blogs" className="underline underline-offset-4">
+                here
+              </Link>
+              .
+            </p>
+          )}
         </div>
 
         <BlogLayout post={post}>

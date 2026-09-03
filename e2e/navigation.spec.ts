@@ -104,14 +104,17 @@ test.describe("Navigation", () => {
     await expect(page).toHaveTitle(/Coding Stats/i);
   });
 
-  test("services page loads with a contact CTA", async ({ page }) => {
+  test("what-I-work-on page loads with a plain contact link", async ({
+    page,
+  }) => {
     await page.goto("/services");
-    await expect(page).toHaveTitle(/Services/i);
-    const contactCta = page.getByRole("link", {
-      name: /start a conversation/i,
-    });
-    await expect(contactCta).toBeVisible();
-    await expect(contactCta).toHaveAttribute("href", "/contact");
+    await expect(page).toHaveTitle(/What I work on/i);
+    const contactLink = page.getByRole("link", { name: /get in touch/i });
+    await expect(contactLink).toBeVisible();
+    await expect(contactLink).toHaveAttribute("href", "/contact");
+    // The freelance intake copy must not come back.
+    await expect(page.getByText(/start a conversation/i)).toHaveCount(0);
+    await expect(page.getByText(/48 hours/i)).toHaveCount(0);
   });
 
   test("/hire permanently redirects to /services", async ({ page }) => {

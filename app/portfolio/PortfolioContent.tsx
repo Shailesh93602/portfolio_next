@@ -69,8 +69,8 @@ export function PortfolioContent() {
           My <span className="italic text-primary">Projects</span>
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          A showcase of engineering excellence, from distributed systems to
-          AI-driven tools.
+          Real projects, with the architecture and the bugs written up — from
+          distributed systems to AI inside products.
         </p>
       </motion.div>
 

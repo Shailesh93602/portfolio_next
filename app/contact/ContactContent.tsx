@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { fadeIn, staggerContainer } from "@/lib/animations";
 import {
   MailIcon,
-  PhoneIcon,
   MapPinIcon,
   GithubIcon,
   LinkedinIcon,
@@ -14,6 +13,11 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { SOCIAL_LINKS, CONTACT_INFO } from "@/lib/constants";
+import {
+  isPlausiblePhone,
+  normalisePhone,
+  PHONE_ERROR_MESSAGE,
+} from "@/lib/phone";
 import {
   useForm,
   UseFormRegister,
@@ -127,10 +131,19 @@ export const ContactContent: React.FC = () => {
     try {
       setSubmitStatus(null);
 
+      // Send the phone number in one canonical shape ("+919313026530")
+      // regardless of how it was typed, so the email I receive is consistent.
+      const payload: FormData = {
+        ...data,
+        phoneNumber: data.phoneNumber
+          ? normalisePhone(data.phoneNumber)
+          : data.phoneNumber,
+      };
+
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
       // 503 with fallback: "mailto" means Resend isn't configured in prod yet;
@@ -190,7 +203,7 @@ export const ContactContent: React.FC = () => {
           Contact <span className="text-primary">Me</span>
         </h1>
         <p className="text-muted-foreground">
-          Have a project in mind or just want to talk engineering? Send a
+          Questions about my work, or just want to talk engineering? Send a
           message and I&apos;ll get back to you.
         </p>
       </motion.section>
@@ -215,18 +228,6 @@ export const ContactContent: React.FC = () => {
                   className="text-muted-foreground transition-colors hover:text-primary"
                 >
                   {CONTACT_INFO.EMAIL}
-                </a>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <PhoneIcon className="mt-1 h-5 w-5 text-primary" />
-              <div>
-                <h3 className="font-semibold">Phone</h3>
-                <a
-                  href={`tel:${CONTACT_INFO.PHONE}`}
-                  className="text-muted-foreground transition-colors hover:text-primary"
-                >
-                  {CONTACT_INFO.PHONE}
                 </a>
               </div>
             </div>
@@ -312,10 +313,13 @@ export const ContactContent: React.FC = () => {
                 name="phoneNumber"
                 type="tel"
                 rules={{
-                  pattern: {
-                    value: /^\d{10}$/,
-                    message: "Please enter a valid 10-digit phone number",
-                  },
+                  // Optional field; when present it must be a plausible number
+                  // in ANY common format — "+91 93130 26530" included. The old
+                  // /^\d{10}$/ rejected every formatted number.
+                  validate: (value: unknown) =>
+                    !value ||
+                    isPlausiblePhone(String(value)) ||
+                    PHONE_ERROR_MESSAGE,
                 }}
                 error={errors.phoneNumber?.message}
                 register={register}

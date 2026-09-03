@@ -39,6 +39,7 @@ const SITE_PAGES = new Set([
   "Hire",
   "Resume",
   "Services",
+  "What I work on",
   "Engineering",
   "FAQ",
   "Uses",

@@ -2,6 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { SITE_URL } from "@/lib/blog-constants";
+import {
+  BALLAST_CHECKER_FINDINGS,
+  BALLAST_LEDGER_FINDINGS,
+  numberWord,
+  numberWordCapitalised,
+} from "@/lib/claims";
 
 const TITLE = "How I verify — Shailesh Chaudhari";
 const DESCRIPTION =
@@ -115,9 +121,12 @@ const findings: readonly Finding[] = [
     href: "https://github.com/Shailesh93602/DevScale/blob/main/FINDINGS.md",
   },
   {
-    title: "Six bugs, half of them in the checker",
+    // Both numbers come from lib/claims.ts, which the daily claim check
+    // verifies against BALLAST's docs/LEDGER.md. This page once said "six"
+    // while the project page said "eight" and the ledger said nine.
+    title: `${numberWordCapitalised(BALLAST_LEDGER_FINDINGS)} bugs, ${numberWord(BALLAST_CHECKER_FINDINGS)} of them in the checker`,
     looked: "A verification harness finding bugs in the system under test.",
-    was: "As many of them were in the harness. One invariant fired on correctly-refused operations because the checker was consuming the system's own account of what it had done — a checker that trusts the thing it is checking is not a checker.",
+    was: `${numberWordCapitalised(BALLAST_CHECKER_FINDINGS)} of the ${numberWord(BALLAST_LEDGER_FINDINGS)} were in the harness or the oracle, not the system. One invariant fired on correctly-refused operations because the checker was consuming the system's own account of what it had done — a checker that trusts the thing it is checking is not a checker. The mutation runner reported 100% against a suite that was already red, and later its negation operator turned out not to negate.`,
     lesson:
       "The most useful thing deterministic simulation taught me was to distrust the oracle as much as the implementation.",
     where: "BALLAST",

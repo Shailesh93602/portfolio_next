@@ -9,11 +9,9 @@ import {
   CommitIcon,
   CodeIcon,
   CheckCircledIcon,
-  LightningBoltIcon,
-  TimerIcon,
   CalendarIcon,
 } from "@radix-ui/react-icons";
-import { TrophyIcon, AwardIcon, StarIcon } from "@/components/icons";
+import { TrophyIcon } from "@/components/icons";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -151,41 +149,6 @@ export function StatisticsContent({
     );
   }, [stats?.github?.contributionDays]);
 
-  // Transform LeetCode submission calendar data for heatmap
-  const leetcodeHeatmapData = React.useMemo(() => {
-    if (!stats?.leetcode?.submissionCalendar) return [];
-
-    const submissionCalendar = stats.leetcode.submissionCalendar;
-    const result: { date: string; count: number; level: 0 | 1 | 2 | 3 | 4 }[] =
-      [];
-
-    // Convert Unix timestamps (in seconds) to dates and counts
-    Object.entries(submissionCalendar).forEach(([timestamp, count]) => {
-      // Convert timestamp to date string (YYYY-MM-DD format)
-      const date = new Date(parseInt(timestamp) * 1000)
-        .toISOString()
-        .split("T")[0];
-      const submissions =
-        typeof count === "number" ? count : parseInt(count as string);
-
-      // Determine level based on count (similar to GitHub levels)
-      let level: 0 | 1 | 2 | 3 | 4 = 0;
-      if (submissions > 0) level = 1;
-      if (submissions >= 3) level = 2;
-      if (submissions >= 5) level = 3;
-      if (submissions >= 10) level = 4;
-
-      result.push({
-        date,
-        count: submissions,
-        level,
-      });
-    });
-
-    // Sort by date
-    return result.sort((a, b) => a.date.localeCompare(b.date));
-  }, [stats?.leetcode?.submissionCalendar]);
-
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="mb-16 text-center transition-transform duration-500">
@@ -283,14 +246,11 @@ export function StatisticsContent({
                   color="bg-gradient-to-br from-pink-500/10 to-pink-600/5"
                   textColor="text-pink-500"
                 />
-                <StatCard
-                  label="Total PRs"
-                  value={stats?.github?.totalPRs || "0"}
-                  icon={CommitIcon}
-                  color="bg-gradient-to-br from-green-500/10 to-green-600/5"
-                  textColor="text-green-500"
-                  hint="public repos only"
-                />
+                {/* No "Total PRs" card. The field behind it was
+                    totalPullRequestContributions for a rolling one-year
+                    window on public repos only — it read "5" for someone
+                    whose PR count is in the hundreds, and nothing on the
+                    page said what it was counting. */}
                 {/* 'Total Commits' + 'Contribution Activity' heatmap
                     used to show different numbers (4758 vs 7184) because
                     commits exclude PRs/issues/reviews. Renamed to
@@ -328,20 +288,13 @@ export function StatisticsContent({
         </PlatformSection>
 
         {/* LeetCode Section */}
+        {/* LeetCode: solved counts and ranking only. The submission heatmap,
+            streaks, "Active Years" and "Total Active Days" used to sit next to
+            each other and disagree — LeetCode's totalActiveDays is per
+            calendar year while the heatmap summed every year, so the page
+            read "15 active days" beside "750 submissions". Numbers that
+            cannot be reconciled on the page do not belong on it. */}
         <PlatformSection title="LeetCode Statistics" icon={CodeIcon}>
-          {/* LeetCode Contribution Heatmap */}
-          {!isLoading && leetcodeHeatmapData.length > 0 && (
-            <div className="col-span-4 mb-6">
-              <Card className="overflow-hidden p-6">
-                <h3 className="mb-4 text-lg font-semibold">
-                  LeetCode Submission Activity
-                </h3>
-                <GitHubContributionHeatmap
-                  contributionData={leetcodeHeatmapData}
-                />
-              </Card>
-            </div>
-          )}
           {isLoading ? (
             <div className="col-span-4 grid grid-cols-2 gap-4 md:grid-cols-4">
               {Array(8)
@@ -387,52 +340,6 @@ export function StatisticsContent({
                   icon={TrophyIcon}
                   color="bg-gradient-to-br from-purple-500/10 to-purple-600/5"
                   textColor="text-purple-500"
-                />
-                <StatCard
-                  label="Reputation"
-                  value={stats?.leetcode?.reputation || "0"}
-                  icon={AwardIcon}
-                  color="bg-gradient-to-br from-blue-500/10 to-blue-600/5"
-                  textColor="text-blue-500"
-                />
-                <StatCard
-                  label="Contribution Points"
-                  value={stats?.leetcode?.contributionPoint || "0"}
-                  icon={StarIcon}
-                  color="bg-gradient-to-br from-amber-500/10 to-amber-600/5"
-                  textColor="text-amber-500"
-                />
-                {/* Acceptance Rate section removed as requested */}
-              </div>
-
-              <div className="col-span-4 mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
-                <StatCard
-                  label="Current Streak"
-                  value={`${stats?.leetcode?.currentStreak?.count || "0"} days`}
-                  icon={LightningBoltIcon}
-                  color="bg-gradient-to-br from-orange-500/10 to-orange-600/5"
-                  textColor="text-orange-500"
-                />
-                <StatCard
-                  label="Longest Streak"
-                  value={`${stats?.leetcode?.longestStreak?.count || "0"} days`}
-                  icon={CalendarIcon}
-                  color="bg-gradient-to-br from-rose-500/10 to-rose-600/5"
-                  textColor="text-rose-500"
-                />
-                <StatCard
-                  label="Active Years"
-                  value={stats?.leetcode?.activeYears?.length || "0"}
-                  icon={CalendarIcon}
-                  color="bg-gradient-to-br from-indigo-500/10 to-indigo-600/5"
-                  textColor="text-indigo-500"
-                />
-                <StatCard
-                  label="Total Active Days"
-                  value={stats?.leetcode?.totalActiveDays || "0"}
-                  icon={TimerIcon}
-                  color="bg-gradient-to-br from-violet-500/10 to-violet-600/5"
-                  textColor="text-violet-500"
                 />
               </div>
             </>

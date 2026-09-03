@@ -43,9 +43,15 @@ const HOME_CONTENT = resolve(__dirname, "..", "app", "HomeContent.tsx");
  * Every claim this file has ever caught was true when written; there is no
  * reason the home page's would age differently.
  */
+const CLAIMS_TS = resolve(__dirname, "..", "lib", "claims.ts");
+
 const LOCAL_SOURCES = {
   projects: PROJECTS_TS,
   home: HOME_CONTENT,
+  // Numbers that more than one page repeats live here ONCE (`/engineering`
+  // said six, `/portfolio/ballast` said eight, the ledger said nine). The
+  // pages import the constant; this script checks the constant.
+  claims: CLAIMS_TS,
 };
 
 const TIMEOUT_MS = 20_000;
@@ -146,13 +152,23 @@ const CLAIMS = [
   },
   {
     what: "BALLAST ledger findings",
-    localPattern: /The suite found (\w+) real bugs/,
+    localFile: "claims",
+    localPattern: /BALLAST_LEDGER_FINDINGS = (\d+)/,
     repo: "Shailesh93602/ballast",
     path: "docs/LEDGER.md",
     // Counts the rows in the ledger's summary table.
     sourceCount: /^\| L\d+ /gm,
-    // The portfolio writes the number as a word.
-    asWord: true,
+  },
+  {
+    what: "KhataGO Gemini tool count",
+    localFile: "claims",
+    localPattern: /KHATAGO_TOOL_COUNT = (\d+)/,
+    repo: "Shailesh93602/KhataGO",
+    path: "lib/ai/tools.ts",
+    // One `name: "..."` per declared function tool.
+    sourceCount: /^\s*name: "/gm,
+    // Private today (see the claim above); checks itself once public.
+    privateRepo: true,
   },
 ];
 
@@ -253,9 +269,16 @@ async function fetchAtHead(repo, path) {
   return res.text();
 }
 
-const localText = {
-  projects: readFileSync(PROJECTS_TS, "utf8"),
-  home: readFileSync(HOME_CONTENT, "utf8"),
+const localText = Object.fromEntries(
+  Object.entries(LOCAL_SOURCES).map(([key, file]) => [
+    key,
+    readFileSync(file, "utf8"),
+  ])
+);
+const LOCAL_LABELS = {
+  projects: "constants/projects.ts",
+  home: "app/HomeContent.tsx",
+  claims: "lib/claims.ts",
 };
 let failures = 0;
 let unverifiable = 0;
@@ -269,8 +292,7 @@ for (const claim of CLAIMS) {
     // The claim was reworded or removed. Not automatically wrong — but this
     // checker can no longer vouch for it, and silently passing would be the
     // failure mode the whole script exists to prevent.
-    const where =
-      whichLocal === "home" ? "app/HomeContent.tsx" : "constants/projects.ts";
+    const where = LOCAL_LABELS[whichLocal];
     console.error(
       `✗  ${claim.what}: no longer found in ${where} — update or remove this check`
     );
@@ -349,9 +371,9 @@ for (const claim of CLAIMS) {
 console.log();
 if (failures > 0) {
   console.error(
-    `${failures} claim(s) no longer match. Update constants/projects.ts or ` +
-      `app/HomeContent.tsx — a claim that was true when written is still ` +
-      `false now.`
+    `${failures} claim(s) no longer match. Update constants/projects.ts, ` +
+      `app/HomeContent.tsx or lib/claims.ts — a claim that was true when ` +
+      `written is still false now.`
   );
   process.exit(1);
 }

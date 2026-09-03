@@ -249,11 +249,10 @@ export default function ProjectDetailContent({ project }: Props) {
             <section className="space-y-16">
               <div className="mx-auto mb-20 max-w-3xl space-y-4 text-center">
                 <h2 className="text-4xl font-black uppercase italic tracking-tight md:text-5xl">
-                  Visual Showcase
+                  Screens
                 </h2>
                 <p className="text-xl leading-relaxed text-muted-foreground">
-                  A high-fidelity walkthrough of the core interfaces and user
-                  experiences, designed with modern aesthetics.
+                  Screenshots from the shipped product.
                 </p>
               </div>
 
@@ -270,9 +269,6 @@ export default function ProjectDetailContent({ project }: Props) {
                     <div
                       className={`space-y-6 lg:col-span-4 ${idx % 2 === 1 ? "lg:order-2" : ""}`}
                     >
-                      <div className="mb-2 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-xl font-black text-primary">
-                        0{idx + 1}
-                      </div>
                       <h3 className="text-3xl font-bold">{showcase.title}</h3>
                       <p className="text-lg leading-relaxed text-muted-foreground">
                         {showcase.description}
@@ -384,8 +380,11 @@ export default function ProjectDetailContent({ project }: Props) {
                   </h3>
                 </div>
                 <div className="space-y-8">
+                  {/* A distinct one-line quote when the project has one;
+                      otherwise fall back to the challenge text. Repeating the
+                      paragraph above verbatim as a "quote" read as filler. */}
                   <div className="space-y-4 rounded-2xl border border-white/5 bg-white/5 p-6 text-lg italic leading-relaxed text-muted-foreground">
-                    &quot;{project.challengesSolved}&quot;
+                    &quot;{project.pullQuote ?? project.challengesSolved}&quot;
                   </div>
                   {project.id === "eduscale" && (
                     <div className="flex gap-6">

@@ -324,6 +324,7 @@ export async function fetchGithubStats(username: string) {
     languages_url: string;
     stargazers_count: number;
     forks_count: number;
+    fork?: boolean;
   }
 
   const [userResponse, reposResponse] = await Promise.all([
@@ -336,8 +337,16 @@ export async function fetchGithubStats(username: string) {
   const languages: Record<string, number> = {};
   let totalSize = 0;
 
+  // Languages come from repositories he AUTHORED. Forks (next.js, n8n, quivr)
+  // are someone else's code, and their Rust and Vue used to show up on the
+  // statistics page as if he wrote in them — languages with no repo of his
+  // behind them.
+  const ownRepos = (reposResponse.data as GithubRepo[]).filter(
+    (repo) => !repo.fork
+  );
+
   const languageResults = await Promise.all(
-    reposResponse.data.map(async (repo: GithubRepo) => {
+    ownRepos.map(async (repo: GithubRepo) => {
       try {
         const res = await axios.get(repo.languages_url, { headers });
         return res.data;

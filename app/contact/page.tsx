@@ -10,7 +10,7 @@ const contactPageSchema = {
   url: `${SITE_URL}/contact`,
   name: `Contact ${BLOG_AUTHOR.name}`,
   description:
-    "Get in touch with Shailesh Chaudhari for web development projects, collaborations, and opportunities.",
+    "Get in touch with Shailesh Chaudhari about backend and full-stack engineering.",
   breadcrumb: {
     "@type": "BreadcrumbList",
     itemListElement: [
@@ -26,8 +26,9 @@ const contactPageSchema = {
   mainEntity: {
     "@type": "Person",
     "@id": `${SITE_URL}/#person`,
+    // No telephone: the personal number is not published on any public
+    // surface (it stays on the resume PDF, which is a deliberate download).
     email: CONTACT_INFO.EMAIL,
-    telephone: CONTACT_INFO.PHONE,
   },
 };
 

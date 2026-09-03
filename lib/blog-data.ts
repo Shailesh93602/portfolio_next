@@ -31,6 +31,18 @@ export interface BlogPost {
   featured?: boolean;
   seoKeywords: string[];
   lastModified?: string;
+  /**
+   * `archived: true` in frontmatter. The post still renders at /blog/<slug>
+   * (its URL keeps returning 200 and stays in the sitemap) but it is excluded
+   * from the blog index, the home page, the RSS feed and the tag lists, and
+   * it renders with a "From the archive" note.
+   *
+   * Used for the 2024 batch: seventeen posts published 2024-09-28 to
+   * 2024-10-09 that were written for search traffic, not to say anything.
+   * Deleting them would break inbound links; leading with them would tell a
+   * recruiter the wrong story about what the blog is for.
+   */
+  archived: boolean;
 }
 
 // Sourced from lib/profile.ts (single-source-of-truth for identity facts).
@@ -118,6 +130,7 @@ function loadPost(slug: string): BlogPost | null {
       featured: data.featured ?? false,
       seoKeywords: data.seoKeywords ?? [],
       lastModified: data.lastModified,
+      archived: data.archived === true,
     };
   } catch {
     return null;
@@ -125,9 +138,13 @@ function loadPost(slug: string): BlogPost | null {
 }
 
 // Loaded once at module init — only runs server-side (fs usage is intentional).
+/** Every post that renders — used by the sitemap and static params. */
 export const blogPosts: BlogPost[] = BLOG_SLUGS.map(loadPost).filter(
   Boolean
 ) as BlogPost[];
+
+/** Every post the site SURFACES — listing, home, feed, tags, related posts. */
+export const publishedPosts: BlogPost[] = blogPosts.filter((p) => !p.archived);
 
 export const getPostBySlug = (slug: string): BlogPost | undefined =>
   blogPosts.find((p) => p.slug === slug);
@@ -135,19 +152,19 @@ export const getPostBySlug = (slug: string): BlogPost | undefined =>
 export const getRelatedPosts = (slug: string, limit = 3): BlogPost[] => {
   const post = getPostBySlug(slug);
   if (!post) return [];
-  return blogPosts
+  return publishedPosts
     .filter((p) => p.slug !== slug && p.tags.some((t) => post.tags.includes(t)))
     .slice(0, limit);
 };
 
 export const getFeaturedPosts = (): BlogPost[] =>
-  blogPosts.filter((p) => p.featured);
+  publishedPosts.filter((p) => p.featured);
 
 export const getAllTags = (): string[] => {
   const tags = new Set<string>();
-  blogPosts.forEach((p) => p.tags.forEach((t) => tags.add(t)));
+  publishedPosts.forEach((p) => p.tags.forEach((t) => tags.add(t)));
   return Array.from(tags).sort((a, b) => a.localeCompare(b));
 };
 
 export const getPostsByTag = (tag: string): BlogPost[] =>
-  blogPosts.filter((p) => p.tags.includes(tag));
+  publishedPosts.filter((p) => p.tags.includes(tag));

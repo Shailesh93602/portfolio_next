@@ -55,7 +55,7 @@ test.describe("Contact form", () => {
       await page.locator('[role="alert"]').allInnerTexts()
     ).join(" | ");
     expect(messages).toContain("Invalid email format");
-    expect(messages).toContain("valid 10-digit phone number");
+    expect(messages).toContain("valid phone number");
     expect(messages).toContain("Message must be at least 10 characters");
   });
 

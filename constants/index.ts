@@ -59,22 +59,31 @@ export const experiences: Experience[] = [
     period: "July 2025 - Present",
     companyUrl: COMPANY_LINKS.CONTEXTQA,
     skills: [
-      "Next.js",
-      "TailwindCSS",
-      "Shadcn UI",
       "Node.js",
+      "TypeScript",
       "Express.js",
+      "Redis",
       "PostgreSQL",
       "MongoDB",
       "Prisma",
+      "WebSockets",
+      "Docker",
+      "GKE",
+      "Next.js",
       "Chrome Extensions",
     ],
+    // Pattern level only. No company metrics, no customer names: those are
+    // ContextQA's numbers to publish, and the ones he can least verify in a
+    // room. Java/Python is a clause, never a bullet — the work is Node-first.
     description:
-      "First 2-3 months: shipped 2 Chrome extensions (Vibe Testing + AxeTos). Since then: working on the backend of ContextQA's core QA-automation platform — test execution engine, VNC streaming, and browser-automation orchestration across Playwright, WebdriverIO, and LambdaTest.",
+      "Node.js backend of the core QA-automation platform: the test-execution engine, live browser-session streaming, the integrations engine and the session control plane on GKE. First 2-3 months: shipped 2 Chrome extensions (Vibe Testing + AxeTos).",
     highlights: [
-      "Core platform backend: Node.js + Express services orchestrating test runs across Playwright / WebdriverIO / LambdaTest, VNC streaming for live browser-session debugging, and the APIs that drive run history, assertions, and artifacts.",
-      "AxeTos (Accessibility Extension — shipped in first 2-3 months): Chrome extension + Node.js/Express backend for WCAG A/AA/AAA auditing with automated fix suggestions and precise DOM locators.",
-      "Vibe Testing (Web Testing Extension — shipped in first 2-3 months): Chrome extension for AI-powered UI testing targeting v0.dev / Lovable / Replit apps. Real-time log streaming via WebSockets, screenshot capture, AI-generated bug scenarios, chat-based fix workflows.",
+      "Test-execution engine (Node.js) orchestrating concurrent browser and mobile runs across Playwright, WebdriverIO/Appium and LambdaTest; live browser-session streaming over WebSockets (noVNC proxied through a Node control plane); a debug engine with breakpoints and resume-from-checkpoint.",
+      "Primary author of the integrations engine (Node/TypeScript): GitHub App, GitLab and Linear OAuth, Slack Block Kit bot, webhook ingestion — made multi-tenant by moving OAuth handshake state from per-pod memory to Redis with an atomic Lua read-and-delete, resolving tenants by installation id, and keeping the token vault ciphertext-only at rest.",
+      "Session control plane on GKE: pre-warmed pod pool over Redis, idempotent stop with first-terminal-wins status ordering, request trace ids via AsyncLocalStorage, stable error codes plus a diagnostics bundle for on-prem customers, pod eviction protection and memory budgeting.",
+      "Presigned-URL chokepoint so private S3/MinIO/GCS buckets work on-prem; PR-impact analysis where a webhook and an MCP tool call share one path. Also contribute to the platform's Java (Spring Boot) and Python services.",
+      "AxeTos (shipped in first 2-3 months): Chrome extension + Node.js backend for WCAG A/AA/AAA auditing with fix suggestions and precise DOM locators.",
+      "Vibe Testing (shipped in first 2-3 months): Chrome extension for AI-assisted UI testing — real-time log streaming over WebSockets, screenshot capture, AI-generated bug scenarios, chat-based fix workflows.",
     ],
   },
   {

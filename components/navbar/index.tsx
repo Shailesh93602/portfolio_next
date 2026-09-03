@@ -20,7 +20,7 @@ const navigation: NavItem[] = [
   { name: "Engineering", href: "/engineering" },
   { name: "Statistics", href: "/statistics" },
   { name: "Blogs", href: "/blogs" },
-  { name: "Services", href: "/services" },
+  { name: "What I do", href: "/services" },
   { name: "Contact", href: "/contact" },
 ];
 
