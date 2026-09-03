@@ -83,11 +83,11 @@ export default function NowPage() {
             />
             <span>
               <strong className="font-semibold text-foreground">
-                Test execution engine:
+                Test-execution engine (Node.js):
               </strong>{" "}
-              backend work on the QA-automation orchestrator — Playwright /
-              WebdriverIO / LambdaTest job scheduling, retry semantics, artifact
-              collection.
+              orchestrating concurrent browser and mobile runs across Playwright
+              / WebdriverIO / LambdaTest, plus a debug engine with breakpoints
+              and resume-from-checkpoint.
             </span>
           </li>
           <li className="flex gap-3">
@@ -97,10 +97,25 @@ export default function NowPage() {
             />
             <span>
               <strong className="font-semibold text-foreground">
-                VNC streaming:
+                Integrations engine and session control plane:
               </strong>{" "}
-              piping live test sessions from headless browsers to the dashboard
-              for visual debugging.
+              GitHub App / GitLab / Linear OAuth and a Slack bot made
+              multi-tenant (OAuth state in Redis, tenants resolved by
+              installation id); on GKE, a pre-warmed pod pool, idempotent stop,
+              request trace ids and a diagnostics bundle for on-prem customers.
+            </span>
+          </li>
+          <li className="flex gap-3">
+            <span
+              aria-hidden
+              className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
+            />
+            <span>
+              <strong className="font-semibold text-foreground">
+                Live browser-session streaming:
+              </strong>{" "}
+              noVNC proxied through a Node control plane over WebSockets, so a
+              running test can be watched and debugged from the dashboard.
             </span>
           </li>
         </ul>

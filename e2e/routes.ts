@@ -1,5 +1,5 @@
 import { projects } from "../constants/projects";
-import { BLOG_SLUGS } from "../lib/blog-data";
+import { BLOG_SLUGS, publishedPosts } from "../lib/blog-data";
 
 /**
  * Single source of truth for "every route a visitor can land on".
@@ -25,14 +25,27 @@ export const STATIC_ROUTES = [
 /** `/portfolio/<id>` for every project in the portfolio data. */
 export const PROJECT_ROUTES = projects.map((p) => `/portfolio/${p.id}`);
 
-/** `/blog/<slug>` for every published post. */
+/** `/blog/<slug>` for every post that must render — archived ones included. */
 export const BLOG_ROUTES = BLOG_SLUGS.map((slug) => `/blog/${slug}`);
+
+/**
+ * `/blog/<slug>` for the posts the listing, feed and home actually surface.
+ * Archived posts (the 2024 SEO-era batch) still render at their URLs but are
+ * deliberately not linked from /blogs, so "every post is reachable from the
+ * listing" is asserted over THIS set.
+ */
+export const PUBLISHED_BLOG_ROUTES = publishedPosts.map(
+  (p) => `/blog/${p.slug}`
+);
 
 /** Legacy/guessable URLs that must permanently redirect, not 404. */
 export const REDIRECT_ROUTES: { from: string; to: string }[] = [
   { from: "/blog", to: "/blogs" },
   { from: "/hire", to: "/services" },
   { from: "/hire-me", to: "/services" },
+  { from: "/projects", to: "/portfolio" },
+  { from: "/work", to: "/portfolio" },
+  { from: "/resume", to: "/Shailesh_Chaudhari_Resume.pdf" },
 ];
 
 export const ALL_ROUTES: string[] = [

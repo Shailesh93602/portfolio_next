@@ -29,7 +29,7 @@ test.describe("Recruiter journey", () => {
 
     // Primary calls to action are present and reachable.
     await expect(
-      page.getByRole("link", { name: /hire me/i }).first()
+      page.getByRole("link", { name: /get in touch/i }).first()
     ).toBeVisible();
     await expect(
       page.getByRole("link", { name: /download resume/i }).first()

@@ -1,3 +1,10 @@
+import {
+  BALLAST_CHECKER_FINDINGS,
+  BALLAST_LEDGER_FINDINGS,
+  KHATAGO_TOOL_COUNT,
+  numberWord,
+} from "../lib/claims";
+
 export interface ShowcaseItem {
   title: string;
   imageLight?: string;
@@ -36,6 +43,13 @@ export interface Project {
   problem?: string;
   solution?: string;
   challengesSolved?: string;
+  /**
+   * One sentence, shown as the pull-quote on the showcase layout. Drawn from
+   * the project's FINDINGS.md. When absent the layout falls back to
+   * `challengesSolved` — which is the paragraph directly above the quote, so
+   * every showcase project should set this.
+   */
+  pullQuote?: string;
   gallery?: string[]; // Legacy basic gallery
   showcases?: ShowcaseItem[]; // Standardized high-fidelity preview layout
   isShowcase?: boolean; // Flag for special rendering
@@ -53,7 +67,7 @@ const rawProjects: Project[] = [
     id: "eduscale",
     title: "EduScale",
     description:
-      "A premium, all-in-one engineering learning platform featuring personalized roadmaps, real-time coding battles, and comprehensive placement preparation.",
+      "An engineering learning platform with personalized roadmaps, real-time coding battles across multiple Node.js instances, and placement preparation.",
     image: "/Images/eduscale_landing_dark.png",
     isShowcase: true,
     tags: [
@@ -74,6 +88,9 @@ const rawProjects: Project[] = [
     ],
     live: "https://eduscale.vercel.app/",
     github: "https://github.com/Shailesh93602/devscale",
+    // FINDINGS.md §6 — the idempotency guard that was not one.
+    pullQuote:
+      "The tell was already in the code: the finder ordered results by date, and ordering only matters if more than one row can exist — the code anticipated duplicates and coped with them instead of preventing them.",
     detailedDescription:
       "An EdTech platform built around a distributed real-time engine. The backend uses @socket.io/redis-adapter for horizontal Socket.io scaling across multiple Node.js instances, redlock for distributed locking on the battle start / submit-answer / complete paths, opossum as a circuit breaker around the remote code-execution service (Judge0), prom-client exposing a Prometheus /metrics endpoint, and Bull queues for email delivery with a dead-letter queue. Frontend is Next.js 16 App Router with Redux Toolkit. The AI layer (code review, tutor, pgvector-backed recommendations) runs on each user's OWN provider key rather than a shared one — encrypted at rest with AES-256-GCM, with the model-fallback cooldowns and the circuit breaker partitioned per key so one tenant's exhausted quota or bad credential cannot degrade another's.",
     architecture: {
@@ -216,7 +233,7 @@ const rawProjects: Project[] = [
     id: "devtrack",
     title: "DevTrack",
     description:
-      "A premium developer intelligence dashboard that track coding progress, analyzes learning patterns, and provides actionable insights for continuous improvement.",
+      "A developer analytics dashboard that tracks coding progress, analyzes learning patterns, and turns them into concrete daily recommendations.",
     image: "/projects/devtrack/dashboard_dark.png",
     isShowcase: true,
     tags: [
@@ -347,7 +364,7 @@ const rawProjects: Project[] = [
       {
         title: "Developer Settings",
         description:
-          "Premium user management and profile configuration with seamless theme switching.",
+          "User management and profile configuration with theme switching.",
         imageLight: "/projects/devtrack/settings_ui.png",
       },
     ],
@@ -368,7 +385,7 @@ const rawProjects: Project[] = [
       "WebSockets",
     ],
     detailedDescription:
-      "Vibe Testing (also known as ContextQA) is a sophisticated Chrome extension designed for the modern web ecosystem. It integrates with AI agents to perform autonomous UI validation, broken link detection, performance analysis, and accessibility testing. It specifically targets sites built on platforms like v0.dev and Replit, providing real-time feedback and screenshots of execution.",
+      "Vibe Testing is a Chrome extension built at ContextQA, the company, and shipped during my first months there. It integrates with AI agents to perform autonomous UI validation, broken link detection, performance analysis, and accessibility testing. It specifically targets sites built on platforms like v0.dev and Replit, providing real-time feedback and screenshots of execution.",
     architecture: {
       layers: [
         {
@@ -434,7 +451,7 @@ const rawProjects: Project[] = [
       "Chrome Extension",
     ],
     detailedDescription:
-      "AxeTos (part of the ContextQA suite) is a comprehensive solution for web accessibility. It combines a powerful Chrome extension with a dedicated Node.js backend to audit websites against WCAG A, AA, and AAA standards. Beyond just identifying issues, it offers a revolutionary 'instant fix' capability via script injection.",
+      "AxeTos (part of the ContextQA suite) is a comprehensive solution for web accessibility. It combines a powerful Chrome extension with a dedicated Node.js backend to audit websites against WCAG A, AA, and AAA standards. Beyond just identifying issues, it offers an 'instant fix' capability via script injection.",
     architecture: {
       layers: [
         {
@@ -478,7 +495,7 @@ const rawProjects: Project[] = [
     id: "codesensei-search",
     title: "CodeSenseiSearch",
     description:
-      "Semantic code-search monorepo — Next.js + NestJS deployed on Vercel, Postgres with pgvector on Supabase, BullMQ workers backed by Upstash Redis, embeddings via Gemini.",
+      "Semantic code-search monorepo, still being built: a Next.js search UI against a mock dataset, NestJS backend scaffolding, a Prisma schema with a pgvector column, and Docker Compose for Postgres + Redis. The ingestion → embedding → retrieval pipeline is not yet wired end to end.",
     image: "/Images/portfolio1.png",
     tags: [
       "NestJS",
@@ -489,7 +506,9 @@ const rawProjects: Project[] = [
       "Monorepo",
     ],
     github: "https://github.com/Shailesh93602/CodeSenseiSearch",
-    live: "https://code-sensei-search-web.vercel.app",
+    // No `live`: the deployed page is a landing page over mock data, and a
+    // "Live demo" button on a project whose pipeline is not wired end to end
+    // promises something the click cannot deliver. The repo is the artifact.
     detailedDescription:
       "A monorepo (pnpm workspaces) exploring AI-powered semantic code search. Shipped so far: Next.js landing page with feature showcase, search UI with real-time suggestions and filtering against a ~50-example mock dataset, NestJS backend scaffolding, Prisma schema with a pgvector column, and a Docker Compose for Postgres + Redis + pgAdmin. The ingestion → embedding → retrieval pipeline is prototyped but not yet wired end-to-end; Phase 2 (real content ingestion from GitHub / StackOverflow) is the active work.",
     architecture: {
@@ -563,8 +582,10 @@ const rawProjects: Project[] = [
     // Private repo. Renders as "Private repository" rather than a link that
     // 404s — the URL stays so flipping it public is a one-line change.
     githubPrivate: true,
-    detailedDescription:
-      "KhataGO is a WhatsApp-first bookkeeping platform for Indian MSMEs. The backend is a reconciliation pipeline: Meta webhooks arrive with at-least-once delivery, and idempotency is enforced in Postgres rather than a cache — a unique constraint on the WhatsApp message id rejects duplicate deliveries, and a conditional UPDATE (PENDING→PROCESSING) atomically claims each message so concurrent redeliveries produce exactly one Gemini run instead of a double ledger write. Gemini 2.0 Flash with function-calling parses both text ('Sold 500 to Ram') and receipt images (OCR → structured JSON with merchant/amount/date/line items) into 10 tool calls — create_transaction, create_receivable, record_payment_received, get_party_ledger, send_payment_reminder, and others — each mapped to a Prisma write. Results flow back to the user over WhatsApp; a CA portal exports Tally-ready XML vouchers for month-end close.",
+    // FINDINGS.md §2 — a claim with no way out of it.
+    pullQuote:
+      "A lock without an expiry is a deadlock waiting for a crash: mutual exclusion and liveness are different properties, and passing tests for the first says nothing about the second.",
+    detailedDescription: `KhataGO is a WhatsApp-first bookkeeping platform for Indian MSMEs. The backend is a reconciliation pipeline: Meta webhooks arrive with at-least-once delivery, and idempotency is enforced in Postgres rather than a cache — a unique constraint on the WhatsApp message id rejects duplicate deliveries, and a conditional UPDATE (PENDING→PROCESSING) atomically claims each message so concurrent redeliveries produce exactly one Gemini run instead of a double ledger write. The webhook persists the message and acknowledges Meta within the request; a containerized polling worker drains the queue — the same Postgres table, claimed through the same atomic UPDATE, retried with exponential backoff and jitter, and dead-lettered after three attempts with an audited admin replay. Gemini 2.0 Flash with function-calling parses both text ('Sold 500 to Ram') and receipt images (OCR → structured JSON with merchant/amount/date/line items) into ${KHATAGO_TOOL_COUNT} tool calls — create_transaction, create_receivable, record_payment_received, get_party_ledger, send_payment_reminder, and others — each mapped to a Prisma write. Results flow back to the user over WhatsApp; a CA portal exports Tally-ready XML vouchers for month-end close.`,
     architecture: {
       layers: [
         {
@@ -578,10 +599,19 @@ const rawProjects: Project[] = [
         {
           name: "AI / Reconciliation",
           items: [
-            "Gemini 2.0 Flash with function-calling (8 tools)",
+            `Gemini 2.0 Flash with function-calling (${KHATAGO_TOOL_COUNT} tools)`,
             "Receipt-image pipeline: download → Vision → structured JSON",
             "Tool executor maps function calls to Prisma writes",
             "Chat history windowed to last 10 turns per user",
+          ],
+        },
+        {
+          name: "Worker",
+          items: [
+            "Standalone Node process in the same Docker image as the web app",
+            "Postgres IS the queue: atomic conditional-UPDATE claim, stale-claim takeover",
+            "Exponential backoff with jitter (250ms → 30s) so replicas do not poll in lockstep",
+            "Dead-letter after 3 attempts; admin replay is audited",
           ],
         },
         {
@@ -614,7 +644,7 @@ const rawProjects: Project[] = [
       },
       {
         label: "Tool calls",
-        value: "10",
+        value: String(KHATAGO_TOOL_COUNT),
         description:
           "Gemini function-calling surface: transactions, receivables, payments, ledgers, reminders",
       },
@@ -642,16 +672,16 @@ const rawProjects: Project[] = [
     ],
     techStack: [
       "Frontend: Next.js (App Router), React, Tailwind CSS, Recharts, i18next",
-      "Backend: Node.js, Express (TypeScript), Prisma ORM, PostgreSQL",
+      "Backend: Next.js API routes (Node.js, TypeScript), Prisma ORM, PostgreSQL; a standalone Node worker process",
       "AI & Messaging: Google Gemini AI (function-calling + Vision OCR), WhatsApp Cloud API",
-      "Infrastructure: Supabase (Auth & Real-time), Vercel",
+      "Infrastructure: Supabase (Auth & Real-time), Vercel for the web app, one Docker image running web + worker as two processes, Postgres-backed job queue with a dead-letter queue",
     ],
     problem:
       "Small business owners in India struggle with complex accounting software. They often rely on manual notebooks (Khatas), which lead to data loss, calculation errors, and delays in GST compliance.",
     solution:
       "A 'zero-learning-curve' platform that works where the user already is: WhatsApp. By combining the simplicity of chat with the power of AI, KhataGO makes business accounting as easy as sending a message.",
     challengesSolved:
-      "Meta's WhatsApp Cloud API delivers at least once, so the same message arrives twice — and an LLM call is expensive enough that deduplicating after it is too late. Idempotency lives in Postgres instead of a cache: the message id is a unique column, so a duplicate insert fails at the DB, and processing starts with a conditional UPDATE that flips aiStatus PENDING→PROCESSING only if it is still PENDING. If that update changes zero rows, another delivery already claimed the message and this one exits — concurrent redeliveries yield exactly one Gemini run and one ledger write, with no cache to fall out of sync with the audit row. The webhook acknowledges Meta immediately and the AI work runs after the response, so a burst never times out the handler. The Gemini OCR pipeline downloads the WhatsApp image, sends it to Gemini Vision, and maps the extracted JSON (merchant, amount, date, line items) to a ledger transaction. Tally XML export is the fiddly part: the voucher schema needs specific date formatting, ledger name lookups, and GST field structure — wrong XML silently fails to import, so it is covered by 19 unit tests.",
+      "Meta's WhatsApp Cloud API delivers at least once, so the same message arrives twice — and an LLM call is expensive enough that deduplicating after it is too late. Idempotency lives in Postgres instead of a cache: the message id is a unique column, so a duplicate insert fails at the DB, and processing starts with a conditional UPDATE that flips aiStatus PENDING→PROCESSING only if it is still PENDING. If that update changes zero rows, another delivery already claimed the message and this one exits — concurrent redeliveries yield exactly one Gemini run and one ledger write, with no cache to fall out of sync with the audit row. The webhook persists the message and acknowledges Meta immediately; a containerized polling worker drains the queue — the Postgres table itself, claimed with the same atomic conditional UPDATE, retried with exponential backoff and jitter, and dead-lettered after three attempts with an audited admin replay — so a burst never times out the handler and a crash mid-run is picked up within seconds rather than at the next cron. The Gemini OCR pipeline downloads the WhatsApp image, sends it to Gemini Vision, and maps the extracted JSON (merchant, amount, date, line items) to a ledger transaction. Tally XML export is the fiddly part: the voucher schema needs specific date formatting, ledger name lookups, and GST field structure — wrong XML silently fails to import, so it is covered by 19 unit tests.",
     userFlow: [
       {
         step: "Onboarding",
@@ -770,8 +800,7 @@ const rawProjects: Project[] = [
       "Multi-tenant admission control fails in ways that ordinary tests do not reach. A tenant can exceed its cap; every tenant can be under its cap while the shared pool overflows, because caps sum above capacity; a worker can hold a slot forever after dying; and an at-least-once completion channel can apply an effect twice. All four are timing-dependent, so the bug that matters is the one that does not reproduce.",
     solution:
       "Remove the timing. A virtual clock, a seeded PRNG and a total order on equal-time events make the entire execution a pure function of one seed, so any failure replays exactly. On top of that, four independent checks that fail differently — invariants, a reference oracle of a deliberately different shape, mechanical mutation testing, and a self-verifying shrinker. The hardest problems turned out to be definitional rather than technical, so thirty-eight semantic ambiguities were written down and decided before any policy code existed — three of them are still open questions rather than settled ones, and are marked as such.",
-    challengesSolved:
-      'The suite found eight real bugs, and about as many were in the checker as in the implementation — which was the most useful thing it taught. One invariant fired on correctly-refused stale releases because the checker was consuming the control plane\'s own account of what it had done; a checker that trusts the thing it is checking is not a checker, so it now records accepted-release facts and judges those. A differential divergence exposed a spec gap rather than a code defect: nothing had ever said whether completion releases the slot. Another came from a definition — the reference used a status map to mean "was claimed", but cancel inserts a status even for a rejected admission, so rejected-then-cancelled runs were billed for credit they never spent. Mutation testing found two pieces of dead code no behavioural test could see, including a double-release branch that was unreachable because the flag guarding it was never set to true. The deeper lesson is written into the design: an ambiguity resolved silently propagates identically into both the implementation and the reference oracle, and the differential test is then structurally blind to it. Two later findings were about the harness rather than the system: the mutation runner judged a mutant killed whenever the suite failed, so with an already-failing suite it reported a flawless 100% while real survivors went unrecorded — the number that should have raised an alarm was the reassuring one, and it now refuses to run against a red baseline. And a retry-limit branch I had written turned out to be unreachable, because contention in the model stopped after the first attempt; a reachability probe over every input shape confirmed it never fired, so the model was made to sustain contention rather than the branch being deleted.',
+    challengesSolved: `The suite found ${numberWord(BALLAST_LEDGER_FINDINGS)} real bugs, ${numberWord(BALLAST_CHECKER_FINDINGS)} of them in the checker rather than the implementation — which was the most useful thing it taught. One invariant fired on correctly-refused stale releases because the checker was consuming the control plane\'s own account of what it had done; a checker that trusts the thing it is checking is not a checker, so it now records accepted-release facts and judges those. A differential divergence exposed a spec gap rather than a code defect: nothing had ever said whether completion releases the slot. Another came from a definition — the reference used a status map to mean "was claimed", but cancel inserts a status even for a rejected admission, so rejected-then-cancelled runs were billed for credit they never spent. Mutation testing found two pieces of dead code no behavioural test could see, including a double-release branch that was unreachable because the flag guarding it was never set to true. The deeper lesson is written into the design: an ambiguity resolved silently propagates identically into both the implementation and the reference oracle, and the differential test is then structurally blind to it. Two later findings were about the harness rather than the system: the mutation runner judged a mutant killed whenever the suite failed, so with an already-failing suite it reported a flawless 100% while real survivors went unrecorded — the number that should have raised an alarm was the reassuring one, and it now refuses to run against a red baseline. And a retry-limit branch I had written turned out to be unreachable, because contention in the model stopped after the first attempt; a reachability probe over every input shape confirmed it never fired, so the model was made to sustain contention rather than the branch being deleted. The last one was in the mutation harness itself: a negation operator spliced without parentheses turned if (a !== b) into (!a) !== b, so vacuous mutants read as survivors and the score under-read at 87.3% until it was fixed and every remaining survivor argued (95.8%).`,
   },
   {
     id: "grounded",

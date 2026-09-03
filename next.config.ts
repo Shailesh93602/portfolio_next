@@ -36,6 +36,22 @@ const baseConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
+  // Guessable URLs that used to 404. Each is a URL a recruiter types by hand
+  // or an old link elsewhere still points at. `/blog` → `/blogs` and
+  // `/hire(-me)` → `/services` are page-level permanentRedirect()s beside
+  // their routes; these three have no page of their own, so they live here.
+  // e2e/routes.ts REDIRECT_ROUTES asserts every one of them.
+  async redirects() {
+    return [
+      { source: "/projects", destination: "/portfolio", permanent: true },
+      { source: "/work", destination: "/portfolio", permanent: true },
+      {
+        source: "/resume",
+        destination: "/Shailesh_Chaudhari_Resume.pdf",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 // Bundle analysis findings (run: npm run analyze)

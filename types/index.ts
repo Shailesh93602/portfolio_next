@@ -25,12 +25,6 @@ export interface Skill {
   items: SkillItem[];
 }
 
-export interface Hobby {
-  title: string;
-  description: string;
-  icon: string;
-}
-
 export interface Education {
   degree: string;
   institution: string;

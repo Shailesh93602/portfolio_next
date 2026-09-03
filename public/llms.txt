@@ -1,44 +1,46 @@
 # Shailesh Chaudhari — Portfolio
 
-> Software Engineer (~2.5 years) with a backend focus. Current role: backend of ContextQA's core QA-automation product (test execution engine, VNC streaming, Playwright/WebdriverIO/LambdaTest orchestration).
+> Software Engineer (~2.5 years), TypeScript/Node, backend-strongest, applied AI. Current role: Node.js backend of ContextQA's core QA-automation platform (test-execution engine, live browser-session streaming, integrations engine, session control plane on GKE).
 
 Shailesh Chaudhari is a Software Engineer based in Ahmedabad, Gujarat, India (originally from Patan, Gujarat). BE in Information Technology from Government Engineering College, Bhavnagar (2024, CGPA 7.99). Institute Rank 1 on GeeksforGeeks with 604+ problems solved.
 
 Professional timeline:
-- Jan 2024 – Aug 2024: Software Developer Intern at EsparkBiz Technologies (full-stack learning — Node.js, React, Next.js, TypeScript, Tailwind; dummy projects; real-time patterns).
+- Jan 2024 – Aug 2024: Software Developer Intern at EsparkBiz Technologies (REST APIs and React/Next.js interfaces with authentication and RBAC; Stripe and Supabase auth integrations).
 - Aug 2024 – Jul 2025: Software Engineer at EsparkBiz Technologies (3 client projects end-to-end — full-stack UI, backend APIs, client communication and requirements).
-- Jul 2025 – present: Software Engineer at ContextQA. First 2-3 months: shipped 2 Chrome extensions (Vibe Testing for AI-powered web testing, AxeTos for WCAG accessibility). Since then: backend of the core QA-automation product (test execution engine, VNC streaming, browser-automation orchestration via Playwright / WebdriverIO / LambdaTest).
+- Jul 2025 – present: Software Engineer at ContextQA. First 2-3 months: shipped 2 Chrome extensions (Vibe Testing for AI-assisted web testing, AxeTos for WCAG accessibility). Since then: the Node.js backend of the core QA-automation platform — a test-execution engine orchestrating concurrent browser and mobile runs (Playwright, WebdriverIO/Appium, LambdaTest), live browser-session streaming over WebSockets (noVNC proxied through a Node control plane), a debug engine with breakpoints and resume-from-checkpoint; primary author of the integrations engine (GitHub App, GitLab and Linear OAuth, Slack bot, webhook ingestion; multi-tenant via OAuth state in Redis and tenant resolution by installation id); the session control plane on GKE (pre-warmed pod pool over Redis, idempotent stop, request trace ids, stable error codes and a diagnostics bundle for on-prem customers). Also contributes to the platform's Java (Spring Boot) and Python services.
 
 ## Pages
 
-- [Home](https://shaileshchaudhari.vercel.app/): Introduction, side projects, featured blog posts, availability
+- [Home](https://shaileshchaudhari.vercel.app/): Introduction, side projects, featured blog posts
 - [About](https://shaileshchaudhari.vercel.app/about): Work history, education, skills, achievements
-- [Portfolio](https://shaileshchaudhari.vercel.app/portfolio): 13 projects with architecture write-ups and live demos
-- [Blog](https://shaileshchaudhari.vercel.app/blogs): Technical articles on web development and software engineering
-- [Statistics](https://shaileshchaudhari.vercel.app/statistics): GitHub contributions, LeetCode stats, competitive programming metrics
+- [Portfolio](https://shaileshchaudhari.vercel.app/portfolio): 10 projects with architecture write-ups and live demos
+- [Engineering](https://shaileshchaudhari.vercel.app/engineering): Real bugs from his own code, and why each one looked correct
+- [Blog](https://shaileshchaudhari.vercel.app/blogs): Technical articles on verification, concurrency and backend engineering
+- [Statistics](https://shaileshchaudhari.vercel.app/statistics): GitHub contributions and LeetCode solved counts
 - [Contact](https://shaileshchaudhari.vercel.app/contact): Contact form + direct email
-- [Hire](https://shaileshchaudhari.vercel.app/hire): Services and engagement details
+- [What I work on](https://shaileshchaudhari.vercel.app/services): The kinds of problems he works on and how he works
 
 ## Side projects (shipped)
 
 Live:
 
+- [KhataGO](https://khatago.vercel.app/): WhatsApp-first bookkeeping for Indian MSMEs. WhatsApp Business webhook with DB-enforced idempotency (unique message id + an atomic PENDING→PROCESSING claim, no cache in the path); a containerized polling worker over a Postgres-backed queue with an atomic claim, exponential backoff with jitter, and a dead-letter queue with audited replay; Gemini function-calling (10 tools) for text and receipt OCR → structured transactions + receivables; Tally XML export. Stack: Next.js, TypeScript, Prisma, PostgreSQL (Supabase), Gemini AI SDK, WhatsApp Cloud API, Docker, i18n (en/hi/gu).
 - [EduScale](https://eduscale.vercel.app/): Real-time engineering learning platform with 1v1 coding battles. Backend uses @socket.io/redis-adapter (horizontal Socket.io scaling), redlock (distributed locks on the battle start / submit-answer / complete paths), opossum (circuit breaker around the Judge0 code-execution call), prom-client (Prometheus /metrics: request duration, active connections, memory), and a Bull queue with a dead-letter queue for email. Stack: Next.js 16, React 19, TypeScript, Node.js, Express, Prisma, PostgreSQL, Redis, Supabase Auth.
 - [DevTrack](https://daily-dev-track.vercel.app): Developer productivity dashboard. Supabase Realtime postgres_changes subscription on daily_logs for live activity feed + sub-second multi-tab sync. Stack: Next.js, TypeScript, Prisma, PostgreSQL, Supabase Realtime, Recharts.
-- [KhataGO](https://khatago.vercel.app/): WhatsApp-first AI accounting for Indian SMBs. WhatsApp Business webhook with DB-enforced idempotency (unique message id + an atomic PENDING→PROCESSING claim, no cache in the path), Gemini AI function-calling for receipt OCR → structured transactions + receivables management. Stack: Next.js, Gemini AI SDK, WhatsApp Cloud API, PostgreSQL (Prisma), i18n (en/hi/gu).
 
 Open source:
 
-- [CodeSenseiSearch](https://github.com/Shailesh93602/CodeSenseiSearch): AI-powered semantic code search. NestJS backend with pgvector, AST-aware function/class-level chunking, Gemini embeddings, cosine-similarity ranking. The retrieval pipeline is scaffolded, not yet wired end to end. Natural-language queries return ranked file+line results.
+- [BALLAST](https://github.com/Shailesh93602/ballast): Deterministic simulation of a multi-tenant session control plane — per-tenant concurrency caps, quota windows, leases over an unreliable substrate. Every run is a pure function of one integer seed (1,000 seeds replay byte-identically). Verified four ways: 8 invariants, a reference oracle, mutation testing (158 of 165 mutants killed, 197 tests), a self-verifying shrinker. 9 real findings in docs/LEDGER.md, 4 of them in the checker. Zero runtime dependencies.
+- [CodeSenseiSearch](https://github.com/Shailesh93602/CodeSenseiSearch): AI-powered semantic code search, in progress. NestJS backend scaffolding with pgvector, AST-aware function/class-level chunking, Gemini embeddings. The ingestion → embedding → retrieval pipeline is scaffolded, not yet wired end to end.
 
 ContextQA Chrome extensions (shipped in first 2-3 months at ContextQA, 2025):
 
-- Vibe Testing: Chrome extension for AI-powered web testing with real-time log streaming. Stack: Chrome Extension, Python AI Agent, Node.js, Socket.io.
-- AxeTos: Chrome extension for WCAG A/AA/AAA accessibility testing with intelligent fix suggestions. Stack: Chrome Extension, Node.js, axe-core, AWS S3.
+- Vibe Testing: Chrome extension for AI-assisted web testing with real-time log streaming. Stack: Chrome Extension, Python AI Agent, Node.js, Socket.io.
+- AxeTos: Chrome extension for WCAG A/AA/AAA accessibility testing with fix suggestions. Stack: Chrome Extension, Node.js, axe-core, AWS S3.
 
 ## Skills
 
-TypeScript · React · Next.js · Node.js · Express.js · NestJS · PostgreSQL · MongoDB · Redis · Prisma · Drizzle · Tailwind CSS · Socket.io · @socket.io/redis-adapter · Redlock · Circuit Breaker (opossum) · Prometheus (prom-client) · Bull Queues · Vector Embeddings · pgvector · Chrome Extensions · Supabase · Supabase Realtime · Stripe API · Razorpay API · Webhook Idempotency · Playwright · WebdriverIO · LambdaTest · Docker · AWS · Swagger/OpenAPI
+TypeScript · JavaScript · SQL · C++ (DSA) · React · Next.js · Tailwind CSS · shadcn/ui · WCAG 2.1 AA · Node.js · Express · NestJS · Socket.io · Prisma · REST · PostgreSQL · Redis · MongoDB · Docker / Docker Compose · GitHub Actions · GKE (exposure) · Vercel · Supabase · AWS S3 · LLM function/tool calling (Gemini) · multi-model fallback · bring-your-own-key encryption · evals · MCP tools · pgvector RAG · Playwright · WebdriverIO · LambdaTest · deterministic simulation · mutation testing · working exposure: Java (Spring Boot), Python
 
 ## Contact
 

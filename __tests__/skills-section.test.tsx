@@ -60,7 +60,10 @@ describe("SkillsSection", () => {
     render(<SkillsSection />);
     expect(screen.getByText("Docker")).toBeInTheDocument();
     expect(screen.getByText("Git")).toBeInTheDocument();
-    expect(screen.getByText("AWS")).toBeInTheDocument();
+    // "AWS S3", not "AWS": the only AWS work he has done is S3 file workflows
+    // (eSparkBiz), and a bare "AWS" chip claims more than that.
+    expect(screen.getByText("AWS S3")).toBeInTheDocument();
+    expect(screen.queryByText("AWS")).not.toBeInTheDocument();
   });
 
   it("renders all 4 skill category cards", () => {

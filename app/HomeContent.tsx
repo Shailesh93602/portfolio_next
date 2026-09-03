@@ -65,14 +65,16 @@ export default function HomeContent({ featuredPosts }: Props) {
 
             <p className="text-lg leading-relaxed text-muted-foreground">
               ~2.5 years in the industry. Currently at ContextQA working on the
-              backend of our core QA-automation product — test execution engine,
-              VNC streaming, and multi-cloud browser orchestration across
-              Playwright / WebdriverIO / LambdaTest. Comfortable across the
-              stack from my EsparkBiz client-project days, but I go deep on
-              backend systems: distributed locks (Redlock), real-time pub/sub
-              (Socket.io + Redis adapter), webhook idempotency (SETNX), AI
-              pipelines (Gemini function-calling). Targeting backend, platform,
-              or developer-tooling roles.
+              Node.js backend of the core QA-automation platform — a
+              test-execution engine orchestrating Playwright / WebdriverIO /
+              LambdaTest runs, live browser-session streaming over WebSockets,
+              the integrations engine (GitHub, GitLab, Linear, Slack) and a
+              session control plane on GKE. Comfortable across the stack from my
+              EsparkBiz client-project days, but I go deep on backend systems:
+              distributed locks (Redlock), real-time pub/sub (Socket.io + Redis
+              adapter), webhook idempotency enforced in Postgres, LLM
+              tool-calling (Gemini) inside products, and deterministic testing
+              of concurrent systems.
             </p>
 
             <div className="flex flex-wrap gap-2">
@@ -84,8 +86,8 @@ export default function HomeContent({ featuredPosts }: Props) {
             </div>
 
             <p className="mt-3 text-sm text-muted-foreground">
-              Interested in distributed systems, real-time platforms and payment
-              infrastructure —
+              Interested in distributed systems, real-time platforms and
+              developer tooling —
               <Link href="/contact" className="ml-1 text-primary underline">
                 get in touch
               </Link>

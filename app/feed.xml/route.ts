@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { blogPosts } from "@/lib/blog-data";
+import { publishedPosts } from "@/lib/blog-data";
 
 const BASE_URL = "https://shaileshchaudhari.vercel.app";
 const AUTHOR = "Shailesh Chaudhari";
@@ -14,7 +14,7 @@ function escapeXml(text: string): string {
 }
 
 export async function GET() {
-  const sorted = [...blogPosts].sort(
+  const sorted = [...publishedPosts].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 

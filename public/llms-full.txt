@@ -23,13 +23,13 @@
 
 ### Software Engineer — ContextQA (July 10, 2025 – Present)
 **Company:** https://contextqa.com
-**Stack:** Node.js, Express.js, PostgreSQL, MongoDB, Prisma, Playwright, WebdriverIO, LambdaTest, VNC, Socket.io, Chrome Extensions
+**Stack:** Node.js, TypeScript, Express.js, Redis, PostgreSQL, MongoDB, Prisma, Playwright, WebdriverIO/Appium, LambdaTest, noVNC over WebSockets, Docker, GKE, Chrome Extensions; working exposure to Java (Spring Boot) and Python
 
-**Current role:** backend of ContextQA's core QA-automation product. Work covers:
-- Test execution engine (orchestrating Playwright + WebdriverIO runs across environments)
-- VNC streaming (live browser-session viewing for debugging automated tests)
-- LambdaTest integration for multi-cloud browser coverage
-- API for managing test runs, assertions, artifacts, and run history
+**Current role:** Node.js backend of ContextQA's core QA-automation platform. Pattern level only — no company metrics or customer names:
+- Test-execution engine orchestrating concurrent browser and mobile runs across Playwright, WebdriverIO/Appium and LambdaTest; live browser-session streaming over WebSockets (noVNC proxied through a Node control plane); a debug engine with breakpoints and resume-from-checkpoint.
+- Primary author of the integrations engine (Node/TypeScript): GitHub App, GitLab and Linear OAuth, Slack Block Kit bot, webhook ingestion — made multi-tenant by moving OAuth handshake state from per-pod memory to Redis with an atomic Lua read-and-delete, resolving tenants by installation id, and keeping the token vault ciphertext-only at rest.
+- Session control plane on GKE: pre-warmed pod pool over Redis, idempotent stop with first-terminal-wins status ordering, request trace ids via AsyncLocalStorage, stable error codes plus a diagnostics bundle for on-prem customers, pod eviction protection and memory budgeting.
+- Presigned-URL chokepoint so private S3/MinIO/GCS buckets work on-prem; PR-impact analysis where a webhook and an MCP tool call share one path. Also contributes to the platform's Java (Spring Boot) and Python services.
 
 **First 2-3 months at ContextQA (shipped):** two production Chrome extensions, now maintained by the team:
 
@@ -75,7 +75,7 @@ Owned authentication module end-to-end on Garage Management System team project 
 **GitHub:** https://github.com/Shailesh93602/devscale
 **Stack:** Next.js 16, React 19, TypeScript, Tailwind CSS, Prisma, PostgreSQL, Supabase, Socket.io, @socket.io/redis-adapter, redlock, opossum, prom-client, Bull, Redis, Node.js, Express.js
 
-Premium engineering learning platform with a production-grade distributed real-time engine:
+Engineering learning platform with a distributed real-time engine:
 
 **Architecture:**
 - `@socket.io/redis-adapter`: Socket.io cluster adapter for horizontal scaling across multiple Node.js instances. All instances share room state via Redis.
@@ -104,7 +104,7 @@ Developer intelligence dashboard:
 
 ### KhataGO
 **Live:** https://khatago.vercel.app/
-**Stack:** Next.js, TypeScript, Prisma, PostgreSQL (Supabase), Gemini AI, WhatsApp Cloud API, i18next, Node.js
+**Stack:** Next.js (App Router + API routes), TypeScript, Prisma, PostgreSQL (Supabase), Gemini AI (function-calling, 10 tools), WhatsApp Cloud API, i18next, Node.js worker process, Docker
 **Note:** Source code is private.
 
 WhatsApp-first AI accounting platform for Indian SMBs:
@@ -113,14 +113,14 @@ WhatsApp-first AI accounting platform for Indian SMBs:
 - **WhatsApp webhook idempotency (no cache):** Meta delivers at least once. The WhatsApp message id is a unique column, so a duplicate insert fails at the database; processing then begins with a conditional UPDATE flipping aiStatus PENDING→PROCESSING only if it is still PENDING. Zero rows changed means another delivery already claimed it, so concurrent redeliveries produce exactly one Gemini run and one ledger write — and idempotency can never drift from the audit row the way a separate cache can.
 - **Gemini AI OCR pipeline:** WhatsApp image URL → download to buffer → Gemini Vision API → structured JSON (merchant, amount, date, line items) → ledger transaction. Error handling for low-confidence extractions.
 - **Tally XML export:** Generates TALLYMESSAGE XML vouchers for accountants. Non-trivial: Tally requires specific date format, ledger name lookup from master data, and precise GST field structure. Wrong XML silently fails to import.
-- **Fast webhook ack:** The handler persists the message and returns to Meta immediately, then runs the Gemini work after the response — so a burst of deliveries never times out the webhook, without introducing a queue broker.
+- **Fast webhook ack + a worker over Postgres:** The handler persists the message and returns to Meta immediately. A containerized polling worker (a standalone Node process in the same Docker image as the web app) drains the queue — the Postgres table itself, claimed with an atomic conditional UPDATE, retried with exponential backoff and jitter (250ms → 30s), dead-lettered after 3 attempts, with an audited admin replay. No broker: the table already has visibility timeouts (`aiClaimedAt`) and attempt counts, and a second system whose state can disagree with the first would only add a failure mode.
 - **i18next:** Full UI in English, Hindi, and Gujarati.
 
 ---
 
 ### CodeSenseiSearch
 **GitHub:** https://github.com/Shailesh93602/CodeSenseiSearch
-**Stack:** pnpm monorepo (Next.js + NestJS), TypeScript, PostgreSQL, pgvector, Gemini text-embedding-004, BullMQ
+**Stack:** pnpm monorepo (Next.js + NestJS), TypeScript, PostgreSQL, pgvector, Gemini embeddings, Docker Compose (Postgres + Redis). Queue workers are scaffolded, not deployed.
 
 AI-powered semantic code search engine (Phase 1 complete, Phase 2 in progress — the ingestion → embedding → retrieval pipeline is scaffolded but not yet wired end to end):
 
@@ -191,12 +191,12 @@ Professional WCAG accessibility testing suite:
 
 ## Blog Topics Covered
 
-Web Development · Full Stack · Frontend (React, Next.js, Tailwind) · Backend (Node.js, NestJS, Express) · Authentication (Supabase, OAuth) · Payments (Stripe) · DSA & Problem Solving · Real-time Systems · Distributed Systems · Career & Software Engineering
+Verification (a passing test only proves the test passes; mutation testing) · Webhook idempotency without Redis · Concurrency control (inventory that never oversells) · Retry-safe payment APIs · Production RAG that says "I don't know". Seventeen earlier posts from 2024 (tutorials and career reflections) remain online at their URLs, marked "From the archive", and are not listed on the blog index.
 
 ---
 
-## Availability
+## Contact
 
 Backend and full-stack engineering.
 Contact: https://shaileshchaudhari.vercel.app/contact
-Hire page: https://shaileshchaudhari.vercel.app/hire
+What he works on: https://shaileshchaudhari.vercel.app/services

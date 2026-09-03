@@ -24,7 +24,7 @@ npm run type-check      # tsc --noEmit
 npm run format          # Prettier (writes)
 npm run format:check    # Prettier (CI check, read-only)
 
-npm test                # Jest unit tests (currently 270 tests, 28 suites)
+npm test                # Jest unit tests (currently 355 tests, 38 suites)
 npm run test:watch      # Jest watch mode
 npm run test:coverage   # Jest with coverage report
 npm run test:e2e        # Playwright (needs dev/prod server running)
@@ -57,7 +57,8 @@ app/                    # Next.js App Router pages
   blog/[slug]/          # Individual blog post (MDX)
   blogs/                # Blog listing
   contact/              # Contact form (calls /api/contact, falls back to mailto on 503)
-  hire/                 # Hire me page
+  hire/, hire-me/       # permanentRedirect → /services
+  services/             # "What I work on" — neutral; NOT a freelance landing page (see __tests__/no-hire-copy.test.ts)
   portfolio/            # Portfolio listing
     PortfolioContent.tsx
     PortfolioSkeleton.tsx  # "use client" — used as loading.tsx target (NEVER remove "use client" — framer-motion there breaks SSG without it)
@@ -74,7 +75,7 @@ components/
     ArchitectureDiagram.tsx  # Layered architecture visualization (lucide icons per layer)
     KeyMetrics.tsx           # 3-card metric grid used on showcase project detail pages
     ThemeComparison.tsx      # Light/dark image toggle for project screenshots
-  ExperienceSection, EducationSection, SkillsSection, Achievements, HobbiesSection
+  ExperienceSection, EducationSection, SkillsSection, Achievements
   stats-charts.tsx      # Dynamic import (ssr:false) — recharts
   github-contribution-heatmap.tsx
 
@@ -95,6 +96,8 @@ lib/
   leetcode-service.ts         # LeetCode API calls + streak calculation
   statistics-snapshot.ts      # getStatisticsSnapshot() — reads data/statistics-snapshot.json
   constants.ts                # SOCIAL_LINKS, CONTACT_INFO, SITE_URL, META_DEFAULTS
+  claims.ts                   # Numbers stated about OTHER repos (BALLAST ledger findings, KhataGO tool count) — defined once, imported by every page, verified daily by check-project-claims.mjs
+  phone.ts                    # Contact-form phone validation/normalisation (accepts +91 / spaces / dashes)
   blog-constants.ts           # BLOG_AUTHOR, SITE_URL (for layout schema)
   animations.ts               # Shared framer-motion variants (fadeIn, staggerContainer)
   utils.ts                    # cn() utility
@@ -137,7 +140,7 @@ public/
 
 ## Testing
 
-- **Unit tests** (`__tests__/`): 270 tests across 28 suites. Covers API routes (statistics, contact), blog functions, components (BlogCard, ProjectCard, EducationSection, KeyMetrics), utils, constants. Run with `npm test`.
+- **Unit tests** (`__tests__/`): 355 tests across 38 suites. Covers API routes (statistics, contact), blog functions, components (BlogCard, ProjectCard, EducationSection, KeyMetrics), utils, constants. Run with `npm test`.
 - **E2E** (`e2e/`):
   - `routes.ts` — **not a spec.** Derives the route inventory (static + `/portfolio/<id>` from `constants/projects.ts` + `/blog/<slug>` from `BLOG_SLUGS`) so adding a project or post automatically widens the asset / SEO gates.
   - `navigation.spec.ts` — desktop + mobile nav sanity
@@ -169,7 +172,7 @@ public/
 - `metadata.ts` per-page file exports the Next.js `Metadata` object (so server-rendered head can consume it).
 - All constants (social links, contact info) come from `lib/constants.ts` — **never hardcode URLs/emails**.
 - Images: use `next/image` everywhere. Store new images under `public/Images/<project-name>/`.
-- Blog posts: add MDX to `content/blog/`, then add the slug to `BLOG_SLUGS` in `lib/blog-data.ts`. `data/blog-manifest.json` is auto-generated on postbuild.
+- Blog posts: add MDX to `content/blog/`, then add the slug to `BLOG_SLUGS` in `lib/blog-data.ts`. `data/blog-manifest.json` is auto-generated on postbuild. `archived: true` in frontmatter keeps a post at its URL (200, in the sitemap) but out of the index / home / RSS / tags — the 17 posts from 2024 are archived this way; `publishedPosts` is what surfaces list, `blogPosts` is everything that renders.
 - **Commits:** no "Co-Authored-By: Claude" lines. Focused, imperative subject lines.
 
 ## Accessibility baseline (WCAG AA)
