@@ -23,9 +23,51 @@ describe("resume.json — currency and honesty", () => {
       "mrengineers",
       "Redis-backed idempotency",
       "microservices architecture",
+      // Dropped on the owner's call (2026-09-03): the cross-platform "700+"
+      // problem count and the CodeChef line are not reproducible by any one
+      // command, unlike the GfG figure.
+      "700+",
+      "CodeChef",
     ]) {
       expect(raw).not.toContain(banned);
     }
+  });
+
+  it("leads with the ratified positioning", () => {
+    expect(resume.title).toBe(
+      "Software Engineer - TypeScript/Node, backend-strongest, applied AI"
+    );
+    expect(resume.summary).toMatch(/TypeScript\/Node/);
+    expect(resume.summary).toMatch(/WCAG 2\.1 AA/);
+  });
+
+  it("keeps ContextQA claims at the pattern level — no company metrics", () => {
+    const contextqa = resume.experience.find((e) => e.company === "ContextQA")!;
+    const text = contextqa.bullets.join(" ");
+    // Percentages, currency and "N customers/users" are the company's numbers
+    // to publish, not his — and the ones he can least defend in a room.
+    expect(text).not.toMatch(/\d+\s?%/);
+    expect(text).not.toMatch(/[$₹]\s?\d/);
+    expect(text).not.toMatch(/\d+\s?(customers|users|clients|teams)\b/i);
+    // Java/Python is one clause inside a Node bullet, never a bullet of its own.
+    const javaBullets = contextqa.bullets.filter((b) => /Java/.test(b));
+    expect(javaBullets).toHaveLength(1);
+    expect(javaBullets[0]).toMatch(/^(?!Java)/);
+  });
+
+  it("is ASCII-only, which the ATS scan also enforces on the PDF", () => {
+    // resume/scan.py rejects non-ASCII glyphs in the text layer (em dashes,
+    // curly quotes). Catch it at the source so the PDF never has to.
+    const raw = JSON.stringify(resume);
+    expect(raw).toMatch(/^[\x20-\x7E]*$/);
+  });
+
+  it("achievements are the two ratified lines plus the hackathon", () => {
+    expect(resume.achievements).toEqual([
+      "Institute Rank 1 on GeeksforGeeks (604+ problems solved)",
+      "5-star C++ on HackerRank",
+      "Finalist, New India Vibrant Hackathon 2023",
+    ]);
   });
 
   it("features exactly the three resume projects", () => {

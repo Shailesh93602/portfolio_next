@@ -1,31 +1,33 @@
 Shailesh Chaudhari
-Full-Stack Software Engineer - Backend-Focused
+Software Engineer - TypeScript/Node, backend-strongest, applied AI
 shailesh93602@gmail.com | +91 9313026530 | github.com/Shailesh93602 | linkedin.com/in/shaileshbhai-chaudhari | shaileshchaudhari.vercel.app
 
 SUMMARY
-Full-stack engineer with 2.5+ years shipping production systems end to end, strongest on the backend: multi-tenant test-execution infrastructure, idempotent webhook pipelines and real-time platforms. Backend in TypeScript/Node.js with PostgreSQL, Redis and Docker; frontend in React and Next.js, including interfaces audited to WCAG 2.1 AA. Focused on correctness: concurrency control, deterministic testing, and verification that asserts real outcomes.
+TypeScript/Node full-stack engineer with 2.5+ years shipping production systems end to end: multi-tenant test-execution infrastructure, idempotent webhook pipelines, real-time platforms, and LLM tool-calling agents inside products. Frontend in React/Next.js, audited to WCAG 2.1 AA. Focused on correctness: concurrency control, deterministic testing, and verification that asserts real outcomes.
 
 EXPERIENCE
 Software Engineer, ContextQA (Jul 2025 - Present)
-- Build the backend of the core QA-automation platform: a test-execution engine orchestrating concurrent runs across Playwright, WebdriverIO and LambdaTest; VNC streaming for live browser-session debugging; and the REST APIs driving run history, assertions and artifacts.
-- Shipped 2 products end to end (React, Next.js, TypeScript, Tailwind + Node.js): Vibe Testing, an AI-assisted UI testing extension streaming live logs over WebSockets, and AxeTos, which audits pages against WCAG A/AA/AAA with precise DOM locators. Both still in use.
+- Backend of the core QA-automation platform: a Node.js test-execution engine orchestrating concurrent browser and mobile runs (Playwright, WebdriverIO/Appium, LambdaTest), live browser-session streaming (noVNC) over WebSockets through a Node control plane, and a debug engine with breakpoints and resume-from-checkpoint.
+- Primary author of the integrations engine (Node/TypeScript): GitHub App, GitLab and Linear OAuth, Slack Block Kit bot, webhook ingestion. Made it multi-tenant: OAuth handshake state moved from per-pod memory to Redis with an atomic Lua read-and-delete, tenant resolution by installation id, token vault ciphertext-only at rest.
+- Node session control plane on GKE: pre-warmed pod pool over Redis, idempotent stop with first-terminal-wins status ordering, request trace ids via AsyncLocalStorage, stable error codes and a diagnostics bundle for on-prem customers, pod eviction protection and memory budgeting.
+- Presigned-URL chokepoint so private S3/MinIO/GCS buckets work on-prem; PR-impact analysis flow where a webhook and an MCP tool call share one path. Also contribute to the platform's Java (Spring Boot) and Python services with AI-assisted development.
+- Shipped 2 products end to end (React/Next.js + Node.js): Vibe Testing, an AI-assisted UI-testing extension streaming live logs over WebSockets, and AxeTos, a WCAG A/AA/AAA auditor with precise DOM locators. Both still in use.
 
 Software Developer, eSparkBiz Technologies (Aug 2024 - Jul 2025)
-- Delivered 3 client products full-stack in React and Node.js (EdTech scheduling, sign-language e-learning, corporate LMS), all on schedule with zero production incidents.
-- Integrated a third-party scheduling API with a Python/CPLEX optimization service; synchronized large datasets and built the real-time calendar UI in React, backed by AWS S3 file workflows.
+- Delivered 3 client products full-stack in React and Node.js (EdTech scheduling, sign-language e-learning, corporate LMS), on schedule with zero production incidents; integrated a third-party scheduling API with a Python/CPLEX optimizer, built the real-time calendar UI, and AWS S3 file workflows.
 
 Software Developer Intern, eSparkBiz Technologies (Jan 2024 - Aug 2024)
 - Built REST APIs and React/Next.js interfaces with authentication and role-based access control (RBAC); integrated Stripe payments and Supabase authentication.
 
 PROJECTS
 KhataGO - WhatsApp-first bookkeeping for Indian MSMEs (khatago.vercel.app)
-- Idempotency-guarded reconciliation pipeline: Meta webhook to database-enforced deduplication to LLM function-calling to ledger writes to Tally XML export. Exactly-once effects over an at-least-once delivery channel, enforced by a unique constraint rather than a distributed lock; 8 simultaneous deliveries of the same message produce exactly one ledger write.
+- Idempotency-guarded reconciliation pipeline: Meta webhook -> DB-enforced deduplication -> LLM function-calling (10 tools) -> ledger writes -> Tally XML export. Exactly-once effects over an at-least-once channel via a unique constraint, not a distributed lock; 8 simultaneous deliveries of one message produce exactly one ledger write.
 - Containerized (Docker) polling worker over a PostgreSQL-backed queue with an atomic claim, exponential backoff with jitter, and a dead-letter queue (DLQ) with audited replay.
-- Next.js/React app in three languages (English, Hindi, Gujarati) with locale-aware invoices and GST reporting.
+- Next.js/React app in three languages (English, Hindi, Gujarati) with locale-aware invoices and GST reporting; bring-your-own Gemini key encrypted at rest (AES-256-GCM).
 
 BALLAST - deterministic simulation of a multi-tenant session control plane (github.com/Shailesh93602/ballast)
 - Per-tenant concurrency caps, quota windows, and leases over an unreliable substrate; every run is a pure function of one integer seed and replays byte-identically, verified across 1,000 seeds.
-- Verified 4 independent ways: 8 invariants, a reference oracle, mutation testing (158 of 165 mutants killed), and a self-verifying shrinker. Found 9 real bugs, about half in the checker rather than the implementation.
+- Verified 4 independent ways: 8 invariants, a reference oracle, mutation testing (158 of 165 mutants killed, 197 tests), and a self-verifying shrinker. Found 9 real bugs, 4 of them in the checker rather than the implementation.
 - Measured 3 concurrency-control strategies for a flash sale against a real PostgreSQL under 200 concurrent buyers: read-then-write oversold 200 of 5 units; conditional update and optimistic versioning each sold exactly 5.
 
 EduScale - real-time coding battles across multiple Node.js instances (eduscale.vercel.app, github.com/Shailesh93602/DevScale)
@@ -33,17 +35,18 @@ EduScale - real-time coding battles across multiple Node.js instances (eduscale.
 - Next.js/React frontend with role-gated routes, audited to WCAG 2.1 AA by automated axe checks that run on every public route in CI.
 
 SKILLS
-- Languages: TypeScript, JavaScript, SQL, C++
-- Frontend: React, Next.js, Tailwind CSS, shadcn/ui, Redux, responsive UI, accessibility (WCAG 2.1 AA)
-- Backend: Node.js, Express.js, NestJS, REST APIs, Socket.io, Prisma ORM
-- Databases: PostgreSQL, Redis, MongoDB (relational and non-relational)
-- Infrastructure: Docker, Docker Compose, GitHub Actions (CI/CD), Vercel, Supabase, AWS S3
-- Reliability patterns: idempotency, concurrency control, distributed locks, message queues and dead-letter queues, circuit breakers, RBAC, mutation and property-based testing
+- Languages: TypeScript, JavaScript, SQL, C++ (DSA)
+- Frontend: React, Next.js, Tailwind CSS, shadcn/ui, accessibility (WCAG 2.1 AA)
+- Backend: Node.js, Express, NestJS, Socket.io, Prisma, REST APIs
+- Data: PostgreSQL, Redis, MongoDB
+- Infrastructure: Docker / Docker Compose, GitHub Actions (CI/CD), GKE (exposure), Vercel, Supabase, AWS S3
+- AI: LLM function/tool calling (Gemini), multi-model fallback, per-key isolation, bring-your-own-key encryption, evals, MCP tools, pgvector RAG
+- Working exposure: Java (Spring Boot), Python
 
 EDUCATION
 - B.E. in Information Technology, Government Engineering College, Bhavnagar, Gujarat - 2020 to 2024 - CGPA 7.99/10
 
 ACHIEVEMENTS
-- Institute Rank 1 on GeeksforGeeks (604+ problems solved); 700+ DSA problems solved across platforms
-- 5-star C++ rating on HackerRank; active on CodeChef and LeetCode
+- Institute Rank 1 on GeeksforGeeks (604+ problems solved)
+- 5-star C++ on HackerRank
 - Finalist, New India Vibrant Hackathon 2023

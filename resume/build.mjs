@@ -17,14 +17,14 @@ const html = `<!DOCTYPE html>
 <meta charset="utf-8">
 <title>${esc(data.name)} - Resume</title>
 <style>
-  @page { size: A4; margin: 8mm 12mm; }
+  @page { size: A4; margin: 7mm 12mm; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: Helvetica, Arial, sans-serif; font-size: 8.9pt; line-height: 1.26; color: #111; }
+  body { font-family: Helvetica, Arial, sans-serif; font-size: 8.7pt; line-height: 1.24; color: #111; }
   h1 { font-size: 16pt; }
   .headline { font-size: 10pt; color: #333; margin-top: 1px; }
   .contact { font-size: 8.8pt; color: #333; margin-top: 3px; }
   .contact a { color: #0b57a4; text-decoration: none; }
-  h2 { font-size: 9.3pt; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #222; padding-bottom: 1px; margin: 6px 0 3px; }
+  h2 { font-size: 9.3pt; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #222; padding-bottom: 1px; margin: 5px 0 3px; }
   .role { display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; }
   .role b { font-size: 9.6pt; }
   .dates { font-size: 8.6pt; color: #444; white-space: nowrap; }
