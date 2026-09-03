@@ -23,108 +23,68 @@ seoKeywords:
   - "test suite verification"
 ---
 
-I was adding a new module to a simulation project and ran the mutation testing harness to check my new tests were any good.
-
-```
-killed 165/165   mutation score 100.0%
-```
-
-A perfect score. Every single mutant caught.
-
-I did not celebrate. I went looking for the bug — and there was one.
-
-## What mutation testing actually does
-
-If you have not used it: mutation testing answers a question code coverage cannot.
-
-Coverage tells you a line **ran**. It says nothing about whether anything **checked what that line did**. You can execute every line in a codebase with a test suite that asserts nothing at all and score 100%.
-
-Mutation testing works differently. It deliberately breaks your code — flips a `<=` to `<`, changes a `+1` to `-1`, deletes a statement — and then runs your tests.
-
-- If the tests **fail**, the mutant is **killed**. Something was watching that line.
-- If the tests **pass**, the mutant **survived**. That line ran, and nothing cared what it did.
-
-Your mutation score is the percentage killed. It is the closest thing I know to an honest measure of whether a test suite is doing its job.
-
-## Why 100% is a red flag
-
-Here is the mechanism stated plainly, because the bug lives inside it:
-
-> **A mutant is judged killed when the test suite fails with it applied.**
-
-Read it again with a hostile eye. It has a corollary that my harness never accounted for:
-
-> **If the suite already fails, every mutant is killed.**
-
-The harness applies a mutation, runs the tests, sees red, and records a kill. It has no idea the red was already there. Do that 165 times and you get a flawless score generated entirely by a broken build.
-
-And that is what happened. A stale number in my README made three assertions fail — nothing to do with the code being mutated. Every subsequent mutant was scored killed against an already-failing suite, and genuinely surviving mutants went unrecorded.
-
-**The number that should have raised an alarm was the reassuring one.**
-
-That inversion is what makes this worth writing down. If the harness had printed 83%, I would have investigated immediately. It printed 100%, which invites you to close the terminal and feel good.
-
-## The fix is four lines
-
-Run the suite once, before mutating anything, and refuse to continue if it is red:
-
-```js
-if (!runSuite()) {
+<p>I was adding a new module to a simulation project and ran the mutation testing harness to check my new tests were any good.</p>
+<pre><code>killed 165/165   mutation score 100.0%
+</code></pre>
+<p>A perfect score. Every single mutant caught.</p>
+<p>I did not celebrate. I went looking for the bug — and there was one.</p>
+<h2>What mutation testing actually does</h2>
+<p>If you have not used it: mutation testing answers a question code coverage cannot.</p>
+<p>Coverage tells you a line <strong>ran</strong>. It says nothing about whether anything <strong>checked what that line did</strong>. You can execute every line in a codebase with a test suite that asserts nothing at all and score 100%.</p>
+<p>Mutation testing works differently. It deliberately breaks your code — flips a <code>&lt;=</code> to <code>&lt;</code>, changes a <code>+1</code> to <code>-1</code>, deletes a statement — and then runs your tests.</p>
+<ul>
+<li>If the tests <strong>fail</strong>, the mutant is <strong>killed</strong>. Something was watching that line.</li>
+<li>If the tests <strong>pass</strong>, the mutant <strong>survived</strong>. That line ran, and nothing cared what it did.</li>
+</ul>
+<p>Your mutation score is the percentage killed. It is the closest thing I know to an honest measure of whether a test suite is doing its job.</p>
+<h2>Why 100% is a red flag</h2>
+<p>Here is the mechanism stated plainly, because the bug lives inside it:</p>
+<blockquote>
+<p><strong>A mutant is judged killed when the test suite fails with it applied.</strong></p>
+</blockquote>
+<p>Read it again with a hostile eye. It has a corollary that my harness never accounted for:</p>
+<blockquote>
+<p><strong>If the suite already fails, every mutant is killed.</strong></p>
+</blockquote>
+<p>The harness applies a mutation, runs the tests, sees red, and records a kill. It has no idea the red was already there. Do that 165 times and you get a flawless score generated entirely by a broken build.</p>
+<p>And that is what happened. A stale number in my README made three assertions fail — nothing to do with the code being mutated. Every subsequent mutant was scored killed against an already-failing suite, and genuinely surviving mutants went unrecorded.</p>
+<p><strong>The number that should have raised an alarm was the reassuring one.</strong></p>
+<p>That inversion is what makes this worth writing down. If the harness had printed 83%, I would have investigated immediately. It printed 100%, which invites you to close the terminal and feel good.</p>
+<h2>The fix is four lines</h2>
+<p>Run the suite once, before mutating anything, and refuse to continue if it is red:</p>
+<pre><code class="language-js">if (!runSuite()) {
   console.error(
-    "REFUSING TO RUN: the test suite fails before any mutation is applied.\n\n" +
-      "Every mutant would be scored KILLED and the result would read 100%,\n" +
-      "because a mutant is killed by the suite failing — and it already does."
+    &quot;REFUSING TO RUN: the test suite fails before any mutation is applied.\n\n&quot; +
+      &quot;Every mutant would be scored KILLED and the result would read 100%,\n&quot; +
+      &quot;because a mutant is killed by the suite failing — and it already does.&quot;
   );
   process.exit(1);
 }
-```
-
-The error message matters as much as the check. "Suite failed" would send someone hunting for a broken test. Explaining _why the result would be meaningless_ is what stops them from working around it.
-
-The real score, once the suite was green: **84.2%** — below my own 85% gate, with genuine survivors to go and fix. Considerably less flattering, and considerably more useful.
-
-## The survivor that was not a missing test
-
-While fixing those survivors I hit a second, better problem.
-
-A mutant changed `attempt <= MAX_RETRIES` to `attempt < MAX_RETRIES` and survived. My first instinct was the obvious one: I am missing an assertion about the retry count. So I sat down to write it.
-
-I could not.
-
-The branch that handles running out of retries **could never execute.** In my model, all the contending writers committed during the first attempt, so the compare-and-set could lose at most once and then always won. A reachability probe across every input shape confirmed it: the retry-exhaustion path never fired, not once.
-
-That is dead code wearing the costume of defensive programming. It looks careful. It reviews well. It does nothing.
-
-**The fix was not to delete the branch.** Deleting it was defensible on the evidence — it genuinely never ran — but the retry bound is _correct_, and the reason it never ran was that my model let contention politely stop after one attempt. Real contention does not do that. A busy row stays busy.
-
-So I fixed the **model**: one contender commits per attempt, sustained. The branch is now reachable, the test that pins it is real, and the model is more faithful into the bargain.
-
-> When a mutant survives, the interesting question is not always _"which assertion am I missing?"_ Sometimes it is _"why does this code never run?"_ — and the answer is that your model is too polite, not your test too weak.
-
-## The part that generalises
-
-Both of these are the same shape, and I had already hit it once before in the same project. An invariant checker was reading the system's own report of what it had done, rather than the raw facts — so a correctly-refused operation looked like a violation. A checker that trusts the thing it is checking is not a checker.
-
-The mutation harness is that failure one level further out. It is the tool that grades the tests, and it could not distinguish _"these tests are excellent"_ from _"these tests are broken."_
-
-Every layer that grades another layer needs someone grading it. Eventually that someone is you, asking a question that feels faintly paranoid:
-
-**What would this output look like if the tool itself were wrong?**
-
-For a mutation harness, the answer is "a perfect score." For a code coverage tool, it is "100% coverage of assertions that assert nothing." For a green CI badge, it is "the job passes because the test step was never wired up."
-
-I have found all three of those this month, in my own code.
-
-## What I would tell someone adopting mutation testing
-
-**Do not chase 100%.** It is not achievable on real code and, as above, achieving it is more likely to mean something is broken. Some mutants are genuinely equivalent — they change the code without changing its behaviour, and no test can kill them. A healthy score is somewhere in the eighties with every survivor either fixed or explicitly argued as equivalent.
-
-**Triage every survivor, and write the argument down.** "This mutant is equivalent because…" is a sentence worth keeping in the repository. Six months later, neither you nor anyone else will remember whether that survivor was fine or forgotten.
-
-**Assert on outcomes, not on tallies.** Several of my survivors changed arithmetic _inside_ a data structure while every test still passed — because my tests counted results from a log of events and nothing ever inspected the structure itself. That was a design gap, not a missing assertion, and mutation testing is what surfaced it.
-
-**Run it on a green suite. Now enforced, in my case, by the harness itself.**
-
----
-
-_The project is [BALLAST](https://github.com/Shailesh93602/ballast), a deterministic simulation of a multi-tenant control plane. Every finding above — and six more — is written up in its [`LEDGER.md`](https://github.com/Shailesh93602/ballast/blob/main/docs/LEDGER.md), including which ones turned out to be in the checker rather than the system. Three of eight were._
+</code></pre>
+<p>The error message matters as much as the check. "Suite failed" would send someone hunting for a broken test. Explaining <em>why the result would be meaningless</em> is what stops them from working around it.</p>
+<p>The real score, once the suite was green: <strong>84.2%</strong> — below my own 85% gate, with genuine survivors to go and fix. Considerably less flattering, and considerably more useful.</p>
+<h2>The survivor that was not a missing test</h2>
+<p>While fixing those survivors I hit a second, better problem.</p>
+<p>A mutant changed <code>attempt &lt;= MAX_RETRIES</code> to <code>attempt &lt; MAX_RETRIES</code> and survived. My first instinct was the obvious one: I am missing an assertion about the retry count. So I sat down to write it.</p>
+<p>I could not.</p>
+<p>The branch that handles running out of retries <strong>could never execute.</strong> In my model, all the contending writers committed during the first attempt, so the compare-and-set could lose at most once and then always won. A reachability probe across every input shape confirmed it: the retry-exhaustion path never fired, not once.</p>
+<p>That is dead code wearing the costume of defensive programming. It looks careful. It reviews well. It does nothing.</p>
+<p><strong>The fix was not to delete the branch.</strong> Deleting it was defensible on the evidence — it genuinely never ran — but the retry bound is <em>correct</em>, and the reason it never ran was that my model let contention politely stop after one attempt. Real contention does not do that. A busy row stays busy.</p>
+<p>So I fixed the <strong>model</strong>: one contender commits per attempt, sustained. The branch is now reachable, the test that pins it is real, and the model is more faithful into the bargain.</p>
+<blockquote>
+<p>When a mutant survives, the interesting question is not always <em>"which assertion am I missing?"</em> Sometimes it is <em>"why does this code never run?"</em> — and the answer is that your model is too polite, not your test too weak.</p>
+</blockquote>
+<h2>The part that generalises</h2>
+<p>Both of these are the same shape, and I had already hit it once before in the same project. An invariant checker was reading the system's own report of what it had done, rather than the raw facts — so a correctly-refused operation looked like a violation. A checker that trusts the thing it is checking is not a checker.</p>
+<p>The mutation harness is that failure one level further out. It is the tool that grades the tests, and it could not distinguish <em>"these tests are excellent"</em> from <em>"these tests are broken."</em></p>
+<p>Every layer that grades another layer needs someone grading it. Eventually that someone is you, asking a question that feels faintly paranoid:</p>
+<p><strong>What would this output look like if the tool itself were wrong?</strong></p>
+<p>For a mutation harness, the answer is "a perfect score." For a code coverage tool, it is "100% coverage of assertions that assert nothing." For a green CI badge, it is "the job passes because the test step was never wired up."</p>
+<p>I have found all three of those this month, in my own code.</p>
+<h2>What I would tell someone adopting mutation testing</h2>
+<p><strong>Do not chase 100%.</strong> It is not achievable on real code and, as above, achieving it is more likely to mean something is broken. Some mutants are genuinely equivalent — they change the code without changing its behaviour, and no test can kill them. A healthy score is somewhere in the eighties with every survivor either fixed or explicitly argued as equivalent.</p>
+<p><strong>Triage every survivor, and write the argument down.</strong> "This mutant is equivalent because…" is a sentence worth keeping in the repository. Six months later, neither you nor anyone else will remember whether that survivor was fine or forgotten.</p>
+<p><strong>Assert on outcomes, not on tallies.</strong> Several of my survivors changed arithmetic <em>inside</em> a data structure while every test still passed — because my tests counted results from a log of events and nothing ever inspected the structure itself. That was a design gap, not a missing assertion, and mutation testing is what surfaced it.</p>
+<p><strong>Run it on a green suite. Now enforced, in my case, by the harness itself.</strong></p>
+<hr>
+<p><em>The project is <a href="https://github.com/Shailesh93602/ballast">BALLAST</a>, a deterministic simulation of a multi-tenant control plane. Every finding above — and six more — is written up in its <a href="https://github.com/Shailesh93602/ballast/blob/main/docs/LEDGER.md"><code>LEDGER.md</code></a>, including which ones turned out to be in the checker rather than the system. Three of eight were.</em></p>

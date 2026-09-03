@@ -53,7 +53,7 @@ export default function HomeContent({ featuredPosts }: Props) {
           <div className="space-y-6 motion-safe:animate-[fade-in-up_0.5s_ease-out] lg:w-1/2">
             <div className="space-y-2">
               <Badge variant="outline" className="text-sm font-medium">
-                Available for hire · Open to part-time & freelance
+                Backend & full-stack engineering
               </Badge>
               <h1 className="text-4xl font-bold text-foreground lg:text-6xl">
                 Hi, I&apos;m Shailesh Chaudhari
@@ -84,9 +84,10 @@ export default function HomeContent({ featuredPosts }: Props) {
             </div>
 
             <p className="mt-3 text-sm text-muted-foreground">
-              Open to part-time, freelance (hourly or project-based) work —
+              Interested in distributed systems, real-time platforms and payment
+              infrastructure —
               <Link href="/contact" className="ml-1 text-primary underline">
-                contact me
+                get in touch
               </Link>
             </p>
 
@@ -98,7 +99,7 @@ export default function HomeContent({ featuredPosts }: Props) {
               >
                 <Link href="/contact">
                   <Briefcase className="mr-2 inline-block h-4 w-4" />
-                  Hire Me
+                  Get in touch
                 </Link>
               </Button>
               <Button

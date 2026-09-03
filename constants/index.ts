@@ -1,4 +1,4 @@
-import { SOCIAL_LINKS } from "@/lib/constants";
+import { COMPANY_LINKS, SOCIAL_LINKS } from "@/lib/constants";
 import { Achievement, Education, Experience } from "@/types";
 
 export const education: Education[] = [
@@ -57,7 +57,7 @@ export const experiences: Experience[] = [
     title: "Software Engineer",
     company: "ContextQA",
     period: "July 2025 - Present",
-    companyUrl: "https://contextqa.com",
+    companyUrl: COMPANY_LINKS.CONTEXTQA,
     skills: [
       "Next.js",
       "TailwindCSS",
@@ -81,7 +81,7 @@ export const experiences: Experience[] = [
     title: "Software Developer",
     company: "eSparkBiz Technologies",
     period: "August 2024 - July 2025",
-    companyUrl: "https://www.esparkinfo.com/",
+    companyUrl: COMPANY_LINKS.ESPARKBIZ,
     skills: [
       "React.js",
       "Node.js",
@@ -106,7 +106,7 @@ export const experiences: Experience[] = [
     title: "Software Developer Intern",
     company: "eSparkBiz Technologies",
     period: "January 2024 - August 2024",
-    companyUrl: "https://www.esparkinfo.com/",
+    companyUrl: COMPANY_LINKS.ESPARKBIZ,
     skills: [
       "HTML",
       "CSS",

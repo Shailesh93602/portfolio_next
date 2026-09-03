@@ -20,7 +20,7 @@ export const homeFaq: FaqItem[] = [
   {
     question: "Is Shailesh Chaudhari available for hire?",
     answer:
-      "Yes, Shailesh Chaudhari is open to part-time, freelance (hourly or project-based) engagements. He can be contacted through the contact page at shaileshchaudhari.vercel.app/contact.",
+      "Shailesh Chaudhari can be reached through the contact page at shaileshchaudhari.vercel.app/contact to discuss backend and full-stack engineering work.",
   },
   {
     question: "What are Shailesh Chaudhari's notable projects?",
@@ -52,7 +52,7 @@ export const portfolioFaq = (count: number): FaqItem[] => [
   {
     question: "Is Shailesh Chaudhari open to new opportunities?",
     answer:
-      "Yes. He is currently a Software Engineer at ContextQA (backend of the core QA-automation product — test execution engine, VNC streaming, Playwright/WebdriverIO/LambdaTest orchestration) and is open to part-time and freelance work. Reach him via the contact form at https://shaileshchaudhari.vercel.app/contact or by email at shailesh93602@gmail.com.",
+      "Yes. He is currently a Software Engineer at ContextQA (backend of the core QA-automation product — test execution engine, VNC streaming, Playwright/WebdriverIO/LambdaTest orchestration). Reach him via the contact form at https://shaileshchaudhari.vercel.app/contact or by email at shailesh93602@gmail.com.",
   },
   {
     question: "Where can I see Shailesh Chaudhari's code?",

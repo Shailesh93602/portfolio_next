@@ -226,30 +226,6 @@ export function CircleIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-export function DownloadIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.8}
-      aria-hidden="true"
-      {...props}
-    >
-      <path
-        d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M7 10l5 5 5-5M12 15V3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 export function BriefcaseIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -473,3 +449,8 @@ export function GraduationCapIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+// DownloadIcon lived here and is deliberately gone: nothing imported it, and
+// the one place the site offers a download — the résumé button on the home
+// page — uses lucide's `Download`. Two icons for one idea, one of them unused,
+// is how the next person ends up picking the wrong one.

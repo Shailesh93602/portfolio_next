@@ -64,10 +64,21 @@ export const PROFILE = {
     phone: "+91 9313026530",
   },
 
+  /**
+   * Deliberately NEUTRAL.
+   *
+   * This used to advertise "part-time and freelance", which aimed the whole
+   * site at contract work — "part-time software engineer" was even an SEO
+   * keyword. That is the wrong signal for the roles now being targeted.
+   *
+   * It is NOT replaced with "open to full-time roles", which would be worse:
+   * this is a public page, and announcing availability is announcing a job
+   * search. The site describes the work and offers a contact page; what that
+   * contact is FOR is decided in the conversation, not broadcast.
+   */
   availability: {
-    openTo: ["part-time", "freelance", "full-time"],
-    // Short line for hero / footer.
-    line: "Available for hire · Open to part-time, freelance, and full-time roles",
+    openTo: [],
+    line: "Backend & full-stack engineering",
   },
 
   // Positioning bios at three lengths — pick the one that fits the surface.

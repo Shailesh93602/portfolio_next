@@ -1,3 +1,4 @@
+import { PROFILE_META } from "@/lib/profile";
 import type { Metadata } from "next";
 import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 
@@ -12,9 +13,12 @@ const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(
 )}`;
 
 export const metadata: Metadata = {
-  title: "Shailesh Chaudhari — Software Engineer",
+  // PROFILE_META.titleTag composes exactly this from PROFILE, and existed
+  // unused while the same string sat here as a literal. A name and a job title
+  // that appear in two places drift the day one of them changes.
+  title: PROFILE_META.titleTag,
   description:
-    "Software Engineer at ContextQA working on the backend of our core QA-automation product (test execution, VNC, Playwright/WebdriverIO/LambdaTest). Side projects: distributed systems (Redlock, Socket.io Redis adapter), AI pipelines (Gemini function-calling, OCR), webhook idempotency patterns. Open to part-time and freelance work.",
+    "Software Engineer at ContextQA working on the backend of our core QA-automation product (test execution, VNC, Playwright/WebdriverIO/LambdaTest). Side projects: distributed systems (Redlock, Socket.io Redis adapter), AI pipelines (Gemini function-calling, OCR), webhook idempotency patterns.",
   metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: `${SITE_URL}/`,
@@ -22,7 +26,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Shailesh Chaudhari — Software Engineer",
     description:
-      "Software Engineer at ContextQA (backend of core QA-automation product). Side projects explore distributed systems, AI pipelines, webhook idempotency. Open to part-time and freelance work.",
+      "Software Engineer at ContextQA (backend of core QA-automation product). Side projects explore distributed systems, AI pipelines, webhook idempotency.",
     url: SITE_URL,
     siteName: META_DEFAULTS.siteName,
     images: [
@@ -40,7 +44,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Shailesh Chaudhari — Software Engineer",
     description:
-      "Software Engineer at ContextQA. Backend, real-time systems, Next.js. Open to part-time & freelance.",
+      "Software Engineer at ContextQA. Backend, real-time systems, Next.js.",
     images: [ogImageUrl],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,
@@ -54,7 +58,5 @@ export const metadata: Metadata = {
     "Node.js Developer",
     "Chrome Extension Developer",
     "TypeScript Developer",
-    "freelance developer India",
-    "part-time software engineer",
   ],
 };

@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/react";
 import SpeedInsightsClient from "@/components/speed-insights-client";
 import Navbar from "@/components/navbar/index";
 import { Providers } from "./providers";
+import { COMPANY_LINKS } from "@/lib/constants";
 import Script from "next/script";
 import { SITE_URL, BLOG_AUTHOR, META_DEFAULTS } from "@/lib/blog-constants";
 import { PROFILE } from "@/lib/profile";
@@ -220,9 +221,9 @@ export default function RootLayout({
               },
               seeks: {
                 "@type": "Demand",
-                name: "Part-time and freelance backend / full-stack engineering work",
+                name: "Backend and full-stack engineering",
                 description:
-                  "Open to part-time and freelance engagements alongside the ContextQA role. Particular interest in distributed systems, payment infrastructure, real-time platforms, and AI-pipeline backends.",
+                  "Backend and full-stack engineering, with particular interest in distributed systems, payment infrastructure, real-time platforms, and AI-pipeline backends.",
               },
               hasCredential: [
                 {
@@ -239,7 +240,12 @@ export default function RootLayout({
               worksFor: {
                 "@type": "Organization",
                 name: "ContextQA",
-                url: "https://contextqa.com",
+                // Was a literal here AND in constants/index.ts, and the two
+                // disagreed: "https://contextqa.com" vs
+                // "https://www.contextqa.com/". A URL in structured data that
+                // does not match the one the page links to is exactly the kind
+                // of mismatch a validator flags and a human never notices.
+                url: COMPANY_LINKS.CONTEXTQA,
               },
               hasOccupation: {
                 "@type": "Occupation",
