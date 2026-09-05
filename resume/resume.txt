@@ -21,7 +21,7 @@ Software Developer Intern, eSparkBiz Technologies (Jan 2024 - Aug 2024)
 
 PROJECTS
 KhataGO - WhatsApp-first bookkeeping for Indian MSMEs (khatago.vercel.app)
-- Idempotency-guarded reconciliation pipeline: Meta webhook -> DB-enforced deduplication -> LLM function-calling (10 tools) -> ledger writes -> Tally XML export. Exactly-once effects over an at-least-once channel via a unique constraint, not a distributed lock; 8 simultaneous deliveries of one message produce exactly one ledger write.
+- Idempotency-guarded reconciliation pipeline: Meta webhook -> DB-enforced dedup -> LLM function-calling (10 tools) -> ledger writes -> Tally XML export. Exactly-once effects over an at-least-once channel via a unique constraint, not a distributed lock: 8 simultaneous deliveries of one message collapse to one stored row; 8 concurrent executors of one agent write step commit exactly one ledger row.
 - Containerized (Docker) polling worker over a PostgreSQL-backed queue with an atomic claim, exponential backoff with jitter, and a dead-letter queue (DLQ) with audited replay.
 - Next.js/React app in three languages (English, Hindi, Gujarati) with locale-aware invoices and GST reporting; bring-your-own Gemini key encrypted at rest (AES-256-GCM).
 
@@ -30,8 +30,8 @@ BALLAST - deterministic simulation of a multi-tenant session control plane (gith
 - Verified 4 independent ways: 8 invariants, a reference oracle, mutation testing (158 of 165 mutants killed, 197 tests), and a self-verifying shrinker. Found 9 real bugs, 4 of them in the checker rather than the implementation.
 - Measured 3 concurrency-control strategies for a flash sale against a real PostgreSQL under 200 concurrent buyers: read-then-write oversold 200 of 5 units; conditional update and optimistic versioning each sold exactly 5.
 
-EduScale - real-time coding battles across multiple Node.js instances (eduscale.vercel.app, github.com/Shailesh93602/DevScale)
-- Cross-instance coordination across 2+ Node.js server instances for real-time battles: Socket.io Redis adapter for pub/sub, Redlock distributed mutex for battle start, per-key circuit breakers around LLM calls, and Prometheus metrics.
+EduScale - real-time coding battles over Socket.io and Redis (eduscale.vercel.app, github.com/Shailesh93602/DevScale)
+- Designed for horizontal scaling across Node.js instances: Socket.io Redis adapter for cross-instance pub/sub, Redlock distributed mutex on battle start, per-key circuit breakers around LLM calls, and Prometheus metrics.
 - Next.js/React frontend with role-gated routes, audited to WCAG 2.1 AA by automated axe checks that run on every public route in CI.
 
 SKILLS
