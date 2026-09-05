@@ -264,7 +264,13 @@ test.describe("Recruiter journey", () => {
     page,
     request,
   }) => {
-    await page.goto("/portfolio", { waitUntil: "networkidle" });
+    // The card hrefs are in the server-rendered HTML, so nothing here needs
+    // the network to go quiet. On the GitHub runner this page, loaded as the
+    // fourth test of the worker against `next start`, never reached
+    // `networkidle` in 30s (3/3 attempts), while the same load standalone on
+    // the same runner went idle in 2.9s — so wait for what the test reads.
+    await page.goto("/portfolio", { waitUntil: "domcontentloaded" });
+    await expect(page.locator('a[href^="/portfolio/"]').first()).toBeVisible();
     const hrefs = await page.$$eval('a[href^="/portfolio/"]', (as) => [
       ...new Set(
         as.map((a) => (a as HTMLAnchorElement).getAttribute("href") ?? "")
