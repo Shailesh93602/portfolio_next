@@ -24,7 +24,7 @@ npm run type-check      # tsc --noEmit
 npm run format          # Prettier (writes)
 npm run format:check    # Prettier (CI check, read-only)
 
-npm test                # Jest unit tests (currently 355 tests, 38 suites)
+npm test                # Jest unit tests (currently 361 tests, 39 suites)
 npm run test:watch      # Jest watch mode
 npm run test:coverage   # Jest with coverage report
 npm run test:e2e        # Playwright (needs dev/prod server running)
@@ -99,6 +99,7 @@ lib/
   claims.ts                   # Numbers stated about OTHER repos (BALLAST ledger findings, KhataGO tool count) — defined once, imported by every page, verified daily by check-project-claims.mjs
   phone.ts                    # Contact-form phone validation/normalisation (accepts +91 / spaces / dashes)
   blog-constants.ts           # BLOG_AUTHOR, SITE_URL (for layout schema)
+  blog-html.ts                # makeScrollRegionsFocusable — adds tabindex="0" to <pre>/<table> in post HTML at render (they scroll on a phone; axe scrollable-region-focusable kept the a11y job red 2026-08-30 → 09-05)
   animations.ts               # Shared framer-motion variants (fadeIn, staggerContainer)
   utils.ts                    # cn() utility
 
@@ -109,6 +110,7 @@ scripts/
   migrate-blog.mjs               # One-time script: extracted blog posts from old blog-data.ts
 
 .github/workflows/
+  ci.yml                     # quality (tsc · eslint · prettier · jest) + a11y (a11y.spec.ts, both viewports, next dev) + e2e (recruiter-journey + meta-and-schema, chromium, production build)
   url-health-check.yml       # Daily 10:00 UTC cron runs check-live-urls.mjs
   claim-check.yml            # Daily 10:30 UTC + on PRs touching constants/projects.ts. Runs check-project-claims.mjs.
   (Supabase keepalive workflow DELETED — replaced by per-project Vercel crons inside KhataGO + DevTrack + EduScale/Frontend)
@@ -140,7 +142,7 @@ public/
 
 ## Testing
 
-- **Unit tests** (`__tests__/`): 355 tests across 38 suites. Covers API routes (statistics, contact), blog functions, components (BlogCard, ProjectCard, EducationSection, KeyMetrics), utils, constants. Run with `npm test`.
+- **Unit tests** (`__tests__/`): 361 tests across 39 suites. Covers API routes (statistics, contact), blog functions, components (BlogCard, ProjectCard, EducationSection, KeyMetrics), utils, constants. Run with `npm test`.
 - **E2E** (`e2e/`):
   - `routes.ts` — **not a spec.** Derives the route inventory (static + `/portfolio/<id>` from `constants/projects.ts` + `/blog/<slug>` from `BLOG_SLUGS`) so adding a project or post automatically widens the asset / SEO gates.
   - `navigation.spec.ts` — desktop + mobile nav sanity
@@ -153,12 +155,12 @@ public/
   - `api-endpoints.spec.ts` — API route sanity
   - `console-and-links.spec.ts` — **broken-links + console-error gate** — 11 pages × 0 errors required. Whitelists benign third-party noise (GA, Vercel Insights, Sentry).
   - `asset-integrity.spec.ts` — **every route** × 0 console errors / 0 failed requests, every `<img>` decoded with non-zero intrinsic size, og+twitter images resolve to real bytes, icons + manifest + the resume PDF (asserts `%PDF-` magic bytes), and the legacy `/hire` `/hire-me` `/blog` redirects.
-  - `recruiter-journey.spec.ts` — land → hero → portfolio → case study → live demo + repo popups → resume download.
+  - `recruiter-journey.spec.ts` — **one sequential journey** (runs in CI, chromium): home (hero above the fold, no availability/freelance copy) → /portfolio → a project detail → /engineering (findings render, internal write-ups 200) → resume PDF (200, `application/pdf`, `%PDF-`, >20 KB, plus the `/resume` redirect) → /contact (mailto + form present, **no phone number in text or markup, no "project in mind" copy**). Plus case-study substance, live/repo popups, every card resolves. The old "Hire me" CTA assertion is gone with the CTA.
   - `blog-journey.spec.ts` — listing → post → MDX rendered as HTML → RSS well-formedness → per-post OG image → BlogPosting JSON-LD.
   - `contact-form.spec.ts` — real validation copy, server-side Zod validation, and the 503 + `fallback:"mailto"` path (the default behaviour with no `RESEND_API_KEY`).
   - `statistics-fallback.spec.ts` — snapshot renders in the SSR HTML and survives an upstream 504 / a 12s hang.
   - `meta-and-schema.spec.ts` — per-route title/description/canonical/og:type, **brand appears at most once in `<title>`**, unique canonicals + titles, valid JSON-LD, sitemap ↔ robots ↔ servable-routes consistency.
-- `e2e/` tests require a running server; CI does `npm run start` after `npm run build`.
+- `e2e/` tests require a running server. **CI runs three of them** (`.github/workflows/ci.yml`): the `a11y` job runs `a11y.spec.ts` on both viewports against `next dev` (~7 min); the `e2e` job builds, then runs `recruiter-journey.spec.ts` + `meta-and-schema.spec.ts` on chromium against `next start` (Playwright starts it via `PLAYWRIGHT_WEB_SERVER_COMMAND`). Everything else is local-only — run it before a PR that touches what it covers.
 - **Pin the port.** Port 3000 is often taken by another app on this machine, which silently points the whole suite at the wrong site. Run the gates against a production build:
   ```bash
   npm run build && npx next start -p 3230
