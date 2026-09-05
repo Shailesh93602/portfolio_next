@@ -14,6 +14,7 @@ import { join } from "node:path";
 import {
   BALLAST_CHECKER_FINDINGS,
   BALLAST_LEDGER_FINDINGS,
+  KHATAGO_EVAL_COUNT,
   KHATAGO_TOOL_COUNT,
   numberWord,
   numberWordCapitalised,
@@ -67,6 +68,73 @@ describe("BALLAST finding counts", () => {
     );
     expect(src).toContain("BALLAST_LEDGER_FINDINGS = (\\d+)");
     expect(src).toContain("KHATAGO_TOOL_COUNT = (\\d+)");
+    expect(src).toContain("KHATAGO_EVAL_COUNT = (\\d+)");
+  });
+});
+
+describe("KhataGO eval count", () => {
+  it("the Evals metric, the architecture and the prose all state the constant", () => {
+    const kg = byId("khatago");
+    const metric = kg.keyMetrics?.find((m) => m.label === "Evals");
+    expect(metric?.value).toBe(`${KHATAGO_EVAL_COUNT}/${KHATAGO_EVAL_COUNT}`);
+    // A metric a reader can reproduce names the command.
+    expect(metric?.description).toContain("npm run evals");
+
+    const archItems = kg.architecture?.layers.flatMap((l) => l.items) ?? [];
+    expect(
+      archItems.some((i) =>
+        i.startsWith(`${KHATAGO_EVAL_COUNT} deterministic evals`)
+      )
+    ).toBe(true);
+    expect(kg.detailedDescription).toContain(
+      `${KHATAGO_EVAL_COUNT} deterministic evals`
+    );
+  });
+
+  it("the files AI agents read state the same number", () => {
+    for (const file of ["llms.txt", "llms-full.txt"]) {
+      const text = readFileSync(join(process.cwd(), "public", file), "utf8");
+      expect(text).toContain(`${KHATAGO_EVAL_COUNT} deterministic evals`);
+      // No stale literal survives alongside it.
+      expect(text).not.toMatch(
+        new RegExp(`\\b(?!${KHATAGO_EVAL_COUNT}\\b)\\d+ deterministic evals`)
+      );
+    }
+  });
+
+  it("nothing claims the 2026-09-05 agent work is live: it is in the repository", () => {
+    // KhataGO's production deploys have failed since 2026-08-30; the state
+    // machine, evals and retention crons are merged, not served. Every
+    // surface that describes them says so.
+    const kg = byId("khatago");
+    expect(kg.detailedDescription).toMatch(/In the repository/);
+    const layer = kg.architecture?.layers.find((l) =>
+      /Agent runtime/.test(l.name)
+    );
+    expect(layer?.name).toMatch(/in the repository/);
+    for (const file of ["llms.txt", "llms-full.txt"]) {
+      const text = readFileSync(join(process.cwd(), "public", file), "utf8");
+      expect(text).toMatch(/[Ii]n the repository[^.]*not yet deployed/);
+    }
+  });
+});
+
+describe("KhataGO race claims match the tests they cite", () => {
+  it("the home page attributes each 8 to the property its test proves", () => {
+    const home = readFileSync(
+      join(process.cwd(), "app", "HomeContent.tsx"),
+      "utf8"
+    );
+    // whatsapp-webhook.integration.test.ts counts WhatsappMessage rows.
+    expect(home).toMatch(
+      /8 simultaneous deliveries of one message collapse to one stored row/
+    );
+    // agent-run.integration.test.ts counts Transaction rows.
+    expect(home).toMatch(
+      /8 concurrent executors of one agent write step commit exactly one ledger row/
+    );
+    // The sentence no test asserted.
+    expect(home).not.toMatch(/deliveries[^.]*produce exactly one ledger write/);
   });
 });
 

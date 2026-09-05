@@ -205,7 +205,7 @@ export default function HomeContent({ featuredPosts }: Props) {
               tag: "khatago",
               title: "Webhook idempotency, in production",
               proof:
-                "WhatsApp-first bookkeeping. Meta delivers at least once, so idempotency is enforced in Postgres — a unique message id plus an atomic PENDING→PROCESSING claim. Proven under a real race: 8 simultaneous deliveries of the same message produce exactly one ledger write.",
+                "WhatsApp-first bookkeeping. Meta delivers at least once, so idempotency is enforced in Postgres — a unique message id plus an atomic PENDING→PROCESSING claim. Proven under a real race against Postgres: 8 simultaneous deliveries of one message collapse to one stored row; 8 concurrent executors of one agent write step commit exactly one ledger row.",
               href: "/portfolio/khatago",
               cta: "See how KhataGO works",
             },

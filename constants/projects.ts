@@ -1,6 +1,7 @@
 import {
   BALLAST_CHECKER_FINDINGS,
   BALLAST_LEDGER_FINDINGS,
+  KHATAGO_EVAL_COUNT,
   KHATAGO_TOOL_COUNT,
   numberWord,
 } from "../lib/claims";
@@ -585,7 +586,7 @@ const rawProjects: Project[] = [
     // FINDINGS.md §2 — a claim with no way out of it.
     pullQuote:
       "A lock without an expiry is a deadlock waiting for a crash: mutual exclusion and liveness are different properties, and passing tests for the first says nothing about the second.",
-    detailedDescription: `KhataGO is a WhatsApp-first bookkeeping platform for Indian MSMEs. The backend is a reconciliation pipeline: Meta webhooks arrive with at-least-once delivery, and idempotency is enforced in Postgres rather than a cache — a unique constraint on the WhatsApp message id rejects duplicate deliveries, and a conditional UPDATE (PENDING→PROCESSING) atomically claims each message so concurrent redeliveries produce exactly one Gemini run instead of a double ledger write. The webhook persists the message and acknowledges Meta within the request; a containerized polling worker drains the queue — the same Postgres table, claimed through the same atomic UPDATE, retried with exponential backoff and jitter, and dead-lettered after three attempts with an audited admin replay. Gemini 2.0 Flash with function-calling parses both text ('Sold 500 to Ram') and receipt images (OCR → structured JSON with merchant/amount/date/line items) into ${KHATAGO_TOOL_COUNT} tool calls — create_transaction, create_receivable, record_payment_received, get_party_ledger, send_payment_reminder, and others — each mapped to a Prisma write. Results flow back to the user over WhatsApp; a CA portal exports Tally-ready XML vouchers for month-end close.`,
+    detailedDescription: `KhataGO is a WhatsApp-first bookkeeping platform for Indian MSMEs. The backend is a reconciliation pipeline: Meta webhooks arrive with at-least-once delivery, and idempotency is enforced in Postgres rather than a cache — a unique constraint on the WhatsApp message id rejects duplicate deliveries, and a conditional UPDATE (PENDING→PROCESSING) atomically claims each message so concurrent redeliveries produce exactly one Gemini run instead of a double ledger write. The webhook persists the message and acknowledges Meta within the request; a containerized polling worker drains the queue — the same Postgres table, claimed through the same atomic UPDATE, retried with exponential backoff and jitter, and dead-lettered after three attempts with an audited admin replay. Gemini 2.0 Flash with function-calling parses both text ('Sold 500 to Ram') and receipt images (OCR → structured JSON with merchant/amount/date/line items) into ${KHATAGO_TOOL_COUNT} tool calls — create_transaction, create_receivable, record_payment_received, get_party_ledger, send_payment_reminder, and others — each mapped to a Prisma write. Results flow back to the user over WhatsApp; a CA portal exports Tally-ready XML vouchers for month-end close. In the repository (merged 2026-09-05, not yet deployed), the tool-calling loop runs as an explicit, resumable state machine: the model's plan for each turn is persisted before any tool runs, and a write tool commits in the same transaction as its step, so a crash resumes from the last durable turn and at-most-once execution is a property of the database rather than of control flow. Bring-your-own Gemini keys get per-key cooldown isolation, so one user's 429 does not park a model for everyone. Each run is traced as one document (Postgres JSONB by default, a MongoDB adapter opt-in); ${KHATAGO_EVAL_COUNT} deterministic evals run in CI through promptproof under both the default loop and a LangGraph.js rendering behind a flag; retention crons bound traces and runs.`,
     architecture: {
       layers: [
         {
@@ -603,6 +604,17 @@ const rawProjects: Project[] = [
             "Receipt-image pipeline: download → Vision → structured JSON",
             "Tool executor maps function calls to Prisma writes",
             "Chat history windowed to last 10 turns per user",
+          ],
+        },
+        {
+          name: "Agent runtime (in the repository)",
+          items: [
+            "Tool-calling loop as a resumable state machine: the plan for a turn is persisted before any tool runs",
+            "A write tool commits in one transaction with its step — at-most-once as a database property",
+            "Per-key cooldowns for bring-your-own Gemini keys; one user's 429 stays that user's",
+            "Traces as one document per run: Postgres JSONB by default, MongoDB adapter opt-in",
+            `${KHATAGO_EVAL_COUNT} deterministic evals in CI via promptproof, under the default loop and a LangGraph.js engine behind a flag`,
+            "Retention crons for traces, runs and steps",
           ],
         },
         {
@@ -649,6 +661,12 @@ const rawProjects: Project[] = [
           "Gemini function-calling surface: transactions, receivables, payments, ledgers, reminders",
       },
       {
+        label: "Evals",
+        value: `${KHATAGO_EVAL_COUNT}/${KHATAGO_EVAL_COUNT}`,
+        description:
+          "Fixture conversations through the production loop under a scripted model, in CI, under both engines. Reproduce in the repository: npm run evals; npm run evals -- --engine=langgraph",
+      },
+      {
         label: "Languages",
         value: "3",
         description:
@@ -673,7 +691,7 @@ const rawProjects: Project[] = [
     techStack: [
       "Frontend: Next.js (App Router), React, Tailwind CSS, Recharts, i18next",
       "Backend: Next.js API routes (Node.js, TypeScript), Prisma ORM, PostgreSQL; a standalone Node worker process",
-      "AI & Messaging: Google Gemini AI (function-calling + Vision OCR), WhatsApp Cloud API",
+      "AI & Messaging: Google Gemini AI (function-calling + Vision OCR), WhatsApp Cloud API; agent loop as a resumable state machine, promptproof evals, LangGraph.js as a comparison engine behind a flag, MongoDB adapter for traces (opt-in)",
       "Infrastructure: Supabase (Auth & Real-time), Vercel for the web app, one Docker image running web + worker as two processes, Postgres-backed job queue with a dead-letter queue",
     ],
     problem:

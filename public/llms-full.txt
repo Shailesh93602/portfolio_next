@@ -104,16 +104,17 @@ Developer intelligence dashboard:
 
 ### KhataGO
 **Live:** https://khatago.vercel.app/
-**Stack:** Next.js (App Router + API routes), TypeScript, Prisma, PostgreSQL (Supabase), Gemini AI (function-calling, 10 tools), WhatsApp Cloud API, i18next, Node.js worker process, Docker
+**Stack:** Next.js (App Router + API routes), TypeScript, Prisma, PostgreSQL (Supabase), Gemini AI (function-calling, 10 tools), WhatsApp Cloud API, i18next, Node.js worker process, Docker, promptproof (evals), LangGraph.js (comparison engine behind a flag), MongoDB (opt-in trace store)
 **Note:** Source code is private.
 
 WhatsApp-first AI accounting platform for Indian SMBs:
 
 **Technical depth:**
-- **WhatsApp webhook idempotency (no cache):** Meta delivers at least once. The WhatsApp message id is a unique column, so a duplicate insert fails at the database; processing then begins with a conditional UPDATE flipping aiStatus PENDING→PROCESSING only if it is still PENDING. Zero rows changed means another delivery already claimed it, so concurrent redeliveries produce exactly one Gemini run and one ledger write — and idempotency can never drift from the audit row the way a separate cache can.
+- **WhatsApp webhook idempotency (no cache):** Meta delivers at least once. The WhatsApp message id is a unique column, so a duplicate insert fails at the database; processing then begins with a conditional UPDATE flipping aiStatus PENDING→PROCESSING only if it is still PENDING. Zero rows changed means another delivery already claimed it, so concurrent redeliveries produce exactly one Gemini run — and idempotency can never drift from the audit row the way a separate cache can. Asserted against a real Postgres: 8 simultaneous deliveries of one message collapse to one stored row; 8 concurrent executors of one agent write step commit exactly one ledger row.
 - **Gemini AI OCR pipeline:** WhatsApp image URL → download to buffer → Gemini Vision API → structured JSON (merchant, amount, date, line items) → ledger transaction. Error handling for low-confidence extractions.
 - **Tally XML export:** Generates TALLYMESSAGE XML vouchers for accountants. Non-trivial: Tally requires specific date format, ledger name lookup from master data, and precise GST field structure. Wrong XML silently fails to import.
 - **Fast webhook ack + a worker over Postgres:** The handler persists the message and returns to Meta immediately. A containerized polling worker (a standalone Node process in the same Docker image as the web app) drains the queue — the Postgres table itself, claimed with an atomic conditional UPDATE, retried with exponential backoff and jitter (250ms → 30s), dead-lettered after 3 attempts, with an audited admin replay. No broker: the table already has visibility timeouts (`aiClaimedAt`) and attempt counts, and a second system whose state can disagree with the first would only add a failure mode.
+- **Agent loop as a resumable state machine (in the repository, merged 2026-09-05, not yet deployed):** the model's plan for each turn is persisted before any tool runs; a write tool commits in the same transaction as its step, so a crash resumes from the last durable turn and at-most-once execution is a property of the database, not of control flow. Bring-your-own Gemini keys get per-key cooldown isolation. Each run is traced as one document (Postgres JSONB by default, a MongoDB adapter opt-in). 21 deterministic evals run in CI through promptproof under both the default loop and a LangGraph.js rendering behind a flag; retention crons bound traces, runs and steps.
 - **i18next:** Full UI in English, Hindi, and Gujarati.
 
 ---
