@@ -22,10 +22,11 @@ const BLOG_DIR = join(process.cwd(), "content", "blog");
 
 /**
  * The archive boundary. Seventeen posts dated 2024-09-28 → 2024-10-09 were
- * written for search traffic; they stay online (URLs keep returning 200, they
- * stay in the sitemap) but are not surfaced anywhere the site chooses what to
- * show. Anything dated on or before this is expected to be archived, and
- * anything after it is expected not to be.
+ * written for search traffic; they stay online (URLs keep returning 200) but
+ * are not surfaced anywhere the site chooses what to show — not the index,
+ * the feed, the tags, nor (since 2026-09-05) the sitemap, and they are served
+ * with noindex; see archived-posts.test.ts. Anything dated on or before this
+ * is expected to be archived, and anything after it is expected not to be.
  */
 const ARCHIVE_CUTOFF = "2024-12-31";
 

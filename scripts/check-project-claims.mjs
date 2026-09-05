@@ -45,9 +45,16 @@ const HOME_CONTENT = resolve(__dirname, "..", "app", "HomeContent.tsx");
  */
 const CLAIMS_TS = resolve(__dirname, "..", "lib", "claims.ts");
 
+/**
+ * Personal facts (lib/profile.ts) — the GeeksforGeeks problem count lives here
+ * and is checked against the profile itself, not a repository.
+ */
+const PROFILE_TS = resolve(__dirname, "..", "lib", "profile.ts");
+
 const LOCAL_SOURCES = {
   projects: PROJECTS_TS,
   home: HOME_CONTENT,
+  profile: PROFILE_TS,
   // Numbers that more than one page repeats live here ONCE (`/engineering`
   // said six, `/portfolio/ballast` said eight, the ledger said nine). The
   // pages import the constant; this script checks the constant.
@@ -67,8 +74,11 @@ const TIMEOUT_MS = 20_000;
 const CLAIMS = [
   {
     what: "BALLAST test count",
-    // What this portfolio says.
-    localPattern: /"Tests: Vitest \((\d+)\)"/,
+    // What this portfolio says — one constant, rendered by the project card,
+    // and held against the resume and llms.txt by claims-consistency.test.ts.
+    // (It read 197 on three surfaces while the README said 202.)
+    localFile: "claims",
+    localPattern: /BALLAST_TEST_COUNT = (\d+)/,
     // Where the truth lives.
     repo: "Shailesh93602/ballast",
     path: "README.md",
@@ -200,6 +210,39 @@ const CLAIMS = [
     sourceCount: /^\s*id: "/gm,
     privateRepo: true,
   },
+  // ── GeeksforGeeks ─────────────────────────────────────────────────────
+  //
+  // The site says "Institute Rank 1 on GeeksforGeeks (650+ problems solved)".
+  // The profile page is a Next.js app whose RSC payload embeds the profile
+  // record as JSON — `"total_problems_solved":650,"institute_rank":1` — so
+  // the two fields are matched by their JSON keys rather than by page
+  // structure. If GfG moves them, the claim becomes UNVERIFIABLE (a warning
+  // that names the reason), not a failure: a page redesign is not a false
+  // claim, and scraping the rendered HTML instead would make this the
+  // flakiest check in the file.
+  //
+  // "650+" is a floor, so the comparison is `atLeast`: the upstream figure may
+  // grow past the stated one without making the claim false. It is reported
+  // when it does, so the number can be raised.
+  {
+    what: "GeeksforGeeks problems solved (stated as a floor)",
+    localFile: "profile",
+    localPattern: /problemsSolved: (\d+)/,
+    url: "https://www.geeksforgeeks.org/user/thenameisshaileshbhai/",
+    // The JSON is string-escaped inside the RSC script tag, hence the optional
+    // backslash before the closing quote.
+    sourcePattern: /total_problems_solved\\?":(\d+)/,
+    compare: "atLeast",
+    fragile: true,
+  },
+  {
+    what: "GeeksforGeeks institute rank",
+    localFile: "profile",
+    localPattern: /geeksforgeeksRank: (\d+)/,
+    url: "https://www.geeksforgeeks.org/user/thenameisshaileshbhai/",
+    sourcePattern: /institute_rank\\?":(\d+)/,
+    fragile: true,
+  },
 ];
 
 const WORDS = {
@@ -309,7 +352,18 @@ const LOCAL_LABELS = {
   projects: "constants/projects.ts",
   home: "app/HomeContent.tsx",
   claims: "lib/claims.ts",
+  profile: "lib/profile.ts",
 };
+
+/** A plain page, for claims whose source is not a GitHub repository. */
+async function fetchPage(url) {
+  const res = await request(url, {
+    "User-Agent":
+      "Mozilla/5.0 (compatible; portfolio-claim-check; +https://shaileshchaudhari.vercel.app)",
+    Accept: "text/html",
+  });
+  return res.text();
+}
 let failures = 0;
 let unverifiable = 0;
 
@@ -333,7 +387,9 @@ for (const claim of CLAIMS) {
 
   let upstream;
   try {
-    const text = await fetchAtHead(claim.repo, claim.path);
+    const text = claim.url
+      ? await fetchPage(claim.url)
+      : await fetchAtHead(claim.repo, claim.path);
     if (claim.sourceCheck || claim.sourceMustMatch) {
       const ok = claim.sourceCheck
         ? claim.sourceCheck(text)
@@ -355,6 +411,16 @@ for (const claim of CLAIMS) {
     } else {
       const m = text.match(claim.sourcePattern);
       if (!m) {
+        if (claim.fragile) {
+          // The source is a third-party page, not a file this project's
+          // owner controls. Its shape changing says nothing about the claim.
+          unverifiable++;
+          console.warn(
+            `⚠  ${claim.what}: portfolio says ${stated}, but ${claim.url} no longer ` +
+              `exposes the field this check reads — UNVERIFIABLE until the check is updated.`
+          );
+          continue;
+        }
         console.error(
           `✗  ${claim.what}: upstream no longer states this — the claim is unverifiable`
         );
@@ -364,6 +430,13 @@ for (const claim of CLAIMS) {
       upstream = m[1];
     }
   } catch (error) {
+    if (claim.fragile) {
+      unverifiable++;
+      console.warn(
+        `⚠  ${claim.what}: could not read ${claim.url} (${error.message}) — UNVERIFIABLE this run.`
+      );
+      continue;
+    }
     if (claim.privateRepo && /HTTP 404/.test(error.message)) {
       // Distinguished from an outage ON PURPOSE. A private repo is not a
       // transient failure that will clear itself — it is a claim that CANNOT
@@ -388,6 +461,23 @@ for (const claim of CLAIMS) {
     ? (WORDS[Number(upstream)] ?? upstream)
     : upstream;
 
+  if (claim.compare === "atLeast") {
+    const statedN = Number(stated);
+    const upstreamN = Number(upstream);
+    if (upstreamN >= statedN) {
+      console.log(
+        `✓  ${claim.what}: portfolio says ${stated}+, upstream says ${upstream}` +
+          (upstreamN > statedN ? " — the floor can be raised" : "")
+      );
+    } else {
+      console.error(
+        `✗  ${claim.what}: portfolio says ${stated}+, upstream says ${upstream}`
+      );
+      failures++;
+    }
+    continue;
+  }
+
   if (stated === expected) {
     console.log(`✓  ${claim.what}: portfolio says ${stated}, upstream agrees`);
   } else {
@@ -402,16 +492,16 @@ console.log();
 if (failures > 0) {
   console.error(
     `${failures} claim(s) no longer match. Update constants/projects.ts, ` +
-      `app/HomeContent.tsx or lib/claims.ts — a claim that was true when ` +
-      `written is still false now.`
+      `app/HomeContent.tsx, lib/claims.ts or lib/profile.ts — a claim that ` +
+      `was true when written is still false now.`
   );
   process.exit(1);
 }
 console.log("All verifiable claims match.");
 if (unverifiable > 0) {
   console.log(
-    `${unverifiable} claim(s) could not be verified because their repository ` +
-      `is private. Not a failure — but those are the claims that can drift ` +
-      `without anything noticing.`
+    `${unverifiable} claim(s) could not be verified (private repository, or a ` +
+      `third-party page that could not be read). Not a failure — but those are ` +
+      `the claims that can drift without anything noticing.`
   );
 }

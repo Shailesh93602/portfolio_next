@@ -1,7 +1,9 @@
 import { test, expect, APIRequestContext } from "@playwright/test";
 import {
   ALL_ROUTES,
+  ARCHIVED_BLOG_ROUTES,
   BLOG_ROUTES,
+  INDEXABLE_ROUTES,
   PROJECT_ROUTES,
   STATIC_ROUTES,
 } from "./routes";
@@ -215,15 +217,63 @@ test.describe("Sitemap and robots agree with what is actually servable", () => {
     expect(broken, "sitemap entries that do not return 200").toEqual([]);
   });
 
-  test("every servable route is in the sitemap", async ({ request }) => {
+  test("every indexable route is in the sitemap, and no archived post is", async ({
+    request,
+  }) => {
     const xml = await (await request.get("/sitemap.xml")).text();
     const paths = new Set(
       [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
         (m) => new URL(m[1]).pathname.replace(/\/$/, "") || "/"
       )
     );
-    const missing = ALL_ROUTES.filter((r) => !paths.has(r));
+    const missing = INDEXABLE_ROUTES.filter((r) => !paths.has(r));
     expect(missing, "routes missing from the sitemap").toEqual([]);
+    const leaked = ARCHIVED_BLOG_ROUTES.filter((r) => paths.has(r));
+    expect(leaked, "archived posts advertised in the sitemap").toEqual([]);
+  });
+
+  test("archived posts are served, noindexed, and crawlable", async ({
+    request,
+  }) => {
+    // The 2024 batch kept ranking for his name because it sat in the sitemap
+    // with no robots directive. The fix has three parts and each is asserted:
+    // the URL still answers (inbound links keep working), the served HTML
+    // carries the noindex — server-rendered, not injected on the client —
+    // and robots.txt does NOT disallow it, or the tag would never be read.
+    expect(ARCHIVED_BLOG_ROUTES.length).toBeGreaterThan(0);
+    const robots = await (await request.get("/robots.txt")).text();
+    const disallows = [...robots.matchAll(/Disallow:\s*(\S*)/gi)].map(
+      (m) => m[1]
+    );
+    for (const route of ARCHIVED_BLOG_ROUTES) {
+      const res = await request.get(route, { maxRedirects: 0 });
+      expect(res.status(), `${route} status`).toBe(200);
+      const html = await res.text();
+      expect(html, `${route} lacks a server-rendered noindex`).toMatch(
+        /<meta[^>]+name="robots"[^>]+content="noindex,\s*follow"/i
+      );
+      expect(
+        disallows.some((d) => d && route.startsWith(d)),
+        `${route} is disallowed in robots.txt, which cancels its noindex`
+      ).toBe(false);
+    }
+  });
+
+  test("published posts carry no noindex", async ({ request }) => {
+    // The complement: the directive must not leak onto the posts the site
+    // wants indexed. Checks the newest three rather than all of them — one
+    // wrong conditional would hit every post, so three is enough to catch it.
+    const sample = INDEXABLE_ROUTES.filter((r) => r.startsWith("/blog/")).slice(
+      0,
+      3
+    );
+    expect(sample.length).toBe(3);
+    for (const route of sample) {
+      const html = await (await request.get(route)).text();
+      expect(html, `${route} is noindexed`).not.toMatch(
+        /<meta[^>]+name="robots"[^>]+content="[^"]*noindex/i
+      );
+    }
   });
 
   test("robots.txt allows crawling and points at the sitemap", async ({

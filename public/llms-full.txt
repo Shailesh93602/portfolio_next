@@ -64,7 +64,7 @@ Owned authentication module end-to-end on Garage Management System team project 
 **Institution location:** Bhavnagar, Gujarat, India
 **Period:** 2020 – 2024
 **CGPA:** 7.99 / 10
-**Notable:** Institute Rank 1 on GeeksforGeeks (604+ problems solved); Hackathon Finalist at New India Vibrant Hackathon 2023
+**Notable:** Institute Rank 1 on GeeksforGeeks (650+ problems solved); Hackathon Finalist at New India Vibrant Hackathon 2023
 
 ---
 
@@ -182,11 +182,11 @@ Professional WCAG accessibility testing suite:
 
 ## Achievements
 
-- **GeeksforGeeks Institute Rank 1** — 604+ problems solved. Profile: https://www.geeksforgeeks.org/user/thenameisshaileshbhai/
-- **HackerRank 5-Star** — Problem Solving, Python. Profile: https://www.hackerrank.com/profile/shailesh93602
+- **Institute Rank 1 on GeeksforGeeks (650+ problems solved).** Profile: https://www.geeksforgeeks.org/user/thenameisshaileshbhai/
+- **5-star C++ on HackerRank.** Profile: https://www.hackerrank.com/profile/shailesh93602
 - **Hackathon Finalist** — New India Vibrant Hackathon 2023 (ITI Alumni Tracking System, React + PHP)
 - **LeetCode:** https://leetcode.com/u/Shaileshbhai/
-- **CodeChef:** https://www.codechef.com/users/shaileshbhai03
+- **Also active on CodeChef:** https://www.codechef.com/users/shaileshbhai03
 
 ---
 

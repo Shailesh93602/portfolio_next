@@ -4,7 +4,7 @@ import { PROFILE } from "@/lib/profile";
 
 const titleTag = `About — ${PROFILE.name.full}`;
 
-const descriptionLong = `${PROFILE.role.title} based in ${PROFILE.location.displayShort}, originally from ${PROFILE.location.hometown}. Currently at ${PROFILE.role.company} working on the backend of the core QA-automation product. Previously ~2 years at EsparkBiz. ${PROFILE.education.degree}, ${PROFILE.education.institutionShort}, ${PROFILE.education.year}.`;
+const descriptionLong = `${PROFILE.role.title} based in ${PROFILE.location.displayShort}, originally from ${PROFILE.location.hometown}. Currently at ${PROFILE.role.company} working on the backend of the core QA-automation product. Previously ${PROFILE.previousRole.tenure}. ${PROFILE.education.degree}, ${PROFILE.education.institutionShort}, ${PROFILE.education.year}.`;
 
 const descriptionOg = `${PROFILE.role.title} based in ${PROFILE.location.displayShort}. ${PROFILE.bio.oneLine}`;
 

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tooltip } from "@/components/ui/tooltip";
 import { format } from "date-fns";
+import { contributionRange } from "@/lib/contribution-range";
 
 interface ContributionDay {
   date: string;
@@ -62,7 +63,7 @@ export function GitHubContributionHeatmap({
         <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
           <h3 className="text-lg font-semibold">Contribution Activity</h3>
           <p className="text-sm text-muted-foreground">
-            Last 365 days &middot; Total:{" "}
+            {contributionRange(contributionData)} &middot; Total:{" "}
             <span className="font-medium text-foreground">
               {contributionData
                 .reduce((a, d) => a + d.count, 0)

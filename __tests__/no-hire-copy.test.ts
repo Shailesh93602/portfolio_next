@@ -16,15 +16,47 @@
  * It also bans the copy "tells" the same review flagged — "premium",
  * "sophisticated", "revolutionary", "engineering excellence" — which say
  * nothing and read as filler.
+ *
+ * 2026-09-05, second pass of the live site: /now said "Targeting Stripe,
+ * Vercel, Supabase as next employer." A Now page is the one place a job
+ * search leaks out in the present tense, so the employer-targeting shapes
+ * are banned too, and the scan now covers content/ (the blog) as well.
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const ROOT = process.cwd();
 
-const SCAN_DIRS = ["app", "components", "lib", "constants"];
+const SCAN_DIRS = ["app", "components", "lib", "constants", "content"];
 const SCAN_FILES = ["public/llms.txt", "public/llms-full.txt"];
-const EXTENSIONS = new Set([".ts", ".tsx", ".txt"]);
+const EXTENSIONS = new Set([".ts", ".tsx", ".txt", ".mdx"]);
+
+/**
+ * Job-search copy: banned everywhere, the blog included. Someone employed
+ * does not announce on a public page whom they would rather work for.
+ */
+const JOB_SEARCH: { pattern: RegExp; why: string }[] = [
+  { pattern: /next employer/i, why: "announces a job search" },
+  {
+    pattern: /as (?:my |an? )?(?:next |future |dream )?employers?\b/i,
+    why: "announces a job search",
+  },
+  // "Targeting Stripe, Vercel, Supabase" — a capitalised name right after
+  // "targeting". Lower-case objects ("targeting AI-built apps") are prose.
+  {
+    pattern: /\btargeting\s+[A-Z][A-Za-z0-9]*(?:,|\s+(?:and|or|as)\b)/,
+    why: "names a target company",
+  },
+  { pattern: /\bopen to\b/i, why: "availability framing" },
+  {
+    pattern: /looking for (?:a |my next )?(?:role|job|position|opportunit)/i,
+    why: "announces a job search",
+  },
+  {
+    pattern: /\bdream (?:company|job|employer)/i,
+    why: "announces a job search",
+  },
+];
 
 const BANNED: { pattern: RegExp; why: string }[] = [
   { pattern: /available for hire/i, why: "advertises availability" },
@@ -45,12 +77,16 @@ const BANNED: { pattern: RegExp; why: string }[] = [
   { pattern: /\brevolutionary\b/i, why: "copy tell" },
   { pattern: /engineering excellence/i, why: "copy tell" },
   { pattern: /also known as ContextQA/i, why: "ContextQA is the company" },
+  { pattern: /ContextQA, the company/i, why: "explains the obvious" },
+  { pattern: /\bour core QA-automation/i, why: "'our' is the company's voice" },
+  ...JOB_SEARCH,
 ];
 
 function stripComments(src: string): string {
   return src
     .replace(/\/\*[\s\S]*?\*\//g, " ")
     .replace(/\{\/\*[\s\S]*?\*\/\}/g, " ")
+    .replace(/<!--[\s\S]*?-->/g, " ")
     .replace(/(^|[^:"'`])\/\/.*$/gm, "$1");
 }
 
@@ -77,11 +113,34 @@ describe("no availability / freelance copy on any public surface", () => {
     expect(files.length).toBeGreaterThan(40);
   });
 
+  it("still catches the /now sentence that started this pass", () => {
+    const live = [
+      "Targeting Stripe, Vercel, Supabase as next employer.",
+      "open to new opportunities? Yes.",
+      "I would love Salesforce as my next employer",
+      "currently looking for a role in backend",
+    ];
+    for (const line of live) {
+      expect(BANNED.some(({ pattern }) => pattern.test(line))).toBe(true);
+    }
+    // And does not fire on ordinary prose the site legitimately carries.
+    for (const line of [
+      "test generation and execution targeting AI-built apps",
+      "a Slack bot made multi-tenant",
+      "openTo: []",
+    ]) {
+      expect(BANNED.some(({ pattern }) => pattern.test(line))).toBe(false);
+    }
+  });
+
   it("finds none of the banned phrases", () => {
     const offenders: string[] = [];
     for (const file of files) {
       const text = stripComments(readFileSync(file, "utf8"));
-      for (const { pattern, why } of BANNED) {
+      // The blog is scanned for job-search copy only. Its 2024 posts use
+      // words like "premium" and "freelance" in their ordinary senses.
+      const rules = file.endsWith(".mdx") ? JOB_SEARCH : BANNED;
+      for (const { pattern, why } of rules) {
         const m = text.match(pattern);
         if (m) offenders.push(`${relative(ROOT, file)}: "${m[0]}" (${why})`);
       }

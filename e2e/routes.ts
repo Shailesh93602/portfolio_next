@@ -1,5 +1,5 @@
 import { projects } from "../constants/projects";
-import { BLOG_SLUGS, publishedPosts } from "../lib/blog-data";
+import { BLOG_SLUGS, blogPosts, publishedPosts } from "../lib/blog-data";
 
 /**
  * Single source of truth for "every route a visitor can land on".
@@ -29,14 +29,24 @@ export const PROJECT_ROUTES = projects.map((p) => `/portfolio/${p.id}`);
 export const BLOG_ROUTES = BLOG_SLUGS.map((slug) => `/blog/${slug}`);
 
 /**
- * `/blog/<slug>` for the posts the listing, feed and home actually surface.
- * Archived posts (the 2024 SEO-era batch) still render at their URLs but are
- * deliberately not linked from /blogs, so "every post is reachable from the
- * listing" is asserted over THIS set.
+ * `/blog/<slug>` for the posts the listing, feed, home AND sitemap actually
+ * surface. Archived posts (the 2024 SEO-era batch) still render at their URLs
+ * but are deliberately not linked from /blogs, so "every post is reachable
+ * from the listing" and "every indexable route is in the sitemap" are both
+ * asserted over THIS set.
  */
 export const PUBLISHED_BLOG_ROUTES = publishedPosts.map(
   (p) => `/blog/${p.slug}`
 );
+
+/**
+ * The archived posts: served (200), noindexed, out of the sitemap, and NOT
+ * disallowed in robots.txt — a crawler that may not fetch the page never reads
+ * the noindex, so Disallow + noindex would keep them indexed forever.
+ */
+export const ARCHIVED_BLOG_ROUTES = blogPosts
+  .filter((p) => p.archived)
+  .map((p) => `/blog/${p.slug}`);
 
 /** Legacy/guessable URLs that must permanently redirect, not 404. */
 export const REDIRECT_ROUTES: { from: string; to: string }[] = [
@@ -52,6 +62,13 @@ export const ALL_ROUTES: string[] = [
   ...STATIC_ROUTES,
   ...PROJECT_ROUTES,
   ...BLOG_ROUTES,
+];
+
+/** Every route that should be in the sitemap: ALL_ROUTES minus the archive. */
+export const INDEXABLE_ROUTES: string[] = [
+  ...STATIC_ROUTES,
+  ...PROJECT_ROUTES,
+  ...PUBLISHED_BLOG_ROUTES,
 ];
 
 /**

@@ -27,7 +27,7 @@ const PHONE_LOCAL = PROFILE.contact.phone.replace(/\D/g, "").slice(-10);
 
 /** Copy the site must not carry — every phrase was live before 2026-09-03. */
 const BANNED_COPY =
-  /available for hire|open to new opportunities|hire me\b|freelanc|have a project in mind|within 48 hours|under 48 hours|reply time|targeting .* roles/i;
+  /available for hire|open to new opportunities|hire me\b|freelanc|have a project in mind|within 48 hours|under 48 hours|reply time|targeting .* roles|next employer|as (?:my )?(?:next )?employer|\bopen to\b|looking for a role/i;
 
 /**
  * Follow a navbar link on either viewport. The desktop links are `hidden` on

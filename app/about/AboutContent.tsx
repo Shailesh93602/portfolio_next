@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ChevronUpIcon, ChevronDownIcon } from "@/components/icons";
 import { itemVariants } from "@/constants";
+import { PROFILE } from "@/lib/profile";
 import { ExperienceSection } from "@/components/ExperienceSection";
 import { EducationSection } from "@/components/EducationSection";
 import AchievementsSection from "@/components/Achievements";
@@ -19,9 +19,11 @@ const containerVariants = {
   },
 };
 
+// There is no expand/collapse toggle on this page any more. The content was
+// already open by default, so the only thing the toggle ever rendered was a
+// full-width "Show Less" card under the closing quote — a control for hiding
+// the experience and education a visitor came here to read.
 export default function AboutContent() {
-  const [showFullContent, setShowFullContent] = useState<boolean>(true);
-
   return (
     <div className="container mx-auto px-4 py-24">
       <motion.div
@@ -75,10 +77,10 @@ export default function AboutContent() {
                 GKE with a pre-warmed pod pool, idempotent stop and request
                 trace ids. The first 2-3 months I shipped 2 Chrome extensions
                 (Vibe Testing, AxeTos) before moving to the core product. Before
-                ContextQA, I spent ~2 years at eSparkBiz building EdTech,
-                e-commerce, and corporate training platforms end-to-end. On the
-                side I explore distributed systems (Redlock, Socket.io Redis
-                adapter, Prometheus metrics), deterministic simulation and
+                ContextQA, I spent {PROFILE.previousRole.tenure} building
+                EdTech, e-commerce, and corporate training platforms end-to-end.
+                On the side I explore distributed systems (Redlock, Socket.io
+                Redis adapter, Prometheus metrics), deterministic simulation and
                 mutation testing (BALLAST), AI pipelines (Gemini
                 function-calling, OCR), and webhook idempotency patterns. I
                 reach for correctness over convenience.
@@ -87,60 +89,39 @@ export default function AboutContent() {
 
             <motion.div
               initial="hidden"
-              animate={showFullContent ? "visible" : "hidden"}
+              animate="visible"
               variants={containerVariants}
               className="space-y-12"
             >
-              {showFullContent && (
-                <>
-                  <ExperienceSection />
+              <ExperienceSection />
 
-                  <EducationSection />
+              <EducationSection />
 
-                  <AchievementsSection />
-                  <SkillsSection />
-                  {/* Replaced a borrowed aphorism ("Code is like humor...")
-                      that implied the opposite of what he does — explaining his
-                      work carefully is the thing he is best at. This says what
-                      he actually values, in his own words, and links to the
-                      evidence rather than asking to be taken on faith. */}
-                  <motion.blockquote
-                    variants={itemVariants}
-                    className="my-8 border-l-4 border-primary py-4 pl-6 text-lg text-muted-foreground"
-                  >
-                    <p className="italic">
-                      &quot;I would rather ship something I can prove is correct
-                      than something that looks clever. Almost every bug I am
-                      proud of finding was in code that already compiled,
-                      already passed its tests, and had already been
-                      reviewed.&quot;
-                    </p>
-                    <Link
-                      href="/engineering"
-                      className="mt-3 inline-block text-base not-italic underline underline-offset-4 hover:text-primary"
-                    >
-                      The full list, and why each one looked correct &rarr;
-                    </Link>
-                  </motion.blockquote>
-                </>
-              )}
+              <AchievementsSection />
+              <SkillsSection />
+              {/* Replaced a borrowed aphorism ("Code is like humor...")
+                  that implied the opposite of what he does — explaining his
+                  work carefully is the thing he is best at. This says what
+                  he actually values, in his own words, and links to the
+                  evidence rather than asking to be taken on faith. */}
+              <motion.blockquote
+                variants={itemVariants}
+                className="my-8 border-l-4 border-primary py-4 pl-6 text-lg text-muted-foreground"
+              >
+                <p className="italic">
+                  &quot;I would rather ship something I can prove is correct
+                  than something that looks clever. Almost every bug I am proud
+                  of finding was in code that already compiled, already passed
+                  its tests, and had already been reviewed.&quot;
+                </p>
+                <Link
+                  href="/engineering"
+                  className="mt-3 inline-block text-base not-italic underline underline-offset-4 hover:text-primary"
+                >
+                  The full list, and why each one looked correct &rarr;
+                </Link>
+              </motion.blockquote>
             </motion.div>
-
-            <motion.button
-              variants={itemVariants}
-              className="hover:bg-card-hover group mt-8 flex w-full items-center justify-center rounded-lg border border-border bg-card p-4 transition-all duration-300 hover:border-primary"
-              onClick={() => setShowFullContent(!showFullContent)}
-              aria-expanded={showFullContent}
-            >
-              <span className="mr-2 text-lg font-semibold text-foreground">
-                {showFullContent ? "Show Less" : "Show More"}
-              </span>
-              {showFullContent ? (
-                <ChevronUpIcon className="h-5 w-5 text-primary transition-transform group-hover:-translate-y-1" />
-              ) : (
-                <ChevronDownIcon className="h-5 w-5 text-primary transition-transform group-hover:translate-y-1" />
-              )}
-            </motion.button>
           </motion.div>
         </div>
       </motion.div>

@@ -14,6 +14,7 @@ import { join } from "node:path";
 import {
   BALLAST_CHECKER_FINDINGS,
   BALLAST_LEDGER_FINDINGS,
+  BALLAST_TEST_COUNT,
   KHATAGO_EVAL_COUNT,
   KHATAGO_TOOL_COUNT,
   numberWord,
@@ -67,8 +68,37 @@ describe("BALLAST finding counts", () => {
       "utf8"
     );
     expect(src).toContain("BALLAST_LEDGER_FINDINGS = (\\d+)");
+    expect(src).toContain("BALLAST_TEST_COUNT = (\\d+)");
     expect(src).toContain("KHATAGO_TOOL_COUNT = (\\d+)");
     expect(src).toContain("KHATAGO_EVAL_COUNT = (\\d+)");
+    // And the two personal facts it checks against the GfG profile itself.
+    expect(src).toContain("problemsSolved: (\\d+)");
+    expect(src).toContain("geeksforgeeksRank: (\\d+)");
+    expect(src).toContain("total_problems_solved");
+  });
+});
+
+describe("BALLAST test count", () => {
+  it("the project card renders the constant and no stale literal survives", () => {
+    const b = byId("ballast");
+    const text = JSON.stringify(b);
+    expect(text).toContain(`Tests: Vitest (${BALLAST_TEST_COUNT})`);
+    expect(text).not.toMatch(/Vitest \((?!202\))\d+\)/);
+  });
+
+  it("the resume and llms.txt state the same number", () => {
+    const resume = readFileSync(
+      join(process.cwd(), "resume", "resume.json"),
+      "utf8"
+    );
+    expect(resume).toContain(`${BALLAST_TEST_COUNT} tests`);
+    expect(resume).not.toMatch(/\b(?!202\b)\d{3} tests\b/);
+    const llms = readFileSync(
+      join(process.cwd(), "public", "llms.txt"),
+      "utf8"
+    );
+    expect(llms).toContain(`${BALLAST_TEST_COUNT} tests`);
+    expect(llms).not.toMatch(/\b(?!202\b)\d{3} tests\b/);
   });
 });
 

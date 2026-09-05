@@ -53,10 +53,35 @@ export const PROFILE = {
     cgpa: 7.99,
   },
 
+  /**
+   * The role before ContextQA. One place, because "~2 years at EsparkBiz" was
+   * on four surfaces in two spellings, and the real span (Jan 2024 – Jul 2025)
+   * is eighteen months, seven of them as an intern.
+   */
+  previousRole: {
+    company: "eSparkBiz Technologies",
+    companyShort: "eSparkBiz",
+    start: "Jan 2024",
+    end: "Jul 2025",
+    /** Sentence fragment for bios: "Previously <tenure>." */
+    tenure:
+      "about 1.5 years at eSparkBiz (Jan 2024 – Jul 2025, including a 7-month internship)",
+  },
+
   achievements: {
-    // Keep these specific and verifiable.
+    // Keep these specific and verifiable — each one names its platform, and
+    // nothing here claims a college or a year. The GfG profile lists the
+    // institute as eSparkBiz Technologies, so "while in final year" was
+    // contradicted on click.
     geeksforgeeksRank: 1,
-    problemsSolved: 604,
+    /**
+     * `total_problems_solved` on the GeeksforGeeks profile. Stated on the
+     * site as "<n>+". Verified daily by scripts/check-project-claims.mjs.
+     */
+    problemsSolved: 650,
+    /** The one HackerRank badge at five stars. Python is 3★; no Problem Solving badge. */
+    hackerrank: "5-star C++ on HackerRank",
+    hackathon: "Finalist, New India Vibrant Hackathon 2023",
   },
 
   contact: {
@@ -90,7 +115,7 @@ export const PROFILE = {
       "Software Engineer at ContextQA working on the Node.js backend of the core QA-automation platform — the test-execution engine (Playwright / WebdriverIO / LambdaTest), live browser-session streaming, the integrations engine and the session control plane on GKE. BE in Information Technology from GEC Bhavnagar (2024).",
 
     medium:
-      "Software Engineer at ContextQA working on the Node.js backend of the core QA-automation platform — the test-execution engine (Playwright / WebdriverIO / LambdaTest), live browser-session streaming over WebSockets, the integrations engine (GitHub, GitLab, Linear, Slack) and the session control plane on GKE. Previously ~2 years at EsparkBiz shipping full-stack client projects end-to-end. Side projects explore distributed systems (Redlock, Socket.io Redis adapter, Prometheus), deterministic simulation and mutation testing (BALLAST), AI pipelines (Gemini function-calling, OCR), and webhook idempotency patterns. BE in Information Technology from Government Engineering College, Bhavnagar (2024, CGPA 7.99).",
+      "Software Engineer at ContextQA working on the Node.js backend of the core QA-automation platform — the test-execution engine (Playwright / WebdriverIO / LambdaTest), live browser-session streaming over WebSockets, the integrations engine (GitHub, GitLab, Linear, Slack) and the session control plane on GKE. Previously about 1.5 years at eSparkBiz (Jan 2024 – Jul 2025, including a 7-month internship) shipping full-stack client projects end-to-end. Side projects explore distributed systems (Redlock, Socket.io Redis adapter, Prometheus), deterministic simulation and mutation testing (BALLAST), AI pipelines (Gemini function-calling, OCR), and webhook idempotency patterns. BE in Information Technology from Government Engineering College, Bhavnagar (2024, CGPA 7.99).",
   },
 } as const;
 
@@ -101,4 +126,11 @@ export const PROFILE_META = {
 
   /** e.g. "Shailesh Chaudhari — Software Engineer" */
   titleTag: `${PROFILE.name.full} — ${PROFILE.role.title}`,
+
+  /**
+   * The one DSA line: "Institute Rank 1 on GeeksforGeeks (650+ problems
+   * solved)". Every surface that states the GfG figure renders this, so the
+   * number cannot fork again (it was 604+, 600+ and 700+ at the same time).
+   */
+  gfgLine: `Institute Rank ${PROFILE.achievements.geeksforgeeksRank} on GeeksforGeeks (${PROFILE.achievements.problemsSolved}+ problems solved)`,
 } as const;

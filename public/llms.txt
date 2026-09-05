@@ -2,11 +2,11 @@
 
 > Software Engineer (~2.5 years), TypeScript/Node, backend-strongest, applied AI. Current role: Node.js backend of ContextQA's core QA-automation platform (test-execution engine, live browser-session streaming, integrations engine, session control plane on GKE).
 
-Shailesh Chaudhari is a Software Engineer based in Ahmedabad, Gujarat, India (originally from Patan, Gujarat). BE in Information Technology from Government Engineering College, Bhavnagar (2024, CGPA 7.99). Institute Rank 1 on GeeksforGeeks with 604+ problems solved.
+Shailesh Chaudhari is a Software Engineer based in Ahmedabad, Gujarat, India (originally from Patan, Gujarat). BE in Information Technology from Government Engineering College, Bhavnagar (2024, CGPA 7.99). Institute Rank 1 on GeeksforGeeks (650+ problems solved).
 
 Professional timeline:
-- Jan 2024 – Aug 2024: Software Developer Intern at EsparkBiz Technologies (REST APIs and React/Next.js interfaces with authentication and RBAC; Stripe and Supabase auth integrations).
-- Aug 2024 – Jul 2025: Software Engineer at EsparkBiz Technologies (3 client projects end-to-end — full-stack UI, backend APIs, client communication and requirements).
+- Jan 2024 – Aug 2024: Software Developer Intern at eSparkBiz Technologies (REST APIs and React/Next.js interfaces with authentication and RBAC; Stripe and Supabase auth integrations).
+- Aug 2024 – Jul 2025: Software Developer at eSparkBiz Technologies (about 1.5 years there in total, including the 7-month internship; 3 client projects end-to-end — full-stack UI, backend APIs, client communication and requirements).
 - Jul 2025 – present: Software Engineer at ContextQA. First 2-3 months: shipped 2 Chrome extensions (Vibe Testing for AI-assisted web testing, AxeTos for WCAG accessibility). Since then: the Node.js backend of the core QA-automation platform — a test-execution engine orchestrating concurrent browser and mobile runs (Playwright, WebdriverIO/Appium, LambdaTest), live browser-session streaming over WebSockets (noVNC proxied through a Node control plane), a debug engine with breakpoints and resume-from-checkpoint; primary author of the integrations engine (GitHub App, GitLab and Linear OAuth, Slack bot, webhook ingestion; multi-tenant via OAuth state in Redis and tenant resolution by installation id); the session control plane on GKE (pre-warmed pod pool over Redis, idempotent stop, request trace ids, stable error codes and a diagnostics bundle for on-prem customers). Also contributes to the platform's Java (Spring Boot) and Python services.
 
 ## Pages
@@ -30,7 +30,7 @@ Live:
 
 Open source:
 
-- [BALLAST](https://github.com/Shailesh93602/ballast): Deterministic simulation of a multi-tenant session control plane — per-tenant concurrency caps, quota windows, leases over an unreliable substrate. Every run is a pure function of one integer seed (1,000 seeds replay byte-identically). Verified four ways: 8 invariants, a reference oracle, mutation testing (158 of 165 mutants killed, 197 tests), a self-verifying shrinker. 9 real findings in docs/LEDGER.md, 4 of them in the checker. Zero runtime dependencies.
+- [BALLAST](https://github.com/Shailesh93602/ballast): Deterministic simulation of a multi-tenant session control plane — per-tenant concurrency caps, quota windows, leases over an unreliable substrate. Every run is a pure function of one integer seed (1,000 seeds replay byte-identically). Verified four ways: 8 invariants, a reference oracle, mutation testing (158 of 165 mutants killed, 202 tests), a self-verifying shrinker. 9 real findings in docs/LEDGER.md, 4 of them in the checker. Zero runtime dependencies.
 - [CodeSenseiSearch](https://github.com/Shailesh93602/CodeSenseiSearch): AI-powered semantic code search, in progress. NestJS backend scaffolding with pgvector, AST-aware function/class-level chunking, Gemini embeddings. The ingestion → embedding → retrieval pipeline is scaffolded, not yet wired end to end.
 
 ContextQA Chrome extensions (shipped in first 2-3 months at ContextQA, 2025):
