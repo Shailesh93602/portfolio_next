@@ -24,13 +24,15 @@ npm run type-check      # tsc --noEmit
 npm run format          # Prettier (writes)
 npm run format:check    # Prettier (CI check, read-only)
 
-npm test                # Jest unit tests (currently 361 tests, 39 suites)
+npm test                # Jest unit tests (currently 376 tests, 40 suites)
 npm run test:watch      # Jest watch mode
 npm run test:coverage   # Jest with coverage report
 npm run test:e2e        # Playwright (needs dev/prod server running)
 npm run test:e2e:ui     # Playwright with UI mode
 
 npm run analyze         # Bundle analysis (ANALYZE=true build)
+npm run check:claims    # Numbers this site states about other repos vs. those repos
+npm run check:freshness # Does each live site (this, KhataGO, EduScale) serve its repo's main? KhataGO row is red by design until its deploy is fixed
 
 # Regenerate all screenshots (11 pages × 2 themes × 2 viewports)
 # Requires prod server: npm run start
@@ -52,6 +54,7 @@ app/                    # Next.js App Router pages
     contact/route.ts    # POST — Zod validation + Resend email + in-memory rate limit (5/hr per IP) + graceful 503+mailto fallback when RESEND_API_KEY missing
     og/route.tsx        # Dynamic OG image (@vercel/og) for project detail pages
     statistics/route.ts # GitHub + LeetCode stats with 10s upstream timeout + snapshot fallback
+    version/route.ts    # GET — { sha, shortSha, ref, deployedAt, env } for THIS deployment; baked from VERCEL_GIT_COMMIT_SHA at build (next.config `env`), force-dynamic, no-store, noindex. Read by scripts/check-deploy-freshness.mjs. lib/version.ts resolves it.
 
   about/                # About page
   blog/[slug]/          # Individual blog post (MDX)
@@ -96,7 +99,7 @@ lib/
   leetcode-service.ts         # LeetCode API calls + streak calculation
   statistics-snapshot.ts      # getStatisticsSnapshot() — reads data/statistics-snapshot.json
   constants.ts                # SOCIAL_LINKS, CONTACT_INFO, SITE_URL, META_DEFAULTS
-  claims.ts                   # Numbers stated about OTHER repos (BALLAST ledger findings, KhataGO tool count) — defined once, imported by every page, verified daily by check-project-claims.mjs
+  claims.ts                   # Numbers stated about OTHER repos (BALLAST ledger findings, KhataGO tool count, KhataGO eval count) — defined once, imported by every page, verified daily by check-project-claims.mjs
   phone.ts                    # Contact-form phone validation/normalisation (accepts +91 / spaces / dashes)
   blog-constants.ts           # BLOG_AUTHOR, SITE_URL (for layout schema)
   blog-html.ts                # makeScrollRegionsFocusable — adds tabindex="0" to <pre>/<table> in post HTML at render (they scroll on a phone; axe scrollable-region-focusable kept the a11y job red 2026-08-30 → 09-05)
@@ -105,13 +108,14 @@ lib/
 
 scripts/
   check-live-urls.mjs            # Daily URL health check (GitHub Actions). Reads every `live`/`github` URL out of constants/projects.ts, so it widens automatically when a project is added. KNOWN_PRIVATE entries carry an expiry.
+  check-deploy-freshness.mjs     # Daily FRESHNESS check. For this site, KhataGO and EduScale (frontend + backend health): fetch the served sha, compare with the repo's `main` via the GitHub API. Fails if the served sha is not an ancestor of main, if main has been ahead >24h, or if /api/version 404s while main has the route. KhataGO is private to the Actions token → sha reported "cannot verify (private)", but its 404 still FAILS from the declared route date (2026-09-05). Red by design until KhataGO's Vercel deploys (failing since 2026-08-30) are fixed.
   check-project-claims.mjs       # Daily CLAIM check. Verifies the NUMBERS projects.ts states about other repos against those repos. Every false claim here started as a true one — "Vitest (147)" was right when written and wrong four merges later. Fetches at a resolved SHA, never at `main`: raw.githubusercontent's CDN serves stale objects for minutes after a push, which made an earlier version flaky exactly when it mattered.
   generate-blog-manifest.mjs     # Runs as postbuild; reads content/blog/ → writes data/blog-manifest.json
   migrate-blog.mjs               # One-time script: extracted blog posts from old blog-data.ts
 
 .github/workflows/
   ci.yml                     # quality (tsc · eslint · prettier · jest) + a11y (a11y.spec.ts, both viewports, next dev) + e2e (recruiter-journey + meta-and-schema, chromium, production build)
-  url-health-check.yml       # Daily 10:00 UTC cron runs check-live-urls.mjs
+  url-health-check.yml       # Daily 10:00 UTC cron: `check` job runs check-live-urls.mjs (is it up); `freshness` job runs check-deploy-freshness.mjs (is it current). The freshness job is expected RED while KhataGO's deploy outage lasts — do not delete the row, fix the deploy.
   claim-check.yml            # Daily 10:30 UTC + on PRs touching constants/projects.ts. Runs check-project-claims.mjs.
   (Supabase keepalive workflow DELETED — replaced by per-project Vercel crons inside KhataGO + DevTrack + EduScale/Frontend)
 
@@ -142,7 +146,7 @@ public/
 
 ## Testing
 
-- **Unit tests** (`__tests__/`): 361 tests across 39 suites. Covers API routes (statistics, contact), blog functions, components (BlogCard, ProjectCard, EducationSection, KeyMetrics), utils, constants. Run with `npm test`.
+- **Unit tests** (`__tests__/`): 376 tests across 40 suites. Covers API routes (statistics, contact), blog functions, components (BlogCard, ProjectCard, EducationSection, KeyMetrics), utils, constants. Run with `npm test`.
 - **E2E** (`e2e/`):
   - `routes.ts` — **not a spec.** Derives the route inventory (static + `/portfolio/<id>` from `constants/projects.ts` + `/blog/<slug>` from `BLOG_SLUGS`) so adding a project or post automatically widens the asset / SEO gates.
   - `navigation.spec.ts` — desktop + mobile nav sanity

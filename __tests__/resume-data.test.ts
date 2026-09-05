@@ -78,6 +78,41 @@ describe("resume.json — currency and honesty", () => {
     ]);
   });
 
+  it("EduScale claims a design for horizontal scaling, not a multi-instance deployment", () => {
+    // Fact-check 2026-09-05 (INTERVIEW_PREP/resume-lines.md): the backend is
+    // multi-instance-SAFE by design — Redis adapter, Redlock, per-key breakers —
+    // but there is no deployment record of it ever running as more than one
+    // instance (it is on Vercel serverless). "2+ instances" asserted a
+    // deployment; the true claim is the design. A recruiter will not catch the
+    // difference; an interviewer will, on the first follow-up.
+    const edu = resume.projects.find((p) => p.name === "EduScale")!;
+    const text = [edu.tagline, ...edu.bullets].join(" ");
+    expect(text).not.toMatch(/\d\s*\+\s*(Node\.js\s+)?(server\s+)?instances/i);
+    expect(text).not.toMatch(/multiple\s+(Node\.js\s+)?(server\s+)?instances/i);
+    expect(text).not.toMatch(/across\s+\d+/i);
+    expect(text).toMatch(/horizontal scaling across Node\.js instances/);
+  });
+
+  it("KhataGO's race numbers say exactly what the named tests assert", () => {
+    // whatsapp-webhook.integration.test.ts (CONCURRENCY = 8) asserts one
+    // WhatsappMessage row and eight 202s — NOT a ledger entry. The ledger-level
+    // guarantee is agent-run.integration.test.ts (CONCURRENCY = 8): eight
+    // executors of one planned write step, one Transaction row. The bullet
+    // must attribute each number to the property its test proves; "8
+    // deliveries → one ledger write" had no assertion behind it.
+    const kg = resume.projects.find((p) => p.name === "KhataGO")!;
+    const text = kg.bullets.join(" ");
+    expect(text).not.toMatch(
+      /deliveries[^.]*produce exactly one ledger write/i
+    );
+    expect(text).toMatch(
+      /8 simultaneous deliveries of one message collapse to one stored row/
+    );
+    expect(text).toMatch(
+      /8 concurrent executors of one agent write step commit exactly one ledger row/
+    );
+  });
+
   it("keeps contact identity intact", () => {
     expect(resume.contact.email).toBe("shailesh93602@gmail.com");
     expect(resume.contact.github).toBe("github.com/Shailesh93602");

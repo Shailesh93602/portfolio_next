@@ -8,6 +8,10 @@
 # Complements the per-project Vercel cron keep-alive: the keep-alive
 # prevents Supabase from pausing in the first place; this workflow
 # surfaces cases where it didn't (cron failure, Vercel down, etc).
+#
+# Two jobs: `check` (is each site UP) and `freshness` (is each site CURRENT —
+# does it serve its repo's main). See the comment on the second job for why
+# the KhataGO row there is red on purpose today.
 
 name: URL Health Check
 
@@ -50,3 +54,44 @@ jobs:
             echo "- Vercel deploy regression (check project deployment logs)" >> $GITHUB_STEP_SUMMARY
             echo "- DNS / upstream outage (transient — re-run workflow)" >> $GITHUB_STEP_SUMMARY
           fi
+
+  # ── Deploy freshness ───────────────────────────────────────────────────────
+  #
+  # The job above proves each site is UP. This one proves each site is
+  # CURRENT. They are different properties, and the gap between them cost a
+  # week: KhataGO's production deploys began failing on 2026-08-30, the
+  # previous build kept answering 200, and nine merged PRs went unserved with
+  # every daily check green.
+  #
+  # Each site now reports the commit it serves (`GET /api/version`, or
+  # `.version.sha` in EduScale's health payload) and
+  # scripts/check-deploy-freshness.mjs compares it with the repository's
+  # `main` (`gh api repos/<owner>/<repo>/commits/main`). It fails if the served
+  # sha is not an ancestor of main, if main has been ahead for more than 24
+  # hours, or if the route 404s while main has it.
+  #
+  # 🔴 KNOWN RED, BY DESIGN: the KhataGO row fails until its Vercel deploys are
+  # fixed (MANUAL item 0 in the hub). Its repo is private, so this job's
+  # GITHUB_TOKEN cannot read it and the sha comparison reports "cannot verify
+  # (private)" — but its /api/version route has been on main since 2026-09-05,
+  # so the live 404 is a stale deploy and is failed as one. Do not "fix" this
+  # job by removing that row; fix the deploy.
+  #
+  # A separate job so its failure email names the right problem — "stale", not
+  # "down" — and so a URL outage and a stale deploy are never mistaken for one
+  # incident.
+  freshness:
+    name: Live deploys serve main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # No install: node builtins and fetch only, like the sibling scripts.
+      - name: Compare each site's served commit with its repo's main
+        run: node scripts/check-deploy-freshness.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -63,22 +63,43 @@ public/        # Static assets and images
 
 ## Scripts
 
-| Command                 | Description                              |
-| ----------------------- | ---------------------------------------- |
-| `npm run dev`           | Development server (localhost:3000)      |
-| `npm run build`         | Production build                         |
-| `npm run start`         | Serve production build                   |
-| `npm run lint`          | ESLint                                   |
-| `npm run type-check`    | TypeScript strict check                  |
-| `npm run format`        | Prettier (writes)                        |
-| `npm run analyze`       | Bundle analysis (ANALYZE=true build)     |
-| `npm test`              | Jest unit tests (270 tests, 28 suites)   |
-| `npm run test:coverage` | Jest with coverage report                |
-| `npm run test:e2e`      | Playwright E2E (requires running server) |
-| `npm run test:e2e:ui`   | Playwright with UI mode                  |
+| Command                   | Description                                                    |
+| ------------------------- | -------------------------------------------------------------- |
+| `npm run dev`             | Development server (localhost:3000)                            |
+| `npm run build`           | Production build                                               |
+| `npm run start`           | Serve production build                                         |
+| `npm run lint`            | ESLint                                                         |
+| `npm run type-check`      | TypeScript strict check                                        |
+| `npm run format`          | Prettier (writes)                                              |
+| `npm run analyze`         | Bundle analysis (ANALYZE=true build)                           |
+| `npm test`                | Jest unit tests (376 tests, 40 suites)                         |
+| `npm run test:coverage`   | Jest with coverage report                                      |
+| `npm run test:e2e`        | Playwright E2E (requires running server)                       |
+| `npm run test:e2e:ui`     | Playwright with UI mode                                        |
+| `npm run check:claims`    | Numbers stated about other repos vs. those repos (daily in CI) |
+| `npm run check:freshness` | Does each live site serve its repo's `main`? (daily in CI)     |
 
 ## Deployment
 
 Deployed on Vercel with automatic CI/CD on push to `main`.
+
+### Deploy freshness
+
+`GET /api/version` reports the commit each deployment is serving
+(`{ sha, shortSha, ref, deployedAt, env }`, baked from `VERCEL_GIT_COMMIT_SHA`
+at build; `Cache-Control: no-store`, `noindex`). KhataGO and EduScale expose
+the same route, and EduScale's backend puts the same block in
+`/api/v1/health`. `scripts/check-deploy-freshness.mjs` compares each served
+sha with the repository's `main` every morning (the `freshness` job in
+`.github/workflows/url-health-check.yml`) and fails if the served commit is
+not an ancestor of `main`, if `main` has been ahead for more than 24 hours, or
+if the route 404s while `main` has it.
+
+A 200 proves a site is up, not that it is current: KhataGO's production
+deploys failed from 2026-08-30 while every status-code check stayed green.
+**The KhataGO row of this check is red by design until that deploy is fixed**
+— its repo is private to the workflow token, so the sha cannot be compared,
+but the route has been on its `main` since 2026-09-05 and a 404 there is a
+stale build.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/shailesh93602/portfolio_next)

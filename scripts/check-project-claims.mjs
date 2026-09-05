@@ -136,10 +136,16 @@ const CLAIMS = [
     sourceMustMatch: /['\`"]\/metrics['\`"][\s\S]{0,400}?register\.metrics\(\)/,
   },
   {
-    what: "home page: 8 concurrent deliveries, one ledger write",
+    what: "home page: 8 simultaneous deliveries, one stored row",
     localFile: "home",
+    // Reworded 2026-09-05. This used to read "produce exactly one ledger
+    // write", and the test it points at does not assert that: it counts
+    // WhatsappMessage rows and 202s. A claim checker that verifies the NUMBER
+    // against a test proving a DIFFERENT property is the subtlest way a true
+    // number backs a false sentence. The ledger-level guarantee is the next
+    // claim, with its own test.
     localPattern:
-      /(\d+) simultaneous deliveries of the same message produce exactly one ledger write/,
+      /(\d+) simultaneous deliveries of one message collapse to one stored row/,
     repo: "Shailesh93602/KhataGO",
     path: "tests/integration/whatsapp-webhook.integration.test.ts",
     sourcePattern: /const CONCURRENCY = (\d+);/,
@@ -148,6 +154,19 @@ const CLAIMS = [
     // it makes the cost of the repo being private visible every day instead of
     // leaving one claim silently unchecked. It starts working by itself the
     // moment the repo goes public (MANUAL item 4).
+    privateRepo: true,
+  },
+  {
+    what: "home page: 8 concurrent executors, one ledger row",
+    localFile: "home",
+    localPattern:
+      /(\d+) concurrent executors of one agent write step commit exactly one ledger row/,
+    repo: "Shailesh93602/KhataGO",
+    // "N concurrent executors of one planned write step produce ONE transaction
+    // row and ONE result" — the tool's ledger write and the step's move to
+    // DONE are one Postgres transaction, and the move is conditional.
+    path: "tests/integration/agent-run.integration.test.ts",
+    sourcePattern: /const CONCURRENCY = (\d+);/,
     privateRepo: true,
   },
   {
@@ -168,6 +187,17 @@ const CLAIMS = [
     // One `name: "..."` per declared function tool.
     sourceCount: /^\s*name: "/gm,
     // Private today (see the claim above); checks itself once public.
+    privateRepo: true,
+  },
+  {
+    what: "KhataGO eval count",
+    localFile: "claims",
+    localPattern: /KHATAGO_EVAL_COUNT = (\d+)/,
+    repo: "Shailesh93602/KhataGO",
+    path: "evals/cases.ts",
+    // One `id: "..."` per fixture conversation. The same number is what
+    // `npm run evals` reports as its case count under either engine.
+    sourceCount: /^\s*id: "/gm,
     privateRepo: true,
   },
 ];

@@ -19,6 +19,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check:claims": "node scripts/check-project-claims.mjs",
+    "check:freshness": "node scripts/check-deploy-freshness.mjs",
     "refresh:stats": "node scripts/refresh-statistics-snapshot.mjs",
     "gen:route-dates": "node scripts/generate-route-dates.mjs",
     "prebuild": "node scripts/generate-route-dates.mjs"

@@ -48,7 +48,7 @@
       "tagline": "WhatsApp-first bookkeeping for Indian MSMEs",
       "links": ["khatago.vercel.app"],
       "bullets": [
-        "Idempotency-guarded reconciliation pipeline: Meta webhook -> DB-enforced deduplication -> LLM function-calling (10 tools) -> ledger writes -> Tally XML export. Exactly-once effects over an at-least-once channel via a unique constraint, not a distributed lock; 8 simultaneous deliveries of one message produce exactly one ledger write.",
+        "Idempotency-guarded reconciliation pipeline: Meta webhook -> DB-enforced dedup -> LLM function-calling (10 tools) -> ledger writes -> Tally XML export. Exactly-once effects over an at-least-once channel via a unique constraint, not a distributed lock: 8 simultaneous deliveries of one message collapse to one stored row; 8 concurrent executors of one agent write step commit exactly one ledger row.",
         "Containerized (Docker) polling worker over a PostgreSQL-backed queue with an atomic claim, exponential backoff with jitter, and a dead-letter queue (DLQ) with audited replay.",
         "Next.js/React app in three languages (English, Hindi, Gujarati) with locale-aware invoices and GST reporting; bring-your-own Gemini key encrypted at rest (AES-256-GCM)."
       ]
@@ -65,10 +65,10 @@
     },
     {
       "name": "EduScale",
-      "tagline": "real-time coding battles across multiple Node.js instances",
+      "tagline": "real-time coding battles over Socket.io and Redis",
       "links": ["eduscale.vercel.app", "github.com/Shailesh93602/DevScale"],
       "bullets": [
-        "Cross-instance coordination across 2+ Node.js server instances for real-time battles: Socket.io Redis adapter for pub/sub, Redlock distributed mutex for battle start, per-key circuit breakers around LLM calls, and Prometheus metrics.",
+        "Designed for horizontal scaling across Node.js instances: Socket.io Redis adapter for cross-instance pub/sub, Redlock distributed mutex on battle start, per-key circuit breakers around LLM calls, and Prometheus metrics.",
         "Next.js/React frontend with role-gated routes, audited to WCAG 2.1 AA by automated axe checks that run on every public route in CI."
       ]
     }

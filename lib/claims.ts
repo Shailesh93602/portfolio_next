@@ -33,6 +33,16 @@ export const BALLAST_CHECKER_FINDINGS = 4;
  */
 export const KHATAGO_TOOL_COUNT = 10;
 
+/**
+ * Fixture conversations in `evals/cases.ts` in Shailesh93602/KhataGO. Each runs
+ * through the production agent loop under a scripted model in CI, scored by
+ * promptproof, under both engines (the hand-rolled loop and the LangGraph.js
+ * rendering behind `--engine=langgraph`).
+ * Reproduce: `grep -cE '^\s*id: "' evals/cases.ts`, or run them:
+ * `npm run evals && npm run evals -- --engine=langgraph`.
+ */
+export const KHATAGO_EVAL_COUNT = 21;
+
 const WORDS = [
   "zero",
   "one",
