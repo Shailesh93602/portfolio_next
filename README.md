@@ -72,7 +72,7 @@ public/        # Static assets and images
 | `npm run type-check`      | TypeScript strict check                                        |
 | `npm run format`          | Prettier (writes)                                              |
 | `npm run analyze`         | Bundle analysis (ANALYZE=true build)                           |
-| `npm test`                | Jest unit tests (376 tests, 40 suites)                         |
+| `npm test`                | Jest unit tests (414 tests, 42 suites)                         |
 | `npm run test:coverage`   | Jest with coverage report                                      |
 | `npm run test:e2e`        | Playwright E2E (requires running server)                       |
 | `npm run test:e2e:ui`     | Playwright with UI mode                                        |
@@ -93,13 +93,19 @@ the same route, and EduScale's backend puts the same block in
 sha with the repository's `main` every morning (the `freshness` job in
 `.github/workflows/url-health-check.yml`) and fails if the served commit is
 not an ancestor of `main`, if `main` has been ahead for more than 24 hours, or
-if the route 404s while `main` has it.
+if the route 404s while `main` has it. A build in flight is not a failure: for
+30 minutes (`FRESHNESS_GRACE_MINUTES`) after the oldest change live is missing
+— the oldest unserved commit, or the commit that put the route on `main`;
+never `main` HEAD, which any unrelated commit would reset — a behind sha or a
+404 is reported as `deploying` (exit 0, warning) instead. The decision is
+`scripts/deploy-freshness-decision.mjs`, unit-tested against a fake clock.
 
 A 200 proves a site is up, not that it is current: KhataGO's production
 deploys failed from 2026-08-30 while every status-code check stayed green.
 **The KhataGO row of this check is red by design until that deploy is fixed**
 — its repo is private to the workflow token, so the sha cannot be compared,
 but the route has been on its `main` since 2026-09-05 and a 404 there is a
-stale build.
+stale build. A private repo has no commit times to measure a grace window
+from, so it gets none.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/shailesh93602/portfolio_next)

@@ -28,28 +28,52 @@
  *   3. the version route answers 404 while the repository has the route on
  *      `main` — the shape KhataGO's outage takes today.
  *
+ * WHAT IS REPORTED AS `deploying` (exit 0, with a warning): rule 2 or rule 3
+ * tripping inside the grace window — 30 minutes by default,
+ * `FRESHNESS_GRACE_MINUTES` to change it — measured from the OLDEST change
+ * live is missing (the oldest unserved commit, or the commit that put the
+ * route on `main`; never from `main` HEAD, which a fresh unrelated commit
+ * would reset). A run minutes after a merge sees a build in flight, not a
+ * defect. See deploy-freshness-decision.mjs for the reasoning and the rules.
+ *
  * WHAT IS NOT A FAILURE: a repository this token cannot read. KhataGO is
  * private and the Actions `GITHUB_TOKEN` is scoped to THIS repo, so the API
  * answers 404 for it. That is reported as "cannot verify (private)" and never
  * counted as a pass. Rule 3 still applies to it, from declared knowledge: the
  * route landed on KhataGO `main` on 2026-09-05 (#55), so a 404 there is a
- * stale deploy, not a missing feature. That is why the KhataGO row FAILS by
- * design until its deploys are fixed — this job existing at all is the
- * response to that outage, and a check that passed through it would be the
- * old blind spot with a new name.
+ * stale deploy, not a missing feature — and with no commit times to measure
+ * from, a private repository has no grace window. That is why the KhataGO row
+ * FAILS by design until its deploys are fixed — this job existing at all is
+ * the response to that outage, and a check that passed through it would be
+ * the old blind spot with a new name.
  *
  * Run: node scripts/check-deploy-freshness.mjs
  *      GITHUB_TOKEN is optional locally (60 unauthenticated requests/hour is
  *      plenty) and set from `secrets.GITHUB_TOKEN` in Actions.
+ *      FRESHNESS_GRACE_MINUTES overrides the 30-minute grace window.
  */
 
 import { appendFileSync } from "node:fs";
 
-const MAX_LAG_MS = 24 * 60 * 60 * 1000;
+import {
+  decideFreshness,
+  dig,
+  parseGraceMinutes,
+} from "./deploy-freshness-decision.mjs";
+
 const TIMEOUT_MS = 30_000;
 const RETRIES = 1;
 const RETRY_DELAY_MS = 5_000;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+let graceMinutes;
+try {
+  graceMinutes = parseGraceMinutes(process.env.FRESHNESS_GRACE_MINUTES);
+} catch (err) {
+  console.error(err instanceof Error ? err.message : String(err));
+  process.exit(2);
+}
+const GRACE_MS = graceMinutes * 60_000;
 
 /**
  * Each target names the live version URL, where in its JSON the sha lives,
@@ -158,167 +182,41 @@ async function gh(path) {
   return { status: res.status, json };
 }
 
-function dig(obj, path) {
-  let cur = obj;
-  for (const key of path) {
-    if (cur === null || typeof cur !== "object") return undefined;
-    cur = cur[key];
-  }
-  return cur;
-}
-
-const hours = (ms) => (ms / 3_600_000).toFixed(1);
-
 /**
- * One target → { ok, verdict, detail, unverifiable }.
- *
- * `ok: false` fails the run. `unverifiable: true` is reported distinctly and
- * never counted as a pass.
+ * Gather the facts, then decide. The probes are lazy so a fresh site costs
+ * two requests and only the shapes that need more make more.
  */
 async function check(target) {
   const live = await fetchLive(target.url);
+  const head = await gh(`repos/${target.repo}/commits/main`);
   const servedSha = dig(live.json, target.shaPath);
 
-  // ── What does main say? ────────────────────────────────────────────────
-  const head = await gh(`repos/${target.repo}/commits/main`);
-  const repoReadable = head.status === 200;
-  if (!repoReadable && head.status !== 404) {
-    // Rate limit, outage. Not a false claim about the deploy; say so.
-    return {
-      ok: true,
-      unverifiable: true,
-      verdict: "skipped",
-      detail: `GitHub API answered ${head.status} for ${target.repo}`,
-    };
-  }
-  const mainSha = repoReadable ? head.json.sha : null;
-
-  // ── Rule 3: the route is missing from live ─────────────────────────────
-  if (live.status === 0) {
-    return {
-      ok: false,
-      verdict: "FAIL",
-      detail: `${target.url} unreachable (${live.error})`,
-    };
-  }
-  if (live.status === 404 || servedSha === undefined) {
-    const shape =
-      live.status === 404
-        ? "answers 404"
-        : `answers ${live.status} with no sha at .${target.shaPath.join(".")}`;
-    if (repoReadable) {
-      const route = await gh(
+  const probes = {
+    async route() {
+      const contents = await gh(
         `repos/${target.repo}/contents/${target.routePath}?ref=main`
       );
-      if (route.status === 200) {
-        return {
-          ok: false,
-          verdict: "FAIL",
-          detail:
-            `${shape}, but ${target.repo} has ${target.routePath} on main ` +
-            `(${mainSha.slice(0, 7)}) — live is serving a build from before the route: a stale deploy`,
-        };
+      if (contents.status !== 200) {
+        return { status: contents.status, lastCommitDate: null };
       }
-      return {
-        ok: true,
-        verdict: "ok",
-        detail: `${shape}; ${target.routePath} is not on main yet, so that is expected`,
-      };
-    }
-    if (target.routeOnMainSince) {
-      return {
-        ok: false,
-        verdict: "FAIL",
-        detail:
-          `${shape}; ${target.repo} is private to this token, but the route has been on ` +
-          `main since ${target.routeOnMainSince} — live is a build from before it: a stale deploy`,
-      };
-    }
-    return {
-      ok: true,
-      unverifiable: true,
-      verdict: "cannot verify (private)",
-      detail: `${shape}; ${target.repo} is private and no route date is declared`,
-    };
-  }
-
-  if (typeof servedSha !== "string" || !/^[0-9a-f]{40}$/.test(servedSha)) {
-    // `unknown` means the build did not bake VERCEL_GIT_COMMIT_SHA. A
-    // version endpoint that cannot name its commit is the blind spot again.
-    return {
-      ok: false,
-      verdict: "FAIL",
-      detail: `served sha is ${JSON.stringify(servedSha)} — not a commit; the build did not bake its git sha`,
-    };
-  }
-
-  if (!repoReadable) {
-    return {
-      ok: true,
-      unverifiable: true,
-      verdict: "cannot verify (private)",
-      detail: `live serves ${servedSha.slice(0, 7)}; ${target.repo} is private to this token, so main is unknown`,
-    };
-  }
-
-  // ── Rules 1 and 2: ancestry and lag ────────────────────────────────────
-  if (servedSha === mainSha) {
-    return {
-      ok: true,
-      verdict: "ok",
-      detail: `live serves main HEAD ${servedSha.slice(0, 7)}`,
-    };
-  }
-
-  const cmp = await gh(`repos/${target.repo}/compare/${servedSha}...main`);
-  if (cmp.status === 404) {
-    return {
-      ok: false,
-      verdict: "FAIL",
-      detail: `live serves ${servedSha.slice(0, 7)}, which is not a commit in ${target.repo}`,
-    };
-  }
-  if (cmp.status !== 200) {
-    return {
-      ok: true,
-      unverifiable: true,
-      verdict: "skipped",
-      detail: `GitHub compare answered ${cmp.status}`,
-    };
-  }
-  const { status, ahead_by: aheadBy, commits = [] } = cmp.json;
-  // base = served, head = main. "ahead" means main is ahead of served, i.e.
-  // served IS an ancestor. "behind" / "diverged" mean it is not.
-  if (status !== "ahead" && status !== "identical") {
-    return {
-      ok: false,
-      verdict: "FAIL",
-      detail: `live serves ${servedSha.slice(0, 7)}, which is not an ancestor of main ${mainSha.slice(0, 7)} (${status})`,
-    };
-  }
-  const dates = commits
-    .map((c) => Date.parse(c?.commit?.committer?.date ?? ""))
-    .filter((t) => Number.isFinite(t));
-  // Oldest commit main has that live does not. If the list was truncated
-  // (GitHub caps it at 250) fall back to main HEAD's own date — a lag that
-  // deep is over the window either way.
-  const oldest = dates.length
-    ? Math.min(...dates)
-    : Date.parse(head.json.commit.committer.date);
-  const lagMs = Date.now() - oldest;
-  const summary = `live serves ${servedSha.slice(0, 7)}; main ${mainSha.slice(0, 7)} is ${aheadBy} commit(s) ahead, oldest unserved is ${hours(lagMs)}h old`;
-  if (lagMs > MAX_LAG_MS) {
-    return {
-      ok: false,
-      verdict: "FAIL",
-      detail: `${summary} — over the 24h window`,
-    };
-  }
-  return {
-    ok: true,
-    verdict: "ok",
-    detail: `${summary} — within the 24h window (deploy in flight)`,
+      // When did main last change this file? That is the change a 404 build
+      // is missing, and the anchor for the grace window.
+      const touched = await gh(
+        `repos/${target.repo}/commits?path=${encodeURIComponent(target.routePath)}&sha=main&per_page=1`
+      );
+      const lastCommitDate =
+        touched.status === 200 && Array.isArray(touched.json)
+          ? (touched.json[0]?.commit?.committer?.date ?? null)
+          : null;
+      return { status: 200, lastCommitDate };
+    },
+    compare: () => gh(`repos/${target.repo}/compare/${servedSha}...main`),
   };
+
+  return decideFreshness({ target, live, head }, probes, {
+    now: Date.now(),
+    graceMs: GRACE_MS,
+  });
 }
 
 const results = [];
@@ -338,11 +236,16 @@ for (const target of TARGETS) {
   }
 }
 
+const icon = (r) =>
+  r.ok ? (r.unverifiable ? "~" : r.deploying ? "…" : "✓") : "✗";
+
 const width = Math.max(...results.map((r) => r.target.name.length));
-console.log("\nDeploy freshness — does live serve main?\n" + "─".repeat(78));
+console.log(
+  `\nDeploy freshness — does live serve main? (grace window: ${graceMinutes}m)\n` +
+    "─".repeat(78)
+);
 for (const r of results) {
-  const icon = r.ok ? (r.unverifiable ? "~" : "✓") : "✗";
-  const line = `${icon}  ${r.target.name.padEnd(width + 2)} ${r.verdict.padEnd(24)} ${r.detail}`;
+  const line = `${icon(r)}  ${r.target.name.padEnd(width + 2)} ${r.verdict.padEnd(24)} ${r.detail}`;
   if (r.ok) console.log(line);
   else console.error(line);
 }
@@ -350,12 +253,12 @@ console.log("─".repeat(78));
 
 const failed = results.filter((r) => !r.ok);
 const unverifiable = results.filter((r) => r.ok && r.unverifiable);
+const deploying = results.filter((r) => r.ok && r.deploying);
 
 if (process.env.GITHUB_STEP_SUMMARY) {
   const rows = results
     .map(
-      (r) =>
-        `| ${r.ok ? (r.unverifiable ? "~" : "✓") : "✗"} | ${r.target.name} | ${r.verdict} | ${r.detail} |`
+      (r) => `| ${icon(r)} | ${r.target.name} | ${r.verdict} | ${r.detail} |`
     )
     .join("\n");
   appendFileSync(
@@ -364,6 +267,21 @@ if (process.env.GITHUB_STEP_SUMMARY) {
   );
 }
 
+if (deploying.length > 0) {
+  const msg =
+    `${deploying.length} target(s) are behind main by less than the ${graceMinutes}m grace window ` +
+    `(deploy in flight, not a failure — re-run after it lands):\n` +
+    deploying.map((r) => `  • ${r.target.name}: ${r.detail}`).join("\n");
+  console.log(`\nWARNING: ${msg}`);
+  if (process.env.GITHUB_ACTIONS) {
+    // One annotation per target, on the workflow run's summary page.
+    for (const r of deploying) {
+      console.log(
+        `::warning title=Deploy in flight (${r.target.name})::${r.detail}`
+      );
+    }
+  }
+}
 if (unverifiable.length > 0) {
   console.log(
     `\n${unverifiable.length} target(s) could not be verified against their repository ` +
@@ -380,5 +298,6 @@ if (failed.length > 0) {
   process.exit(1);
 }
 console.log(
-  `\nAll ${results.length - unverifiable.length} verifiable sites serve main.`
+  `\nAll ${results.length - unverifiable.length} verifiable sites serve main` +
+    (deploying.length > 0 ? ` (${deploying.length} deploying).` : ".")
 );

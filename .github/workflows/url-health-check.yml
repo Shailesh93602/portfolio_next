@@ -68,7 +68,11 @@ jobs:
   # scripts/check-deploy-freshness.mjs compares it with the repository's
   # `main` (`gh api repos/<owner>/<repo>/commits/main`). It fails if the served
   # sha is not an ancestor of main, if main has been ahead for more than 24
-  # hours, or if the route 404s while main has it.
+  # hours, or if the route 404s while main has it. A build in flight is not a
+  # failure: inside a 30-minute grace window (FRESHNESS_GRACE_MINUTES), anchored
+  # on the oldest change live is missing, a behind sha or a 404 is reported as
+  # `deploying` — exit 0 with a warning annotation — so a run minutes after a
+  # merge does not page anyone.
   #
   # 🔴 KNOWN RED, BY DESIGN: the KhataGO row fails until its Vercel deploys are
   # fixed (MANUAL item 0 in the hub). Its repo is private, so this job's

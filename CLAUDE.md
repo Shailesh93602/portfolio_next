@@ -34,7 +34,7 @@ npm run test:e2e:ui     # Playwright with UI mode
 
 npm run analyze         # Bundle analysis (ANALYZE=true build)
 npm run check:claims    # Numbers this site states about other repos vs. those repos
-npm run check:freshness # Does each live site (this, KhataGO, EduScale) serve its repo's main? KhataGO row is red by design until its deploy is fixed
+npm run check:freshness # Does each live site (this, KhataGO, EduScale) serve its repo's main? KhataGO row is red by design until its deploy is fixed. FRESHNESS_GRACE_MINUTES (default 30) = window in which a behind sha / 404 is "deploying", not FAIL
 
 # Regenerate all screenshots (11 pages × 2 themes × 2 viewports)
 # Requires prod server: npm run start
@@ -110,7 +110,8 @@ lib/
 
 scripts/
   check-live-urls.mjs            # Daily URL health check (GitHub Actions). Reads every `live`/`github` URL out of constants/projects.ts, so it widens automatically when a project is added. KNOWN_PRIVATE entries carry an expiry.
-  check-deploy-freshness.mjs     # Daily FRESHNESS check. For this site, KhataGO and EduScale (frontend + backend health): fetch the served sha, compare with the repo's `main` via the GitHub API. Fails if the served sha is not an ancestor of main, if main has been ahead >24h, or if /api/version 404s while main has the route. KhataGO is private to the Actions token → sha reported "cannot verify (private)", but its 404 still FAILS from the declared route date (2026-09-05). Red by design until KhataGO's Vercel deploys (failing since 2026-08-30) are fixed.
+  check-deploy-freshness.mjs     # Daily FRESHNESS check. For this site, KhataGO and EduScale (frontend + backend health): fetch the served sha, compare with the repo's `main` via the GitHub API. Fails if the served sha is not an ancestor of main, if main has been ahead >24h, or if /api/version 404s while main has the route. Inside a 30-minute grace window (FRESHNESS_GRACE_MINUTES) a behind sha or a 404 is `deploying` (exit 0 + warning) — the window is anchored on the OLDEST change live is missing (oldest unserved commit / the commit that put the route on main), never on main HEAD, which a fresh unrelated commit would reset. KhataGO is private to the Actions token → sha reported "cannot verify (private)", but its 404 still FAILS from the declared route date (2026-09-05), with no grace (no commit times). Red by design until KhataGO's Vercel deploys (failing since 2026-08-30) are fixed.
+  deploy-freshness-decision.mjs  # The I/O-free decision half of the above (injected clock + lazy probes). Unit-tested in __tests__/deploy-freshness-decision.test.ts: fresh, deploying-inside-grace, stale-outside-grace, 404 inside/outside grace, private, and the env parsing.
   check-project-claims.mjs       # Daily CLAIM check. Verifies the NUMBERS projects.ts states about other repos against those repos. Every false claim here started as a true one — "Vitest (147)" was right when written and wrong four merges later. Fetches at a resolved SHA, never at `main`: raw.githubusercontent's CDN serves stale objects for minutes after a push, which made an earlier version flaky exactly when it mattered.
   generate-blog-manifest.mjs     # Runs as postbuild; reads content/blog/ → writes data/blog-manifest.json
   migrate-blog.mjs               # One-time script: extracted blog posts from old blog-data.ts
@@ -148,7 +149,7 @@ public/
 
 ## Testing
 
-- **Unit tests** (`__tests__/`): 376 tests across 40 suites. Covers API routes (statistics, contact), blog functions, components (BlogCard, ProjectCard, EducationSection, KeyMetrics), utils, constants. Run with `npm test`.
+- **Unit tests** (`__tests__/`): 414 tests across 42 suites. Covers API routes (statistics, contact), blog functions, components (BlogCard, ProjectCard, EducationSection, KeyMetrics), utils, constants. Run with `npm test`.
 - **E2E** (`e2e/`):
   - `routes.ts` — **not a spec.** Derives the route inventory (static + `/portfolio/<id>` from `constants/projects.ts` + `/blog/<slug>` from `BLOG_SLUGS`) so adding a project or post automatically widens the asset / SEO gates.
   - `navigation.spec.ts` — desktop + mobile nav sanity
