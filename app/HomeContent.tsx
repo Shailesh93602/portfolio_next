@@ -70,7 +70,7 @@ export default function HomeContent({ featuredPosts }: Props) {
               LambdaTest runs, live browser-session streaming over WebSockets,
               the integrations engine (GitHub, GitLab, Linear, Slack) and a
               session control plane on GKE. Comfortable across the stack from my
-              EsparkBiz client-project days, but I go deep on backend systems:
+              eSparkBiz client-project days, but I go deep on backend systems:
               distributed locks (Redlock), real-time pub/sub (Socket.io + Redis
               adapter), webhook idempotency enforced in Postgres, LLM
               tool-calling (Gemini) inside products, and deterministic testing

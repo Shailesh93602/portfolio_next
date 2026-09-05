@@ -14,7 +14,7 @@ Software Engineer, ContextQA (Jul 2025 - Present)
 - Shipped 2 products end to end (React/Next.js + Node.js): Vibe Testing, an AI-assisted UI-testing extension streaming live logs over WebSockets, and AxeTos, a WCAG A/AA/AAA auditor with precise DOM locators. Both still in use.
 
 Software Developer, eSparkBiz Technologies (Aug 2024 - Jul 2025)
-- Delivered 3 client products full-stack in React and Node.js (EdTech scheduling, sign-language e-learning, corporate LMS), on schedule with zero production incidents; integrated a third-party scheduling API with a Python/CPLEX optimizer, built the real-time calendar UI, and AWS S3 file workflows.
+- Delivered 3 client products full-stack in React and Node.js (EdTech scheduling, sign-language e-learning, corporate LMS), all on schedule; integrated a third-party scheduling API with a Python/CPLEX optimizer, built the real-time calendar UI, and AWS S3 file workflows.
 
 Software Developer Intern, eSparkBiz Technologies (Jan 2024 - Aug 2024)
 - Built REST APIs and React/Next.js interfaces with authentication and role-based access control (RBAC); integrated Stripe payments and Supabase authentication.
@@ -27,7 +27,7 @@ KhataGO - WhatsApp-first bookkeeping for Indian MSMEs (khatago.vercel.app)
 
 BALLAST - deterministic simulation of a multi-tenant session control plane (github.com/Shailesh93602/ballast)
 - Per-tenant concurrency caps, quota windows, and leases over an unreliable substrate; every run is a pure function of one integer seed and replays byte-identically, verified across 1,000 seeds.
-- Verified 4 independent ways: 8 invariants, a reference oracle, mutation testing (158 of 165 mutants killed, 197 tests), and a self-verifying shrinker. Found 9 real bugs, 4 of them in the checker rather than the implementation.
+- Verified 4 independent ways: 8 invariants, a reference oracle, mutation testing (158 of 165 mutants killed, 202 tests), and a self-verifying shrinker. Found 9 real bugs, 4 of them in the checker rather than the implementation.
 - Measured 3 concurrency-control strategies for a flash sale against a real PostgreSQL under 200 concurrent buyers: read-then-write oversold 200 of 5 units; conditional update and optimistic versioning each sold exactly 5.
 
 EduScale - real-time coding battles over Socket.io and Redis (eduscale.vercel.app, github.com/Shailesh93602/DevScale)
@@ -47,6 +47,6 @@ EDUCATION
 - B.E. in Information Technology, Government Engineering College, Bhavnagar, Gujarat - 2020 to 2024 - CGPA 7.99/10
 
 ACHIEVEMENTS
-- Institute Rank 1 on GeeksforGeeks (604+ problems solved)
+- Institute Rank 1 on GeeksforGeeks (650+ problems solved)
 - 5-star C++ on HackerRank
 - Finalist, New India Vibrant Hackathon 2023

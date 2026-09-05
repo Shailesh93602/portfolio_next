@@ -1,4 +1,4 @@
-import { PROFILE } from "./profile";
+import { PROFILE, PROFILE_META } from "./profile";
 import { KHATAGO_TOOL_COUNT } from "./claims";
 
 export interface FaqItem {
@@ -6,7 +6,7 @@ export interface FaqItem {
   answer: string;
 }
 
-const whoIsAnswer = `${PROFILE.name.full} is a ${PROFILE.role.title} based in ${PROFILE.location.displayShort}, originally from ${PROFILE.location.hometown}. At ${PROFILE.role.company} he works on the ${PROFILE.role.focus}. During his first 2-3 months at ${PROFILE.role.company} he shipped two Chrome extensions (Vibe Testing, AxeTos). Previously ~2 years at EsparkBiz shipping full-stack client projects. Side projects explore distributed systems (Redlock, Socket.io Redis adapter, Prometheus), AI pipelines (Gemini function-calling, OCR), and webhook idempotency patterns.`;
+const whoIsAnswer = `${PROFILE.name.full} is a ${PROFILE.role.title} based in ${PROFILE.location.displayShort}, originally from ${PROFILE.location.hometown}. At ${PROFILE.role.company} he works on the ${PROFILE.role.focus}. During his first 2-3 months at ${PROFILE.role.company} he shipped two Chrome extensions (Vibe Testing, AxeTos). Previously ${PROFILE.previousRole.tenure} shipping full-stack client projects. Side projects explore distributed systems (Redlock, Socket.io Redis adapter, Prometheus), AI pipelines (Gemini function-calling, OCR), and webhook idempotency patterns.`;
 
 export const homeFaq: FaqItem[] = [
   {
@@ -35,8 +35,7 @@ export const homeFaq: FaqItem[] = [
   },
   {
     question: "What are Shailesh Chaudhari's coding achievements?",
-    answer:
-      "Shailesh Chaudhari achieved Institute Rank 1 on GeeksforGeeks with 604+ problems solved, earned a 5-Star rating on HackerRank, and was a finalist in the New India Vibrant Hackathon 2023.",
+    answer: `Shailesh Chaudhari holds ${PROFILE_META.gfgLine}, a ${PROFILE.achievements.hackerrank}, and was a finalist in the New India Vibrant Hackathon 2023.`,
   },
 ];
 
@@ -61,8 +60,7 @@ export const portfolioFaq = (count: number): FaqItem[] => [
   },
   {
     question: "What is Shailesh Chaudhari's experience level?",
-    answer:
-      "About 2.5 years of professional experience. Software Developer Intern at EsparkBiz Technologies (Jan 2024 – Aug 2024), Software Engineer at EsparkBiz (Aug 2024 – Jul 2025) shipping 3 client projects end-to-end, then Software Engineer at ContextQA from July 2025 onwards working on the backend of their core QA-automation product. Institute Rank 1 on GeeksforGeeks with 600+ problems solved.",
+    answer: `About 2.5 years of professional experience: ${PROFILE.previousRole.tenure} — Software Developer Intern (Jan 2024 – Aug 2024), then Software Developer (Aug 2024 – Jul 2025) shipping 3 client projects end-to-end — then Software Engineer at ContextQA from July 2025 onwards working on the backend of the core QA-automation product. ${PROFILE_META.gfgLine}.`,
   },
 ];
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
+import { PROFILE_META } from "@/lib/profile";
 
 // True 1200×630 social card (the shailesh.webp portrait pillar-boxes).
 const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(
@@ -11,8 +12,7 @@ const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Coding Stats — Shailesh Chaudhari",
-  description:
-    "GitHub contribution heatmap, LeetCode progress, and competitive programming metrics. Institute Rank 1 on GeeksforGeeks with 604+ problems solved.",
+  description: `GitHub contribution heatmap, LeetCode progress, and competitive programming metrics. ${PROFILE_META.gfgLine}.`,
   alternates: {
     canonical: `${SITE_URL}/statistics`,
   },

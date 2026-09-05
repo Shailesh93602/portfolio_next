@@ -73,6 +73,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: {
       canonical: `${SITE_URL}/blog/${slug}`,
     },
+    // Archived posts stay at their URLs (200) but leave the index. This is
+    // the server-rendered tag, and the post is NOT disallowed in robots.txt:
+    // a crawler that may not fetch the page never reads the noindex, so
+    // Disallow + noindex keeps the URL indexed forever. Paired with the
+    // sitemap, which lists only publishedPosts.
+    ...(post.archived ? { robots: { index: false, follow: true } } : {}),
   };
 }
 

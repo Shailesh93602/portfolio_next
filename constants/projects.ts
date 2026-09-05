@@ -1,6 +1,7 @@
 import {
   BALLAST_CHECKER_FINDINGS,
   BALLAST_LEDGER_FINDINGS,
+  BALLAST_TEST_COUNT,
   KHATAGO_EVAL_COUNT,
   KHATAGO_TOOL_COUNT,
   numberWord,
@@ -188,7 +189,7 @@ const rawProjects: Project[] = [
       "Bring-your-own AI keys: users supply their own Gemini key, stored AES-256-GCM encrypted at rest, so nobody's usage is billed to a shared credential.",
     ],
     techStack: [
-      "Frontend: Next.js 15 (App Router), React 19, Tailwind CSS, Framer Motion, Redux Toolkit, Zustand",
+      "Frontend: Next.js 16 (App Router), React 19, Tailwind CSS, Framer Motion, Redux Toolkit, Zustand",
       "Backend: Node.js, Express.js (TypeScript), Prisma ORM, PostgreSQL",
       "Real-time: Socket.io + @socket.io/redis-adapter, Redis, Redlock, Bull (email queue + DLQ), Supabase Auth",
       "Developer Experience: Swagger/OpenAPI, Playwright E2E testing",
@@ -386,7 +387,7 @@ const rawProjects: Project[] = [
       "WebSockets",
     ],
     detailedDescription:
-      "Vibe Testing is a Chrome extension built at ContextQA, the company, and shipped during my first months there. It integrates with AI agents to perform autonomous UI validation, broken link detection, performance analysis, and accessibility testing. It specifically targets sites built on platforms like v0.dev and Replit, providing real-time feedback and screenshots of execution.",
+      "Vibe Testing is a Chrome extension built at ContextQA and shipped during my first months there. It integrates with AI agents to perform autonomous UI validation, broken link detection, performance analysis, and accessibility testing. It specifically targets sites built on platforms like v0.dev and Replit, providing real-time feedback and screenshots of execution.",
     architecture: {
       layers: [
         {
@@ -811,7 +812,7 @@ const rawProjects: Project[] = [
     techStack: [
       "Language: TypeScript (ESM, strict)",
       "Dependencies: none at runtime — typescript, eslint, prettier and vitest only",
-      "Tests: Vitest (197)",
+      `Tests: Vitest (${BALLAST_TEST_COUNT})`,
       "Verification: invariants + reference oracle + mutation testing + shrinker",
     ],
     problem:

@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { blogPosts } from "@/lib/blog-data";
+import { publishedPosts } from "@/lib/blog-data";
 import { projects } from "@/constants/projects";
 import { SITE_URL } from "@/lib/blog-constants";
 import routeModified from "@/lib/route-modified.json";
@@ -96,15 +96,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Dynamic blog post routes — `images` is a Google Discover ranking signal
   // and surfaces hero images directly in the search index.
-  const dynamicBlogRoutes: MetadataRoute.Sitemap = blogPosts.map((post) => ({
-    url: `${SITE_URL}/blog/${post.slug}`,
-    lastModified: post.lastModified
-      ? new Date(post.lastModified)
-      : new Date(post.date),
-    changeFrequency: "monthly",
-    priority: post.featured ? 0.8 : 0.6,
-    images: post.image ? [`${SITE_URL}${post.image}`] : undefined,
-  }));
+  //
+  // publishedPosts, not blogPosts: the archived 2024 batch still renders at
+  // its URLs but carries noindex, and a sitemap that advertises noindexed
+  // pages asks the crawler to index what the page then refuses. Those posts
+  // ranked for his name on the strength of this list.
+  const dynamicBlogRoutes: MetadataRoute.Sitemap = publishedPosts.map(
+    (post) => ({
+      url: `${SITE_URL}/blog/${post.slug}`,
+      lastModified: post.lastModified
+        ? new Date(post.lastModified)
+        : new Date(post.date),
+      changeFrequency: "monthly",
+      priority: post.featured ? 0.8 : 0.6,
+      images: post.image ? [`${SITE_URL}${post.image}`] : undefined,
+    })
+  );
 
   // Dynamic portfolio project routes — same image-annotation treatment.
   const dynamicPortfolioRoutes: MetadataRoute.Sitemap = projects.map(

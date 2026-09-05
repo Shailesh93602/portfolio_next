@@ -27,14 +27,20 @@ describe("AchievementsSection", () => {
     ).toBeInTheDocument();
   });
 
+  // Title and description both name the platform now, so getAllByText.
   it("renders 'GeeksforGeeks' text", () => {
     render(<AchievementsSection />);
-    expect(screen.getByText(/geeksforgeeks/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/geeksforgeeks/i).length).toBeGreaterThan(0);
   });
 
   it("renders 'HackerRank' text", () => {
     render(<AchievementsSection />);
-    expect(screen.getByText(/hackerrank/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/hackerrank/i).length).toBeGreaterThan(0);
+  });
+
+  it("renders no CodeChef card", () => {
+    render(<AchievementsSection />);
+    expect(screen.queryByText(/codechef/i)).toBeNull();
   });
 
   it("renders all achievement titles from the ACHIEVEMENTS constant", () => {

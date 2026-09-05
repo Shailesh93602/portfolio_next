@@ -1,4 +1,5 @@
 import { COMPANY_LINKS, SOCIAL_LINKS } from "@/lib/constants";
+import { PROFILE, PROFILE_META } from "@/lib/profile";
 import { Achievement, Education, Experience } from "@/types";
 
 export const education: Education[] = [
@@ -12,7 +13,6 @@ export const education: Education[] = [
     highlights: [
       "Coursework: Data Structures & Algorithms, DBMS, Operating Systems, Computer Networks, Software Engineering",
       "Hackathon Finalist — New India Vibrant Hackathon 2023 (built ITI Alumni Tracking System)",
-      "Achieved Institute Rank 1 on GeeksforGeeks while in final year — 604+ problems solved",
     ],
   },
 ];
@@ -22,27 +22,23 @@ export const itemVariants = {
   visible: { y: 0, opacity: 1 },
 };
 
+// Each card must survive the click on "View Profile". The GfG profile shows
+// 650 solved and eSparkBiz as the institute, so the old "while in final year"
+// contradicted itself; HackerRank shows one five-star badge (C++), not
+// "multiple skills including Problem Solving and Python"; the CodeChef card
+// (1★, rating 1219) invited a question with no good answer, so it is gone.
 export const achievements: Achievement[] = [
   {
-    title: "Institute Rank 1",
-    description:
-      "Achieved Institute Rank 1 on GeeksforGeeks coding platform with 604+ problems solved",
+    title: "Institute Rank 1 on GeeksforGeeks",
+    description: `${PROFILE_META.gfgLine}.`,
     iconName: "trophy",
     link: SOCIAL_LINKS.GEEKSFORGEEKS,
   },
   {
-    title: "5 Star Rating on HackerRank",
-    description:
-      "Achieved 5 star rating in multiple programming skills including Problem Solving and Python",
+    title: "5-star C++ on HackerRank",
+    description: `${PROFILE.achievements.hackerrank}: the C++ skill badge at five stars.`,
     iconName: "star",
     link: SOCIAL_LINKS.HACKERRANK,
-  },
-  {
-    title: "CodeChef Problem Solver",
-    description:
-      "Active competitive programmer with consistent problem-solving on CodeChef platform",
-    iconName: "code",
-    link: SOCIAL_LINKS.CODECHEF,
   },
   {
     title: "Hackathon Finalist",
@@ -108,7 +104,7 @@ export const experiences: Experience[] = [
       "Brightmont (EdTech scheduling): Integrated Teachworks scheduling API with Python/Cplex optimization service, synchronized large datasets, built real-time calendar UI with S3 file workflows.",
       "The ASL Shop (Sign Language e-learning): Built Dictionary module with advanced search and Coda sync, implemented Supabase auth from scratch, contributed to course and quiz features.",
       "Proleven (Corporate LMS): Resolved critical production bugs, improved email workflow reliability, streamlined notification trigger systems.",
-      "Delivered all three client engagements on schedule with no production incidents.",
+      "Delivered all three client engagements on schedule.",
     ],
   },
   {
@@ -139,7 +135,7 @@ export const experiences: Experience[] = [
       "Redux",
     ],
     description:
-      "Intensive 8-month internship progressing from web fundamentals to production NestJS and Next.js. Owned entire modules, not just tickets.",
+      "Seven-month internship progressing from web fundamentals to production NestJS and Next.js. Owned entire modules, not just tickets.",
     highlights: [
       "Garage Management System: Owned the authentication module end-to-end — role-based access control, session management, and user admin UI in a Node.js/Express/EJS team project.",
       "Advanced from HTML/CSS/MySQL to TypeScript, NestJS, Next.js, Sequelize, TypeORM, and Redux in under 6 months.",

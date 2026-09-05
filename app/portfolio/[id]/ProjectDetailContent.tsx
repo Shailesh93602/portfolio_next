@@ -390,7 +390,9 @@ export default function ProjectDetailContent({ project }: Props) {
                     <div className="flex gap-6">
                       <div className="space-y-1">
                         <p className="text-2xl font-bold text-foreground">
-                          Next.js 15
+                          {/* EduScale/Frontend/package.json: "next": "^16.x".
+                              The prose above said 16 while this stat said 15. */}
+                          Next.js 16
                         </p>
                         <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                           Framework
@@ -530,8 +532,8 @@ export default function ProjectDetailContent({ project }: Props) {
                 Interested in the full engineering breakdown?
               </h2>
               <p className="text-xl leading-relaxed text-muted-foreground">
-                I'm always open to discussing technical implementations, from
-                state management strategies to infrastructure scaling.
+                Happy to talk through the technical decisions, from state
+                management strategies to infrastructure scaling.
               </p>
               {/* flex-wrap: two `size="lg"` buttons with px-10 are ~480px
                   together, so on a 390px screen the row pushed the page into

@@ -9,7 +9,7 @@ import { Providers } from "./providers";
 import { COMPANY_LINKS } from "@/lib/constants";
 import Script from "next/script";
 import { SITE_URL, BLOG_AUTHOR, META_DEFAULTS } from "@/lib/blog-constants";
-import { PROFILE } from "@/lib/profile";
+import { PROFILE, PROFILE_META } from "@/lib/profile";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
@@ -259,8 +259,8 @@ export default function RootLayout({
                   "Next.js, React, TypeScript, Node.js, PostgreSQL, Chrome Extensions",
               },
               award: [
-                "GeeksforGeeks Institute Rank 1 with 604+ problems solved",
-                "HackerRank 5-Star rating in Problem Solving",
+                PROFILE_META.gfgLine,
+                PROFILE.achievements.hackerrank,
                 "Finalist — New India Vibrant Hackathon 2023",
               ],
               workExample: [

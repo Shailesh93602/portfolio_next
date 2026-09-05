@@ -9,9 +9,11 @@ Stack: Next.js 16 + Turbopack, TypeScript (strict), Tailwind CSS, shadcn/ui, fra
 ## Owner context (don't forget)
 
 - Owner is a Software Engineer at **ContextQA** working on the **backend of their core QA-automation product** (test execution engine, VNC streaming, Playwright / WebdriverIO / LambdaTest orchestration). First 2-3 months at ContextQA were Chrome extensions (Vibe Testing + AxeTos) — current work is the core product backend.
-- Previously ~2 years at EsparkBiz (intern Jan 2024 – Aug 2024; Software Engineer Aug 2024 – Jul 2025). Shipped 3 client projects end-to-end.
+- Previously about 1.5 years at **eSparkBiz** (that spelling, everywhere): intern Jan 2024 – Aug 2024 (7 months), Software Developer Aug 2024 – Jul 2025. Shipped 3 client projects end-to-end. Tenure string lives in `PROFILE.previousRole.tenure`; `__tests__/identity-claims.test.ts` bans "~2 years" and the other spellings.
 - Targeting **Tier-1 companies, Salesforce specifically**, at MTS level.
 - **Honesty bar:** never claim specific PR counts, never claim "payments infrastructure engineer" title, never say Chrome extensions are the current work. See MANUAL.md for full rules.
+- **Job discretion:** he is employed. Nothing on the site names a target employer, says "next employer", "open to", or "looking for a role" — `/now` carried "Targeting Stripe, Vercel, Supabase as next employer" until 2026-09-05. `__tests__/no-hire-copy.test.ts` bans those shapes across app/, components/, lib/, constants/, content/ and llms\*.txt; `e2e/recruiter-journey.spec.ts` checks the rendered pages.
+- **Claims a recruiter checks by clicking (2026-09-05):** GfG = `PROFILE_META.gfgLine` ("Institute Rank 1 on GeeksforGeeks (650+ problems solved)", no college / final-year framing — the profile's institute is eSparkBiz); HackerRank = "5-star C++" only (Python is 3★, no Problem Solving badge); no CodeChef achievement card (1★). `scripts/check-project-claims.mjs` verifies the GfG number and rank daily from the profile's embedded JSON (`total_problems_solved`, `institute_rank`).
 
 ## Key commands
 
@@ -24,7 +26,7 @@ npm run type-check      # tsc --noEmit
 npm run format          # Prettier (writes)
 npm run format:check    # Prettier (CI check, read-only)
 
-npm test                # Jest unit tests (currently 376 tests, 40 suites)
+npm test                # Jest unit tests (currently 392 tests, 41 suites)
 npm run test:watch      # Jest watch mode
 npm run test:coverage   # Jest with coverage report
 npm run test:e2e        # Playwright (needs dev/prod server running)
@@ -69,7 +71,7 @@ app/                    # Next.js App Router pages
     [id]/
       page.tsx
       ProjectDetailContent.tsx   # Renders showcase or fallback project layout based on project.isShowcase
-  statistics/           # GitHub + LeetCode stats page with snapshot fallback
+  statistics/           # GitHub + LeetCode stats page with snapshot fallback. Contributions are summed from 2024-01-01 (lib/github-service.ts), NOT the trailing year the GitHub profile shows — every caption derives its window from lib/contribution-range.ts; never write "Last 365 days" there again.
 
 components/
   navbar/               # Sticky navbar with mobile overlay
@@ -178,7 +180,7 @@ public/
 - `metadata.ts` per-page file exports the Next.js `Metadata` object (so server-rendered head can consume it).
 - All constants (social links, contact info) come from `lib/constants.ts` — **never hardcode URLs/emails**.
 - Images: use `next/image` everywhere. Store new images under `public/Images/<project-name>/`.
-- Blog posts: add MDX to `content/blog/`, then add the slug to `BLOG_SLUGS` in `lib/blog-data.ts`. `data/blog-manifest.json` is auto-generated on postbuild. `archived: true` in frontmatter keeps a post at its URL (200, in the sitemap) but out of the index / home / RSS / tags — the 17 posts from 2024 are archived this way; `publishedPosts` is what surfaces list, `blogPosts` is everything that renders.
+- Blog posts: add MDX to `content/blog/`, then add the slug to `BLOG_SLUGS` in `lib/blog-data.ts`. `data/blog-manifest.json` is auto-generated on postbuild. `archived: true` in frontmatter keeps a post at its URL (200) but out of the index / home / RSS / tags **and the sitemap**, served with `<meta name="robots" content="noindex, follow">` from `generateMetadata` — and deliberately NOT disallowed in robots.txt (Disallow + noindex cancel). The 17 posts from 2024 are archived this way; `publishedPosts` is what surfaces list, `blogPosts` is everything that renders. Guarded by `__tests__/archived-posts.test.ts` and the sitemap tests in `e2e/meta-and-schema.spec.ts`. There is no `/api/blogs` route any more — it served a stale hand-copied duplicate of the post list (with the "700+" title) that nothing consumed.
 - **Commits:** no "Co-Authored-By: Claude" lines. Focused, imperative subject lines.
 
 ## Accessibility baseline (WCAG AA)

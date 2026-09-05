@@ -32,8 +32,8 @@ export const metadata: Metadata = {
   },
 };
 
-// Updated: 2026-06-18
-const lastUpdated = "June 18, 2026";
+// Updated: 2026-09-05
+const lastUpdated = "September 5, 2026";
 
 const breadcrumbSchema = {
   "@context": "https://schema.org",
@@ -69,9 +69,9 @@ export default function NowPage() {
             Now page
           </a>{" "}
           — a single source of truth for what I&apos;m actively working on this
-          month, beyond the project portfolio. Recruiters and friends asking
-          &quot;what are you up to&quot; get a current answer instead of a
-          months-old LinkedIn post.
+          month, beyond the project portfolio. Anyone asking &quot;what are you
+          up to&quot; gets a current answer instead of a months-old LinkedIn
+          post.
         </p>
 
         <h2 className="mt-12 text-2xl font-bold">At work — ContextQA</h2>
@@ -155,11 +155,17 @@ export default function NowPage() {
             />
             <span>
               <strong className="font-semibold text-foreground">
-                Reach me at:
+                Where I go deep:
               </strong>{" "}
-              particularly distributed systems, payment infrastructure,
-              real-time platforms, AI-pipeline backends. Targeting Stripe,
-              Vercel, Supabase as next employer.
+              distributed systems, payment infrastructure, real-time platforms
+              and AI-pipeline backends — the themes the projects above and the{" "}
+              <Link
+                href="/engineering"
+                className="underline underline-offset-4"
+              >
+                engineering write-ups
+              </Link>{" "}
+              keep returning to.
             </span>
           </li>
         </ul>
@@ -167,10 +173,10 @@ export default function NowPage() {
         <h2 className="mt-12 text-2xl font-bold">Reading / learning</h2>
         <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
           Distributed systems patterns from{" "}
-          <em>Designing Data-Intensive Applications</em>; Stripe / Square
-          engineering blogs on idempotency and webhook design; the Vercel edge
-          runtime docs to better understand the constraints my Vercel-deployed
-          NestJS apps run under.
+          <em>Designing Data-Intensive Applications</em>; engineering write-ups
+          on idempotency and webhook design; the Vercel runtime docs, to
+          understand the constraints the Node.js apps I run on Vercel (KhataGO,
+          EduScale) work under.
         </p>
 
         <div className="mt-16 flex flex-wrap gap-4 border-t pt-8">

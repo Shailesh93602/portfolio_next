@@ -23,6 +23,7 @@ const StatsCharts = dynamic(
 import { Badge } from "@/components/ui/badge";
 import { GitHubLanguages } from "@/components/github-languages";
 import { GitHubContributionHeatmap } from "@/components/github-contribution-heatmap";
+import { contributionRange } from "@/lib/contribution-range";
 
 const StatCard = ({
   label,
@@ -149,6 +150,10 @@ export function StatisticsContent({
     );
   }, [stats?.github?.contributionDays]);
 
+  // What the contributions figure counts, from the data itself. The GitHub
+  // profile shows the trailing 12 months; this page sums since Jan 2024.
+  const range = contributionRange(contributionHeatmapData);
+
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="mb-16 text-center transition-transform duration-500">
@@ -262,6 +267,11 @@ export function StatisticsContent({
                   icon={CommitIcon}
                   color="bg-gradient-to-br from-indigo-500/10 to-indigo-600/5"
                   textColor="text-indigo-500"
+                  hint={
+                    range
+                      ? `GitHub contribution calendar, ${range} — the profile page shows only the last 12 months`
+                      : undefined
+                  }
                 />
                 <StatCard
                   label="Longest Streak"
@@ -352,11 +362,7 @@ export function StatisticsContent({
         {!isLoading && (
           <div className="mb-16">
             <StatsCharts
-              githubContributions={
-                stats?.github?.contributionDays?.map(
-                  (day: { contributionCount: number }) => day.contributionCount
-                ) || []
-              }
+              githubContributions={contributionHeatmapData}
               leetcodeProblemStats={{
                 easy: stats?.leetcode?.easySolved || 0,
                 medium: stats?.leetcode?.mediumSolved || 0,

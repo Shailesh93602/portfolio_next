@@ -15,7 +15,8 @@ import {
   Cell,
   Legend,
 } from "recharts";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
+import { contributionRange } from "@/lib/contribution-range";
 
 interface ContributionData {
   date: string;
@@ -29,7 +30,10 @@ interface ProblemStats {
 }
 
 interface StatsChartsProps {
-  githubContributions: number[];
+  /** Real calendar days. The chart used to receive bare counts and invent
+   *  dates by counting back 364 days from "now" — for the 980-day series the
+   *  page actually passes, that labelled most points with dates in the future. */
+  githubContributions: { date: string; count: number }[];
   leetcodeProblemStats: ProblemStats;
 }
 
@@ -37,16 +41,17 @@ export function StatsCharts({
   githubContributions,
   leetcodeProblemStats,
 }: StatsChartsProps) {
-  // Transform GitHub contributions data
   const contributionsData: ContributionData[] = githubContributions.map(
-    (count, index) => ({
-      date: format(
-        new Date(Date.now() - (364 - index) * 24 * 60 * 60 * 1000),
-        "MMM dd"
-      ),
+    ({ date, count }) => ({
+      date: format(parseISO(date), "MMM d, yyyy"),
       count,
     })
   );
+  const totalContributions = githubContributions.reduce(
+    (a, b) => a + b.count,
+    0
+  );
+  const range = contributionRange(githubContributions);
 
   // Transform LeetCode problem stats
   const problemStatsData = [
@@ -108,7 +113,7 @@ export function StatsCharts({
               <div
                 className="h-[250px]"
                 role="img"
-                aria-label={`GitHub contribution trend over the last ${contributionsData.length} days. Total ${githubContributions.reduce((a, b) => a + b, 0)} contributions.`}
+                aria-label={`GitHub contribution trend, ${range}. Total ${totalContributions} contributions.`}
               >
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={contributionsData}>
@@ -162,9 +167,9 @@ export function StatsCharts({
                 </ResponsiveContainer>
               </div>
               <div className="mt-4 flex justify-between text-sm text-muted-foreground">
-                <span>Last 365 days</span>
+                <span>{range}</span>
                 <span>
-                  Total: {githubContributions.reduce((a, b) => a + b, 0)}{" "}
+                  Total: {totalContributions.toLocaleString("en-US")}{" "}
                   contributions
                 </span>
               </div>

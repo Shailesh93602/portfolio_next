@@ -18,6 +18,14 @@
 export const BALLAST_LEDGER_FINDINGS = 9;
 
 /**
+ * Vitest tests in Shailesh93602/ballast, as its README states them.
+ * Reproduce: `npx vitest run` there, or `grep -oE '\*\*[0-9]+ tests\*\*' README.md`.
+ * The daily claim check reads this constant; the portfolio card, the resume
+ * and llms.txt render it (or are held to it by claims-consistency.test.ts).
+ */
+export const BALLAST_TEST_COUNT = 202;
+
+/**
  * Of those, the findings whose defect was in the CHECKER — the invariant
  * corpus, the reference oracle or the mutation harness — rather than in the
  * system under test: L1 (invariant trusted the plane's self-report), L3

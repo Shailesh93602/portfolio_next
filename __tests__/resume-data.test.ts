@@ -6,6 +6,8 @@
 import fs from "fs";
 import path from "path";
 import resume from "../resume/resume.json";
+import { PROFILE, PROFILE_META } from "@/lib/profile";
+import { BALLAST_TEST_COUNT } from "@/lib/claims";
 
 describe("resume.json — currency and honesty", () => {
   it("lists ContextQA as the single current employer", () => {
@@ -28,6 +30,18 @@ describe("resume.json — currency and honesty", () => {
       // command, unlike the GfG figure.
       "700+",
       "CodeChef",
+      // 2026-09-05 second recruiter pass: the GfG figure was stale (the
+      // profile shows 650), and "zero production incidents" is unverifiable
+      // and sat beside "Resolved critical production bugs" on /about.
+      "604+",
+      "final year",
+      "zero production incidents",
+      "no production incidents",
+      // The public HackerRank badges are C++ 5-star only.
+      "Problem Solving and Python",
+      // Two spellings were live; eSparkBiz is the company's own.
+      "EsparkBiz",
+      "Esparkbiz",
     ]) {
       expect(raw).not.toContain(banned);
     }
@@ -62,12 +76,27 @@ describe("resume.json — currency and honesty", () => {
     expect(raw).toMatch(/^[\x20-\x7E]*$/);
   });
 
-  it("achievements are the two ratified lines plus the hackathon", () => {
+  it("achievements are the PROFILE lines, verbatim — one source for each number", () => {
     expect(resume.achievements).toEqual([
-      "Institute Rank 1 on GeeksforGeeks (604+ problems solved)",
-      "5-star C++ on HackerRank",
-      "Finalist, New India Vibrant Hackathon 2023",
+      PROFILE_META.gfgLine,
+      PROFILE.achievements.hackerrank,
+      PROFILE.achievements.hackathon,
     ]);
+    expect(resume.achievements[0]).toBe(
+      "Institute Rank 1 on GeeksforGeeks (650+ problems solved)"
+    );
+  });
+
+  it("states BALLAST's test count from lib/claims.ts", () => {
+    // It said 197 while the README said 202 and the daily claim check was red.
+    const ballast = resume.projects.find((p) => p.name === "BALLAST")!;
+    expect(ballast.bullets.join(" ")).toContain(`${BALLAST_TEST_COUNT} tests`);
+  });
+
+  it("the eSparkBiz bullet claims delivery on schedule, not an incident record", () => {
+    const spark = resume.experience.filter((e) => /eSparkBiz/.test(e.company));
+    expect(spark).toHaveLength(2);
+    expect(spark[0].bullets[0]).toMatch(/all on schedule/);
   });
 
   it("features exactly the three resume projects", () => {

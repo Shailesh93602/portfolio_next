@@ -37,39 +37,26 @@ test.describe("Navigation", () => {
     }
   });
 
-  test("about page loads with all sections visible by default", async ({
+  test("about page shows every section with no collapse toggle", async ({
     page,
   }) => {
     await page.goto("/about");
     await expect(page).toHaveTitle(/About/i);
-    // Content is expanded by default — key sections should be visible
     await expect(
       page.getByRole("heading", { name: /professional experience/i })
     ).toBeVisible();
     await expect(
       page.getByRole("heading", { name: /education/i })
     ).toBeVisible();
-    // Show Less button should be present (content is expanded)
     await expect(
-      page.getByRole("button", { name: /show less/i })
+      page.getByRole("heading", { name: /achievements/i })
     ).toBeVisible();
-  });
-
-  test("about page collapses content on Show Less click", async ({ page }) => {
-    await page.goto("/about");
-    const showLessBtn = page.getByRole("button", { name: /show less/i });
-    await showLessBtn.waitFor({ state: "visible" });
-    await showLessBtn.scrollIntoViewIfNeeded();
-    // `force: true` — on mobile the framer-motion animated container
-    // above the button still reports as the hit target until its
-    // entrance animation finishes (~300 ms), so auto-click fails with
-    // "subtree intercepts pointer events". We trust the locator is
-    // right and dispatch the click directly.
-    await showLessBtn.click({ force: true });
-    // After collapse the button becomes "Show More" — wait for framer-motion state update
-    await expect(page.getByRole("button", { name: /show more/i })).toBeVisible({
-      timeout: 10000,
-    });
+    // The page used to end in a full-width "Show Less" card under the closing
+    // quote — a control whose only effect was hiding the experience a visitor
+    // came to read. There is no toggle any more, in either state.
+    await expect(
+      page.getByRole("button", { name: /show (less|more)/i })
+    ).toHaveCount(0);
   });
 
   test("portfolio page lists projects", async ({ page }) => {

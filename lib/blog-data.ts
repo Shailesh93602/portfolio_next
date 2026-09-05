@@ -33,9 +33,11 @@ export interface BlogPost {
   lastModified?: string;
   /**
    * `archived: true` in frontmatter. The post still renders at /blog/<slug>
-   * (its URL keeps returning 200 and stays in the sitemap) but it is excluded
-   * from the blog index, the home page, the RSS feed and the tag lists, and
-   * it renders with a "From the archive" note.
+   * (its URL keeps returning 200) but it is excluded from the blog index, the
+   * home page, the RSS feed, the tag lists AND the sitemap, it is served with
+   * `<meta name="robots" content="noindex, follow">`, and it renders with a
+   * "From the archive" note. It is deliberately not Disallowed in robots.txt:
+   * a page the crawler may not fetch never has its noindex read.
    *
    * Used for the 2024 batch: seventeen posts published 2024-09-28 to
    * 2024-10-09 that were written for search traffic, not to say anything.
