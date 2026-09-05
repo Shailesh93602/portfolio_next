@@ -4,6 +4,18 @@ const baseConfig: NextConfig = {
   reactStrictMode: true,
   productionBrowserSourceMaps: false,
   poweredByHeader: false,
+  // Baked into the bundle at build time and read back by lib/version.ts for
+  // GET /api/version. Vercel always provides VERCEL_GIT_COMMIT_SHA to the
+  // BUILD; whether it is also exposed to functions at runtime is a project
+  // setting, so the build-time copy is the one that always exists. Empty
+  // string (not undefined) so a local build resolves to `unknown` rather
+  // than leaking a stale value from a developer's shell.
+  env: {
+    APP_BUILD_GIT_SHA: process.env.VERCEL_GIT_COMMIT_SHA ?? "",
+    APP_BUILD_GIT_REF: process.env.VERCEL_GIT_COMMIT_REF ?? "",
+    APP_BUILD_VERCEL_ENV: process.env.VERCEL_ENV ?? "",
+    APP_BUILD_TIME: new Date().toISOString(),
+  },
   // Tree-shake barrel imports (icons/animation/charts) at build time — shrinks
   // the client bundle without per-component dynamic imports, which trip the
   // Turbopack SSG bug with framer-motion (see CLAUDE.md).
