@@ -5,6 +5,7 @@ import { ArrowLeftIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getPostBySlug, getRelatedPosts, blogPosts } from "@/lib/blog-data";
+import { makeScrollRegionsFocusable } from "@/lib/blog-html";
 import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 import { ReadingProgressBar } from "@/components/ReadingProgressBar";
 
@@ -182,7 +183,9 @@ export default async function Page({ params }: Props) {
         <BlogLayout post={post}>
           <div
             className="prose prose-lg max-w-none dark:prose-invert"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{
+              __html: makeScrollRegionsFocusable(post.content),
+            }}
           />
         </BlogLayout>
       </div>

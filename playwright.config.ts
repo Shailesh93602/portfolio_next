@@ -34,10 +34,15 @@ export default defineConfig({
   // Set PLAYWRIGHT_NO_SERVER=1 when you have already started the server
   // yourself (e.g. `next start -p 3230` against a production build) — the
   // asset + a11y gates should run against the prod build, not `next dev`.
+  // Or let Playwright start it and set PLAYWRIGHT_WEB_SERVER_COMMAND to the
+  // command to run (CI's e2e job builds first, then passes `next start`), so
+  // the readiness wait and the port stay in one place.
   webServer: process.env.PLAYWRIGHT_NO_SERVER
     ? undefined
     : {
-        command: `npm run dev -- -p ${PORT}`,
+        command:
+          process.env.PLAYWRIGHT_WEB_SERVER_COMMAND ??
+          `npm run dev -- -p ${PORT}`,
         url: BASE_URL,
         reuseExistingServer: !process.env.CI,
         timeout: 120000,

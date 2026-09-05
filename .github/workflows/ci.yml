@@ -93,3 +93,54 @@ jobs:
             playwright-report/
             test-results/
           retention-days: 7
+
+  # ── Recruiter journey + SEO contract ───────────────────────────────────────
+  #
+  # Two more specs that nothing ran: recruiter-journey (home → portfolio →
+  # project → /engineering → resume PDF → /contact, asserting the outcome of
+  # each step and the ABSENCE of the availability copy and phone number removed
+  # on 2026-09-03) and meta-and-schema (every route's title / canonical /
+  # JSON-LD, sitemap ↔ robots ↔ servable routes). Both went stale on main for
+  # days without anyone noticing, which is the argument for running them.
+  #
+  # A separate job rather than more steps in the a11y job: that one already
+  # takes ~7 minutes, and jobs run in parallel so this adds no wall-clock.
+  # Against a PRODUCTION build (the a11y job uses `next dev`) — the SEO
+  # contract is about what the built site serves. Chromium only: the journey's
+  # nav helper handles both viewports, but the contract is not engine-specific
+  # and the second project would double the runtime to learn the same thing.
+  e2e:
+    name: E2E — recruiter journey · meta & schema
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build
+        run: npm run build
+
+      - name: Run the journey and SEO specs against the production build
+        run: npx playwright test e2e/recruiter-journey.spec.ts e2e/meta-and-schema.spec.ts --project=chromium
+        env:
+          PLAYWRIGHT_WEB_SERVER_COMMAND: npx next start -p 3000
+
+      - name: Upload the report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
