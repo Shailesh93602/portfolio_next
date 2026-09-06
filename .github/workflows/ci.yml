@@ -28,6 +28,13 @@ jobs:
       - name: Lint
         run: npx eslint . --ext .ts,.tsx
 
+      # Runs against the CI checkout on purpose. A developer machine can carry a
+      # global excludes file that hides the absence of a repo-level rule; a fresh
+      # clone cannot. The check accepts only a committed rule, so it answers the
+      # same way here and everywhere else.
+      - name: No credential-bearing files
+        run: npm run check:secrets
+
       # Formatting is checked in CI because it does not hold otherwise. This
       # step was added after 26 files had drifted out of Prettier style: the
       # scripts existed, nothing ran them, and the diff noise landed in
