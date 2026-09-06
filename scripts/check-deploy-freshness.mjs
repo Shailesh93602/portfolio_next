@@ -47,6 +47,19 @@
  * the response to that outage, and a check that passed through it would be
  * the old blind spot with a new name.
  *
+ * WHAT A FAILING ROW SAYS. Two things a sha mismatch does not. First, HOW
+ * LONG: "live is 7d behind main", computed from the oldest unserved commit —
+ * a week has to read as a week. Second, the CAUSE CLASS, for the targets that
+ * can suffer it: an app with migrations gets one extra line naming the shape
+ * that actually caused the outage (a failed migration wedges Prisma with
+ * P3009 and every later build dies on it, without `prisma migrate status`
+ * ever naming the failed migration). Which targets get it is the `migrations`
+ * field below, not a sentence written per row.
+ *
+ * Every run — green or red — prints one summary line under the table,
+ * `N of M apps serve main`, echoed as a `::notice::` so the daily job is
+ * legible from the Actions list without opening it.
+ *
  * Run: node scripts/check-deploy-freshness.mjs
  *      GITHUB_TOKEN is optional locally (60 unauthenticated requests/hour is
  *      plenty) and set from `secrets.GITHUB_TOKEN` in Actions.
@@ -59,6 +72,7 @@ import {
   decideFreshness,
   dig,
   parseGraceMinutes,
+  summarize,
 } from "./deploy-freshness-decision.mjs";
 
 const TIMEOUT_MS = 30_000;
@@ -83,6 +97,10 @@ const GRACE_MS = graceMinutes * 60_000;
  * `routeOnMainSince` is the fallback for a repository the token cannot read.
  * It is a fact about the repository, dated, and it only ever turns a 404 into
  * a failure — never a mismatch into a pass.
+ *
+ * `migrations` names the deploy-blocking class this app can suffer, and is
+ * what earns a failing row its extra "likely cause" line. Only the apps with
+ * a migration step have one: this site has no database and cannot wedge.
  */
 const TARGETS = [
   {
@@ -98,6 +116,8 @@ const TARGETS = [
     shaPath: ["sha"],
     repo: "Shailesh93602/KhataGO",
     routePath: "app/api/version/route.ts",
+    // Prisma + prisma/migrations: the P3009 wedge is exactly what happened here.
+    migrations: "prisma",
     // Private. The route merged as KhataGO #55 on 2026-09-05.
     routeOnMainSince: "2026-09-05",
   },
@@ -116,6 +136,8 @@ const TARGETS = [
     shaPath: ["version", "sha"],
     repo: "Shailesh93602/DevScale",
     routePath: "Backend/src/middlewares/versionMiddleware.ts",
+    // Backend/prisma/migrations — same class, same one-line hint.
+    migrations: "prisma",
   },
 ];
 
@@ -247,9 +269,14 @@ console.log(
 for (const r of results) {
   const line = `${icon(r)}  ${r.target.name.padEnd(width + 2)} ${r.verdict.padEnd(24)} ${r.detail}`;
   if (r.ok) console.log(line);
-  else console.error(line);
+  else {
+    console.error(line);
+    // One extra line, only for a failing row that declares a cause class.
+    if (r.hint) console.error(`${" ".repeat(width + 5)}↳ ${r.hint}`);
+  }
 }
 console.log("─".repeat(78));
+console.log(summarize(results));
 
 const failed = results.filter((r) => !r.ok);
 const unverifiable = results.filter((r) => r.ok && r.unverifiable);
@@ -258,15 +285,21 @@ const deploying = results.filter((r) => r.ok && r.deploying);
 if (process.env.GITHUB_STEP_SUMMARY) {
   const rows = results
     .map(
-      (r) => `| ${icon(r)} | ${r.target.name} | ${r.verdict} | ${r.detail} |`
+      (r) =>
+        `| ${icon(r)} | ${r.target.name} | ${r.verdict} | ${r.detail}` +
+        `${r.hint ? `<br>↳ ${r.hint}` : ""} |`
     )
     .join("\n");
   appendFileSync(
     process.env.GITHUB_STEP_SUMMARY,
-    `### Deploy freshness\n\n| | Site | Verdict | Detail |\n|---|---|---|---|\n${rows}\n\n`
+    `### Deploy freshness\n\n**${summarize(results)}**\n\n` +
+      `| | Site | Verdict | Detail |\n|---|---|---|---|\n${rows}\n\n`
   );
 }
 
+if (process.env.GITHUB_ACTIONS) {
+  console.log(`::notice title=Deploy freshness::${summarize(results)}`);
+}
 if (deploying.length > 0) {
   const msg =
     `${deploying.length} target(s) are behind main by less than the ${graceMinutes}m grace window ` +
@@ -291,7 +324,13 @@ if (unverifiable.length > 0) {
 if (failed.length > 0) {
   console.error(
     `\n${failed.length} live site(s) are not serving main:\n` +
-      failed.map((r) => `  • ${r.target.name}: ${r.detail}`).join("\n") +
+      failed
+        .map(
+          (r) =>
+            `  • ${r.target.name}: ${r.detail}` +
+            `${r.hint ? `\n    ↳ ${r.hint}` : ""}`
+        )
+        .join("\n") +
       `\n\nA 200 from a stale build is the failure this check exists to catch. ` +
       `Open the project's Vercel deployments and read the failed build's log.`
   );

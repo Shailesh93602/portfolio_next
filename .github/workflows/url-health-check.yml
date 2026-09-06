@@ -74,6 +74,15 @@ jobs:
   # `deploying` — exit 0 with a warning annotation — so a run minutes after a
   # merge does not page anyone.
   #
+  # A failing row is written to be acted on without opening three dashboards:
+  # it says HOW LONG live has been behind ("live is 7d behind main"), and for
+  # an app that runs migrations it adds one line naming the cause class that
+  # actually caused this outage — a failed migration wedges Prisma (P3009) and
+  # every later build dies on it. Which apps get that line is the `migrations`
+  # field in the script's target list. Every run, green or red, also prints
+  # `N of M apps serve main` and echoes it as a ::notice:: so the daily job is
+  # legible from the Actions list without opening the log.
+  #
   # 🔴 KNOWN RED, BY DESIGN: the KhataGO row fails until its Vercel deploys are
   # fixed (MANUAL item 0 in the hub). Its repo is private, so this job's
   # GITHUB_TOKEN cannot read it and the sha comparison reports "cannot verify
