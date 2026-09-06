@@ -71,10 +71,13 @@ describe("BALLAST finding counts", () => {
     expect(src).toContain("BALLAST_TEST_COUNT = (\\d+)");
     expect(src).toContain("KHATAGO_TOOL_COUNT = (\\d+)");
     expect(src).toContain("KHATAGO_EVAL_COUNT = (\\d+)");
-    // And the two personal facts it checks against the GfG profile itself.
+    // And the one personal fact it checks against the GfG profile itself.
+    // The institute-rank row went with the rank claim (2026-09-06): a check
+    // that verifies a number no surface states goes stale unnoticed.
     expect(src).toContain("problemsSolved: (\\d+)");
-    expect(src).toContain("geeksforgeeksRank: (\\d+)");
     expect(src).toContain("total_problems_solved");
+    expect(src).not.toContain("geeksforgeeksRank: (\\d+)");
+    expect(src).not.toMatch(/sourcePattern: \/institute_rank/);
   });
 });
 

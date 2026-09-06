@@ -35,7 +35,7 @@ export const homeFaq: FaqItem[] = [
   },
   {
     question: "What are Shailesh Chaudhari's coding achievements?",
-    answer: `Shailesh Chaudhari holds ${PROFILE_META.gfgLine}, a ${PROFILE.achievements.hackerrank}, and was a finalist in the New India Vibrant Hackathon 2023.`,
+    answer: `${PROFILE_META.gfgLine}, a ${PROFILE.achievements.hackerrank}, and finalist in the New India Vibrant Hackathon 2023.`,
   },
 ];
 

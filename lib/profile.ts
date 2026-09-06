@@ -70,10 +70,14 @@ export const PROFILE = {
 
   achievements: {
     // Keep these specific and verifiable — each one names its platform, and
-    // nothing here claims a college or a year. The GfG profile lists the
-    // institute as eSparkBiz Technologies, so "while in final year" was
-    // contradicted on click.
-    geeksforgeeksRank: 1,
+    // nothing here claims a college, a year, or a rank.
+    //
+    // The "Institute Rank 1" framing was dropped on 2026-09-06. A rank is only
+    // as meaningful as the population it ranks within: it reads as a college
+    // cohort, but the GfG profile's institute is eSparkBiz Technologies (a
+    // former employer) with an unknown and probably tiny number of users. A
+    // claim that deflates the moment someone clicks is worse than a smaller
+    // one that holds, so only the volume is stated now.
     /**
      * `total_problems_solved` on the GeeksforGeeks profile. Stated on the
      * site as "<n>+". Verified daily by scripts/check-project-claims.mjs.
@@ -128,9 +132,10 @@ export const PROFILE_META = {
   titleTag: `${PROFILE.name.full} — ${PROFILE.role.title}`,
 
   /**
-   * The one DSA line: "Institute Rank 1 on GeeksforGeeks (650+ problems
-   * solved)". Every surface that states the GfG figure renders this, so the
-   * number cannot fork again (it was 604+, 600+ and 700+ at the same time).
+   * The one DSA line: "650+ problems solved on GeeksforGeeks". Every surface
+   * that states the GfG figure renders this, so the number cannot fork again
+   * (it was 604+, 600+ and 700+ at the same time). Volume only — see the
+   * note on PROFILE.achievements for why the rank framing is gone.
    */
-  gfgLine: `Institute Rank ${PROFILE.achievements.geeksforgeeksRank} on GeeksforGeeks (${PROFILE.achievements.problemsSolved}+ problems solved)`,
+  gfgLine: `${PROFILE.achievements.problemsSolved}+ problems solved on GeeksforGeeks`,
 } as const;

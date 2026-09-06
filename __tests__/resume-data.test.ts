@@ -39,6 +39,16 @@ describe("resume.json — currency and honesty", () => {
       "no production incidents",
       // The public HackerRank badges are C++ 5-star only.
       "Problem Solving and Python",
+      // 2026-09-06: the Java/Python clause is gone. He can ship that code
+      // with AI help but has said he cannot answer interview questions on
+      // it; an ATS gain that is marginal for a TypeScript/Node target does
+      // not pay for a line that invites the question. Verbal, not on paper.
+      "Spring Boot",
+      "AI-assisted development",
+      // The rank framing went with the same pass — volume only, because
+      // "Institute Rank 1" resolves on click to a former employer's cohort
+      // of unknown size.
+      "Institute Rank",
       // Two spellings were live; eSparkBiz is the company's own.
       "EsparkBiz",
       "Esparkbiz",
@@ -63,10 +73,16 @@ describe("resume.json — currency and honesty", () => {
     expect(text).not.toMatch(/\d+\s?%/);
     expect(text).not.toMatch(/[$₹]\s?\d/);
     expect(text).not.toMatch(/\d+\s?(customers|users|clients|teams)\b/i);
-    // Java/Python is one clause inside a Node bullet, never a bullet of its own.
-    const javaBullets = contextqa.bullets.filter((b) => /Java/.test(b));
-    expect(javaBullets).toHaveLength(1);
-    expect(javaBullets[0]).toMatch(/^(?!Java)/);
+    // The Java/Python clause is gone (see the banned list). What replaces it
+    // is not silence: the first bullet says the platform is polyglot and
+    // names the side he owns, so dropping the clause cannot leave the role
+    // reading as a single-language one.
+    expect(text).not.toMatch(/\bJava\b/);
+    expect(contextqa.bullets[0]).toMatch(
+      /Own the Node\.js\/TypeScript backend .* a polyglot system/
+    );
+    // And the skills block no longer carries the "Working exposure" row.
+    expect(resume.skills.map((s) => s.label)).not.toContain("Working exposure");
   });
 
   it("is ASCII-only, which the ATS scan also enforces on the PDF", () => {
@@ -83,7 +99,7 @@ describe("resume.json — currency and honesty", () => {
       PROFILE.achievements.hackathon,
     ]);
     expect(resume.achievements[0]).toBe(
-      "Institute Rank 1 on GeeksforGeeks (650+ problems solved)"
+      "650+ problems solved on GeeksforGeeks"
     );
   });
 
