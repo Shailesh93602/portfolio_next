@@ -92,6 +92,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
       images: [ogFor("/now")],
     },
+    // Documentation for the Dwell Jira app. Public because the Atlassian
+    // Marketplace listing links to it and requires a reachable privacy policy.
+    {
+      url: `${SITE_URL}/dwell`,
+      lastModified: modified("/dwell"),
+      changeFrequency: "monthly",
+      priority: 0.6,
+      images: [ogFor("/dwell")],
+    },
+    {
+      url: `${SITE_URL}/dwell/privacy`,
+      lastModified: modified("/dwell/privacy"),
+      changeFrequency: "yearly",
+      priority: 0.4,
+      images: [ogFor("/dwell/privacy")],
+    },
   ];
 
   // Dynamic blog post routes — `images` is a Google Discover ranking signal

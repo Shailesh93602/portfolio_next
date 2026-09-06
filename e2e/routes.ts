@@ -19,6 +19,8 @@ export const STATIC_ROUTES = [
   "/services",
   "/engineering",
   "/now",
+  "/dwell",
+  "/dwell/privacy",
   "/statistics",
 ] as const;
 
