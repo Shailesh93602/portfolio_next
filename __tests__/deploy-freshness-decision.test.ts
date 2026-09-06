@@ -10,12 +10,25 @@
  * window is anchored on the oldest change live is missing — NOT on main HEAD,
  * because an unrelated fresh commit must not excuse a week-old build. And a
  * private repository, having no commit times, has no window at all.
+ *
+ * The second property is that a failing row is ACTIONABLE: it says how long
+ * live has been behind in the unit a reader thinks in ("live is 7d behind
+ * main", not two shas), and for an app that can wedge its deploys on a failed
+ * migration it names that cause class in one extra line. KhataGO's week-long
+ * outage had exactly that cause and the daily check said none of it.
  */
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import {
+  CAUSE_HINTS,
   DEFAULT_GRACE_MINUTES,
   MAX_LAG_MS,
+  causeHint,
   decideFreshness,
+  formatAge,
   parseGraceMinutes,
+  summarize,
 } from "../scripts/deploy-freshness-decision.mjs";
 
 const NOW = Date.parse("2026-09-05T12:00:00.000Z");
@@ -162,7 +175,7 @@ describe("decideFreshness — the grace window", () => {
       verdict: "deploying",
     });
     expect(r.detail).toMatch(/answers 404/);
-    expect(r.detail).toMatch(/3m ago/);
+    expect(r.detail).toMatch(/live is 3m behind main/);
     expect(calls).toEqual({ route: 1, compare: 0 });
   });
 
@@ -179,7 +192,8 @@ describe("decideFreshness — the grace window", () => {
       opts
     );
     expect(r).toMatchObject({ ok: false, verdict: "FAIL" });
-    expect(r.detail).toMatch(/landed 8\.0h ago, outside the 30m grace window/);
+    expect(r.detail).toMatch(/live is 8\.0h behind main/);
+    expect(r.detail).toMatch(/outside the 30m grace window/);
     expect(r.detail).toMatch(/stale deploy/);
   });
 
@@ -193,7 +207,7 @@ describe("decideFreshness — the grace window", () => {
       opts
     );
     expect(r).toMatchObject({ ok: false, verdict: "FAIL" });
-    expect(r.detail).toMatch(/landed at an unknown time/);
+    expect(r.detail).toMatch(/how far behind live is cannot be measured/);
   });
 
   it("404 while the route is not on main → ok, expected", async () => {
@@ -241,6 +255,9 @@ describe("decideFreshness — the grace window", () => {
     expect(r).toMatchObject({ ok: false, verdict: "FAIL" });
     expect(r.detail).toMatch(/private to this token/);
     expect(r.detail).toMatch(/since 2026-09-05/);
+    // A bound, not a claim: the true lag starts at the first failed build,
+    // which a token that cannot read the repository cannot see.
+    expect(r.detail).toMatch(/at least 1m behind main/);
     expect(calls).toEqual({ route: 0, compare: 0 });
   });
 
@@ -356,5 +373,232 @@ describe("parseGraceMinutes (FRESHNESS_GRACE_MINUTES)", () => {
     for (const bad of ["30m", "abc", "-5", "NaN", "Infinity"]) {
       expect(() => parseGraceMinutes(bad)).toThrow(/FRESHNESS_GRACE_MINUTES/);
     }
+  });
+});
+
+describe("formatAge — how long live has been behind, in a readable unit", () => {
+  const MINUTE = 60_000;
+  const DAY = 24 * HOUR;
+
+  it("minutes below 90 minutes", () => {
+    expect(formatAge(0)).toBe("0m");
+    expect(formatAge(30 * MINUTE)).toBe("30m");
+    expect(formatAge(89 * MINUTE)).toBe("89m");
+  });
+
+  it("hours from 90 minutes to a day", () => {
+    expect(formatAge(90 * MINUTE)).toBe("1.5h");
+    expect(formatAge(8 * HOUR)).toBe("8.0h");
+    expect(formatAge(23 * HOUR + 59 * MINUTE)).toBe("24.0h");
+  });
+
+  it("days from a day up — a week-long outage reads as a week", () => {
+    // The whole point: KhataGO was seven days stale and the check said
+    // "sha mismatch". 168 hours is a true and useless way to print that.
+    expect(formatAge(7 * DAY)).toBe("7d");
+    expect(formatAge(DAY)).toBe("1d");
+    expect(formatAge(31 * HOUR)).toBe("1d");
+    expect(formatAge(30 * DAY)).toBe("30d");
+  });
+
+  it("the day boundary is the 24h lag window, so every FAIL reads in days", () => {
+    expect(formatAge(MAX_LAG_MS - 1)).toMatch(/h$/);
+    expect(formatAge(MAX_LAG_MS)).toBe("1d");
+  });
+
+  it("null when there is nothing to measure — never NaN, and never a false 0m", () => {
+    // The private-repo shape: no commit times, so no age. Printing "0m" there
+    // would say the opposite of the truth.
+    expect(formatAge(NaN)).toBeNull();
+    expect(formatAge(undefined)).toBeNull();
+    expect(formatAge(null)).toBeNull();
+    expect(formatAge(Infinity)).toBeNull();
+    expect(formatAge("8h")).toBeNull();
+  });
+
+  it("clamps a negative age (clock skew) to zero rather than printing '-3m'", () => {
+    expect(formatAge(-3 * MINUTE)).toBe("0m");
+  });
+});
+
+describe("the cause class on a failing row", () => {
+  const withPrisma = { ...target, migrations: "prisma" };
+
+  it("an app with migrations gets one hint line naming the P3009 wedge", () => {
+    expect(causeHint(withPrisma)).toBe(CAUSE_HINTS.prisma);
+    expect(CAUSE_HINTS.prisma).toMatch(/P3009/);
+    expect(CAUSE_HINTS.prisma).toMatch(/_prisma_migrations/);
+    expect(CAUSE_HINTS.prisma).toMatch(
+      /finished_at IS NULL AND rolled_back_at IS NULL/
+    );
+  });
+
+  it("an app with no database declares nothing and gets no line", () => {
+    expect(causeHint(target)).toBeUndefined();
+    expect(causeHint(undefined)).toBeUndefined();
+  });
+
+  it("an unknown kind is refused, not silently dropped", () => {
+    // Dropping it would delete the one line this exists to print, and the row
+    // would look exactly like a correctly-configured one.
+    expect(() => causeHint({ ...target, migrations: "drizzle" })).toThrow(
+      /unknown migrations kind "drizzle"/
+    );
+  });
+
+  it("every kind the real target list declares exists in CAUSE_HINTS", () => {
+    // A static read of the runner, because importing it would run the checks.
+    const src = readFileSync(
+      path.join(__dirname, "..", "scripts", "check-deploy-freshness.mjs"),
+      "utf8"
+    );
+    const declared: string[] = [];
+    const pattern = /migrations:\s*"([^"]+)"/g;
+    let m: RegExpExecArray | null;
+    while ((m = pattern.exec(src)) !== null) declared.push(m[1]);
+    expect(declared.length).toBeGreaterThan(0);
+    for (const kind of declared) expect(CAUSE_HINTS).toHaveProperty(kind);
+  });
+
+  it("carried by a stale sha FAIL, with the age in the same row", async () => {
+    const r = await decideFreshness(
+      {
+        target: withPrisma,
+        live: serving(SERVED),
+        head: readableHead(5 * MIN),
+      },
+      fakeProbes({ compare: aheadBy([5 * MIN, 7 * 24 * HOUR]) }).probes,
+      opts
+    );
+    expect(r).toMatchObject({ ok: false, verdict: "FAIL" });
+    expect(r.detail).toMatch(/live is 7d behind main/);
+    expect(r.hint).toBe(CAUSE_HINTS.prisma);
+  });
+
+  it("carried by a stale 404 FAIL", async () => {
+    const r = await decideFreshness(
+      { target: withPrisma, live: notFound, head: readableHead(4 * MIN) },
+      fakeProbes({ route: { status: 200, lastCommitDate: iso(7 * 24 * HOUR) } })
+        .probes,
+      opts
+    );
+    expect(r).toMatchObject({ ok: false, verdict: "FAIL" });
+    expect(r.detail).toMatch(/live is 7d behind main/);
+    expect(r.hint).toBe(CAUSE_HINTS.prisma);
+  });
+
+  it("carried by the private + declared-date FAIL (the live KhataGO row)", async () => {
+    const r = await decideFreshness(
+      {
+        target: { ...withPrisma, routeOnMainSince: "2026-08-29" },
+        live: notFound,
+        head: privateHead,
+      },
+      fakeProbes({}).probes,
+      opts
+    );
+    expect(r).toMatchObject({ ok: false, verdict: "FAIL" });
+    // NOW is 2026-09-05T12:00Z; the route landed 7.5 days earlier.
+    expect(r.detail).toMatch(/at least 8d behind main/);
+    expect(r.hint).toBe(CAUSE_HINTS.prisma);
+  });
+
+  it("NOT carried by a passing, deploying or unverifiable row", async () => {
+    const fresh = await decideFreshness(
+      { target: withPrisma, live: serving(MAIN), head: readableHead(5 * MIN) },
+      fakeProbes({}).probes,
+      opts
+    );
+    const deploying = await decideFreshness(
+      {
+        target: withPrisma,
+        live: serving(SERVED),
+        head: readableHead(5 * MIN),
+      },
+      fakeProbes({ compare: aheadBy([5 * MIN]) }).probes,
+      opts
+    );
+    const priv = await decideFreshness(
+      { target: withPrisma, live: serving(SERVED), head: privateHead },
+      fakeProbes({}).probes,
+      opts
+    );
+    expect(fresh.hint).toBeUndefined();
+    expect(deploying.hint).toBeUndefined();
+    expect(priv.hint).toBeUndefined();
+  });
+
+  it("NOT carried by a FAIL that is not 'behind main' — a wrong build is not a wedged migration", async () => {
+    const unreachable = await decideFreshness(
+      {
+        target: withPrisma,
+        live: { status: 0, json: null, error: "ETIMEDOUT" },
+        head: readableHead(1 * MIN),
+      },
+      fakeProbes({}).probes,
+      opts
+    );
+    const diverged = await decideFreshness(
+      {
+        target: withPrisma,
+        live: serving(SERVED),
+        head: readableHead(1 * MIN),
+      },
+      fakeProbes({
+        compare: {
+          status: 200,
+          json: { status: "diverged", ahead_by: 1, commits: [] },
+        },
+      }).probes,
+      opts
+    );
+    expect(unreachable).toMatchObject({ ok: false });
+    expect(unreachable.hint).toBeUndefined();
+    expect(diverged).toMatchObject({ ok: false });
+    expect(diverged.hint).toBeUndefined();
+  });
+
+  it("a deploying row still says how far behind it is", async () => {
+    const r = await decideFreshness(
+      { target, live: serving(SERVED), head: readableHead(6 * MIN) },
+      fakeProbes({ compare: aheadBy([6 * MIN]) }).probes,
+      opts
+    );
+    expect(r).toMatchObject({ verdict: "deploying" });
+    expect(r.detail).toMatch(/live is 6m behind main/);
+  });
+});
+
+describe("summarize — the line the job prints even when nothing fails", () => {
+  const ok = { ok: true };
+  const deploying = { ok: true, deploying: true };
+  const unverifiable = { ok: true, unverifiable: true };
+  const failed = { ok: false };
+
+  it("all green: N of N, with no parenthetical", () => {
+    expect(summarize([ok, ok, ok])).toBe("3 of 3 apps serve main");
+  });
+
+  it("names what the rest are, so a regression is visible from the Actions list", () => {
+    expect(summarize([ok, failed, deploying, unverifiable])).toBe(
+      "1 of 4 apps serve main (1 stale, 1 deploying, 1 unverifiable)"
+    );
+  });
+
+  it("today's real shape: three serving, KhataGO stale", () => {
+    expect(summarize([ok, failed, ok, ok])).toBe(
+      "3 of 4 apps serve main (1 stale)"
+    );
+  });
+
+  it("a deploying or unverifiable row is not counted as serving main", () => {
+    // "cannot verify" was never a pass; neither is "not there yet".
+    expect(summarize([deploying, unverifiable])).toBe(
+      "0 of 2 apps serve main (1 deploying, 1 unverifiable)"
+    );
+  });
+
+  it("no targets → 0 of 0, not a crash", () => {
+    expect(summarize([])).toBe("0 of 0 apps serve main");
   });
 });

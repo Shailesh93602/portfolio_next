@@ -26,7 +26,7 @@ npm run type-check      # tsc --noEmit
 npm run format          # Prettier (writes)
 npm run format:check    # Prettier (CI check, read-only)
 
-npm test                # Jest unit tests (currently 392 tests, 41 suites)
+npm test                # Jest unit tests (currently 435 tests, 42 suites)
 npm run test:watch      # Jest watch mode
 npm run test:coverage   # Jest with coverage report
 npm run test:e2e        # Playwright (needs dev/prod server running)
@@ -110,8 +110,8 @@ lib/
 
 scripts/
   check-live-urls.mjs            # Daily URL health check (GitHub Actions). Reads every `live`/`github` URL out of constants/projects.ts, so it widens automatically when a project is added. KNOWN_PRIVATE entries carry an expiry.
-  check-deploy-freshness.mjs     # Daily FRESHNESS check. For this site, KhataGO and EduScale (frontend + backend health): fetch the served sha, compare with the repo's `main` via the GitHub API. Fails if the served sha is not an ancestor of main, if main has been ahead >24h, or if /api/version 404s while main has the route. Inside a 30-minute grace window (FRESHNESS_GRACE_MINUTES) a behind sha or a 404 is `deploying` (exit 0 + warning) — the window is anchored on the OLDEST change live is missing (oldest unserved commit / the commit that put the route on main), never on main HEAD, which a fresh unrelated commit would reset. KhataGO is private to the Actions token → sha reported "cannot verify (private)", but its 404 still FAILS from the declared route date (2026-09-05), with no grace (no commit times). Red by design until KhataGO's Vercel deploys (failing since 2026-08-30) are fixed.
-  deploy-freshness-decision.mjs  # The I/O-free decision half of the above (injected clock + lazy probes). Unit-tested in __tests__/deploy-freshness-decision.test.ts: fresh, deploying-inside-grace, stale-outside-grace, 404 inside/outside grace, private, and the env parsing.
+  check-deploy-freshness.mjs     # Daily FRESHNESS check. For this site, KhataGO and EduScale (frontend + backend health): fetch the served sha, compare with the repo's `main` via the GitHub API. Fails if the served sha is not an ancestor of main, if main has been ahead >24h, or if /api/version 404s while main has the route. Inside a 30-minute grace window (FRESHNESS_GRACE_MINUTES) a behind sha or a 404 is `deploying` (exit 0 + warning) — the window is anchored on the OLDEST change live is missing (oldest unserved commit / the commit that put the route on main), never on main HEAD, which a fresh unrelated commit would reset. KhataGO is private to the Actions token → sha reported "cannot verify (private)", but its 404 still FAILS from the declared route date (2026-09-05), with no grace (no commit times) and with the declared date as a stated LOWER bound ("at least 1d behind main"). Red by design until KhataGO's Vercel deploys (failing since 2026-08-30) are fixed. A failing row also says how long live has been behind (`formatAge`: minutes < 90m, hours < 24h, whole days beyond — a week reads as "7d") and, for targets that declare `migrations: "prisma"` (KhataGO, EduScale backend), one extra line naming the cause class: a failed migration wedges Prisma with P3009 and blocks every later deploy. Every run prints `N of M apps serve main` (+ a ::notice:: annotation).
+  deploy-freshness-decision.mjs  # The I/O-free decision half of the above (injected clock + lazy probes), plus formatAge / CAUSE_HINTS / causeHint / summarize. Unit-tested in __tests__/deploy-freshness-decision.test.ts: fresh, deploying-inside-grace, stale-outside-grace, 404 inside/outside grace, private, the env parsing, the age formatting (minutes/hours/days/unmeasurable), which rows carry a cause hint, and the summary line.
   check-project-claims.mjs       # Daily CLAIM check. Verifies the NUMBERS projects.ts states about other repos against those repos. Every false claim here started as a true one — "Vitest (147)" was right when written and wrong four merges later. Fetches at a resolved SHA, never at `main`: raw.githubusercontent's CDN serves stale objects for minutes after a push, which made an earlier version flaky exactly when it mattered.
   generate-blog-manifest.mjs     # Runs as postbuild; reads content/blog/ → writes data/blog-manifest.json
   migrate-blog.mjs               # One-time script: extracted blog posts from old blog-data.ts
@@ -149,7 +149,7 @@ public/
 
 ## Testing
 
-- **Unit tests** (`__tests__/`): 414 tests across 42 suites. Covers API routes (statistics, contact), blog functions, components (BlogCard, ProjectCard, EducationSection, KeyMetrics), utils, constants. Run with `npm test`.
+- **Unit tests** (`__tests__/`): 435 tests across 42 suites. Covers API routes (statistics, contact), blog functions, components (BlogCard, ProjectCard, EducationSection, KeyMetrics), utils, constants. Run with `npm test`.
 - **E2E** (`e2e/`):
   - `routes.ts` — **not a spec.** Derives the route inventory (static + `/portfolio/<id>` from `constants/projects.ts` + `/blog/<slug>` from `BLOG_SLUGS`) so adding a project or post automatically widens the asset / SEO gates.
   - `navigation.spec.ts` — desktop + mobile nav sanity

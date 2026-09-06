@@ -34,6 +34,21 @@
  * its 404 fails from the declared `routeOnMainSince` date, exactly as before.
  */
 
+/**
+ * One row of the report. `hint`, `unverifiable` and `deploying` are optional,
+ * so the shape is declared once here rather than inferred per return — the
+ * union TypeScript infers from the branches would make `r.hint` an error at
+ * the call sites that must be free to read it.
+ *
+ * @typedef {object} FreshnessResult
+ * @property {boolean} ok                  false fails the run
+ * @property {string} verdict              the short label in the row
+ * @property {string} detail               the row's sentence
+ * @property {boolean} [unverifiable]      reported distinctly; never a pass
+ * @property {boolean} [deploying]         behind, but inside the grace window
+ * @property {string} [hint]               the cause class, on a stale FAIL
+ */
+
 export const DEFAULT_GRACE_MINUTES = 30;
 export const MAX_LAG_MS = 24 * 60 * 60 * 1000;
 
@@ -70,12 +85,107 @@ const minutes = (ms) => Math.max(0, Math.round(ms / 60_000));
 const short = (sha) => (typeof sha === "string" ? sha.slice(0, 7) : "?");
 
 /**
- * One target → { ok, verdict, detail, unverifiable?, deploying? }.
+ * HOW LONG live has been behind, in the unit a reader thinks in. A week-long
+ * outage has to read as a week: KhataGO's said "sha bbbbbbb ≠ sha aaaaaaa"
+ * for seven days, which is true and tells nobody how bad it is. Minutes below
+ * 90 minutes, hours below a day, whole days beyond that — the day boundary is
+ * the same 24 hours that makes a lag a failure, so every FAIL reads in days.
+ *
+ * Returns null when there is nothing to measure — a repository this token
+ * cannot read has no commit times, and a missing date must never print as
+ * "NaNd" or, far worse, as "0m".
+ */
+export function formatAge(ms) {
+  if (!Number.isFinite(ms)) return null;
+  const clamped = Math.max(0, ms);
+  if (clamped < 90 * 60_000) return `${Math.round(clamped / 60_000)}m`;
+  if (clamped < 24 * 3_600_000) return `${(clamped / 3_600_000).toFixed(1)}h`;
+  return `${Math.round(clamped / 86_400_000)}d`;
+}
+
+/** "live is 7d behind main", or the honest version when nothing is measurable. */
+function behindFor(ms) {
+  const age = formatAge(ms);
+  return age
+    ? `live is ${age} behind main`
+    : "how far behind live is cannot be measured";
+}
+
+/**
+ * THE CAUSE CLASS, not only the symptom. "live is 7d behind main" says what
+ * is wrong; it does not say where to look. KhataGO's week had exactly one
+ * cause and it was invisible from outside: a migration failed, which left
+ * Prisma wedged (P3009) so every later build died on it — and
+ * `prisma migrate status` would not name the failed migration.
+ *
+ * A target declares which class it can suffer (`migrations: "prisma"`) and
+ * the sentence lives here once, rather than being written out per row. An app
+ * with no database cannot wedge this way and gets no extra line.
+ */
+export const CAUSE_HINTS = {
+  prisma:
+    "likely cause: a failed migration blocks every deploy (P3009) — read the failed build's log, then " +
+    "`SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL AND rolled_back_at IS NULL`",
+};
+
+/**
+ * The hint for a target, or undefined when it declares none. An unknown kind
+ * is a configuration error and is refused rather than dropped: silently
+ * returning undefined would delete the one line this exists to print.
+ */
+export function causeHint(target) {
+  const kind = target?.migrations;
+  if (kind === undefined || kind === null) return undefined;
+  const hint = CAUSE_HINTS[kind];
+  if (!hint) {
+    throw new Error(
+      `unknown migrations kind ${JSON.stringify(kind)} on target ${target?.name}; ` +
+        `known: ${Object.keys(CAUSE_HINTS).join(", ")}`
+    );
+  }
+  return hint;
+}
+
+/**
+ * A FAIL meaning "live is behind main" — the only shape that carries a hint.
+ *
+ * @returns {FreshnessResult}
+ */
+function stale(target, detail) {
+  const hint = causeHint(target);
+  return { ok: false, verdict: "FAIL", detail, ...(hint ? { hint } : {}) };
+}
+
+/**
+ * The one line the job prints whether or not anything failed, so the run is
+ * legible from the Actions list without opening the log: `3 of 4 apps serve
+ * main`. A regression reads as a smaller number, which is the whole point.
+ */
+export function summarize(results) {
+  const serving = results.filter(
+    (r) => r.ok && !r.unverifiable && !r.deploying
+  ).length;
+  const counts = [
+    ["stale", results.filter((r) => !r.ok).length],
+    ["deploying", results.filter((r) => r.ok && r.deploying).length],
+    ["unverifiable", results.filter((r) => r.ok && r.unverifiable).length],
+  ].filter(([, n]) => n > 0);
+  const tail = counts.length
+    ? ` (${counts.map(([label, n]) => `${n} ${label}`).join(", ")})`
+    : "";
+  return `${serving} of ${results.length} apps serve main${tail}`;
+}
+
+/**
+ * One target → { ok, verdict, detail, unverifiable?, deploying?, hint? }.
  *
  *   ok: false          fails the run.
  *   unverifiable: true reported distinctly, never counted as a pass.
  *   deploying: true    ok, with a warning: live is behind main by less than
  *                      the grace window, measured as described above.
+ *   hint               one extra line naming the cause class, on the FAILs
+ *                      that mean "live is behind main" and only for a target
+ *                      that declares one (`migrations`).
  *
  * @param facts   { target, live: { status, json, error? }, head: { status, json } }
  *                `head` is the GitHub `commits/main` answer; 404 = unreadable.
@@ -87,6 +197,7 @@ const short = (sha) => (typeof sha === "string" ? sha.slice(0, 7) : "?");
  *                  compare() → the GitHub `compare/<served>...main` answer,
  *                              { status, json }.
  * @param opts    { now, graceMs, maxLagMs } — the clock and the windows.
+ * @returns {Promise<FreshnessResult>}
  */
 export async function decideFreshness(
   { target, live, head },
@@ -137,21 +248,16 @@ export async function decideFreshness(
             deploying: true,
             verdict: "deploying",
             detail:
-              `${shape}; ${target.routePath} reached ${target.repo} main ${minutes(sinceLanded)}m ago ` +
-              `(${short(mainSha)}) — inside the ${graceLabel}, deploy in flight`,
+              `${shape}; ${behindFor(sinceLanded)} — ${target.routePath} reached ` +
+              `${target.repo} main (${short(mainSha)}) inside the ${graceLabel}: deploy in flight`,
           };
         }
-        const age = Number.isFinite(sinceLanded)
-          ? `${hours(sinceLanded)}h ago`
-          : "at an unknown time";
-        return {
-          ok: false,
-          verdict: "FAIL",
-          detail:
-            `${shape}, but ${target.repo} has ${target.routePath} on main ` +
-            `(${short(mainSha)}, landed ${age}, outside the ${graceLabel}) — ` +
-            `live is serving a build from before the route: a stale deploy`,
-        };
+        return stale(
+          target,
+          `${shape}; ${behindFor(sinceLanded)} — ${target.repo} has ${target.routePath} ` +
+            `on main (${short(mainSha)}) and live serves a build from before it, ` +
+            `outside the ${graceLabel}: a stale deploy`
+        );
       }
       return {
         ok: true,
@@ -160,13 +266,17 @@ export async function decideFreshness(
       };
     }
     if (target.routeOnMainSince) {
-      return {
-        ok: false,
-        verdict: "FAIL",
-        detail:
-          `${shape}; ${target.repo} is private to this token, but the route has been on ` +
-          `main since ${target.routeOnMainSince} — live is a build from before it: a stale deploy`,
-      };
+      // No commit times to measure from, but the declared date is a real
+      // LOWER bound: live is missing at least the change that landed then.
+      // Said as a bound, never as the lag — KhataGO's true gap starts at the
+      // first failed build, which a token that cannot read the repo cannot see.
+      const since = formatAge(now - Date.parse(target.routeOnMainSince));
+      return stale(
+        target,
+        `${shape}; ${target.repo} is private to this token, so the exact lag is unmeasurable — ` +
+          `but the route has been on main since ${target.routeOnMainSince}, so live is ` +
+          `${since ? `at least ${since} behind main` : "a build from before it"}: a stale deploy`
+      );
     }
     return {
       ok: true,
@@ -240,20 +350,18 @@ export async function decideFreshness(
     ? Math.min(...dates)
     : Date.parse(head.json.commit.committer.date);
   const lagMs = now - oldest;
-  const summary = `live serves ${short(servedSha)}; main ${short(mainSha)} is ${aheadBy} commit(s) ahead, oldest unserved is ${hours(lagMs)}h old`;
+  const summary =
+    `live serves ${short(servedSha)}; main ${short(mainSha)} is ${aheadBy} commit(s) ahead — ` +
+    `${behindFor(lagMs)} (measured from the oldest unserved commit)`;
   if (lagMs > maxLagMs) {
-    return {
-      ok: false,
-      verdict: "FAIL",
-      detail: `${summary} — over the ${hours(maxLagMs)}h window`,
-    };
+    return stale(target, `${summary} — over the ${hours(maxLagMs)}h window`);
   }
   if (lagMs <= graceMs) {
     return {
       ok: true,
       deploying: true,
       verdict: "deploying",
-      detail: `${summary} (${minutes(lagMs)}m) — inside the ${graceLabel}, deploy in flight`,
+      detail: `${summary} — inside the ${graceLabel}, deploy in flight`,
     };
   }
   return {
