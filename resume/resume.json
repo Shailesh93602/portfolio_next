@@ -16,10 +16,10 @@
       "start": "Jul 2025",
       "end": "Present",
       "bullets": [
-        "Backend of the core QA-automation platform: a Node.js test-execution engine orchestrating concurrent browser and mobile runs (Playwright, WebdriverIO/Appium, LambdaTest), live browser-session streaming (noVNC) over WebSockets through a Node control plane, and a debug engine with breakpoints and resume-from-checkpoint.",
+        "Own the Node.js/TypeScript backend of the core QA-automation platform, a polyglot system: a test-execution engine orchestrating concurrent browser and mobile runs (Playwright, WebdriverIO/Appium, LambdaTest), live browser-session streaming (noVNC) over WebSockets through a Node control plane, and a debug engine with breakpoints and resume-from-checkpoint.",
         "Primary author of the integrations engine (Node/TypeScript): GitHub App, GitLab and Linear OAuth, Slack Block Kit bot, webhook ingestion. Made it multi-tenant: OAuth handshake state moved from per-pod memory to Redis with an atomic Lua read-and-delete, tenant resolution by installation id, token vault ciphertext-only at rest.",
         "Node session control plane on GKE: pre-warmed pod pool over Redis, idempotent stop with first-terminal-wins status ordering, request trace ids via AsyncLocalStorage, stable error codes and a diagnostics bundle for on-prem customers, pod eviction protection and memory budgeting.",
-        "Presigned-URL chokepoint so private S3/MinIO/GCS buckets work on-prem; PR-impact analysis flow where a webhook and an MCP tool call share one path. Also contribute to the platform's Java (Spring Boot) and Python services with AI-assisted development.",
+        "Presigned-URL chokepoint so private S3/MinIO/GCS buckets work on-prem; PR-impact analysis flow where a webhook and an MCP tool call share one path.",
         "Shipped 2 products end to end (React/Next.js + Node.js): Vibe Testing, an AI-assisted UI-testing extension streaming live logs over WebSockets, and AxeTos, a WCAG A/AA/AAA auditor with precise DOM locators. Both still in use."
       ]
     },
@@ -97,17 +97,13 @@
     {
       "label": "AI",
       "items": "LLM function/tool calling (Gemini), multi-model fallback, per-key isolation, bring-your-own-key encryption, evals, MCP tools, pgvector RAG"
-    },
-    {
-      "label": "Working exposure",
-      "items": "Java (Spring Boot), Python"
     }
   ],
   "education": [
     "B.E. in Information Technology, Government Engineering College, Bhavnagar, Gujarat - 2020 to 2024 - CGPA 7.99/10"
   ],
   "achievements": [
-    "Institute Rank 1 on GeeksforGeeks (650+ problems solved)",
+    "650+ problems solved on GeeksforGeeks",
     "5-star C++ on HackerRank",
     "Finalist, New India Vibrant Hackathon 2023"
   ]

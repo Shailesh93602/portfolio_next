@@ -212,14 +212,18 @@ const CLAIMS = [
   },
   // ── GeeksforGeeks ─────────────────────────────────────────────────────
   //
-  // The site says "Institute Rank 1 on GeeksforGeeks (650+ problems solved)".
+  // The site says "650+ problems solved on GeeksforGeeks" — the volume, and
+  // only the volume. The "Institute Rank 1" half was dropped on 2026-09-06
+  // (see lib/profile.ts), so the institute_rank field is no longer checked:
+  // this file verifies what is claimed, and checking a number nothing states
+  // is how a check goes stale without anyone noticing.
+  //
   // The profile page is a Next.js app whose RSC payload embeds the profile
-  // record as JSON — `"total_problems_solved":650,"institute_rank":1` — so
-  // the two fields are matched by their JSON keys rather than by page
-  // structure. If GfG moves them, the claim becomes UNVERIFIABLE (a warning
-  // that names the reason), not a failure: a page redesign is not a false
-  // claim, and scraping the rendered HTML instead would make this the
-  // flakiest check in the file.
+  // record as JSON — `"total_problems_solved":650` — so the field is matched
+  // by its JSON key rather than by page structure. If GfG moves it, the claim
+  // becomes UNVERIFIABLE (a warning that names the reason), not a failure: a
+  // page redesign is not a false claim, and scraping the rendered HTML
+  // instead would make this the flakiest check in the file.
   //
   // "650+" is a floor, so the comparison is `atLeast`: the upstream figure may
   // grow past the stated one without making the claim false. It is reported
@@ -233,14 +237,6 @@ const CLAIMS = [
     // backslash before the closing quote.
     sourcePattern: /total_problems_solved\\?":(\d+)/,
     compare: "atLeast",
-    fragile: true,
-  },
-  {
-    what: "GeeksforGeeks institute rank",
-    localFile: "profile",
-    localPattern: /geeksforgeeksRank: (\d+)/,
-    url: "https://www.geeksforgeeks.org/user/thenameisshaileshbhai/",
-    sourcePattern: /institute_rank\\?":(\d+)/,
     fragile: true,
   },
 ];

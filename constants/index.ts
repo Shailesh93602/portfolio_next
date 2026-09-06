@@ -23,14 +23,17 @@ export const itemVariants = {
 };
 
 // Each card must survive the click on "View Profile". The GfG profile shows
-// 650 solved and eSparkBiz as the institute, so the old "while in final year"
-// contradicted itself; HackerRank shows one five-star badge (C++), not
-// "multiple skills including Problem Solving and Python"; the CodeChef card
-// (1★, rating 1219) invited a question with no good answer, so it is gone.
+// 650 solved and eSparkBiz Technologies as the institute, so the old "while in
+// final year" contradicted itself and the "Institute Rank 1" framing resolved
+// to a former employer's cohort of unknown size — dropped 2026-09-06, volume
+// only. HackerRank shows one five-star badge (C++), not "multiple skills
+// including Problem Solving and Python"; the CodeChef card (1★, rating 1219)
+// invited a question with no good answer, so it is gone.
 export const achievements: Achievement[] = [
   {
-    title: "Institute Rank 1 on GeeksforGeeks",
-    description: `${PROFILE_META.gfgLine}.`,
+    title: PROFILE_META.gfgLine,
+    description:
+      "Sustained DSA practice in C++ — the count is on the linked GeeksforGeeks profile, and scripts/check-project-claims.mjs re-reads it daily.",
     iconName: "trophy",
     link: SOCIAL_LINKS.GEEKSFORGEEKS,
   },
@@ -70,14 +73,17 @@ export const experiences: Experience[] = [
     ],
     // Pattern level only. No company metrics, no customer names: those are
     // ContextQA's numbers to publish, and the ones he can least verify in a
-    // room. Java/Python is a clause, never a bullet — the work is Node-first.
+    // room. The Java (Spring Boot) / Python clause was dropped 2026-09-06:
+    // that work is AI-assisted and he has said he cannot defend it in an
+    // interview. The platform is polyglot and he owns the Node/TypeScript
+    // side — say that, and let the rest come up in conversation.
     description:
-      "Node.js backend of the core QA-automation platform: the test-execution engine, live browser-session streaming, the integrations engine and the session control plane on GKE. First 2-3 months: shipped 2 Chrome extensions (Vibe Testing + AxeTos).",
+      "Own the Node.js/TypeScript backend of the core QA-automation platform, a polyglot system: the test-execution engine, live browser-session streaming, the integrations engine and the session control plane on GKE. First 2-3 months: shipped 2 Chrome extensions (Vibe Testing + AxeTos).",
     highlights: [
       "Test-execution engine (Node.js) orchestrating concurrent browser and mobile runs across Playwright, WebdriverIO/Appium and LambdaTest; live browser-session streaming over WebSockets (noVNC proxied through a Node control plane); a debug engine with breakpoints and resume-from-checkpoint.",
       "Primary author of the integrations engine (Node/TypeScript): GitHub App, GitLab and Linear OAuth, Slack Block Kit bot, webhook ingestion — made multi-tenant by moving OAuth handshake state from per-pod memory to Redis with an atomic Lua read-and-delete, resolving tenants by installation id, and keeping the token vault ciphertext-only at rest.",
       "Session control plane on GKE: pre-warmed pod pool over Redis, idempotent stop with first-terminal-wins status ordering, request trace ids via AsyncLocalStorage, stable error codes plus a diagnostics bundle for on-prem customers, pod eviction protection and memory budgeting.",
-      "Presigned-URL chokepoint so private S3/MinIO/GCS buckets work on-prem; PR-impact analysis where a webhook and an MCP tool call share one path. Also contribute to the platform's Java (Spring Boot) and Python services.",
+      "Presigned-URL chokepoint so private S3/MinIO/GCS buckets work on-prem; PR-impact analysis where a webhook and an MCP tool call share one path.",
       "AxeTos (shipped in first 2-3 months): Chrome extension + Node.js backend for WCAG A/AA/AAA auditing with fix suggestions and precise DOM locators.",
       "Vibe Testing (shipped in first 2-3 months): Chrome extension for AI-assisted UI testing — real-time log streaming over WebSockets, screenshot capture, AI-generated bug scenarios, chat-based fix workflows.",
     ],

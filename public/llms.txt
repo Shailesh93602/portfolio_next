@@ -2,12 +2,12 @@
 
 > Software Engineer (~2.5 years), TypeScript/Node, backend-strongest, applied AI. Current role: Node.js backend of ContextQA's core QA-automation platform (test-execution engine, live browser-session streaming, integrations engine, session control plane on GKE).
 
-Shailesh Chaudhari is a Software Engineer based in Ahmedabad, Gujarat, India (originally from Patan, Gujarat). BE in Information Technology from Government Engineering College, Bhavnagar (2024, CGPA 7.99). Institute Rank 1 on GeeksforGeeks (650+ problems solved).
+Shailesh Chaudhari is a Software Engineer based in Ahmedabad, Gujarat, India (originally from Patan, Gujarat). BE in Information Technology from Government Engineering College, Bhavnagar (2024, CGPA 7.99). 650+ problems solved on GeeksforGeeks.
 
 Professional timeline:
 - Jan 2024 – Aug 2024: Software Developer Intern at eSparkBiz Technologies (REST APIs and React/Next.js interfaces with authentication and RBAC; Stripe and Supabase auth integrations).
 - Aug 2024 – Jul 2025: Software Developer at eSparkBiz Technologies (about 1.5 years there in total, including the 7-month internship; 3 client projects end-to-end — full-stack UI, backend APIs, client communication and requirements).
-- Jul 2025 – present: Software Engineer at ContextQA. First 2-3 months: shipped 2 Chrome extensions (Vibe Testing for AI-assisted web testing, AxeTos for WCAG accessibility). Since then: the Node.js backend of the core QA-automation platform — a test-execution engine orchestrating concurrent browser and mobile runs (Playwright, WebdriverIO/Appium, LambdaTest), live browser-session streaming over WebSockets (noVNC proxied through a Node control plane), a debug engine with breakpoints and resume-from-checkpoint; primary author of the integrations engine (GitHub App, GitLab and Linear OAuth, Slack bot, webhook ingestion; multi-tenant via OAuth state in Redis and tenant resolution by installation id); the session control plane on GKE (pre-warmed pod pool over Redis, idempotent stop, request trace ids, stable error codes and a diagnostics bundle for on-prem customers). Also contributes to the platform's Java (Spring Boot) and Python services.
+- Jul 2025 – present: Software Engineer at ContextQA. First 2-3 months: shipped 2 Chrome extensions (Vibe Testing for AI-assisted web testing, AxeTos for WCAG accessibility). Since then: owns the Node.js/TypeScript backend of the core QA-automation platform, a polyglot system — a test-execution engine orchestrating concurrent browser and mobile runs (Playwright, WebdriverIO/Appium, LambdaTest), live browser-session streaming over WebSockets (noVNC proxied through a Node control plane), a debug engine with breakpoints and resume-from-checkpoint; primary author of the integrations engine (GitHub App, GitLab and Linear OAuth, Slack bot, webhook ingestion; multi-tenant via OAuth state in Redis and tenant resolution by installation id); the session control plane on GKE (pre-warmed pod pool over Redis, idempotent stop, request trace ids, stable error codes and a diagnostics bundle for on-prem customers).
 
 ## Pages
 
@@ -40,7 +40,7 @@ ContextQA Chrome extensions (shipped in first 2-3 months at ContextQA, 2025):
 
 ## Skills
 
-TypeScript · JavaScript · SQL · C++ (DSA) · React · Next.js · Tailwind CSS · shadcn/ui · WCAG 2.1 AA · Node.js · Express · NestJS · Socket.io · Prisma · REST · PostgreSQL · Redis · MongoDB · Docker / Docker Compose · GitHub Actions · GKE (exposure) · Vercel · Supabase · AWS S3 · LLM function/tool calling (Gemini) · multi-model fallback · bring-your-own-key encryption · evals · MCP tools · pgvector RAG · Playwright · WebdriverIO · LambdaTest · deterministic simulation · mutation testing · working exposure: Java (Spring Boot), Python
+TypeScript · JavaScript · SQL · C++ (DSA) · React · Next.js · Tailwind CSS · shadcn/ui · WCAG 2.1 AA · Node.js · Express · NestJS · Socket.io · Prisma · REST · PostgreSQL · Redis · MongoDB · Docker / Docker Compose · GitHub Actions · GKE (exposure) · Vercel · Supabase · AWS S3 · LLM function/tool calling (Gemini) · multi-model fallback · bring-your-own-key encryption · evals · MCP tools · pgvector RAG · Playwright · WebdriverIO · LambdaTest · deterministic simulation · mutation testing
 
 ## Contact
 

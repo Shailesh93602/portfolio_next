@@ -23,13 +23,13 @@
 
 ### Software Engineer — ContextQA (July 10, 2025 – Present)
 **Company:** https://contextqa.com
-**Stack:** Node.js, TypeScript, Express.js, Redis, PostgreSQL, MongoDB, Prisma, Playwright, WebdriverIO/Appium, LambdaTest, noVNC over WebSockets, Docker, GKE, Chrome Extensions; working exposure to Java (Spring Boot) and Python
+**Stack:** Node.js, TypeScript, Express.js, Redis, PostgreSQL, MongoDB, Prisma, Playwright, WebdriverIO/Appium, LambdaTest, noVNC over WebSockets, Docker, GKE, Chrome Extensions
 
-**Current role:** Node.js backend of ContextQA's core QA-automation platform. Pattern level only — no company metrics or customer names:
+**Current role:** owns the Node.js/TypeScript backend of ContextQA's core QA-automation platform, a polyglot system. Pattern level only — no company metrics or customer names:
 - Test-execution engine orchestrating concurrent browser and mobile runs across Playwright, WebdriverIO/Appium and LambdaTest; live browser-session streaming over WebSockets (noVNC proxied through a Node control plane); a debug engine with breakpoints and resume-from-checkpoint.
 - Primary author of the integrations engine (Node/TypeScript): GitHub App, GitLab and Linear OAuth, Slack Block Kit bot, webhook ingestion — made multi-tenant by moving OAuth handshake state from per-pod memory to Redis with an atomic Lua read-and-delete, resolving tenants by installation id, and keeping the token vault ciphertext-only at rest.
 - Session control plane on GKE: pre-warmed pod pool over Redis, idempotent stop with first-terminal-wins status ordering, request trace ids via AsyncLocalStorage, stable error codes plus a diagnostics bundle for on-prem customers, pod eviction protection and memory budgeting.
-- Presigned-URL chokepoint so private S3/MinIO/GCS buckets work on-prem; PR-impact analysis where a webhook and an MCP tool call share one path. Also contributes to the platform's Java (Spring Boot) and Python services.
+- Presigned-URL chokepoint so private S3/MinIO/GCS buckets work on-prem; PR-impact analysis where a webhook and an MCP tool call share one path.
 
 **First 2-3 months at ContextQA (shipped):** two production Chrome extensions, now maintained by the team:
 
@@ -64,7 +64,7 @@ Owned authentication module end-to-end on Garage Management System team project 
 **Institution location:** Bhavnagar, Gujarat, India
 **Period:** 2020 – 2024
 **CGPA:** 7.99 / 10
-**Notable:** Institute Rank 1 on GeeksforGeeks (650+ problems solved); Hackathon Finalist at New India Vibrant Hackathon 2023
+**Notable:** 650+ problems solved on GeeksforGeeks; Hackathon Finalist at New India Vibrant Hackathon 2023
 
 ---
 
@@ -182,7 +182,7 @@ Professional WCAG accessibility testing suite:
 
 ## Achievements
 
-- **Institute Rank 1 on GeeksforGeeks (650+ problems solved).** Profile: https://www.geeksforgeeks.org/user/thenameisshaileshbhai/
+- **650+ problems solved on GeeksforGeeks.** Profile: https://www.geeksforgeeks.org/user/thenameisshaileshbhai/
 - **5-star C++ on HackerRank.** Profile: https://www.hackerrank.com/profile/shailesh93602
 - **Hackathon Finalist** — New India Vibrant Hackathon 2023 (ITI Alumni Tracking System, React + PHP)
 - **LeetCode:** https://leetcode.com/u/Shaileshbhai/

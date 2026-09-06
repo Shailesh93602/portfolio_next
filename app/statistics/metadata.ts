@@ -6,7 +6,7 @@ import { PROFILE_META } from "@/lib/profile";
 const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(
   "Coding Stats — Shailesh Chaudhari"
 )}&type=page&description=${encodeURIComponent(
-  "GitHub heatmap, LeetCode progress, GFG Institute Rank 1"
+  `GitHub heatmap, LeetCode progress, ${PROFILE_META.gfgLine}`
 )}`;
 
 export const metadata: Metadata = {
@@ -46,8 +46,7 @@ export const metadata: Metadata = {
     type: "website",
     url: `${SITE_URL}/statistics`,
     title: "Coding Stats — Shailesh Chaudhari",
-    description:
-      "GitHub contributions, LeetCode stats, and competitive programming achievements. Institute Rank 1 on GeeksforGeeks.",
+    description: `GitHub contributions, LeetCode stats, and competitive programming achievements. ${PROFILE_META.gfgLine}.`,
     images: [
       {
         url: ogImageUrl,
@@ -60,7 +59,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Coding Stats — Shailesh Chaudhari",
-    description: "GitHub heatmap, LeetCode progress, GFG Institute Rank 1.",
+    description: `GitHub heatmap, LeetCode progress, ${PROFILE_META.gfgLine}.`,
     images: [ogImageUrl],
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,

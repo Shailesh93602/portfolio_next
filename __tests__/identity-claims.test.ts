@@ -9,6 +9,14 @@
  *     eSparkBiz Technologies, so the college framing was contradicted on
  *     click. The same figure was 604+ on five surfaces, 600+ on one and 700+
  *     in an archived post title.
+ *
+ * Third pass (2026-09-06) dropped the rank framing altogether. A rank is only
+ * as meaningful as the population it ranks within: "Institute Rank 1" reads as
+ * a college cohort, and resolves on click to a former employer with an unknown
+ * and probably tiny number of GfG users. A claim that deflates when verified is
+ * worse than a smaller one that holds, so the site states the volume only —
+ * "650+ problems solved on GeeksforGeeks" — and "Institute Rank" is banned
+ * outright below so it cannot come back.
  *   - "5 star rating in multiple programming skills including Problem Solving
  *     and Python". The public badges show C++ at five stars, Python at three,
  *     and no Problem Solving badge.
@@ -65,13 +73,25 @@ describe("the GeeksforGeeks figure", () => {
 
   it("is the one the profile shows, stated as a floor", () => {
     expect(n).toBe(650);
-    expect(PROFILE_META.gfgLine).toBe(
-      "Institute Rank 1 on GeeksforGeeks (650+ problems solved)"
-    );
+    expect(PROFILE_META.gfgLine).toBe("650+ problems solved on GeeksforGeeks");
+  });
+
+  it("states the volume only — no rank, on any surface", () => {
+    // Verified against the live profile 2026-09-06: total_problems_solved 650,
+    // institute_rank 1, institute_name "eSparkBiz Technologies". The rank is
+    // true and still not worth claiming; see the header note.
+    expect(PROFILE.achievements).not.toHaveProperty("geeksforgeeksRank");
+    const offenders: string[] = [];
+    for (const file of files) {
+      const text = stripComments(readFileSync(file, "utf8"));
+      const m = text.match(/institute rank/i);
+      if (m) offenders.push(`${relative(ROOT, file)}: "${m[0]}"`);
+    }
+    expect(offenders).toEqual([]);
   });
 
   it("is rendered from PROFILE on every surface that states it", () => {
-    expect(achievements[0].description).toContain(PROFILE_META.gfgLine);
+    expect(JSON.stringify(achievements[0])).toContain(PROFILE_META.gfgLine);
     expect(homeFaq.map((f) => f.answer).join(" ")).toContain(
       PROFILE_META.gfgLine
     );
@@ -112,8 +132,8 @@ describe("the GeeksforGeeks figure", () => {
     expect(offenders).toEqual([]);
   });
 
-  it("makes no college or final-year claim about the rank", () => {
-    // The GfG profile's institute is eSparkBiz Technologies. Tying the rank
+  it("makes no college or final-year claim", () => {
+    // The GfG profile's institute is eSparkBiz Technologies. Tying the count
     // to college is contradicted the moment someone clicks through.
     const surfaces = [
       JSON.stringify(education),
@@ -124,8 +144,42 @@ describe("the GeeksforGeeks figure", () => {
       JSON.stringify(resume),
     ].join("\n");
     expect(surfaces).not.toMatch(/final[- ]year/i);
-    expect(surfaces).not.toMatch(/Institute Rank[^.]*college/i);
-    expect(surfaces).not.toMatch(/college[^.]*Institute Rank/i);
+    expect(surfaces).not.toMatch(/GeeksforGeeks[^.]*college/i);
+    expect(surfaces).not.toMatch(/college[^.]*GeeksforGeeks/i);
+  });
+});
+
+describe("the ContextQA platform is polyglot and he owns the Node side", () => {
+  // 2026-09-06: "Also contribute to the platform's Java (Spring Boot) and
+  // Python services with AI-assisted development" is gone from every surface.
+  // He can modify and ship that code with AI help but has said he cannot
+  // answer interview questions on it, and the ATS gain is marginal for a
+  // TypeScript/Node target — not worth a line that invites the question. He
+  // can raise it verbally when it helps. What replaces it is the honest
+  // framing, not silence: a polyglot platform whose Node/TypeScript side is
+  // his.
+  const contextqa = experiences.find((e) => e.company === "ContextQA")!;
+
+  it("no surface claims the Java or Spring Boot contribution", () => {
+    const offenders: string[] = [];
+    for (const file of files) {
+      const text = stripComments(readFileSync(file, "utf8"));
+      const m = text.match(/Spring Boot|AI-assisted development/i);
+      if (m) offenders.push(`${relative(ROOT, file)}: "${m[0]}"`);
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  it("says polyglot rather than reading as a single-language platform", () => {
+    expect(contextqa.description).toMatch(/polyglot/i);
+    expect(contextqa.description).toMatch(/Node\.js\/TypeScript/);
+    const resumeContextqa = resume.experience.find(
+      (e) => e.company === "ContextQA"
+    )!;
+    expect(resumeContextqa.bullets[0]).toMatch(/polyglot/i);
+    for (const f of ["llms.txt", "llms-full.txt"]) {
+      expect(llms(f)).toMatch(/polyglot/i);
+    }
   });
 });
 
