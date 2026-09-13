@@ -23,7 +23,7 @@ export const BALLAST_LEDGER_FINDINGS = 9;
  * The daily claim check reads this constant; the portfolio card, the resume
  * and llms.txt render it (or are held to it by claims-consistency.test.ts).
  */
-export const BALLAST_TEST_COUNT = 202;
+export const BALLAST_TEST_COUNT = 209;
 
 /**
  * Of those, the findings whose defect was in the CHECKER — the invariant

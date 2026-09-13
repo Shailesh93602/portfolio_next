@@ -82,11 +82,28 @@ describe("BALLAST finding counts", () => {
 });
 
 describe("BALLAST test count", () => {
+  /**
+   * 🔴 These patterns are BUILT FROM THE CONSTANT, never written as a literal.
+   *
+   * They used to hardcode `202` inside the negative lookahead — the very number
+   * they exist to protect. So when BALLAST went 202 → 209 the guard did not
+   * fail; it happily asserted "no three-digit count other than 202", which was
+   * true of a file that still said 202. The daily claim check caught the drift
+   * and this suite stayed green for four days beside it.
+   *
+   * A guard that repeats the value it guards is not a guard. Deriving the
+   * pattern means updating `BALLAST_TEST_COUNT` is the whole edit, and any
+   * surface left behind fails here.
+   */
+  const COUNT = String(BALLAST_TEST_COUNT);
+  const staleVitest = new RegExp(`Vitest \\((?!${COUNT}\\))\\d+\\)`);
+  const staleTestCount = new RegExp(`\\b(?!${COUNT}\\b)\\d{3} tests\\b`);
+
   it("the project card renders the constant and no stale literal survives", () => {
     const b = byId("ballast");
     const text = JSON.stringify(b);
     expect(text).toContain(`Tests: Vitest (${BALLAST_TEST_COUNT})`);
-    expect(text).not.toMatch(/Vitest \((?!202\))\d+\)/);
+    expect(text).not.toMatch(staleVitest);
   });
 
   it("the resume and llms.txt state the same number", () => {
@@ -95,13 +112,33 @@ describe("BALLAST test count", () => {
       "utf8"
     );
     expect(resume).toContain(`${BALLAST_TEST_COUNT} tests`);
-    expect(resume).not.toMatch(/\b(?!202\b)\d{3} tests\b/);
+    expect(resume).not.toMatch(staleTestCount);
     const llms = readFileSync(
       join(process.cwd(), "public", "llms.txt"),
       "utf8"
     );
     expect(llms).toContain(`${BALLAST_TEST_COUNT} tests`);
-    expect(llms).not.toMatch(/\b(?!202\b)\d{3} tests\b/);
+    expect(llms).not.toMatch(staleTestCount);
+  });
+
+  /**
+   * `resume.json` is the source; `resume.txt` is COMPILED from it by
+   * `node resume/build.mjs`, alongside the PDF the site actually serves and
+   * the DOCX portals parse. Editing the source without rebuilding leaves the
+   * artifact a recruiter opens stating the old number while every test that
+   * reads the source passes — the same shape of gap as a middleware test that
+   * imports the module the framework never loads.
+   *
+   * resume.txt is the cheap proxy for "the build was re-run": it is committed,
+   * it is plain text, and it cannot be correct unless build.mjs regenerated it.
+   */
+  it("the compiled resume.txt was rebuilt from the source, not left behind", () => {
+    const txt = readFileSync(
+      join(process.cwd(), "resume", "resume.txt"),
+      "utf8"
+    );
+    expect(txt).toContain(`${BALLAST_TEST_COUNT} tests`);
+    expect(txt).not.toMatch(staleTestCount);
   });
 });
 
