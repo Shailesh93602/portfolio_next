@@ -33,6 +33,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
 import { PROFILE, PROFILE_META } from "@/lib/profile";
+import { SOCIAL_LINKS } from "@/lib/constants";
 import { achievements, education, experiences } from "@/constants";
 import { homeFaq, portfolioFaq } from "@/lib/faq-data";
 import { metadata as aboutMetadata } from "@/app/about/metadata";
@@ -276,5 +277,57 @@ describe("no incident-free claim", () => {
     );
     expect(text).not.toMatch(/(zero|no) production incidents/i);
     expect(text).toMatch(/on schedule/);
+  });
+});
+
+describe("one LinkedIn profile, spelled one way", () => {
+  /**
+   * The site linked `shaileshbhaichaudhari` and the RESUME linked
+   * `shaileshbhai-chaudhari`. Only the first is real, so the PDF a recruiter
+   * downloads carried a dead link to his own profile — the worst place for it,
+   * because a resume link is clicked by exactly the person you cannot afford to
+   * lose. He confirmed the correct one on 2026-09-13.
+   *
+   * The hyphenated form is banned outright rather than merely corrected. Two
+   * spellings of one URL is the same failure as two values for one number: it
+   * is not a typo that gets fixed once, it is a fact with two sources.
+   */
+  const WRONG = "shaileshbhai-chaudhari";
+  const RIGHT = "shaileshbhaichaudhari";
+
+  it("the dead hyphenated slug appears in no scanned source", () => {
+    const offenders = files.filter((f) =>
+      readFileSync(f, "utf8").includes(WRONG)
+    );
+    expect(offenders.map((f) => relative(ROOT, f))).toEqual([]);
+  });
+
+  it("the compiled resume artifacts carry the real slug, not the source's word for it", () => {
+    // resume.json is the source; these are built from it by resume/build.mjs.
+    // Asserting only the source would pass while the served PDF stayed wrong —
+    // the same gap that let a stale BALLAST test count reach the live PDF.
+    //
+    // resume.html is deliberately NOT in this list: it is gitignored (an
+    // intermediate render input, per resume/README.md), so it does not exist on
+    // a fresh checkout and asserting it would fail in CI for the wrong reason.
+    // resume.txt is the committed compiled artifact, and it cannot be right
+    // unless build.mjs was re-run.
+    for (const rel of ["resume/resume.txt", "public/index.html"]) {
+      const text = readFileSync(join(ROOT, rel), "utf8");
+      expect({ file: rel, wrong: text.includes(WRONG) }).toEqual({
+        file: rel,
+        wrong: false,
+      });
+      expect({ file: rel, right: text.includes(RIGHT) }).toEqual({
+        file: rel,
+        right: true,
+      });
+    }
+  });
+
+  it("the constant and the resume source agree", () => {
+    expect(SOCIAL_LINKS.LINKEDIN).toContain(RIGHT);
+    expect(resume.contact.linkedin).toContain(RIGHT);
+    expect(SOCIAL_LINKS.LINKEDIN).not.toContain(WRONG);
   });
 });
