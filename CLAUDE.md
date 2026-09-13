@@ -27,7 +27,7 @@ npm run type-check      # tsc --noEmit
 npm run format          # Prettier (writes)
 npm run format:check    # Prettier (CI check, read-only)
 
-npm test                # Jest unit tests (currently 435 tests, 42 suites)
+npm test                # Jest unit tests — 449 tests, 43 suites (counted 2026-09-13; paste the gate's number, never an estimate)
 npm run test:watch      # Jest watch mode
 npm run test:coverage   # Jest with coverage report
 npm run test:e2e        # Playwright (needs dev/prod server running)
@@ -35,7 +35,7 @@ npm run test:e2e:ui     # Playwright with UI mode
 
 npm run analyze         # Bundle analysis (ANALYZE=true build)
 npm run check:claims    # Numbers this site states about other repos vs. those repos
-npm run check:freshness # Does each live site (this, KhataGO, EduScale) serve its repo's main? KhataGO row is red by design until its deploy is fixed. FRESHNESS_GRACE_MINUTES (default 30) = window in which a behind sha / 404 is "deploying", not FAIL
+npm run check:freshness # Does each live site (this, KhataGO, EduScale) serve its repo's main? Today: 3 of 4 serve main, 1 unverifiable, job PASSES. The KhataGO row is no longer red — its Aug-30→Sep-6 deploy outage is over and /api/version answers — it now reads "cannot verify (private)", because the Actions token cannot read a private repo's main. That becomes a real tick if KhataGO goes public. FRESHNESS_GRACE_MINUTES (default 30) = window in which a behind sha / 404 is "deploying", not FAIL
 
 # Regenerate all screenshots (11 pages × 2 themes × 2 viewports)
 # Requires prod server: npm run start
@@ -111,7 +111,7 @@ lib/
 
 scripts/
   check-live-urls.mjs            # Daily URL health check (GitHub Actions). Reads every `live`/`github` URL out of constants/projects.ts, so it widens automatically when a project is added. KNOWN_PRIVATE entries carry an expiry.
-  check-deploy-freshness.mjs     # Daily FRESHNESS check. For this site, KhataGO and EduScale (frontend + backend health): fetch the served sha, compare with the repo's `main` via the GitHub API. Fails if the served sha is not an ancestor of main, if main has been ahead >24h, or if /api/version 404s while main has the route. Inside a 30-minute grace window (FRESHNESS_GRACE_MINUTES) a behind sha or a 404 is `deploying` (exit 0 + warning) — the window is anchored on the OLDEST change live is missing (oldest unserved commit / the commit that put the route on main), never on main HEAD, which a fresh unrelated commit would reset. KhataGO is private to the Actions token → sha reported "cannot verify (private)", but its 404 still FAILS from the declared route date (2026-09-05), with no grace (no commit times) and with the declared date as a stated LOWER bound ("at least 1d behind main"). Red by design until KhataGO's Vercel deploys (failing since 2026-08-30) are fixed. A failing row also says how long live has been behind (`formatAge`: minutes < 90m, hours < 24h, whole days beyond — a week reads as "7d") and, for targets that declare `migrations: "prisma"` (KhataGO, EduScale backend), one extra line naming the cause class: a failed migration wedges Prisma with P3009 and blocks every later deploy. Every run prints `N of M apps serve main` (+ a ::notice:: annotation).
+  check-deploy-freshness.mjs     # Daily FRESHNESS check. For this site, KhataGO and EduScale (frontend + backend health): fetch the served sha, compare with the repo's `main` via the GitHub API. Fails if the served sha is not an ancestor of main, if main has been ahead >24h, or if /api/version 404s while main has the route. Inside a 30-minute grace window (FRESHNESS_GRACE_MINUTES) a behind sha or a 404 is `deploying` (exit 0 + warning) — the window is anchored on the OLDEST change live is missing (oldest unserved commit / the commit that put the route on main), never on main HEAD, which a fresh unrelated commit would reset. KhataGO is private to the Actions token → sha reported "cannot verify (private)", but its 404 still FAILS from the declared route date (2026-09-05), with no grace (no commit times) and with the declared date as a stated LOWER bound ("at least 1d behind main"). ✅ **No longer red (2026-09-13): those deploys are fixed** — KhataGO serves `a8907d5` and `/api/version` answers, so the 404 branch no longer fires. The row is now `cannot verify (private)`, which does not fail the job; it turns into a real tick if the repo goes public. A failing row also says how long live has been behind (`formatAge`: minutes < 90m, hours < 24h, whole days beyond — a week reads as "7d") and, for targets that declare `migrations: "prisma"` (KhataGO, EduScale backend), one extra line naming the cause class: a failed migration wedges Prisma with P3009 and blocks every later deploy. Every run prints `N of M apps serve main` (+ a ::notice:: annotation).
   deploy-freshness-decision.mjs  # The I/O-free decision half of the above (injected clock + lazy probes), plus formatAge / CAUSE_HINTS / causeHint / summarize. Unit-tested in __tests__/deploy-freshness-decision.test.ts: fresh, deploying-inside-grace, stale-outside-grace, 404 inside/outside grace, private, the env parsing, the age formatting (minutes/hours/days/unmeasurable), which rows carry a cause hint, and the summary line.
   check-project-claims.mjs       # Daily CLAIM check. Verifies the NUMBERS projects.ts states about other repos against those repos. Every false claim here started as a true one — "Vitest (147)" was right when written and wrong four merges later. Fetches at a resolved SHA, never at `main`: raw.githubusercontent's CDN serves stale objects for minutes after a push, which made an earlier version flaky exactly when it mattered.
   generate-blog-manifest.mjs     # Runs as postbuild; reads content/blog/ → writes data/blog-manifest.json
@@ -119,7 +119,7 @@ scripts/
 
 .github/workflows/
   ci.yml                     # quality (tsc · eslint · prettier · jest) + a11y (a11y.spec.ts, both viewports, next dev) + e2e (recruiter-journey + meta-and-schema, chromium, production build)
-  url-health-check.yml       # Daily 10:00 UTC cron: `check` job runs check-live-urls.mjs (is it up); `freshness` job runs check-deploy-freshness.mjs (is it current). The freshness job is expected RED while KhataGO's deploy outage lasts — do not delete the row, fix the deploy.
+  url-health-check.yml       # Daily 10:00 UTC cron: `check` job runs check-live-urls.mjs (is it up); `freshness` job runs check-deploy-freshness.mjs (is it current). ✅ Both PASS as of 2026-09-13 — the KhataGO deploy outage that made freshness red is fixed. Its row is now `cannot verify (private)`, which is amber, not a failure.
   claim-check.yml            # Daily 10:30 UTC + on PRs touching constants/projects.ts. Runs check-project-claims.mjs.
   (Supabase keepalive workflow DELETED — replaced by per-project Vercel crons inside KhataGO + DevTrack + EduScale/Frontend)
 
@@ -150,7 +150,7 @@ public/
 
 ## Testing
 
-- **Unit tests** (`__tests__/`): 435 tests across 42 suites. Covers API routes (statistics, contact), blog functions, components (BlogCard, ProjectCard, EducationSection, KeyMetrics), utils, constants. Run with `npm test`.
+- **Unit tests** (`__tests__/`): **449 tests across 43 suites** (counted 2026-09-13). Covers API routes (statistics, contact), blog functions, components (BlogCard, ProjectCard, EducationSection, KeyMetrics), utils, constants. Run with `npm test`.
 - **E2E** (`e2e/`):
   - `routes.ts` — **not a spec.** Derives the route inventory (static + `/portfolio/<id>` from `constants/projects.ts` + `/blog/<slug>` from `BLOG_SLUGS`) so adding a project or post automatically widens the asset / SEO gates.
   - `navigation.spec.ts` — desktop + mobile nav sanity
