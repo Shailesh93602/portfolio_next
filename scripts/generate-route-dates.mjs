@@ -45,6 +45,8 @@ const ROUTES = {
   "/engineering": ["app/engineering/page.tsx"],
   "/statistics": ["app/statistics/page.tsx"],
   "/now": ["app/now/page.tsx"],
+  "/dwell": ["app/dwell/page.tsx"],
+  "/dwell/privacy": ["app/dwell/privacy/page.tsx"],
 };
 
 /** Committer date (%cs, YYYY-MM-DD) of the newest commit touching any path. */
