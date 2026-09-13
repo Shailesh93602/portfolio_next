@@ -1,6 +1,6 @@
 Shailesh Chaudhari
 Software Engineer - TypeScript/Node, backend-strongest, applied AI
-shailesh93602@gmail.com | +91 9313026530 | github.com/Shailesh93602 | linkedin.com/in/shaileshbhai-chaudhari | shaileshchaudhari.vercel.app
+shailesh93602@gmail.com | +91 9313026530 | github.com/Shailesh93602 | linkedin.com/in/shaileshbhaichaudhari | shaileshchaudhari.vercel.app
 
 SUMMARY
 TypeScript/Node full-stack engineer with 2.5+ years shipping production systems end to end: multi-tenant test-execution infrastructure, idempotent webhook pipelines, real-time platforms, and LLM tool-calling agents inside products. Frontend in React/Next.js, audited to WCAG 2.1 AA. Focused on correctness: concurrency control, deterministic testing, and verification that asserts real outcomes.
