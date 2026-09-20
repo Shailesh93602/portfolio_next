@@ -25,8 +25,27 @@ import { projects } from "@/constants/projects";
 
 const PUBLIC = join(process.cwd(), "public");
 
-/** Top-level project bullets, e.g. `- [KhataGO](https://…): …`. */
-const BULLET = /^- \[([A-Za-z0-9][A-Za-z0-9 .-]*)\]\(/gm;
+/**
+ * Top-level project bullets, e.g. `- [KhataGO](https://…): …`.
+ *
+ * The character class now includes the em dash, because one project's title
+ * carries one ("Grounded — Production RAG Starter"). It did not before, which
+ * meant a bullet for that project would simply not match — the check would
+ * skip it silently rather than fail. A scanner that quietly stops scanning is
+ * the failure mode this whole file exists to prevent.
+ */
+const BULLET = /^- \[([A-Za-z0-9][A-Za-z0-9 .\-—]*)\]\(/gm;
+
+/**
+ * The name a reader would search for.
+ * "Grounded — Production RAG Starter" → "Grounded";
+ * "Vibe Testing (ContextQA)" → "Vibe Testing".
+ */
+const shortTitle = (t: string) =>
+  t
+    .split(/\s+—\s+/)[0]
+    .replace(/\s*\([^)]*\)\s*$/, "")
+    .trim();
 
 /** Site pages, not projects — they have no `projects.ts` entry by design. */
 const SITE_PAGES = new Set([
@@ -70,7 +89,9 @@ describe("llms.txt stays consistent with the portfolio", () => {
   });
 
   it("names no project that projects.ts does not contain", () => {
-    const known = new Set(projects.map((p) => p.title));
+    const known = new Set(
+      projects.flatMap((p) => [p.title, shortTitle(p.title)])
+    );
     const orphans = namesIn("llms.txt").filter(
       (n) => !known.has(n) && !SITE_PAGES.has(n) && !PROFESSIONAL_WORK.has(n)
     );
@@ -85,6 +106,43 @@ describe("llms.txt stays consistent with the portfolio", () => {
         `Restore it to projects.ts, or remove it from llms.txt.`
     );
     expect(explained).toEqual([]);
+  });
+
+  /**
+   * 🔴 THE OTHER DIRECTION, which nothing checked.
+   *
+   * The test above asks "does llms.txt advertise something the portfolio does
+   * not show?" — and only that. The mirror question went unasked for as long
+   * as these files have existed, and on 2026-09-20 the answer was bad:
+   *
+   *   - `llms-full.txt` — the file whose own first line calls itself "full
+   *     structured content for AI assistants" and points at llms.txt as "the
+   *     summary version" — contained **zero** occurrences of BALLAST, the one
+   *     project `/engineering` is built around and the one the resume leads
+   *     its projects section with. The summary had it; the full version did not.
+   *   - Grounded, idempotency-kit and promptproof appeared in neither file,
+   *     though all three are in projects.ts and featured on /now. promptproof
+   *     appeared only as a dependency OF KhataGO.
+   *
+   * So an assistant asked to describe this person's work from the file
+   * written for that purpose omitted four of his ten projects. Nothing was
+   * false; the omission simply had no failure mode. It has one now.
+   */
+  it("names every project projects.ts shows", () => {
+    const offenders: string[] = [];
+    for (const file of ["llms.txt", "llms-full.txt"]) {
+      const text = readFileSync(join(PUBLIC, file), "utf8");
+      for (const p of projects) {
+        const name = shortTitle(p.title);
+        if (!text.includes(name)) {
+          offenders.push(
+            `${file} never names "${name}", which projects.ts shows at /portfolio/${p.id}. ` +
+              `An AI agent summarising this portfolio from ${file} will leave it out.`
+          );
+        }
+      }
+    }
+    expect(offenders).toEqual([]);
   });
 
   it("does not mention a project that was deliberately cut", () => {

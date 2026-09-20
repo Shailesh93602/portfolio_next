@@ -1,5 +1,12 @@
 /**
- * Tests for components/header.tsx and components/Showcase/KeyMetrics.tsx
+ * Tests for components/Showcase/KeyMetrics.tsx
+ *
+ * This file also tested `components/header.tsx` until 2026-09-20. That
+ * component was never rendered: the site's header is inlined in
+ * app/layout.tsx and renders components/navbar. The suite was green against
+ * markup no visitor ever loaded — the same shape as a middleware test that
+ * imports the module the framework never registers. Component and tests
+ * deleted together.
  */
 import React from "react";
 import { render, screen } from "@testing-library/react";
@@ -30,41 +37,7 @@ jest.mock("next/navigation", () => ({
   usePathname: () => "/",
 }));
 
-import { Header } from "@/components/header";
 import KeyMetrics from "@/components/Showcase/KeyMetrics";
-
-describe("Header", () => {
-  it("renders a header element", () => {
-    render(<Header />);
-    expect(screen.getByRole("banner")).toBeInTheDocument();
-  });
-
-  it("renders the SC logo link", () => {
-    render(<Header />);
-    expect(screen.getByText("SC")).toBeInTheDocument();
-  });
-
-  it("renders all navigation links", () => {
-    render(<Header />);
-    expect(screen.getByText("Home")).toBeInTheDocument();
-    expect(screen.getByText("About")).toBeInTheDocument();
-    expect(screen.getByText("Projects")).toBeInTheDocument();
-    expect(screen.getByText("Blog")).toBeInTheDocument();
-    expect(screen.getByText("Contact")).toBeInTheDocument();
-  });
-
-  it("Home link points to /", () => {
-    render(<Header />);
-    const homeLink = screen.getByText("Home").closest("a");
-    expect(homeLink).toHaveAttribute("href", "/");
-  });
-
-  it("Blog link points to /blogs", () => {
-    render(<Header />);
-    const blogLink = screen.getByText("Blog").closest("a");
-    expect(blogLink).toHaveAttribute("href", "/blogs");
-  });
-});
 
 describe("KeyMetrics", () => {
   const mockMetrics = [

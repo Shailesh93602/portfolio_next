@@ -31,9 +31,19 @@ import { projects } from "@/constants/projects";
  * you know?" and get an answer.
  */
 
-/** Timing claims: "<200ms", "sub-200ms", "200ms latency", "p95", "p99". */
+/**
+ * Timing claims: "<200ms", "sub-200ms", "200ms latency", "p95", "p99" — and
+ * the wordy forms.
+ *
+ * 🔴 "sub-second" was the hole. Every pattern here wanted a DIGIT, so the home
+ * page and llms.txt carried "sub-second multi-tab sync indicator" for DevTrack
+ * — a latency claim in the same breath as an optimistic-UI feature the repo
+ * does not have — and this file stayed green beside it. A rule expressed as
+ * "no numbers" does not cover a claim made in words, and the reader cannot
+ * tell the difference. Nothing in DevTrack times that round trip.
+ */
 const TIMING_CLAIM =
-  /\b(sub-\s?\d+\s?ms|<\s?\d+\s?ms|\d+\s?ms\s+(latency|response|round-?trip)|p9[59]\b)/i;
+  /\b(sub-\s?\d+\s?ms|<\s?\d+\s?ms|\d+\s?ms\s+(latency|response|round-?trip)|p9[59]\b|sub-(second|millisecond|ms)\b|instant(ly|aneous)?\s+(sync|update|refresh)|real-?time\s+in\s+under)/i;
 
 function stripComments(src: string): string {
   // A comment explaining why a claim was removed contains the claim. Third
@@ -67,6 +77,21 @@ describe("no unmeasured performance claims", () => {
       if (match) offenders.push(`${file}: "${match[0]}"`);
     }
     expect(offenders).toEqual([]);
+  });
+
+  /**
+   * The home page was not scanned until 2026-09-20, which is where the
+   * "sub-second" claim lived — on the first screen a recruiter reads, in
+   * prose hardcoded into the component rather than in projects.ts.
+   * `check-project-claims.mjs` had already been extended to cover this file
+   * for the same reason; this one had not.
+   */
+  it("states no timing figure on the home page", () => {
+    const home = stripComments(
+      readFileSync(join(process.cwd(), "app", "HomeContent.tsx"), "utf8")
+    );
+    const match = home.match(TIMING_CLAIM);
+    expect(match ? `app/HomeContent.tsx: "${match[0]}"` : null).toBeNull();
   });
 
   it("states no timing figure in the site's structured data", () => {

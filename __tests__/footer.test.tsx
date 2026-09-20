@@ -1,5 +1,13 @@
 /**
- * Tests for components/footer.tsx and components/github-languages.tsx
+ * Tests for components/github-languages.tsx
+ *
+ * This file also tested `components/footer.tsx` until 2026-09-20 — seven
+ * assertions against a component nothing rendered. The site's footer is
+ * inlined in app/layout.tsx and carries only the "Built by / Hosted on"
+ * line; the dead component carried GitHub, LinkedIn, Twitter and mailto
+ * links, so the suite asserted "renders LinkedIn link" about a footer with
+ * no social links at all. It also held a second spelling of the LinkedIn
+ * slug that PR #56 went hunting for. Component and tests deleted together.
  */
 import React from "react";
 import { render, screen } from "@testing-library/react";
@@ -23,61 +31,7 @@ jest.mock("next/link", () => ({
   }) => <a href={href}>{children}</a>,
 }));
 
-import { Footer } from "@/components/footer";
 import { GitHubLanguages } from "@/components/github-languages";
-
-describe("Footer", () => {
-  it("renders a footer element", () => {
-    render(<Footer />);
-    expect(screen.getByRole("contentinfo")).toBeInTheDocument();
-  });
-
-  it("renders GitHub link", () => {
-    render(<Footer />);
-    const githubLink = screen.getByText("GitHub").closest("a");
-    expect(githubLink).toHaveAttribute(
-      "href",
-      expect.stringContaining("github")
-    );
-  });
-
-  it("renders LinkedIn link", () => {
-    render(<Footer />);
-    const linkedinLink = screen.getByText("LinkedIn").closest("a");
-    expect(linkedinLink).toHaveAttribute(
-      "href",
-      expect.stringContaining("linkedin")
-    );
-  });
-
-  it("renders Twitter link", () => {
-    render(<Footer />);
-    const twitterLink = screen.getByText("Twitter").closest("a");
-    expect(twitterLink).toHaveAttribute(
-      "href",
-      expect.stringContaining("twitter")
-    );
-  });
-
-  it("renders Email link", () => {
-    render(<Footer />);
-    const emailLink = screen.getByText("Email").closest("a");
-    expect(emailLink).toHaveAttribute(
-      "href",
-      expect.stringContaining("mailto:")
-    );
-  });
-
-  it("renders 'Built by' attribution text", () => {
-    render(<Footer />);
-    expect(screen.getByText(/Built by/)).toBeInTheDocument();
-  });
-
-  it("renders 'Hosted on Vercel' attribution", () => {
-    render(<Footer />);
-    expect(screen.getByText("Vercel")).toBeInTheDocument();
-  });
-});
 
 describe("GitHubLanguages", () => {
   const mockLanguages = [

@@ -6,7 +6,7 @@ import { Analytics } from "@vercel/analytics/react";
 import SpeedInsightsClient from "@/components/speed-insights-client";
 import Navbar from "@/components/navbar/index";
 import { Providers } from "./providers";
-import { COMPANY_LINKS } from "@/lib/constants";
+import { COMPANY_LINKS, SOCIAL_LINKS } from "@/lib/constants";
 import Script from "next/script";
 import { SITE_URL, BLOG_AUTHOR, META_DEFAULTS } from "@/lib/blog-constants";
 import { PROFILE, PROFILE_META } from "@/lib/profile";
@@ -351,7 +351,7 @@ export default function RootLayout({
                     <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
                       Built by{" "}
                       <a
-                        href="https://github.com/shailesh93602"
+                        href={SOCIAL_LINKS.GITHUB}
                         target="_blank"
                         rel="noreferrer"
                         className="font-medium underline underline-offset-4 hover:text-primary"
@@ -360,7 +360,7 @@ export default function RootLayout({
                       </a>
                       . Hosted on{" "}
                       <a
-                        href="https://vercel.com"
+                        href={COMPANY_LINKS.VERCEL}
                         target="_blank"
                         rel="noreferrer"
                         className="font-medium underline underline-offset-4 hover:text-primary"

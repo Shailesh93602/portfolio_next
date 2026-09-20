@@ -76,18 +76,15 @@ if (item.available >= qty) {
   the database does the guarding:
 </p>
 
-<pre>
-  <code>
-    UPDATE inventory SET available = available - $qty WHERE sku = $1 AND
-    available &gt;= $qty; -- 0 rows changed = not enough stock
-  </code>
-</pre>
+<pre><code>UPDATE inventory
+SET available = available - $qty
+WHERE sku = $1 AND available &gt;= $qty;   -- 0 rows changed = not enough stock
+</code></pre>
 
 <p>
   The <code>WHERE available &gt;= $qty</code> clause <em>is</em> the guard.
   There's no separate read, no window for a race. If the row count is 0, there
-  wasn't enough — return out-of-stock. I also add a database{" "}
-  <code>CHECK (available &gt;= 0)</code> as a backstop, so even a bug aborts the
+  wasn't enough — return out-of-stock. I also add a database <code>CHECK (available &gt;= 0)</code> as a backstop, so even a bug aborts the
   transaction instead of going negative.
 </p>
 
@@ -107,13 +104,11 @@ if (item.available >= qty) {
   <li>
     <strong>
       Pessimistic (<code>SELECT … FOR UPDATE</code>):
-    </strong>{" "}
-    lock the row, then decrement. Other transactions wait. Simple, and it
+    </strong> lock the row, then decrement. Other transactions wait. Simple, and it
     serializes the hot row cleanly.
   </li>
   <li>
-    <strong>Optimistic (version CAS):</strong> read a <code>version</code>{" "}
-    column, then <code>UPDATE … WHERE version = $v</code>. If someone else
+    <strong>Optimistic (version CAS):</strong> read a <code>version</code> column, then <code>UPDATE … WHERE version = $v</code>. If someone else
     changed it first, 0 rows match and you retry. No locks held; great when
     conflicts are <em>rare</em>.
   </li>
@@ -126,8 +121,7 @@ if (item.available >= qty) {
   is slowest there because it averages two attempts per success (it retries the
   lost races). Optimistic's advantage is the <em>opposite</em> workload —
   contention spread across many rows, where conflicts are rare and you avoid
-  holding locks.{" "}
-  <strong>
+  holding locks. <strong>
     The lesson: pick the strategy for your contention shape, and measure.
   </strong>
 </p>
@@ -135,18 +129,15 @@ if (item.available >= qty) {
 <h2>The hard part: multi-item baskets without deadlocks</h2>
 
 <p>
-  A real cart reserves several SKUs at once, all-or-nothing. The trap is{" "}
-  <strong>deadlock</strong>: cart A locks milk then waits for eggs; cart B locks
+  A real cart reserves several SKUs at once, all-or-nothing. The trap is <strong>deadlock</strong>: cart A locks milk then waits for eggs; cart B locks
   eggs then waits for milk. Each holds one and waits for the other forever, and
   the database has to abort one.
 </p>
 
 <p>
-  The fix is elegant:{" "}
-  <strong>
+  The fix is elegant: <strong>
     always acquire rows in one fixed global order — sorted by SKU.
-  </strong>{" "}
-  If every basket grabs shared SKUs in the same sequence, no lock cycle can
+  </strong> If every basket grabs shared SKUs in the same sequence, no lock cycle can
   form. I have a test that fires 100 baskets locking the same two SKUs in
   opposite order and asserts <strong>zero deadlocks</strong> with a consistent
   ledger. Any out-of-stock line rolls the whole basket back.
@@ -157,20 +148,17 @@ if (item.available >= qty) {
 <p>
   Networks retry. A user double-clicks. A mobile client resends on a flaky
   connection. Without protection, one intent becomes two reservations. Holdfast
-  accepts an <code>Idempotency-Key</code> with each request, enforced by a{" "}
-  <code>UNIQUE</code> constraint:
+  accepts an <code>Idempotency-Key</code> with each request, enforced by a <code>UNIQUE</code> constraint:
 </p>
 
-<pre>
-  <code>orders (id, idempotency_key UNIQUE, ...)</code>
-</pre>
+<pre><code>orders (id, idempotency_key UNIQUE, ...)
+</code></pre>
 
 <p>
   The reservation runs in one transaction. If a retry arrives with the same key,
   the insert collides with the unique constraint, the whole transaction
   (including the decrement) rolls back, and we return the original order. Proven
-  with 100 concurrent identical requests producing <strong>exactly one</strong>{" "}
-  reservation. This is the same pattern Stripe uses for payment idempotency keys
+  with 100 concurrent identical requests producing <strong>exactly one</strong> reservation. This is the same pattern Stripe uses for payment idempotency keys
   — applied to inventory.
 </p>
 
@@ -204,10 +192,8 @@ if (item.available >= qty) {
 <h2>Stack &amp; honest notes</h2>
 
 <p>
-  Holdfast is TypeScript on Fastify, with a deliberate hybrid data layer:{" "}
-  <strong>Drizzle ORM</strong> owns the schema, migrations, and ordinary reads
-  (type-safe and model-driven), while the reservation hot path is{" "}
-  <strong>raw SQL</strong> — because the whole point is the explicit locking,
+  Holdfast is TypeScript on Fastify, with a deliberate hybrid data layer: <strong>Drizzle ORM</strong> owns the schema, migrations, and ordinary reads
+  (type-safe and model-driven), while the reservation hot path is <strong>raw SQL</strong> — because the whole point is the explicit locking,
   which an ORM's query builder hides, and interactive ORM transactions get flaky
   under heavy concurrency. "ORM for productivity, raw SQL where correctness and
   performance demand it" is how production teams actually work. There's
@@ -226,14 +212,13 @@ if (item.available >= qty) {
 <h2>Try it</h2>
 
 <p>
-  The engine is live and open source. Fire concurrent requests at it and watch
-  it hold the line:
+  The engine is open source, and every number above comes from a benchmark in
+  the repository that you can run against your own Postgres:
 </p>
 
 <ul>
   <li>
-    <strong>Source:</strong>{" "}
-    <a href="https://github.com/Shailesh93602/holdfast">
+    <strong>Source:</strong> <a href="https://github.com/Shailesh93602/holdfast">
       github.com/Shailesh93602/holdfast
     </a>
   </li>

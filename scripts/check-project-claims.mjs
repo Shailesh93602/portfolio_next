@@ -188,6 +188,26 @@ const CLAIMS = [
     // Counts the rows in the ledger's summary table.
     sourceCount: /^\| L\d+ /gm,
   },
+  // The mutation numbers. Added 2026-09-20, after two blog posts were found
+  // stating a score of "84.2%" that exists nowhere upstream while the project
+  // page stated the real one — the same fact on two surfaces of this site,
+  // disagreeing, with nothing watching either.
+  {
+    what: "BALLAST mutants generated",
+    localFile: "claims",
+    localPattern: /BALLAST_MUTANTS_TOTAL = (\d+)/,
+    repo: "Shailesh93602/ballast",
+    path: "docs/MUTATION.md",
+    sourcePattern: /- Mutants generated: \*\*(\d+)\*\*/,
+  },
+  {
+    what: "BALLAST mutants killed",
+    localFile: "claims",
+    localPattern: /BALLAST_MUTANTS_KILLED = (\d+)/,
+    repo: "Shailesh93602/ballast",
+    path: "docs/MUTATION.md",
+    sourcePattern: /- Killed: \*\*(\d+)\*\*/,
+  },
   {
     what: "KhataGO Gemini tool count",
     localFile: "claims",

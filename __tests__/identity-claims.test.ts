@@ -5,7 +5,7 @@
  * Second recruiter-lens pass of the LIVE site (2026-09-05) found:
  *
  *   - "Institute Rank 1 on GeeksforGeeks while in final year — 604+ problems"
- *     on /about. The GfG profile shows 650 solved and lists the institute as
+ *     on /about. The GfG profile showed 650 solved and lists the institute as
  *     eSparkBiz Technologies, so the college framing was contradicted on
  *     click. The same figure was 604+ on five surfaces, 600+ on one and 700+
  *     in an archived post title.
@@ -15,7 +15,7 @@
  * a college cohort, and resolves on click to a former employer with an unknown
  * and probably tiny number of GfG users. A claim that deflates when verified is
  * worse than a smaller one that holds, so the site states the volume only —
- * "650+ problems solved on GeeksforGeeks" — and "Institute Rank" is banned
+ * "<n>+ problems solved on GeeksforGeeks" — and "Institute Rank" is banned
  * outright below so it cannot come back.
  *   - "5 star rating in multiple programming skills including Problem Solving
  *     and Python". The public badges show C++ at five stars, Python at three,
@@ -72,13 +72,26 @@ const llms = (f: string) => readFileSync(join(ROOT, "public", f), "utf8");
 describe("the GeeksforGeeks figure", () => {
   const n = PROFILE.achievements.problemsSolved;
 
-  it("is the one the profile shows, stated as a floor", () => {
-    expect(n).toBe(650);
-    expect(PROFILE_META.gfgLine).toBe("650+ problems solved on GeeksforGeeks");
+  it("is a floor the profile clears, with room for the count to move", () => {
+    // 🔴 Asserted as a RANGE, not as a literal.
+    //
+    // The old version pinned the exact number: `expect(n).toBe(650)`. When the
+    // GfG profile went 650 -> 649 on its own (a recount, or a retired problem)
+    // that assertion did not describe the defect at all — it would have failed
+    // just as loudly if the claim had been corrected. The property that
+    // actually matters is that the stated figure is a floor the live profile
+    // clears, and that the floor is not so far below it as to be useless.
+    //
+    // The live number is verified daily by scripts/check-project-claims.mjs
+    // with `compare: "atLeast"`; this holds the shape of the claim.
+    expect(n).toBeGreaterThanOrEqual(600);
+    expect(n).toBeLessThanOrEqual(649);
+    expect(n % 10).toBe(0); // a round floor, never a spuriously exact count
+    expect(PROFILE_META.gfgLine).toBe(`${n}+ problems solved on GeeksforGeeks`);
   });
 
   it("states the volume only — no rank, on any surface", () => {
-    // Verified against the live profile 2026-09-06: total_problems_solved 650,
+    // Verified against the live profile 2026-09-20: total_problems_solved 649,
     // institute_rank 1, institute_name "eSparkBiz Technologies". The rank is
     // true and still not worth claiming; see the header note.
     expect(PROFILE.achievements).not.toHaveProperty("geeksforgeeksRank");
@@ -312,7 +325,16 @@ describe("one LinkedIn profile, spelled one way", () => {
     // a fresh checkout and asserting it would fail in CI for the wrong reason.
     // resume.txt is the committed compiled artifact, and it cannot be right
     // unless build.mjs was re-run.
-    for (const rel of ["resume/resume.txt", "public/index.html"]) {
+    //
+    // `public/index.html` used to be in this list, and its presence here is
+    // the clearest evidence of the problem it caused: the file was the 2024
+    // static site this app replaced, still committed and still answering 200
+    // at /index.html, and the only reason anybody touched it was to correct a
+    // LinkedIn slug inside it. Its Person JSON-LD still named a former
+    // employer as the current one, and its meta description still offered
+    // freelance services. Deleted on 2026-09-20; see
+    // __tests__/public-static-surface.test.ts for the rule that replaced it.
+    for (const rel of ["resume/resume.txt"]) {
       const text = readFileSync(join(ROOT, rel), "utf8");
       expect({ file: rel, wrong: text.includes(WRONG) }).toEqual({
         file: rel,

@@ -64,7 +64,7 @@ Owned authentication module end-to-end on Garage Management System team project 
 **Institution location:** Bhavnagar, Gujarat, India
 **Period:** 2020 – 2024
 **CGPA:** 7.99 / 10
-**Notable:** 650+ problems solved on GeeksforGeeks; Hackathon Finalist at New India Vibrant Hackathon 2023
+**Notable:** 640+ problems solved on GeeksforGeeks; Hackathon Finalist at New India Vibrant Hackathon 2023
 
 ---
 
@@ -80,7 +80,7 @@ Engineering learning platform with a distributed real-time engine:
 **Architecture:**
 - `@socket.io/redis-adapter`: Socket.io cluster adapter for horizontal scaling across multiple Node.js instances. All instances share room state via Redis.
 - `redlock` (Redlock algorithm): Distributed lock manager preventing race conditions when two users simultaneously attempt to start the same battle. The lock guards the battle start, submit-answer and complete handlers.
-- `opossum`: Circuit breaker wrapping the remote code-execution service. When the breaker trips (threshold exceeded), battles degrade gracefully rather than hanging.
+- `opossum`: Circuit breaker wrapping the remote code-execution service, with a transport timeout at or below the breaker's own deadline (`Backend/src/utils/deadlines.ts`) so a slow executor fails the submission fast rather than leaving the request hanging. The breaker is a single shared instance behind an unbounded per-user fan-out; `FINDINGS.md` §13 writes up why that is a design change rather than a timeout, and it is open.
 - `prom-client`: Prometheus client exposing a `/metrics` endpoint with a request-duration histogram, an active-connection gauge and a memory gauge (plus Node default metrics).
 - `bull` queues: background email delivery with a dead-letter queue for failed sends.
 - `winston`: Structured logging with correlation IDs across distributed operations.
@@ -134,6 +134,48 @@ Natural language queries like "where is the payment retry logic?" return ranked 
 
 ---
 
+### BALLAST
+**GitHub:** https://github.com/Shailesh93602/ballast
+**Stack:** TypeScript (ESM, strict). Zero runtime dependencies; typescript, eslint, prettier, vitest and `pg` (the flash-sale arm) are dev-only.
+
+Deterministic simulation of a multi-tenant session control plane — per-tenant parallel caps, a rolling credit/quota window, a finite pre-warmed capacity pool, leases over a substrate that lies, and an at-least-once completion channel as a durable replay log.
+
+- **Determinism is the design, not a feature:** the whole execution is a pure function of one integer seed. 1,000 seeds replay byte-identically, in-process and across a fresh process, so any failure is reproducible from a single number.
+- **Verified four independent ways:** 8 invariants checked after every event (2,000 histories), a model-based reference oracle run differentially against the implementation, mechanical mutation testing (158 of 165 mutants killed, 95.8%, over `src/policy`; 16 of 16 semantic mutants caught), and a shrinker that verifies its own reduction.
+- **The ledger is the artifact:** `docs/LEDGER.md` lists 9 real findings nobody planted — and 4 of them were in the CHECKER, not the system under test (an invariant that trusted the plane's self-report, a reference that billed unspent credit, a harness that reported 100% on a red suite, a mutation operator that did not negate). Planted mutants live in `MUTATION.md` and are deliberately kept out of the ledger.
+- **Semantics before code:** 38 ambiguities decided in writing before any policy code, with git history as proof the decisions were not written afterwards.
+- **A flash-sale arm** measures three never-oversell strategies against a real PostgreSQL under 200 concurrent buyers, judged by counting rows rather than trusting any strategy's tally: read-then-write sold 200 of 5 units; conditional update and optimistic versioning each sold exactly 5, the latter paying 748 retries for it.
+
+---
+
+### Grounded — Production RAG Starter
+**GitHub:** https://github.com/Shailesh93602/grounded
+**Stack:** TypeScript, pgvector (behind a `VectorStore` interface), OpenAI or a local hash embedder, Vitest
+
+A RAG starter that answers only from its sources, cites them, and refuses rather than hallucinating:
+- **The refusal is a gate, not a prompt.** If the top retrieved chunk scores below `minScore`, the pipeline returns a fixed refusal with `grounded: false` and never calls the model. The system prompt says the same thing as defence in depth — a model can be talked out of an instruction, it cannot answer from context it was never given.
+- **Idempotent ingestion:** chunks are content-hashed, so re-ingesting an unchanged document is a near no-op and deleted chunks are pruned.
+- **Retry that fails fast on 4xx:** `isRetryable` retries connection errors, 429 and 5xx with jitter; a 400 or an auth failure fails immediately.
+- 50 tests, 41 of which run with no database at all.
+
+---
+
+### idempotency-kit
+**GitHub:** https://github.com/Shailesh93602/idempotency-kit
+**Stack:** TypeScript, zero runtime dependencies, Vitest
+
+The Stripe `Idempotency-Key` pattern as a library: an atomic claim so two simultaneous retries cannot both run the operation, replay of the stored result for the loser, release on transient failure so a legitimate retry is never poisoned, and a fingerprint-mismatch guard that rejects a key reused for a different request body. Waiting for the in-flight winner is opt-in (`waitRetries` / `waitIntervalMs`); the default is fail-fast. A sliding-window rate limiter sits on the same pluggable async store. 22 tests, fully offline.
+
+---
+
+### promptproof
+**GitHub:** https://github.com/Shailesh93602/promptproof
+**Stack:** TypeScript, zero runtime dependencies, Vitest
+
+LLM eval and regression-diff kit: define cases, grade outputs, save a baseline, and fail CI on any pass-to-fail transition. Graders for exact match, includes, regex, JSON shape and token overlap, plus bring-your-own. KhataGO uses it to score its 21 deterministic evals in CI under both its own agent loop and a LangGraph.js engine. 27 tests, no API key needed to exercise the harness.
+
+---
+
 
 ### Vibe Testing (ContextQA — proprietary)
 **Stack:** Chrome Extension, Python AI Agent, Node.js, Socket.io, WebSockets, TypeScript, Manifest V3
@@ -166,7 +208,7 @@ Professional WCAG accessibility testing suite:
 
 **Backend:** Node.js, Express.js, NestJS, REST APIs, WebSockets, Socket.io, @socket.io/redis-adapter
 
-**Distributed Systems:** Redlock (distributed locks), Circuit Breaker (opossum), Bull Queues, Prometheus (prom-client), Redis Cluster, Event-driven architecture
+**Distributed Systems:** Redlock (distributed locks), Circuit Breaker (opossum), Bull Queues, Prometheus (prom-client), Event-driven architecture
 
 **AI / Search:** Vector Embeddings, pgvector, OpenAI Embeddings API, Gemini AI, Semantic Search
 
@@ -182,7 +224,7 @@ Professional WCAG accessibility testing suite:
 
 ## Achievements
 
-- **650+ problems solved on GeeksforGeeks.** Profile: https://www.geeksforgeeks.org/user/thenameisshaileshbhai/
+- **640+ problems solved on GeeksforGeeks.** Profile: https://www.geeksforgeeks.org/user/thenameisshaileshbhai/
 - **5-star C++ on HackerRank.** Profile: https://www.hackerrank.com/profile/shailesh93602
 - **Hackathon Finalist** — New India Vibrant Hackathon 2023 (ITI Alumni Tracking System, React + PHP)
 - **LeetCode:** https://leetcode.com/u/Shaileshbhai/

@@ -26,6 +26,20 @@ export const BALLAST_LEDGER_FINDINGS = 9;
 export const BALLAST_TEST_COUNT = 209;
 
 /**
+ * The mutation run over `src/policy` in Shailesh93602/ballast, as
+ * `docs/MUTATION.md` reports it. Reproduce: `node scripts/mutate.mjs` there.
+ *
+ * These two exist because the BLOG forked from them and nothing noticed. Two
+ * published posts stated a mutation score of "84.2%" — a number that appears
+ * nowhere in BALLAST's history, while `/portfolio/ballast` stated the real
+ * sequence (87.3% under a broken negation operator, 95.8% after triage) on the
+ * same site. The blog was a fourth surface this file never reached; see the
+ * blog block in claims-consistency.test.ts.
+ */
+export const BALLAST_MUTANTS_TOTAL = 165;
+export const BALLAST_MUTANTS_KILLED = 158;
+
+/**
  * Of those, the findings whose defect was in the CHECKER — the invariant
  * corpus, the reference oracle or the mutation harness — rather than in the
  * system under test: L1 (invariant trusted the plane's self-report), L3
