@@ -27,7 +27,7 @@ KhataGO - WhatsApp-first bookkeeping for Indian MSMEs (khatago.vercel.app)
 
 BALLAST - deterministic simulation of a multi-tenant session control plane (github.com/Shailesh93602/ballast)
 - Per-tenant concurrency caps, quota windows, and leases over an unreliable substrate; every run is a pure function of one integer seed and replays byte-identically, verified across 1,000 seeds.
-- Verified 4 independent ways: 8 invariants, a reference oracle, mutation testing (161 of 167 mutants killed, 238 tests), and a self-verifying shrinker. Found 21 real bugs, 12 of them in the checker rather than the implementation.
+- Verified 4 independent ways: 8 invariants, a reference oracle, mutation testing (352 of 362 mutants killed, 291 tests), and a self-verifying shrinker. Found 29 real bugs, 18 of them in the checker rather than the implementation.
 - Measured 3 concurrency-control strategies for a flash sale against a real PostgreSQL under 200 concurrent buyers: read-then-write oversold 200 of 5 units; conditional update and optimistic versioning each sold exactly 5.
 
 EduScale - real-time coding battles over Socket.io and Redis (eduscale.vercel.app, github.com/Shailesh93602/DevScale)
