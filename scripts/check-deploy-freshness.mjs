@@ -141,6 +141,36 @@ const TARGETS = [
   },
 ];
 
+/**
+ * Surfaces we watch for HEALTH but not for freshness.
+ *
+ * Why this list exists, 2026-09-20: EduScale turned out to have TWO backends
+ * on the same commit — api-eduscale.vercel.app (200, redis ok) and
+ * api.eduscale.exaveltech.com (503, redis error) — and TARGETS above watches
+ * only the healthy one. A second live frontend at eduscale.exaveltech.com sits
+ * outside the check entirely. So a degraded deployment was invisible to this
+ * job by construction, which is precisely the failure this file was written to
+ * prevent one layer up.
+ *
+ * These WARN and never fail. That is deliberate, not timidity: hub CLAUDE.md
+ * records that EduScale's audit job was red on every PR for months, so nobody
+ * read it, and it hid the next real finding. A row that is red on the day it
+ * lands teaches you to ignore the job. Freshness stays the gate; health is
+ * reported beside it so it cannot be invisible.
+ */
+const HEALTH_ONLY = [
+  {
+    name: "EduScale backend (exaveltech)",
+    url: "https://api.eduscale.exaveltech.com/api/v1/health",
+    note: "second backend on the same commit; known degraded — MANUAL row 0a2",
+  },
+  {
+    name: "EduScale frontend (exaveltech)",
+    url: "https://eduscale.exaveltech.com/",
+    note: "duplicate frontend outside the freshness check",
+  },
+];
+
 const GH_HEADERS = {
   Accept: "application/vnd.github+json",
   "User-Agent": "portfolio-deploy-freshness",
@@ -340,3 +370,52 @@ console.log(
   `\nAll ${results.length - unverifiable.length} verifiable sites serve main` +
     (deploying.length > 0 ? ` (${deploying.length} deploying).` : ".")
 );
+
+// ---- health-only surfaces: reported, never a gate (see HEALTH_ONLY above) ----
+if (HEALTH_ONLY.length > 0) {
+  console.log(`\nHealth-only surfaces (warn, never fail):`);
+  for (const t of HEALTH_ONLY) {
+    // NOT fetchLive: it retries a 5xx and then reports status 0 with the body
+    // discarded — and for a health endpoint the body IS the finding. A 503
+    // whose payload says {"redis":"error"} tells you what to fix; a bare 503
+    // does not. One request, no retry, body kept whatever the status.
+    let res;
+    try {
+      const r = await fetchWithTimeout(t.url, {
+        cache: "no-store",
+        headers: { "User-Agent": "portfolio-deploy-freshness" },
+      });
+      let json = null;
+      try {
+        json = await r.json();
+      } catch {
+        json = null;
+      }
+      res = { status: r.status, json, error: null };
+    } catch (err) {
+      res = {
+        status: 0,
+        json: null,
+        error: err instanceof Error ? err.message : String(err),
+      };
+    }
+    const degraded = res.status === 0 || res.status >= 400;
+    const failing = res.json?.checks
+      ? Object.entries(res.json.checks)
+          .filter(([, v]) => v !== "ok")
+          .map(([k, v]) => `${k}=${v}`)
+      : [];
+    const checks = failing.length > 0 ? ` failing: ${failing.join(", ")}` : "";
+    console.log(
+      `  ${degraded ? "!" : "\u2713"} ${t.name}: ` +
+        `${res.status === 0 ? (res.error ?? "unreachable") : `HTTP ${res.status}`}` +
+        `${checks}`
+    );
+    if (degraded) {
+      console.log(`      \u21b3 ${t.note}`);
+      if (process.env.GITHUB_ACTIONS) {
+        console.log(`::warning title=Degraded surface (${t.name})::${t.note}`);
+      }
+    }
+  }
+}
