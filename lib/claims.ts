@@ -15,7 +15,7 @@
  * Rows in the summary table of `docs/LEDGER.md` in Shailesh93602/ballast.
  * Reproduce: `grep -cE '^\| L[0-9]+ ' docs/LEDGER.md`
  */
-export const BALLAST_LEDGER_FINDINGS = 9;
+export const BALLAST_LEDGER_FINDINGS = 21;
 
 /**
  * Vitest tests in Shailesh93602/ballast, as its README states them.
@@ -23,7 +23,7 @@ export const BALLAST_LEDGER_FINDINGS = 9;
  * The daily claim check reads this constant; the portfolio card, the resume
  * and llms.txt render it (or are held to it by claims-consistency.test.ts).
  */
-export const BALLAST_TEST_COUNT = 209;
+export const BALLAST_TEST_COUNT = 238;
 
 /**
  * The mutation run over `src/policy` in Shailesh93602/ballast, as
@@ -36,8 +36,8 @@ export const BALLAST_TEST_COUNT = 209;
  * same site. The blog was a fourth surface this file never reached; see the
  * blog block in claims-consistency.test.ts.
  */
-export const BALLAST_MUTANTS_TOTAL = 165;
-export const BALLAST_MUTANTS_KILLED = 158;
+export const BALLAST_MUTANTS_TOTAL = 167;
+export const BALLAST_MUTANTS_KILLED = 161;
 
 /**
  * Of those, the findings whose defect was in the CHECKER — the invariant
@@ -47,7 +47,7 @@ export const BALLAST_MUTANTS_KILLED = 158;
  * L9 (mutation operator did not negate). L2 is a spec gap; L4, L5, L6, L8 are
  * implementation defects.
  */
-export const BALLAST_CHECKER_FINDINGS = 4;
+export const BALLAST_CHECKER_FINDINGS = 12;
 
 /**
  * Gemini function-calling tools declared in `lib/ai/tools.ts` in

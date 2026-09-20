@@ -8,11 +8,11 @@ LinkedIn: /in/shaileshbhaichaudhari
 Location: Ahmedabad, Gujarat, India
 
 /* THANKS */
-Tooling: Next.js, Vercel, Cloudflare, Supabase, Upstash, Resend
+Tooling: Next.js, Vercel, Supabase, Resend
 Open source: shadcn/ui, Tailwind CSS, Framer Motion, TanStack Query
 
 /* SITE */
-Last update: 2026-04-30
+Last update: 2026-09-20
 Standards: HTML5, CSS3, ES2024, WCAG 2.1 AA
 Components: Next.js 16 (App Router) + Turbopack, TypeScript (strict)
 Doctype: HTML5
