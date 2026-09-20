@@ -305,6 +305,33 @@
   height: auto;
 }
 
+/* The TL;DR callout that opens 22 posts.
+ *
+ * `<div class="tldr">` was authored into the content from the first post and
+ * styled nowhere: `tldr` appeared in no stylesheet, no component and no
+ * Tailwind config, and the served CSS bundle contained zero occurrences of it.
+ * Every summary a reader meets first therefore rendered as an unstyled block
+ * indistinguishable from the paragraph under it.
+ *
+ * Styled here rather than removed from the content: the markup is the right
+ * markup, it is already in 22 files, and a class defined in one place cannot
+ * drift the way 22 inline treatments would. Colours come from the existing
+ * tokens so it follows the theme in both modes. */
+.blog-content .tldr {
+  margin: 0 0 2rem;
+  padding: 1rem 1.25rem;
+  border-left: 3px solid hsl(var(--primary));
+  border-radius: 0.375rem;
+  background: hsl(var(--muted) / 0.5);
+  font-size: 0.975em;
+  line-height: 1.65;
+}
+
+.blog-content .tldr > strong:first-child {
+  color: hsl(var(--primary));
+  letter-spacing: 0.02em;
+}
+
 /* Tailwind Typography decorates inline <code> with literal backtick characters
  * via `code::before/::after`. In running prose that reads as a rendering
  * artifact — "requests to `/admin` were redirected" looks like markdown that

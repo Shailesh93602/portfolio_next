@@ -154,7 +154,14 @@ const rawProjects: Project[] = [
         label: "Tenant isolation",
         value: "Per-key blast radius",
         description:
-          "Users bring their own LLM key. Model cooldowns and the AI circuit breaker are partitioned per key, so one user's exhausted quota or invalid credential cannot degrade anyone else's — verified by mutation testing, not just by a passing suite",
+          // 2026-09-20: this said "verified by mutation testing, not just by a
+          // passing suite". EduScale has no mutation harness — no Stryker, no
+          // config, no script, zero occurrences of "mutant" in the repo. The
+          // isolation is proven by Backend/src/tests/ai/keyIsolation.test.ts,
+          // an ordinary Jest suite: exactly the thing the sentence disclaimed.
+          // Mutation testing exists in BALLAST, a different project. Naming
+          // the file is stronger than the adjective was, and it is true.
+          "Users bring their own LLM key. Model cooldowns and the AI circuit breaker are partitioned per key, so one user's exhausted quota or invalid credential cannot degrade anyone else's — asserted in Backend/src/tests/ai/keyIsolation.test.ts, which drives one user into a rate limit and a second into a bad key and checks neither reaches the other",
       },
     ],
     userFlow: [
@@ -199,7 +206,7 @@ const rawProjects: Project[] = [
     solution:
       "A unified Engineering Learning Platform (SaaS) that seamlessly integrates structured curriculum with interactive coding tools and real-time social competition. EduScale provides a 'single source of truth' for the student's entire technical journey.",
     challengesSolved:
-      "The hardest problem was preventing race conditions when two users simultaneously start the same battle. The fix: redlock acquires a distributed lock (fail-fast, retryCount 0) around the battle start, submit-answer and complete handlers, so two instances can't both drive the same transition. Socket.io horizontal scaling uses @socket.io/redis-adapter with two independent ioredis connections — pub and sub have to be separate clients or a long-running write on the pub connection stalls the subscriber. opossum wraps the Judge0 code-execution call so a slow or failing executor degrades the battle instead of hanging it.",
+      "The hardest problem was preventing race conditions when two users simultaneously start the same battle. The fix: redlock acquires a distributed lock (fail-fast, retryCount 0) around the battle start, submit-answer and complete handlers, so two instances can't both drive the same transition. Socket.io horizontal scaling uses @socket.io/redis-adapter with two independent ioredis connections — pub and sub have to be separate clients or a long-running write on the pub connection stalls the subscriber. opossum wraps the Judge0 code-execution call, with a transport timeout set at or below the breaker's own deadline (Backend/src/utils/deadlines.ts) so a slow executor fails the submission fast instead of leaving the request hanging. The breaker is still a single shared instance behind an unbounded per-user fan-out — FINDINGS.md §13 writes up why that is a design change rather than a timeout, and it is open.",
     showcases: [
       {
         title: "Unified User Dashboard",
@@ -333,7 +340,7 @@ const rawProjects: Project[] = [
     ],
     techStack: [
       "Frontend: Next.js 16, React 19, Tailwind CSS v4, Lucide React, Shadcn UI, Recharts",
-      "Backend: Next.js route handlers (19 API routes) + a server action for auth, Prisma ORM, PostgreSQL (via Supabase)",
+      "Backend: Next.js route handlers (17 API routes) + a server action for auth, Prisma ORM, PostgreSQL (via Supabase)",
       "Services: Scoping Engine, Pattern Intelligence Service, Streak Manager, Recommendation Logic",
       "Dev Tools: Playwright E2E Testing, ESLint, Prettier",
     ],
@@ -342,7 +349,7 @@ const rawProjects: Project[] = [
     solution:
       "DevTrack solves this by providing a unified intelligence layer. It doesn't just record data; it analyzes it using a proprietary scoring and recommendation engine to guide developers toward their technical goals.",
     challengesSolved:
-      "The core challenge was building a real-time analytics suite that stays responsive as the number of logged activities grows. The dashboard needs nine independent aggregates, so a modular service layer issues them as one Promise.all fan-out rather than a serial waterfall and does the composite scoring in memory before anything reaches the client. The live activity feed is a Supabase Realtime postgres_changes subscription on daily_logs filtered to the current user, so multi-tab sync costs nothing in polling.",
+      "The core challenge was building a real-time analytics suite that stays responsive as the number of logged activities grows. The dashboard needs nine independent aggregates, so a modular service layer issues them as one Promise.all fan-out rather than a serial waterfall and does the composite scoring in memory before anything reaches the client. The live activity feed is a Supabase Realtime postgres_changes subscription on the quoted PascalCase DailyLog table — Prisma declares no @@map, so the Supabase channel has to use the model name — filtered to the current user, so multi-tab sync costs nothing in polling.",
     showcases: [
       {
         title: "Intelligence Dashboard",
@@ -811,7 +818,7 @@ const rawProjects: Project[] = [
     ],
     techStack: [
       "Language: TypeScript (ESM, strict)",
-      "Dependencies: none at runtime — typescript, eslint, prettier and vitest only",
+      "Dependencies: none at runtime — typescript, eslint, prettier, vitest, and pg for the flash-sale arm, all dev-only",
       `Tests: Vitest (${BALLAST_TEST_COUNT})`,
       "Verification: invariants + reference oracle + mutation testing + shrinker",
     ],

@@ -30,8 +30,8 @@ describe("resume.json — currency and honesty", () => {
       // command, unlike the GfG figure.
       "700+",
       "CodeChef",
-      // 2026-09-05 second recruiter pass: the GfG figure was stale (the
-      // profile shows 650), and "zero production incidents" is unverifiable
+      // 2026-09-05 second recruiter pass: the GfG figure was stale, and
+      // "zero production incidents" is unverifiable
       // and sat beside "Resolved critical production bugs" on /about.
       "604+",
       "final year",
@@ -98,9 +98,10 @@ describe("resume.json — currency and honesty", () => {
       PROFILE.achievements.hackerrank,
       PROFILE.achievements.hackathon,
     ]);
-    expect(resume.achievements[0]).toBe(
-      "650+ problems solved on GeeksforGeeks"
-    );
+    // Held to PROFILE, not to a literal: a literal here is a second place
+    // the number lives, and the point of PROFILE_META.gfgLine is that there
+    // is only one. (It read "650+" while the profile showed 649.)
+    expect(resume.achievements[0]).toBe(PROFILE_META.gfgLine);
   });
 
   it("states BALLAST's test count from lib/claims.ts", () => {

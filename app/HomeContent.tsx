@@ -221,7 +221,17 @@ export default function HomeContent({ featuredPosts }: Props) {
               tag: "devtrack",
               title: "Dev-productivity dashboard",
               proof:
-                "Tracks coding time + streaks with Supabase Realtime postgres_changes for the live activity feed, optimistic UI with rollback on auth failure, and sub-second multi-tab sync indicator.",
+                // 2026-09-20: this said "optimistic UI with rollback on auth
+                // failure, and sub-second multi-tab sync indicator". DevTrack
+                // has neither. `useOptimistic` appears nowhere in the repo and
+                // neither does "rollback" or "revert": handleDelete awaits the
+                // server action and then calls router.refresh(), which is a
+                // pessimistic re-fetch — the repo's own comment in
+                // useRealtimeLogs.ts says so. "Sub-second" is an unmeasured
+                // latency claim of exactly the kind no-unmeasured-claims.test.ts
+                // exists to keep off this site; nothing in DevTrack times the
+                // round trip. What is real is the subscription itself.
+                "Tracks coding time + streaks with a Supabase Realtime postgres_changes subscription on the DailyLog table for the live activity feed, so other open tabs update from the change feed instead of polling.",
               href: "/portfolio/devtrack",
               cta: "See DevTrack's realtime",
             },

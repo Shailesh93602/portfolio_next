@@ -81,8 +81,24 @@ export const PROFILE = {
     /**
      * `total_problems_solved` on the GeeksforGeeks profile. Stated on the
      * site as "<n>+". Verified daily by scripts/check-project-claims.mjs.
+     *
+     * 🔴 THIS FIGURE IS NOT MONOTONIC, WHICH IS THE WHOLE REASON FOR THE SLACK.
+     *
+     * It read 650 when the claim was written on 2026-09-06 and 649 when the
+     * daily check was run on 2026-09-20 — GeeksforGeeks recounted, or retired
+     * a problem, and the floor the site advertised stopped being a floor. The
+     * claim check went red, and until it was read, every surface (home,
+     * /about, /statistics, the Person JSON-LD, both llms files, the resume PDF
+     * and the DOCX) advertised "650+" one click away from a profile page
+     * showing 649.
+     *
+     * Stating the exact number is the wrong fix: it makes the site wrong again
+     * the next time he solves one. A floor with headroom is true in both
+     * directions and stays true while the number moves. `compare: "atLeast"`
+     * in the claim check still reports when upstream has grown far enough to
+     * raise this, so the slack does not quietly become permanent.
      */
-    problemsSolved: 650,
+    problemsSolved: 640,
     /** The one HackerRank badge at five stars. Python is 3★; no Problem Solving badge. */
     hackerrank: "5-star C++ on HackerRank",
     hackathon: "Finalist, New India Vibrant Hackathon 2023",

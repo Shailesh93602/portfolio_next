@@ -23,7 +23,7 @@ export const itemVariants = {
 };
 
 // Each card must survive the click on "View Profile". The GfG profile shows
-// 650 solved and eSparkBiz Technologies as the institute, so the old "while in
+// 649 solved and eSparkBiz Technologies as the institute, so the old "while in
 // final year" contradicted itself and the "Institute Rank 1" framing resolved
 // to a former employer's cohort of unknown size — dropped 2026-09-06, volume
 // only. HackerRank shows one five-star badge (C++), not "multiple skills

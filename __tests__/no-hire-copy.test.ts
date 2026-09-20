@@ -21,15 +21,33 @@
  * Vercel, Supabase as next employer." A Now page is the one place a job
  * search leaks out in the present tense, so the employer-targeting shapes
  * are banned too, and the scan now covers content/ (the blog) as well.
+ *
+ * 2026-09-20, third pass, this time fetching URLs rather than reading the app:
+ * `public/index.html` — the 2024 static site this repo replaced — was still
+ * committed, still deployed, and still answered 200 at
+ * /index.html. It described "freelance services for small businesses and
+ * startups", carried "Freelancer, Freelance Designer" as SEO keywords, and
+ * published Person JSON-LD naming eSparkBiz as the current employer. Every
+ * banned phrase in this file was in it.
+ *
+ * The scan missed it for one reason: it listed two files in public/ by name.
+ * A named list only covers the files somebody remembered. It now walks the
+ * whole of public/ for text and HTML, so a stray page cannot hide there again.
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const ROOT = process.cwd();
 
-const SCAN_DIRS = ["app", "components", "lib", "constants", "content"];
-const SCAN_FILES = ["public/llms.txt", "public/llms-full.txt"];
-const EXTENSIONS = new Set([".ts", ".tsx", ".txt", ".mdx"]);
+const SCAN_DIRS = [
+  "app",
+  "components",
+  "lib",
+  "constants",
+  "content",
+  "public",
+];
+const EXTENSIONS = new Set([".ts", ".tsx", ".txt", ".mdx", ".html"]);
 
 /**
  * Job-search copy: banned everywhere, the blog included. Someone employed
@@ -103,10 +121,7 @@ function walk(dir: string): string[] {
   return out;
 }
 
-const files = [
-  ...SCAN_DIRS.flatMap((d) => walk(join(ROOT, d))),
-  ...SCAN_FILES.map((f) => join(ROOT, f)),
-];
+const files = SCAN_DIRS.flatMap((d) => walk(join(ROOT, d)));
 
 describe("no availability / freelance copy on any public surface", () => {
   it("scans a meaningful number of files", () => {
