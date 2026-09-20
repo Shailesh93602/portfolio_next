@@ -43,8 +43,15 @@ import resume from "../resume/resume.json";
 
 const ROOT = process.cwd();
 const SCAN_DIRS = ["app", "components", "lib", "constants", "resume"];
-const SCAN_FILES = ["public/llms.txt", "public/llms-full.txt"];
-const EXTENSIONS = new Set([".ts", ".tsx", ".txt", ".json"]);
+// public/ is WALKED, not listed. It used to name llms.txt and llms-full.txt,
+// and on 2026-09-20 public/index.html was found deployed and indexable with
+// eSparkBiz as the current employer — a file in this very directory that no
+// enumeration mentioned. humans.txt, also unlisted, carries the LinkedIn slug
+// this suite exists to keep consistent, and credited two services the site
+// does not use. Naming files is how a surface goes unchecked; walk the
+// directory and a new file is covered the day it lands.
+const SCAN_DIRS_PUBLIC = ["public"];
+const EXTENSIONS = new Set([".ts", ".tsx", ".txt", ".json", ".html", ".xml"]);
 
 function walk(dir: string): string[] {
   const out: string[] = [];
@@ -65,7 +72,7 @@ function stripComments(src: string): string {
 
 const files = [
   ...SCAN_DIRS.flatMap((d) => walk(join(ROOT, d))),
-  ...SCAN_FILES.map((f) => join(ROOT, f)),
+  ...SCAN_DIRS_PUBLIC.flatMap((d) => walk(join(ROOT, d))),
 ];
 
 const llms = (f: string) => readFileSync(join(ROOT, "public", f), "utf8");
@@ -335,17 +342,21 @@ describe("one LinkedIn profile, spelled one way", () => {
     // employer as the current one, and its meta description still offered
     // freelance services. Deleted on 2026-09-20; see
     // __tests__/public-static-surface.test.ts for the rule that replaced it.
-    for (const rel of ["resume/resume.txt"]) {
-      const text = readFileSync(join(ROOT, rel), "utf8");
-      expect({ file: rel, wrong: text.includes(WRONG) }).toEqual({
-        file: rel,
-        wrong: false,
-      });
-      expect({ file: rel, right: text.includes(RIGHT) }).toEqual({
-        file: rel,
-        right: true,
-      });
-    }
+    // 2026-09-20: this loop used to read exactly one file. Widening the file
+    // list above did nothing for it, which is the whole lesson twice over — an
+    // enumeration inside a guard is as blind as an enumeration outside one.
+    // The wrong slug must appear in NO scanned file; the right one must still
+    // appear in the artifact portals actually parse.
+    const offenders = files.filter((f) =>
+      readFileSync(f, "utf8").includes(WRONG)
+    );
+    expect(offenders.map((f) => f.slice(ROOT.length + 1))).toEqual([]);
+
+    const resumeTxt = readFileSync(join(ROOT, "resume/resume.txt"), "utf8");
+    expect({
+      file: "resume/resume.txt",
+      right: resumeTxt.includes(RIGHT),
+    }).toEqual({ file: "resume/resume.txt", right: true });
   });
 
   it("the constant and the resume source agree", () => {
