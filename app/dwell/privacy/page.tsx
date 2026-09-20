@@ -157,6 +157,22 @@ export default function DwellPrivacyPage() {
           than the telemetry. The honest consequence is that we have no idea how
           you use the app and rely on you telling us when something is wrong.
         </p>
+        <p className={P}>
+          There is exactly one address in this app that is not
+          Atlassian&rsquo;s: the icon shown beside &ldquo;Dwell&rdquo; in
+          Jira&rsquo;s gadget picker, served from{" "}
+          <Code>shaileshchaudhari.vercel.app/dwell/icon-144.png</Code>.
+          Atlassian requires a dashboard gadget&rsquo;s icon to be given as an
+          absolute URL, so it cannot be bundled with the app. It is a static
+          image your browser fetches the same way it fetches any other picture
+          on a page:{" "}
+          <strong>
+            no issue data, no account details and nothing identifying you is
+            sent with it
+          </strong>
+          , and the app&rsquo;s own code still makes no external request of any
+          kind.
+        </p>
 
         <h2 className={H2}>Permissions requested</h2>
         <ul className={UL}>
@@ -170,6 +186,22 @@ export default function DwellPrivacyPage() {
             described above.
           </Item>
         </ul>
+        <p className={P}>
+          <strong>
+            read:jira-work grants more than Dwell uses, and your security
+            reviewer should know that before you install it.
+          </strong>{" "}
+          It is one of Atlassian&rsquo;s broad classic scopes and reaches a
+          large part of the Jira REST API. Dwell calls exactly two endpoints
+          with it, both read-only and both as you rather than as the app:{" "}
+          <Code>POST /rest/api/3/search/jql</Code> to find the issues your query
+          matches, and <Code>GET /rest/api/3/status</Code> to read your
+          workflow&rsquo;s status names and categories. We use the broad scope
+          deliberately: Atlassian&rsquo;s own scope documentation recommends
+          classic scopes over the narrower granular ones, and a scope change
+          after listing — in either direction — is a major version every
+          administrator has to approve again.
+        </p>
         <p className={P}>
           If a future version needs a different permission, Atlassian requires a
           major version upgrade that a site administrator must explicitly
