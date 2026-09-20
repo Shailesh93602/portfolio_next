@@ -5,7 +5,9 @@ import { Achievement, Education, Experience } from "@/types";
 export const education: Education[] = [
   {
     degree: "Bachelor of Engineering — Information Technology",
-    institution: "Government Engineering College Bhavnagar",
+    // From PROFILE, not a literal: this card and the Person JSON-LD in
+    // app/layout.tsx had already drifted apart over a comma.
+    institution: PROFILE.education.institution,
     location: "Bhavnagar, Gujarat, India",
     period: "2020 – 2024",
     score: "7.99",

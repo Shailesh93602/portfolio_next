@@ -17,6 +17,7 @@ import SocialLink from "./components/SocialLink";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SOCIAL_LINKS } from "@/lib/constants";
+import { PROFILE_META } from "@/lib/profile";
 
 const skills = [
   "TypeScript",
@@ -64,9 +65,9 @@ export default function HomeContent({ featuredPosts }: Props) {
             </div>
 
             <p className="text-lg leading-relaxed text-muted-foreground">
-              ~2.5 years in the industry. Currently at ContextQA working on the
-              Node.js backend of the core QA-automation platform — a
-              test-execution engine orchestrating Playwright / WebdriverIO /
+              {PROFILE_META.yearsApprox} in the industry. Currently at ContextQA
+              working on the Node.js backend of the core QA-automation platform
+              — a test-execution engine orchestrating Playwright / WebdriverIO /
               LambdaTest runs, live browser-session streaming over WebSockets,
               the integrations engine (GitHub, GitLab, Linear, Slack) and a
               session control plane on GKE. Comfortable across the stack from my

@@ -91,6 +91,50 @@ function isPlausible(next, current) {
     }
   }
 
+  // 🔴 A DAY MUST APPEAR ONCE.
+  //
+  // GitHub caps the contribution calendar at a year, so the range since 2024 is
+  // fetched as consecutive windows; a day that straddles a boundary comes back
+  // in both. The snapshot this replaced held 980 entries for 978 distinct
+  // dates, and `github.contributions` counted the repeated day twice.
+  //
+  // This refuses to WRITE that shape rather than describing it afterwards: the
+  // job runs weekly against the deployed endpoint, so until a fix is live the
+  // endpoint is still the old code, and a check that merely warned would let
+  // the bad numbers back in every Sunday. Failing is the honest outcome — the
+  // existing snapshot stays, and the red run names the reason.
+  const days = next.github?.contributionDays;
+  if (Array.isArray(days)) {
+    const seen = new Set();
+    const duplicates = new Set();
+    for (const day of days) {
+      if (seen.has(day?.date)) duplicates.add(day.date);
+      seen.add(day?.date);
+    }
+    if (duplicates.size > 0) {
+      problems.push(
+        `github.contributionDays repeats ${duplicates.size} date(s) ` +
+          `(${Array.from(duplicates).slice(0, 5).join(", ")}) — ` +
+          `${days.length} entries for ${seen.size} distinct dates`
+      );
+    }
+    // The headline number and the heatmap under it are the same data; if they
+    // disagree, one of them is lying to the reader and we cannot tell which.
+    const summed = days.reduce(
+      (total, day) => total + (day?.contributionCount ?? 0),
+      0
+    );
+    if (
+      typeof next.github?.contributions === "number" &&
+      next.github.contributions !== summed
+    ) {
+      problems.push(
+        `github.contributions is ${next.github.contributions} but the ` +
+          `${days.length} contributionDays sum to ${summed}`
+      );
+    }
+  }
+
   return problems;
 }
 

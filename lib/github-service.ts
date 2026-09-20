@@ -107,12 +107,16 @@ async function fetchGitHubContributionPeriod(
   const data = await response.json();
 
   if (!data.data?.user) {
-    console.error("GitHub API returned null user data for period:", {
-      from,
-      to,
-      data,
-    });
-    return null;
+    // A null user is not "this person contributed nothing". It is the shape
+    // GitHub returns for an unknown login, a revoked token or a GraphQL error
+    // envelope — every one of which means we do not know the numbers. Returning
+    // null here used to make the window silently contribute zero to the totals,
+    // which is indistinguishable from a real zero and is how a page ends up
+    // advertising "Contributions: 0" with no error state anywhere.
+    throw new Error(
+      `GitHub returned no user for ${username} (${from} → ${to}): ` +
+        `${JSON.stringify(data.errors ?? data).slice(0, 300)}`
+    );
   }
 
   const collection = data.data.user.contributionsCollection;
@@ -126,6 +130,48 @@ async function fetchGitHubContributionPeriod(
   };
 }
 
+/**
+ * One entry per calendar date, ascending, from possibly-overlapping windows.
+ *
+ * 🔴 WHY THIS EXISTS — AND WHY DEDUPLICATION IS THE FIX RATHER THAN ARITHMETIC.
+ *
+ * GitHub's contribution calendar is capped at one year per query, so the range
+ * since 2024-01-01 is fetched as consecutive 365-day windows. Those windows are
+ * built from *instants*; GitHub buckets contributions into *calendar days* in
+ * the profile's own timezone. A day that straddles a window boundary therefore
+ * comes back in both windows, and appending the weeks blindly stored it twice.
+ *
+ * The committed snapshot carried 980 entries for 978 distinct dates:
+ * 2024-12-30 (6 contributions) and 2025-12-30 (0) each appeared twice, and the
+ * 9,634 the page advertised included that 6 a second time.
+ *
+ * Nudging the boundaries cannot fix it: we do not know the profile's timezone,
+ * so any instant we pick can land mid-day for GitHub. Shifting the boundary
+ * moves the duplicate, and leaving a gap loses a real day instead. Merging by
+ * date is correct for every timezone, which is why the fix lives here.
+ *
+ * `Math.max` because a window that clips a day can only ever report *part* of
+ * it; the true count for a date is the largest any window claims for it.
+ */
+export function mergeContributionDays(
+  days: readonly ContributionDay[]
+): ContributionDay[] {
+  const byDate = new Map<string, number>();
+  for (const day of days) {
+    const previous = byDate.get(day.date);
+    byDate.set(
+      day.date,
+      previous === undefined
+        ? day.contributionCount
+        : Math.max(previous, day.contributionCount)
+    );
+  }
+  return Array.from(byDate, ([date, contributionCount]) => ({
+    date,
+    contributionCount,
+  })).sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+}
+
 export async function getGitHubContributions(
   username: string
 ): Promise<GitHubStats> {
@@ -135,7 +181,6 @@ export async function getGitHubContributions(
   const oneYearInMs = 365 * 24 * 60 * 60 * 1000;
 
   let contributionData = {
-    totalContributions: 0,
     weeks: [] as ContributionWeek[],
     totalCommitContributions: 0,
     totalPullRequestContributions: 0,
@@ -143,172 +188,156 @@ export async function getGitHubContributions(
     totalRepositoryContributions: 0,
   };
 
-  try {
-    const startTime = new Date(startDate).getTime();
-    const endTime = new Date(endDate).getTime();
+  const startTime = new Date(startDate).getTime();
+  const endTime = new Date(endDate).getTime();
 
-    if (endTime - startTime > oneYearInMs) {
-      let currentStartDate = new Date(startDate);
-      while (currentStartDate.getTime() < now.getTime()) {
-        const currentEndDate = new Date(
-          Math.min(
-            currentStartDate.getTime() + oneYearInMs - 1000,
-            now.getTime()
-          )
-        );
-        const periodData = await fetchGitHubContributionPeriod(
-          username,
-          currentStartDate.toISOString(),
-          currentEndDate.toISOString()
-        );
-        if (periodData) {
-          contributionData.totalContributions += periodData.totalContributions;
-          contributionData.weeks.push(...periodData.weeks);
-          contributionData.totalCommitContributions +=
-            periodData.totalCommitContributions;
-          contributionData.totalPullRequestContributions +=
-            periodData.totalPullRequestContributions;
-          contributionData.totalIssueContributions +=
-            periodData.totalIssueContributions;
-          contributionData.totalRepositoryContributions +=
-            periodData.totalRepositoryContributions;
-        }
-        currentStartDate = new Date(currentEndDate.getTime() + 1000);
-      }
-    } else {
-      const singlePeriodData = await fetchGitHubContributionPeriod(
+  if (endTime - startTime > oneYearInMs) {
+    let currentStartDate = new Date(startDate);
+    while (currentStartDate.getTime() < now.getTime()) {
+      const currentEndDate = new Date(
+        Math.min(currentStartDate.getTime() + oneYearInMs - 1, now.getTime())
+      );
+      const periodData = await fetchGitHubContributionPeriod(
         username,
-        startDate,
-        endDate
+        currentStartDate.toISOString(),
+        currentEndDate.toISOString()
       );
-      if (singlePeriodData) {
-        contributionData = singlePeriodData;
-      }
+      contributionData.weeks.push(...periodData.weeks);
+      contributionData.totalCommitContributions +=
+        periodData.totalCommitContributions;
+      contributionData.totalPullRequestContributions +=
+        periodData.totalPullRequestContributions;
+      contributionData.totalIssueContributions +=
+        periodData.totalIssueContributions;
+      contributionData.totalRepositoryContributions +=
+        periodData.totalRepositoryContributions;
+      // 1ms, not 1s. The commit/PR/issue totals above are counted by instant,
+      // so a one-second gap between windows could drop a contribution that
+      // landed inside it.
+      currentStartDate = new Date(currentEndDate.getTime() + 1);
     }
-
-    const sortedDays = contributionData.weeks
-      .flatMap((week) => week.contributionDays)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-    const contributionDays = sortedDays.map((day) => ({
-      date: day.date,
-      contributionCount: day.contributionCount,
-    }));
-
-    const today = getLocalDate();
-    const yesterday = getLocalDate(new Date(Date.now() - 86400000));
-
-    const contributionsByDate: Record<string, number> = {};
-    for (const day of sortedDays) {
-      const localDate = getLocalDate(new Date(day.date));
-      contributionsByDate[localDate] =
-        (contributionsByDate[localDate] ?? 0) + day.contributionCount;
-    }
-
-    const datesWithContributions = Object.entries(contributionsByDate)
-      .filter(([, count]) => count > 0)
-      .map(([date]) => date)
-      .sort();
-
-    // Current streak
-    const currentStreak: Streak = { count: 0, startDate: "", endDate: "" };
-    if (contributionsByDate[today] > 0) {
-      currentStreak.count = 1;
-      currentStreak.startDate = today;
-      currentStreak.endDate = today;
-      let checkDate = yesterday;
-      while (contributionsByDate[checkDate] > 0) {
-        currentStreak.count++;
-        currentStreak.startDate = checkDate;
-        checkDate = getLocalDate(
-          new Date(new Date(checkDate).getTime() - 86400000)
-        );
-      }
-    } else if (contributionsByDate[yesterday] > 0) {
-      currentStreak.count = 1;
-      currentStreak.startDate = yesterday;
-      currentStreak.endDate = yesterday;
-      let checkDate = getLocalDate(
-        new Date(new Date(yesterday).getTime() - 86400000)
-      );
-      while (contributionsByDate[checkDate] > 0) {
-        currentStreak.count++;
-        currentStreak.startDate = checkDate;
-        checkDate = getLocalDate(
-          new Date(new Date(checkDate).getTime() - 86400000)
-        );
-      }
-    }
-
-    // Longest streak
-    let longestStreak: Streak = { count: 0, startDate: "", endDate: "" };
-    if (datesWithContributions.length > 0) {
-      let tempStreak: Streak = {
-        count: 1,
-        startDate: datesWithContributions[0],
-        endDate: datesWithContributions[0],
-      };
-      for (let i = 1; i < datesWithContributions.length; i++) {
-        const diffDays = Math.round(
-          (new Date(datesWithContributions[i]).getTime() -
-            new Date(datesWithContributions[i - 1]).getTime()) /
-            (1000 * 60 * 60 * 24)
-        );
-        if (diffDays === 1) {
-          tempStreak.count++;
-          tempStreak.endDate = datesWithContributions[i];
-          if (tempStreak.count > longestStreak.count) {
-            longestStreak = { ...tempStreak };
-          }
-        } else {
-          tempStreak = {
-            count: 1,
-            startDate: datesWithContributions[i],
-            endDate: datesWithContributions[i],
-          };
-        }
-      }
-      if (tempStreak.count > longestStreak.count) {
-        longestStreak = { ...tempStreak };
-      }
-    }
-
-    if (currentStreak.count > 0) {
-      currentStreak.count = daysBetween(
-        currentStreak.startDate,
-        currentStreak.endDate
-      );
-    }
-    if (longestStreak.count > 0) {
-      longestStreak.count = daysBetween(
-        longestStreak.startDate,
-        longestStreak.endDate
-      );
-    }
-
-    return {
-      totalContributions: contributionData.totalContributions,
-      currentStreak,
-      longestStreak,
-      totalCommits: contributionData.totalCommitContributions,
-      totalPRs: contributionData.totalPullRequestContributions,
-      totalIssues: contributionData.totalIssueContributions,
-      totalRepos: contributionData.totalRepositoryContributions,
-      contributionDays,
-    };
-  } catch (error) {
-    console.error("Error fetching GitHub contributions:", error);
-    return {
-      totalContributions: 0,
-      currentStreak: { count: 0, startDate: "", endDate: "" },
-      longestStreak: { count: 0, startDate: "", endDate: "" },
-      totalCommits: 0,
-      totalPRs: 0,
-      totalIssues: 0,
-      totalRepos: 0,
-      contributionDays: [],
-    };
+  } else {
+    contributionData = await fetchGitHubContributionPeriod(
+      username,
+      startDate,
+      endDate
+    );
   }
+
+  const contributionDays = mergeContributionDays(
+    contributionData.weeks.flatMap((week) => week.contributionDays)
+  );
+
+  // Derived from the merged days, never summed from the per-window
+  // `totalContributions` fields — those double-count the boundary day for
+  // exactly the reason documented on mergeContributionDays, and a total that
+  // disagrees with the heatmap beside it is the defect this replaces.
+  const totalContributions = contributionDays.reduce(
+    (sum, day) => sum + day.contributionCount,
+    0
+  );
+
+  const today = getLocalDate();
+  const yesterday = getLocalDate(new Date(Date.now() - 86400000));
+
+  const contributionsByDate: Record<string, number> = {};
+  for (const day of contributionDays) {
+    const localDate = getLocalDate(new Date(day.date));
+    contributionsByDate[localDate] =
+      (contributionsByDate[localDate] ?? 0) + day.contributionCount;
+  }
+
+  const datesWithContributions = Object.entries(contributionsByDate)
+    .filter(([, count]) => count > 0)
+    .map(([date]) => date)
+    .sort();
+
+  // Current streak
+  const currentStreak: Streak = { count: 0, startDate: "", endDate: "" };
+  if (contributionsByDate[today] > 0) {
+    currentStreak.count = 1;
+    currentStreak.startDate = today;
+    currentStreak.endDate = today;
+    let checkDate = yesterday;
+    while (contributionsByDate[checkDate] > 0) {
+      currentStreak.count++;
+      currentStreak.startDate = checkDate;
+      checkDate = getLocalDate(
+        new Date(new Date(checkDate).getTime() - 86400000)
+      );
+    }
+  } else if (contributionsByDate[yesterday] > 0) {
+    currentStreak.count = 1;
+    currentStreak.startDate = yesterday;
+    currentStreak.endDate = yesterday;
+    let checkDate = getLocalDate(
+      new Date(new Date(yesterday).getTime() - 86400000)
+    );
+    while (contributionsByDate[checkDate] > 0) {
+      currentStreak.count++;
+      currentStreak.startDate = checkDate;
+      checkDate = getLocalDate(
+        new Date(new Date(checkDate).getTime() - 86400000)
+      );
+    }
+  }
+
+  // Longest streak
+  let longestStreak: Streak = { count: 0, startDate: "", endDate: "" };
+  if (datesWithContributions.length > 0) {
+    let tempStreak: Streak = {
+      count: 1,
+      startDate: datesWithContributions[0],
+      endDate: datesWithContributions[0],
+    };
+    for (let i = 1; i < datesWithContributions.length; i++) {
+      const diffDays = Math.round(
+        (new Date(datesWithContributions[i]).getTime() -
+          new Date(datesWithContributions[i - 1]).getTime()) /
+          (1000 * 60 * 60 * 24)
+      );
+      if (diffDays === 1) {
+        tempStreak.count++;
+        tempStreak.endDate = datesWithContributions[i];
+        if (tempStreak.count > longestStreak.count) {
+          longestStreak = { ...tempStreak };
+        }
+      } else {
+        tempStreak = {
+          count: 1,
+          startDate: datesWithContributions[i],
+          endDate: datesWithContributions[i],
+        };
+      }
+    }
+    if (tempStreak.count > longestStreak.count) {
+      longestStreak = { ...tempStreak };
+    }
+  }
+
+  if (currentStreak.count > 0) {
+    currentStreak.count = daysBetween(
+      currentStreak.startDate,
+      currentStreak.endDate
+    );
+  }
+  if (longestStreak.count > 0) {
+    longestStreak.count = daysBetween(
+      longestStreak.startDate,
+      longestStreak.endDate
+    );
+  }
+
+  return {
+    totalContributions,
+    currentStreak,
+    longestStreak,
+    totalCommits: contributionData.totalCommitContributions,
+    totalPRs: contributionData.totalPullRequestContributions,
+    totalIssues: contributionData.totalIssueContributions,
+    totalRepos: contributionData.totalRepositoryContributions,
+    contributionDays,
+  };
 }
 
 export async function fetchGithubStats(username: string) {

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
+import { PROFILE_META } from "@/lib/profile";
 
 // True 1200×630 social card (the shailesh.webp portrait pillar-boxes).
 const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(
@@ -11,8 +12,9 @@ const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Blog — Shailesh Chaudhari",
-  description:
-    "Technical writing from 2+ years of shipping full-stack products. Topics: Next.js, NestJS, authentication, Stripe, DSA, and lessons from real production work.",
+  // A fifth hand-typed copy of the years figure, and the one that had drifted
+  // furthest: "2+" against 2.5 everywhere else. Rendered from PROFILE now.
+  description: `Technical writing from ${PROFILE_META.yearsFloor} of shipping full-stack products. Topics: Next.js, NestJS, authentication, Stripe, DSA, and lessons from real production work.`,
   alternates: {
     canonical: `${SITE_URL}/blogs`,
   },

@@ -37,6 +37,7 @@ import { SOCIAL_LINKS } from "@/lib/constants";
 import { achievements, education, experiences } from "@/constants";
 import { homeFaq, portfolioFaq } from "@/lib/faq-data";
 import { metadata as aboutMetadata } from "@/app/about/metadata";
+import { metadata as blogsMetadata } from "@/app/blogs/metadata";
 import { metadata as statisticsMetadata } from "@/app/statistics/metadata";
 import resume from "../resume/resume.json";
 
@@ -351,5 +352,120 @@ describe("one LinkedIn profile, spelled one way", () => {
     expect(SOCIAL_LINKS.LINKEDIN).toContain(RIGHT);
     expect(resume.contact.linkedin).toContain(RIGHT);
     expect(SOCIAL_LINKS.LINKEDIN).not.toContain(WRONG);
+  });
+});
+
+/**
+ * 🔴 A CONSTANT NOTHING IMPORTS IS NOT A SOURCE OF TRUTH.
+ *
+ * `PROFILE.role.yearsExperience` existed from the day this file was written and
+ * had ZERO call sites. Every surface typed the figure out by hand, and by
+ * 2026-09-20 they had forked into three phrasings — "~2.5 years" on the home
+ * page and in llms.txt, "About 2.5 years" in the FAQ, "2.5+ years" on the
+ * résumé. Nobody had noticed, because nothing compared them.
+ *
+ * The phrasings are allowed to differ: an approximation and a floor say
+ * different, both-true things and belong on different surfaces. The NUMBER may
+ * not. So the patterns below are BUILT FROM `PROFILE.role.yearsExperience` —
+ * never written as `2.5` — for the reason `claims-consistency.test.ts` records
+ * at length: a guard that repeats the value it guards is not a guard, and this
+ * repo has already shipped one that stayed green for four days.
+ */
+describe("years of experience", () => {
+  const years = PROFILE.role.yearsExperience;
+
+  it("is rendered from PROFILE, in each surface's own phrasing", () => {
+    expect(PROFILE_META.yearsApprox).toBe(`~${years} years`);
+    expect(PROFILE_META.yearsFloor).toBe(`${years}+ years`);
+    expect(PROFILE_META.yearsSentence).toBe(
+      `About ${years} years of professional experience`
+    );
+    expect(PROFILE.bio.oneLine).toContain(PROFILE_META.yearsApprox);
+    expect(
+      portfolioFaq(10)
+        .map((f) => f.answer)
+        .join(" ")
+    ).toContain(PROFILE_META.yearsSentence);
+    expect(String(blogsMetadata.description)).toContain(
+      PROFILE_META.yearsFloor
+    );
+  });
+
+  it("the home page derives it rather than carrying its own literal", () => {
+    // A server-rendered string check would pass on a hardcoded copy; reading
+    // the source proves the page cannot fork on its own.
+    const src = readFileSync(join(ROOT, "app", "HomeContent.tsx"), "utf8");
+    expect(src).toContain("PROFILE_META.yearsApprox");
+    expect(stripComments(src)).not.toMatch(/[~+]?\d(?:\.\d)? years/);
+  });
+
+  it("the static files AI agents and recruiters read state the same number", () => {
+    // These cannot import PROFILE (plain text / JSON consumed by a build), so
+    // this is the join between them and the constant.
+    expect(llms("llms.txt")).toContain(PROFILE_META.yearsApprox);
+    expect(resume.summary).toContain(PROFILE_META.yearsFloor);
+  });
+
+  it("the compiled resume.txt was rebuilt, and states it too", () => {
+    // resume.txt is the cheap proof that `node resume/build.mjs` ran: the PDF
+    // a recruiter opens and the DOCX a portal parses come out of the same run.
+    const txt = readFileSync(join(ROOT, "resume", "resume.txt"), "utf8");
+    expect(txt).toContain(PROFILE_META.yearsFloor);
+  });
+
+  it("no surface states a different figure", () => {
+    // `(?<![\d.])` so "2.5+ years" is read as one number rather than as a
+    // stray "5" — the first draft of this guard reported the correct résumé
+    // line as an offender, which is how a guard gets loosened and stops
+    // catching anything.
+    const yearsPattern = new RegExp(
+      `(?<![\\d.])(?!${years}\\b)\\d(?:\\.\\d)?\\+?\\s*years?\\s+(?:of\\s+)?` +
+        `(?:professional\\s+)?(?:experience|in the industry|shipping|building)`,
+      "gi"
+    );
+    const offenders: string[] = [];
+    for (const file of files) {
+      const text = stripComments(readFileSync(file, "utf8"));
+      for (const m of Array.from(text.matchAll(yearsPattern))) {
+        offenders.push(`${relative(ROOT, file)}: "${m[0].trim()}"`);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+});
+
+/**
+ * The college is spelled one way.
+ *
+ * It was a literal in `lib/profile.ts`, in `constants/index.ts` (the education
+ * card a visitor reads) and twice in `app/layout.tsx`'s Person JSON-LD — and
+ * `constants/index.ts` had lost the comma, so the rendered page and the
+ * structured data named the institution differently. Structured data that
+ * disagrees with the page it describes is the same defect class as KhataGO's
+ * hand-written FAQPage markup.
+ */
+describe("the education institution", () => {
+  const institution = PROFILE.education.institution;
+
+  it("the education card and the Person JSON-LD both come from PROFILE", () => {
+    expect(education[0].institution).toBe(institution);
+    const layout = readFileSync(join(ROOT, "app", "layout.tsx"), "utf8");
+    expect(layout).toContain("PROFILE.education.institution");
+    expect(stripComments(layout)).not.toContain(institution);
+  });
+
+  it("every surface spells it identically", () => {
+    // Any "Government Engineering College …" that is not the canonical string.
+    const offenders: string[] = [];
+    for (const file of files) {
+      const text = stripComments(readFileSync(file, "utf8"));
+      for (const m of Array.from(
+        text.matchAll(/Government Engineering College[,\s]+Bhavnagar/g)
+      )) {
+        if (m[0] !== institution)
+          offenders.push(`${relative(ROOT, file)}: "${m[0]}"`);
+      }
+    }
+    expect(offenders).toEqual([]);
   });
 });
