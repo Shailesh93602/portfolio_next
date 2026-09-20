@@ -60,7 +60,7 @@ export const portfolioFaq = (count: number): FaqItem[] => [
   },
   {
     question: "What is Shailesh Chaudhari's experience level?",
-    answer: `About 2.5 years of professional experience: ${PROFILE.previousRole.tenure} — Software Developer Intern (Jan 2024 – Aug 2024), then Software Developer (Aug 2024 – Jul 2025) shipping 3 client projects end-to-end — then Software Engineer at ContextQA from July 2025 onwards working on the backend of the core QA-automation product. ${PROFILE_META.gfgLine}.`,
+    answer: `${PROFILE_META.yearsSentence}: ${PROFILE.previousRole.tenure} — Software Developer Intern (Jan 2024 – Aug 2024), then Software Developer (Aug 2024 – Jul 2025) shipping 3 client projects end-to-end — then Software Engineer at ContextQA from July 2025 onwards working on the backend of the core QA-automation product. ${PROFILE_META.gfgLine}.`,
   },
 ];
 

@@ -216,7 +216,7 @@ export default function RootLayout({
               ],
               alumniOf: {
                 "@type": "CollegeOrUniversity",
-                name: "Government Engineering College, Bhavnagar",
+                name: PROFILE.education.institution,
                 url: "https://gecbhavnagar.ac.in",
               },
               seeks: {
@@ -233,7 +233,7 @@ export default function RootLayout({
                   about: "Information Technology",
                   recognizedBy: {
                     "@type": "CollegeOrUniversity",
-                    name: "Government Engineering College, Bhavnagar",
+                    name: PROFILE.education.institution,
                   },
                 },
               ],

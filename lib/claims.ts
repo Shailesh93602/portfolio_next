@@ -65,6 +65,28 @@ export const KHATAGO_TOOL_COUNT = 10;
  */
 export const KHATAGO_EVAL_COUNT = 21;
 
+/**
+ * The Next.js major in `apps/web/package.json` of Shailesh93602/CodeSenseiSearch.
+ * Reproduce: `grep '"next"' apps/web/package.json` there.
+ *
+ * 🔴 WHY A FRAMEWORK VERSION IS IN A FILE OF FACT CLAIMS.
+ *
+ * The card said "Next.js 14" while the repo had been on 16 for some time, and
+ * the guard in `claims-consistency.test.ts` was pinning the *prose around it*
+ * ("not yet wired") rather than checking anything upstream — so the one test
+ * that mentioned this project by name was enforcing the stale description
+ * instead of catching it. A version a reader can check in one click is a
+ * claim like any other; it belongs here, where the daily check can read it.
+ */
+export const CODESENSEI_NEXT_MAJOR = 16;
+
+/**
+ * The NestJS major in `apps/api/package.json` of the same repository.
+ * Reproduce: `grep '"@nestjs/common"' apps/api/package.json` there.
+ * Same reasoning as above — the card names it, so something has to check it.
+ */
+export const CODESENSEI_NEST_MAJOR = 11;
+
 const WORDS = [
   "zero",
   "one",

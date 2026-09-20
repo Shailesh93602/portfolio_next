@@ -40,6 +40,7 @@ jest.mock("next/image", () => ({
 
 import { BlogCard } from "@/components/blog-card";
 import { EducationSection } from "@/components/EducationSection";
+import { PROFILE } from "@/lib/profile";
 
 // ─── BlogCard ─────────────────────────────────────────────────────────────────
 
@@ -105,11 +106,13 @@ describe("EducationSection", () => {
     expect(screen.getByText(/Bachelor of Engineering/i)).toBeInTheDocument();
   });
 
-  it("renders the institution name", () => {
+  it("renders the institution name from PROFILE", () => {
+    // Was the literal "Government Engineering College Bhavnagar" — the
+    // comma-less spelling this card had drifted into, so the test asserted the
+    // drift rather than catching it. From the constant, the rendered card and
+    // the Person JSON-LD cannot disagree again.
     render(<EducationSection />);
-    expect(
-      screen.getByText(/Government Engineering College Bhavnagar/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(PROFILE.education.institution)).toBeInTheDocument();
   });
 
   it("renders the CGPA badge", () => {

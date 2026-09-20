@@ -230,6 +230,141 @@ const CLAIMS = [
     sourceCount: /^\s*id: "/gm,
     privateRepo: true,
   },
+  // ── The projects this file did not cover ──────────────────────────────
+  //
+  // 🔴 EVERY FALSE CLAIM THE LAST AUDIT FOUND WAS IN A PROJECT THIS SCRIPT
+  // DID NOT CHECK.
+  //
+  // It watched BALLAST, KhataGO and the home page. DevTrack, grounded,
+  // idempotency-kit, promptproof and CodeSenseiSearch stated a dozen numbers
+  // between them and nothing read any of them — so CodeSenseiSearch sat two
+  // majors behind ("Next.js 14" against a repo on 16) and described a mock
+  // dataset that had been deleted, and idempotency-kit advertised 13 tests
+  // for a suite that runs 22. Coverage, not cleverness, is what this file was
+  // missing.
+
+  // DevTrack ---------------------------------------------------------------
+  {
+    what: "DevTrack API route count",
+    localPattern: /route handlers \((\d+) API routes\)/,
+    repo: "Shailesh93602/devtrack",
+    // Counted from the repository TREE, because the claim is about how many
+    // files exist — there is no single file that states it, and a number with
+    // no upstream reading is exactly the kind this script exists to refuse.
+    tree: /^app\/api\/.*\/route\.ts$/,
+  },
+  {
+    what: "DevTrack dashboard queries issued in parallel",
+    localPattern: /value: "(\d+) in parallel"/,
+    repo: "Shailesh93602/devtrack",
+    path: "lib/services/dashboard.ts",
+    // The destructuring list in front of `Promise.all([` IS the count. Reading
+    // the array would mean parsing nested calls; reading the names it binds is
+    // the same number and survives reformatting.
+    sourceExtract: (text) => {
+      const m = text.match(/const \[([^\]]+)\] = \(await Promise\.all\(\[/);
+      if (!m) return null;
+      return String(
+        m[1]
+          .split(",")
+          .map((name) => name.trim())
+          .filter(Boolean).length
+      );
+    },
+  },
+  {
+    what: "DevTrack: the live feed is a postgres_changes subscription",
+    localPattern:
+      /(postgres_changes) subscription on the quoted PascalCase DailyLog table/,
+    repo: "Shailesh93602/devtrack",
+    path: "hooks/useRealtimeLogs.ts",
+    // Presence-shaped: the claim is that the feed is a subscription rather than
+    // polling. A `setInterval` refetch would still render a live-looking feed
+    // and make the sentence false.
+    sourceMustMatch: /postgres_changes/,
+  },
+
+  // grounded ---------------------------------------------------------------
+  {
+    what: "grounded total test count",
+    localPattern: /Tests: Vitest — (\d+) tests/,
+    repo: "Shailesh93602/grounded",
+    tree: /^test\/.*\.test\.ts$/,
+    countIn: /^\s*(?:it|test)(?:\.\w+)?\s*\(/gm,
+  },
+  {
+    what: "grounded pgvector tests that skip without a database",
+    localPattern: /the (\d+) pgvector tests skip/,
+    repo: "Shailesh93602/grounded",
+    path: "test/pgvector.test.ts",
+    // Only the cases inside `describe.skipIf(!DB_URL)` skip. The file also
+    // carries one case in the mirror-image `describe.skipIf(!!DB_URL)` block
+    // that runs PRECISELY when the others do not, so a whole-file count would
+    // say 10 and quietly make the sentence false.
+    sourceExtract: (text) => {
+      const gated = text.split(/describe\.skipIf\(!!DB_URL\)/)[0];
+      const after = gated.slice(gated.indexOf("describe.skipIf(!DB_URL)"));
+      return String((after.match(/^\s*it\(/gm) ?? []).length);
+    },
+  },
+
+  // idempotency-kit --------------------------------------------------------
+  {
+    what: "idempotency-kit test count",
+    // Was stated as 13 — the count when the card was written — against a suite
+    // that runs 22 (7 in rateLimit.test.ts, 15 in idempotency.test.ts).
+    localPattern: /Tests: Vitest \((\d+), deterministic\/offline\)/,
+    repo: "Shailesh93602/idempotency-kit",
+    tree: /^test\/.*\.test\.ts$/,
+    countIn: /^\s*(?:it|test)(?:\.\w+)?\s*\(/gm,
+  },
+
+  // promptproof ------------------------------------------------------------
+  {
+    what: "promptproof test count",
+    localPattern: /Tests: Vitest \((\d+), offline\)/,
+    repo: "Shailesh93602/promptproof",
+    tree: /^test\/.*\.test\.ts$/,
+    countIn: /^\s*(?:it|test)(?:\.\w+)?\s*\(/gm,
+  },
+
+  // CodeSenseiSearch -------------------------------------------------------
+  {
+    what: "CodeSenseiSearch Next.js major",
+    localFile: "claims",
+    localPattern: /CODESENSEI_NEXT_MAJOR = (\d+)/,
+    repo: "Shailesh93602/CodeSenseiSearch",
+    path: "apps/web/package.json",
+    sourcePattern: /"next":\s*"[\^~]?(\d+)\./,
+  },
+  {
+    what: "CodeSenseiSearch NestJS major",
+    localFile: "claims",
+    localPattern: /CODESENSEI_NEST_MAJOR = (\d+)/,
+    repo: "Shailesh93602/CodeSenseiSearch",
+    path: "apps/api/package.json",
+    sourcePattern: /"@nestjs\/common":\s*"[\^~]?(\d+)\./,
+  },
+  {
+    what: "CodeSenseiSearch: chunking really walks the TypeScript AST",
+    localPattern: /walking the (TypeScript compiler API)/,
+    repo: "Shailesh93602/CodeSenseiSearch",
+    path: "apps/api/src/workers/code-chunker.ts",
+    // The distinction the card is MAKING is AST vs fixed-size. If the compiler
+    // import goes, the chunker is character-based and the sentence is false.
+    sourceMustMatch: /from 'typescript'|from "typescript"/,
+  },
+  {
+    what: "CodeSenseiSearch: the UI calls the API, not a mock dataset",
+    localPattern: /typed client rather than a (mock dataset)/,
+    repo: "Shailesh93602/CodeSenseiSearch",
+    path: "apps/web/src/lib/hooks/use-search.ts",
+    // This claim replaced "search UI against a mock dataset", which had been
+    // true and stopped being true when `mock-data.ts` was deleted. It can go
+    // stale in the other direction just as easily.
+    sourceMustMatch: /apiClient/,
+  },
+
   // ── GeeksforGeeks ─────────────────────────────────────────────────────
   //
   // The site says "650+ problems solved on GeeksforGeeks" — the volume, and
@@ -358,6 +493,43 @@ async function fetchAtHead(repo, path) {
   return res.text();
 }
 
+/** The resolved default-branch SHA for a repo, cached like fetchAtHead's. */
+async function headSha(repo) {
+  let sha = shaCache.get(repo);
+  if (sha === undefined) {
+    const res = await request(
+      `https://api.github.com/repos/${repo}/commits/HEAD`
+    );
+    sha = (await res.json()).sha;
+    shaCache.set(repo, sha);
+  }
+  return sha;
+}
+
+/**
+ * Every blob path in a repo at its current HEAD.
+ *
+ * Some claims are about how many FILES exist — "17 API routes", "50 tests
+ * across the suite" — and no single upstream file states them. Without this
+ * the only options were to leave those numbers unchecked or to invent a file
+ * that restates them, and a number restated upstream to satisfy a checker is
+ * not evidence of anything.
+ *
+ * Pinned to a SHA for the same reason fetchAtHead is: the mutable ref is
+ * CDN-cached and disagrees with itself for minutes after a push.
+ */
+async function fetchTree(repo) {
+  const sha = await headSha(repo);
+  const res = await request(
+    `https://api.github.com/repos/${repo}/git/trees/${sha}?recursive=1`
+  );
+  const body = await res.json();
+  if (body.truncated) {
+    throw new Error(`tree for ${repo} was truncated by the API`);
+  }
+  return body.tree.filter((node) => node.type === "blob").map((n) => n.path);
+}
+
 const localText = Object.fromEntries(
   Object.entries(LOCAL_SOURCES).map(([key, file]) => [
     key,
@@ -403,6 +575,48 @@ for (const claim of CLAIMS) {
 
   let upstream;
   try {
+    // Tree-shaped claims never read a single file: they count matching paths
+    // in the repository, or sum a per-file pattern across them.
+    if (claim.tree) {
+      const paths = (await fetchTree(claim.repo)).filter((path) =>
+        claim.tree.test(path)
+      );
+      if (paths.length === 0) {
+        // Zero matching files is never the answer to "how many are there" —
+        // it means the repo moved and this check stopped looking anywhere
+        // real. Passing quietly against an empty set is the failure mode this
+        // whole script exists to prevent.
+        console.error(
+          `✗  ${claim.what}: no file in ${claim.repo} matches ${claim.tree} — ` +
+            `the layout changed and this check is no longer looking at anything`
+        );
+        failures++;
+        continue;
+      }
+      if (claim.countIn) {
+        let total = 0;
+        for (const path of paths) {
+          const text = await fetchAtHead(claim.repo, path);
+          total += (text.match(claim.countIn) ?? []).length;
+        }
+        upstream = String(total);
+      } else {
+        upstream = String(paths.length);
+      }
+      if (stated === upstream) {
+        console.log(
+          `✓  ${claim.what}: portfolio says ${stated}, ${claim.repo} agrees ` +
+            `(${paths.length} file(s))`
+        );
+      } else {
+        console.error(
+          `✗  ${claim.what}: portfolio says ${stated}, ${claim.repo} says ${upstream}`
+        );
+        failures++;
+      }
+      continue;
+    }
+
     const text = claim.url
       ? await fetchPage(claim.url)
       : await fetchAtHead(claim.repo, claim.path);
@@ -424,6 +638,21 @@ for (const claim of CLAIMS) {
     }
     if (claim.sourceCount) {
       upstream = String((text.match(claim.sourceCount) ?? []).length);
+    } else if (claim.sourceExtract) {
+      // For counts that a single regex cannot express — a destructuring list,
+      // or the cases inside one of two mirror-image describe blocks. Returning
+      // null means "the upstream no longer has the shape this reads", which is
+      // a failure for the same reason a non-matching sourcePattern is.
+      const extracted = claim.sourceExtract(text);
+      if (extracted === null || extracted === undefined) {
+        console.error(
+          `✗  ${claim.what}: ${claim.path} no longer has the shape this check ` +
+            `reads — the claim is unverifiable`
+        );
+        failures++;
+        continue;
+      }
+      upstream = String(extracted);
     } else {
       const m = text.match(claim.sourcePattern);
       if (!m) {

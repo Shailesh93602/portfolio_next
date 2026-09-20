@@ -2,6 +2,8 @@ import {
   BALLAST_CHECKER_FINDINGS,
   BALLAST_LEDGER_FINDINGS,
   BALLAST_TEST_COUNT,
+  CODESENSEI_NEST_MAJOR,
+  CODESENSEI_NEXT_MAJOR,
   KHATAGO_EVAL_COUNT,
   KHATAGO_TOOL_COUNT,
   numberWord,
@@ -503,8 +505,7 @@ const rawProjects: Project[] = [
   {
     id: "codesensei-search",
     title: "CodeSenseiSearch",
-    description:
-      "Semantic code-search monorepo, still being built: a Next.js search UI against a mock dataset, NestJS backend scaffolding, a Prisma schema with a pgvector column, and Docker Compose for Postgres + Redis. The ingestion → embedding → retrieval pipeline is not yet wired end to end.",
+    description: `Semantic code-search monorepo: an AST-aware chunker, BullMQ workers that embed each chunk with Gemini into a pgvector column, and a hybrid vector + full-text search API behind a NestJS ${CODESENSEI_NEST_MAJOR} backend, with a Next.js ${CODESENSEI_NEXT_MAJOR} search UI wired to it. Runs locally on Docker Compose; there is no hosted instance, so the repository is the artifact.`,
     image: "/Images/portfolio1.png",
     tags: [
       "NestJS",
@@ -515,57 +516,69 @@ const rawProjects: Project[] = [
       "Monorepo",
     ],
     github: "https://github.com/Shailesh93602/CodeSenseiSearch",
-    // No `live`: the deployed page is a landing page over mock data, and a
-    // "Live demo" button on a project whose pipeline is not wired end to end
-    // promises something the click cannot deliver. The repo is the artifact.
-    detailedDescription:
-      "A monorepo (pnpm workspaces) exploring AI-powered semantic code search. Shipped so far: Next.js landing page with feature showcase, search UI with real-time suggestions and filtering against a ~50-example mock dataset, NestJS backend scaffolding, Prisma schema with a pgvector column, and a Docker Compose for Postgres + Redis + pgAdmin. The ingestion → embedding → retrieval pipeline is prototyped but not yet wired end-to-end; Phase 2 (real content ingestion from GitHub / StackOverflow) is the active work.",
+    // Still no `live`, and for a narrower reason than before: the pipeline IS
+    // implemented now, but nothing is hosted — there is a deployment runbook
+    // and no deployment. A "Live demo" button has to survive the click.
+    detailedDescription: `A pnpm monorepo for AI-powered semantic code search, built as a pipeline rather than a demo. Source files are chunked at function/class boundaries by walking the TypeScript compiler API — fixed-size chunks tore function bodies in half and produced embeddings that did not cluster usefully — with a character-based fallback for everything else. BullMQ workers on Redis drive chunking and embedding: the embedding pass is idempotent (only PENDING/FAILED chunks are picked up, and a batch is flagged IN_PROGRESS up front so two workers cannot race) and retries transient Gemini errors with exponential backoff while failing fast on 4xx. Vectors land in a vector(768) column on Postgres via pgvector, and search is hybrid — cosine similarity, full-text and a reranker — behind a NestJS ${CODESENSEI_NEST_MAJOR} API with JWT + GitHub OAuth and a global 60 req/min throttler. The Next.js ${CODESENSEI_NEXT_MAJOR} front end calls that API through a typed client rather than a mock dataset. What is NOT done: there is no hosted deployment, and no integration test against a real Postgres — the end-to-end pipeline test runs in memory against a mocked embedder.`,
     architecture: {
       layers: [
         {
-          name: "Frontend (Phase 1 — shipped)",
+          name: "Ingestion",
           items: [
-            "Next.js + Tailwind landing page",
-            "Search UI with suggestions, filters, syntax highlighting",
-            "Mock dataset (~50 examples) for UX validation",
+            "BullMQ queues on Redis (GitHub / StackOverflow discovery + ingestion)",
+            "ContentChunkingWorker — AST-aware for .ts/.tsx/.js/.jsx, char-based fallback",
+            "AST chunker walks the TypeScript compiler API, one chunk per function/class",
           ],
         },
         {
-          name: "Backend (scaffolded)",
+          name: "Embedding",
           items: [
-            "NestJS REST API skeleton",
-            "Prisma schema with pgvector column",
-            "Chunker worker (function/class-boundary segmentation)",
+            "EmbeddingGenerationWorker — Gemini embeddings, 768-dim",
+            "Idempotent: only PENDING/FAILED chunks are claimed, batch flagged IN_PROGRESS first",
+            "Exponential backoff on 429/5xx; fail fast on 4xx shape errors",
           ],
         },
         {
-          name: "Infrastructure",
-          items: ["PostgreSQL + pgvector", "Redis", "Docker Compose"],
+          name: "Retrieval",
+          items: [
+            "pgvector cosine similarity over vector(768) on content_chunks",
+            "Hybrid search: vector + full-text + reranker",
+            `NestJS ${CODESENSEI_NEST_MAJOR} API, JWT + GitHub OAuth, global 60 req/min throttler`,
+          ],
+        },
+        {
+          name: "Frontend & infrastructure",
+          items: [
+            `Next.js ${CODESENSEI_NEXT_MAJOR} search UI calling the API through a typed client`,
+            "PostgreSQL + pgvector, Redis, Docker Compose",
+            "pnpm workspaces with shared tsconfig / eslint / prettier",
+          ],
         },
       ],
       description:
-        "A pnpm monorepo laying groundwork for semantic code search. Phase 0/1 are complete (monorepo tooling + UI against mock data); the retrieval pipeline is next. Included here as a design + scaffolding sample, not a finished product.",
+        "Discovery and ingestion feed BullMQ queues; the chunker segments each file at syntactic boundaries; the embedding worker fills a pgvector column idempotently; the search API combines cosine similarity with full-text and reranks. Everything runs on `docker compose up` — and only there, because nothing is deployed.",
     },
     features: [
-      "pnpm monorepo with shared TypeScript packages (tsconfig, eslint, prettier)",
-      "Next.js landing page + search interface with real-time suggestions and multi-field filtering",
-      "Prisma schema with pgvector column (dimension tuning pending real embedding model)",
-      "Chunker worker that splits source at function/class boundaries (unit-test coverage is an open P1)",
-      "Docker Compose for Postgres + Redis + pgAdmin — clone-and-run local setup",
-      "CI/CD pipeline + ESLint + Prettier wired across all workspaces",
+      "AST-aware chunking — the TypeScript compiler API gives one chunk per top-level function / method / class with real startLine / endLine",
+      "Idempotent embedding pass — re-running a job on the same chunk ids is a no-op, and IN_PROGRESS flagging stops two workers racing the same batch",
+      "Exponential backoff on transient Gemini errors, immediate bail on 4xx",
+      "Hybrid retrieval — pgvector cosine similarity plus full-text, then a reranker",
+      "JWT + GitHub OAuth, with a global 60 req/min throttler and tighter caps on the auth routes",
+      "Docker Compose for Postgres + pgvector, Redis and pgAdmin — clone-and-run locally",
     ],
     techStack: [
-      "Frontend: Next.js 14, Tailwind CSS, Prism.js syntax highlighting",
-      "Backend: NestJS, TypeScript, Prisma",
-      "Database: PostgreSQL with pgvector extension",
+      `Frontend: Next.js ${CODESENSEI_NEXT_MAJOR}, React 19, Tailwind CSS, Prism.js syntax highlighting`,
+      `Backend: NestJS ${CODESENSEI_NEST_MAJOR}, TypeScript, Prisma 6, BullMQ`,
+      "Database: PostgreSQL with pgvector (vector(768))",
+      "Embeddings: Google Gemini",
       "Infra: Docker Compose, pnpm workspaces, shared tsconfig",
     ],
     problem:
       "grep and file search break down on large codebases — you need to know the exact term. New engineers and AI tools struggle to navigate unfamiliar code when the vocabulary is unknown. A semantic layer over the codebase could turn 'where is auth handled?' into a ranked list of file + line locations.",
     solution:
-      "Monorepo with an ingestion pipeline that chunks source at function/class boundaries (not fixed-line), embeds each chunk, and stores vectors in pgvector. Queries are embedded at runtime and matched via cosine similarity. The UX layer is built against mock data so the interaction design is validated before the retrieval backend is complete.",
+      "A monorepo whose ingestion pipeline chunks source at function/class boundaries rather than at fixed line counts, embeds each chunk, and stores the vectors in pgvector. Queries are embedded at request time and matched by cosine similarity, then combined with full-text results and reranked, so a query that shares no vocabulary with the code can still land on the right file and line range.",
     challengesSolved:
-      "The scaffolding phase made the key insight concrete: fixed-size chunks split function bodies mid-logic and produce low-quality embeddings, whereas function/class-boundary chunks preserve semantic units. Phase 1 validated the UX affordances needed around results (filters, sort, source badges) by running the UI against mock data first, so the retrieval work can focus on quality rather than on reactive UI changes. Next: wire real embeddings through the chunker, finalise the pgvector index strategy (ivfflat vs hnsw), and add chunker unit tests.",
+      "Two decisions carry the project. Chunking is syntactic, not size-based: fixed-size chunks split function bodies mid-logic and produced embeddings that did not cluster, so the chunker walks the TypeScript compiler API and emits one chunk per top-level function, method or class with its real line range preserved. And the embedding pass is written to be re-run: it claims only PENDING or FAILED chunks and flags the batch IN_PROGRESS before any network call, so a crash mid-batch costs a retry rather than duplicate vectors, and two workers cannot embed the same chunk. What is still open is the honest part — nothing is deployed, and the end-to-end test proves the chain in memory against a mocked embedder, not against a real Postgres.",
   },
   {
     id: "khatago",

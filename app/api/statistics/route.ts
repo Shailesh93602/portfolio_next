@@ -69,12 +69,24 @@ export async function GET() {
     let githubStats = snapshot.github ?? GITHUB_FALLBACK;
     let leetcodeStats = snapshot.leetcode ?? LEETCODE_FALLBACK;
 
+    // 🔴 WHICH NUMBERS ARE LIVE AND WHICH CAME OUT OF THE SNAPSHOT.
+    //
+    // Without this the two are indistinguishable downstream, and a zero has
+    // two completely different meanings: "he really did nothing" and "we could
+    // not find out". `getGitHubContributions` used to swallow its own errors
+    // and answer with zeros, so this route's `try` succeeded and overwrote a
+    // good snapshot with them — an expired GITHUB_TOKEN rendered
+    // "Contributions: 0" with no error state anywhere on the page. The service
+    // now throws, and the flag says so on the wire.
+    const stale = { github: true, leetcode: true };
+
     try {
       githubStats = await withTimeout(
         fetchGithubStats(githubUsername),
         UPSTREAM_TIMEOUT_MS,
         "GitHub stats fetch"
       );
+      stale.github = false;
     } catch (error) {
       console.error("Error fetching GitHub statistics:", error);
     }
@@ -85,13 +97,16 @@ export async function GET() {
         UPSTREAM_TIMEOUT_MS,
         "LeetCode stats fetch"
       );
-      if (result) leetcodeStats = result;
+      if (result) {
+        leetcodeStats = result;
+        stale.leetcode = false;
+      }
     } catch (error) {
       console.error("Error fetching LeetCode statistics:", error);
     }
 
     return NextResponse.json(
-      { github: githubStats, leetcode: leetcodeStats },
+      { github: githubStats, leetcode: leetcodeStats, stale },
       {
         headers: {
           // Cache at the edge for 1 h; serve stale for 2 h while revalidating
@@ -106,6 +121,7 @@ export async function GET() {
       {
         github: snapshot.github ?? GITHUB_FALLBACK,
         leetcode: snapshot.leetcode ?? LEETCODE_FALLBACK,
+        stale: { github: true, leetcode: true },
         error: "Failed to fetch statistics, showing fallback data",
       },
       {

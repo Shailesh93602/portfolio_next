@@ -121,16 +121,17 @@ WhatsApp-first AI accounting platform for Indian SMBs:
 
 ### CodeSenseiSearch
 **GitHub:** https://github.com/Shailesh93602/CodeSenseiSearch
-**Stack:** pnpm monorepo (Next.js + NestJS), TypeScript, PostgreSQL, pgvector, Gemini embeddings, Docker Compose (Postgres + Redis). Queue workers are scaffolded, not deployed.
+**Stack:** pnpm monorepo — Next.js 16 / React 19 front end, NestJS 11 API, TypeScript, Prisma 6, PostgreSQL + pgvector, BullMQ on Redis, Gemini embeddings, Docker Compose. Nothing is deployed: the repository runs locally.
 
-AI-powered semantic code search engine (Phase 1 complete, Phase 2 in progress — the ingestion → embedding → retrieval pipeline is scaffolded but not yet wired end to end):
+AI-powered semantic code search engine. The pipeline is implemented end to end in the repository and has never been hosted:
 
 **Architecture:**
-- **Ingestion:** Source files → AST-aware function/class-level chunker (not fixed line counts) → Gemini embeddings → pgvector storage
-- **Search:** Natural language query → embedding → cosine similarity ranking → ranked file+line results
+- **Ingestion:** BullMQ queues on Redis → ContentChunkingWorker → AST-aware chunker that walks the TypeScript compiler API for .ts/.tsx/.js/.jsx (character-based fallback otherwise), one chunk per top-level function / method / class with real startLine / endLine
+- **Embedding:** EmbeddingGenerationWorker → Gemini embeddings → vector(768) on content_chunks. Idempotent: only PENDING/FAILED chunks are claimed and the batch is flagged IN_PROGRESS before any network call, so concurrent workers cannot embed the same chunk. Exponential backoff on 429/5xx, immediate bail on 4xx.
+- **Search:** Natural language query → embedding → hybrid ranking (pgvector cosine similarity + full-text + reranker) → ranked file+line results, behind JWT + GitHub OAuth with a global 60 req/min throttler
 - **Key insight:** Chunking at function/class boundaries keeps semantic units intact. Fixed-size chunking splits logic mid-function, producing noisy embeddings.
 
-Natural language queries like "where is the payment retry logic?" return ranked file paths and line ranges without keyword matching.
+**Not done, stated plainly:** no hosted deployment, and no integration test against a real Postgres — the end-to-end pipeline test runs in memory against a mocked embedder.
 
 ---
 

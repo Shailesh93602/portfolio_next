@@ -12,6 +12,34 @@
  * surfaces become impossible.
  */
 
+/**
+ * Years of professional experience, as a number, once.
+ *
+ * 🔴 IT WAS DEFINED HERE AND IMPORTED BY NOTHING. `PROFILE.role.yearsExperience`
+ * had zero call sites; every surface typed the figure out by hand, and they had
+ * already forked into three phrasings — "~2.5 years" on the home page and in
+ * llms.txt, "About 2.5 years" in the FAQ, "2.5+ years" on the résumé. Three
+ * hand-maintained copies of a number that changes twice a year is the same
+ * shape as the "604+ / 600+ / 700+" GfG fork this file was written to end.
+ *
+ * The phrasings stay — an approximation and a floor say different, both-true
+ * things, and the résumé wants the floor — but the NUMBER comes from here, so
+ * editing this line is the whole edit for every surface that renders. The
+ * static files that cannot import it (llms.txt, resume.json/txt) are held
+ * against this constant by `__tests__/identity-claims.test.ts`.
+ */
+const YEARS_EXPERIENCE = 2.5;
+
+/**
+ * The degree-awarding institution, spelled one way.
+ *
+ * It was a literal in `lib/profile.ts`, `constants/index.ts` (which renders the
+ * education card) and twice in `app/layout.tsx`'s Person JSON-LD — and
+ * `constants/index.ts` had already lost the comma, so the page a visitor reads
+ * and the structured data a crawler reads named the college differently.
+ */
+const INSTITUTION = "Government Engineering College, Bhavnagar";
+
 export const PROFILE = {
   name: {
     full: "Shailesh Chaudhari",
@@ -26,7 +54,7 @@ export const PROFILE = {
     focus:
       "Node.js backend of the core QA-automation platform — a test-execution engine orchestrating Playwright / WebdriverIO / LambdaTest runs, live browser-session streaming over WebSockets, the integrations engine (GitHub, GitLab, Linear, Slack), and the session control plane on GKE",
     positioning: "Full-stack engineer with a backend focus",
-    yearsExperience: 2.5,
+    yearsExperience: YEARS_EXPERIENCE,
   },
 
   // Origin vs current matter for honesty on bio copy:
@@ -46,7 +74,7 @@ export const PROFILE = {
 
   education: {
     degree: "BE in Information Technology",
-    institution: "Government Engineering College, Bhavnagar",
+    institution: INSTITUTION,
     institutionShort: "GEC Bhavnagar",
     institutionLocation: "Bhavnagar, Gujarat, India",
     year: 2024,
@@ -128,14 +156,12 @@ export const PROFILE = {
 
   // Positioning bios at three lengths — pick the one that fits the surface.
   bio: {
-    oneLine:
-      "Software Engineer at ContextQA. ~2.5 years building backends and full-stack products across QA tooling, EdTech, SaaS, and payments.",
+    oneLine: `Software Engineer at ContextQA. ~${YEARS_EXPERIENCE} years building backends and full-stack products across QA tooling, EdTech, SaaS, and payments.`,
 
     short:
       "Software Engineer at ContextQA working on the Node.js backend of the core QA-automation platform — the test-execution engine (Playwright / WebdriverIO / LambdaTest), live browser-session streaming, the integrations engine and the session control plane on GKE. BE in Information Technology from GEC Bhavnagar (2024).",
 
-    medium:
-      "Software Engineer at ContextQA working on the Node.js backend of the core QA-automation platform — the test-execution engine (Playwright / WebdriverIO / LambdaTest), live browser-session streaming over WebSockets, the integrations engine (GitHub, GitLab, Linear, Slack) and the session control plane on GKE. Previously about 1.5 years at eSparkBiz (Jan 2024 – Jul 2025, including a 7-month internship) shipping full-stack client projects end-to-end. Side projects explore distributed systems (Redlock, Socket.io Redis adapter, Prometheus), deterministic simulation and mutation testing (BALLAST), AI pipelines (Gemini function-calling, OCR), and webhook idempotency patterns. BE in Information Technology from Government Engineering College, Bhavnagar (2024, CGPA 7.99).",
+    medium: `Software Engineer at ContextQA working on the Node.js backend of the core QA-automation platform — the test-execution engine (Playwright / WebdriverIO / LambdaTest), live browser-session streaming over WebSockets, the integrations engine (GitHub, GitLab, Linear, Slack) and the session control plane on GKE. Previously about 1.5 years at eSparkBiz (Jan 2024 – Jul 2025, including a 7-month internship) shipping full-stack client projects end-to-end. Side projects explore distributed systems (Redlock, Socket.io Redis adapter, Prometheus), deterministic simulation and mutation testing (BALLAST), AI pipelines (Gemini function-calling, OCR), and webhook idempotency patterns. BE in Information Technology from ${INSTITUTION} (2024, CGPA 7.99).`,
   },
 } as const;
 
@@ -146,6 +172,18 @@ export const PROFILE_META = {
 
   /** e.g. "Shailesh Chaudhari — Software Engineer" */
   titleTag: `${PROFILE.name.full} — ${PROFILE.role.title}`,
+
+  /**
+   * "~2.5 years" — the approximate form, for prose (home page, llms.txt).
+   * Both forms below render the SAME number; only the hedge differs.
+   */
+  yearsApprox: `~${PROFILE.role.yearsExperience} years`,
+
+  /** "2.5+ years" — the floor form, for the résumé summary. */
+  yearsFloor: `${PROFILE.role.yearsExperience}+ years`,
+
+  /** "About 2.5 years of professional experience" — the FAQ's phrasing. */
+  yearsSentence: `About ${PROFILE.role.yearsExperience} years of professional experience`,
 
   /**
    * The one DSA line: "650+ problems solved on GeeksforGeeks". Every surface
