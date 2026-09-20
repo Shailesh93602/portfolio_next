@@ -4002,22 +4002,22 @@
     ]
   },
   "leetcode": {
-    "totalSolved": 615,
+    "totalSolved": 617,
     "totalSubmissions": [
       {
         "difficulty": "All",
-        "count": 620,
-        "submissions": 1325
+        "count": 622,
+        "submissions": 1346
       },
       {
         "difficulty": "Easy",
         "count": 186,
-        "submissions": 488
+        "submissions": 493
       },
       {
         "difficulty": "Medium",
-        "count": 349,
-        "submissions": 675
+        "count": 351,
+        "submissions": 691
       },
       {
         "difficulty": "Hard",
@@ -4025,15 +4025,15 @@
         "submissions": 162
       }
     ],
-    "totalQuestions": 4055,
+    "totalQuestions": 4059,
     "easySolved": 184,
-    "totalEasy": 965,
-    "mediumSolved": 346,
-    "totalMedium": 2115,
+    "totalEasy": 966,
+    "mediumSolved": 348,
+    "totalMedium": 2117,
     "hardSolved": 85,
-    "totalHard": 975,
-    "ranking": 133641,
-    "contributionPoint": 699,
+    "totalHard": 976,
+    "ranking": 133138,
+    "contributionPoint": 707,
     "reputation": 1,
     "submissionCalendar": {
       "1761436800": 5,
@@ -4052,37 +4052,88 @@
       "1785715200": 5,
       "1786320000": 30,
       "1786924800": 45,
-      "1787702400": 30
+      "1787702400": 30,
+      "1789257600": 25,
+      "1789430400": 35,
+      "1789516800": 45
     },
     "recentSubmissions": [
       {
-        "title": "LRU Cache",
-        "titleSlug": "lru-cache",
-        "timestamp": "1787737108",
+        "title": "Container With Most Water",
+        "titleSlug": "container-with-most-water",
+        "timestamp": "1789578995",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
-        "title": "LRU Cache",
-        "titleSlug": "lru-cache",
-        "timestamp": "1787737046",
+        "title": "3Sum",
+        "titleSlug": "3sum",
+        "timestamp": "1789563235",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
-        "title": "LRU Cache",
-        "titleSlug": "lru-cache",
-        "timestamp": "1787736997",
+        "title": "3Sum",
+        "titleSlug": "3sum",
+        "timestamp": "1789563019",
+        "statusDisplay": "Wrong Answer",
+        "lang": "cpp",
+        "__typename": "SubmissionDumpNode"
+      },
+      {
+        "title": "3Sum",
+        "titleSlug": "3sum",
+        "timestamp": "1789562727",
+        "statusDisplay": "Wrong Answer",
+        "lang": "cpp",
+        "__typename": "SubmissionDumpNode"
+      },
+      {
+        "title": "3Sum",
+        "titleSlug": "3sum",
+        "timestamp": "1789562593",
+        "statusDisplay": "Wrong Answer",
+        "lang": "cpp",
+        "__typename": "SubmissionDumpNode"
+      },
+      {
+        "title": "Two Sum II - Input Array Is Sorted",
+        "titleSlug": "two-sum-ii-input-array-is-sorted",
+        "timestamp": "1789558003",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
-        "title": "LRU Cache",
-        "titleSlug": "lru-cache",
-        "timestamp": "1787736792",
+        "title": "Valid Palindrome",
+        "titleSlug": "valid-palindrome",
+        "timestamp": "1789545135",
+        "statusDisplay": "Accepted",
+        "lang": "cpp",
+        "__typename": "SubmissionDumpNode"
+      },
+      {
+        "title": "Valid Palindrome",
+        "titleSlug": "valid-palindrome",
+        "timestamp": "1789544997",
+        "statusDisplay": "Wrong Answer",
+        "lang": "cpp",
+        "__typename": "SubmissionDumpNode"
+      },
+      {
+        "title": "Valid Palindrome",
+        "titleSlug": "valid-palindrome",
+        "timestamp": "1789541856",
+        "statusDisplay": "Wrong Answer",
+        "lang": "cpp",
+        "__typename": "SubmissionDumpNode"
+      },
+      {
+        "title": "Longest Consecutive Sequence",
+        "titleSlug": "longest-consecutive-sequence",
+        "timestamp": "1789493611",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
@@ -4090,136 +4141,88 @@
       {
         "title": "Longest Consecutive Sequence",
         "titleSlug": "longest-consecutive-sequence",
-        "timestamp": "1787733127",
-        "statusDisplay": "Accepted",
+        "timestamp": "1789492930",
+        "statusDisplay": "Wrong Answer",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
         "title": "Longest Consecutive Sequence",
         "titleSlug": "longest-consecutive-sequence",
-        "timestamp": "1787733063",
+        "timestamp": "1789492765",
         "statusDisplay": "Time Limit Exceeded",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
-        "title": "3Sum",
-        "titleSlug": "3sum",
-        "timestamp": "1786956356",
+        "title": "Longest Consecutive Sequence",
+        "titleSlug": "longest-consecutive-sequence",
+        "timestamp": "1789492739",
+        "statusDisplay": "Wrong Answer",
+        "lang": "cpp",
+        "__typename": "SubmissionDumpNode"
+      },
+      {
+        "title": "Valid Sudoku",
+        "titleSlug": "valid-sudoku",
+        "timestamp": "1789473309",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
-        "title": "3Sum",
-        "titleSlug": "3sum",
-        "timestamp": "1786955963",
-        "statusDisplay": "Wrong Answer",
+        "title": "Valid Sudoku",
+        "titleSlug": "valid-sudoku",
+        "timestamp": "1789472871",
+        "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
-        "title": "3Sum",
-        "titleSlug": "3sum",
-        "timestamp": "1786955807",
-        "statusDisplay": "Wrong Answer",
+        "title": "Valid Sudoku",
+        "titleSlug": "valid-sudoku",
+        "timestamp": "1789470909",
+        "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
         "title": "Top K Frequent Elements",
         "titleSlug": "top-k-frequent-elements",
-        "timestamp": "1786954286",
+        "timestamp": "1789306907",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
-        "title": "Kth Largest Element in an Array",
-        "titleSlug": "kth-largest-element-in-an-array",
-        "timestamp": "1786949900",
+        "title": "Valid Anagram",
+        "titleSlug": "valid-anagram",
+        "timestamp": "1789306287",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
-        "title": "Kth Largest Element in an Array",
-        "titleSlug": "kth-largest-element-in-an-array",
-        "timestamp": "1786947798",
+        "title": "Valid Anagram",
+        "titleSlug": "valid-anagram",
+        "timestamp": "1789306036",
         "statusDisplay": "Accepted",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       },
       {
-        "title": "Merge Intervals",
-        "titleSlug": "merge-intervals",
-        "timestamp": "1786945567",
+        "title": "Group Anagrams",
+        "titleSlug": "group-anagrams",
+        "timestamp": "1789305593",
         "statusDisplay": "Accepted",
-        "lang": "cpp",
-        "__typename": "SubmissionDumpNode"
-      },
-      {
-        "title": "Merge Intervals",
-        "titleSlug": "merge-intervals",
-        "timestamp": "1786945357",
-        "statusDisplay": "Wrong Answer",
-        "lang": "cpp",
-        "__typename": "SubmissionDumpNode"
-      },
-      {
-        "title": "Product of Array Except Self",
-        "titleSlug": "product-of-array-except-self",
-        "timestamp": "1786944383",
-        "statusDisplay": "Accepted",
-        "lang": "cpp",
-        "__typename": "SubmissionDumpNode"
-      },
-      {
-        "title": "Product of Array Except Self",
-        "titleSlug": "product-of-array-except-self",
-        "timestamp": "1786378639",
-        "statusDisplay": "Accepted",
-        "lang": "cpp",
-        "__typename": "SubmissionDumpNode"
-      },
-      {
-        "title": "Product of Array Except Self",
-        "titleSlug": "product-of-array-except-self",
-        "timestamp": "1786375394",
-        "statusDisplay": "Accepted",
-        "lang": "cpp",
-        "__typename": "SubmissionDumpNode"
-      },
-      {
-        "title": "Longest Substring Without Repeating Characters",
-        "titleSlug": "longest-substring-without-repeating-characters",
-        "timestamp": "1786368978",
-        "statusDisplay": "Accepted",
-        "lang": "cpp",
-        "__typename": "SubmissionDumpNode"
-      },
-      {
-        "title": "Longest Substring Without Repeating Characters",
-        "titleSlug": "longest-substring-without-repeating-characters",
-        "timestamp": "1786368951",
-        "statusDisplay": "Wrong Answer",
-        "lang": "cpp",
-        "__typename": "SubmissionDumpNode"
-      },
-      {
-        "title": "Longest Substring Without Repeating Characters",
-        "titleSlug": "longest-substring-without-repeating-characters",
-        "timestamp": "1786368549",
-        "statusDisplay": "Wrong Answer",
         "lang": "cpp",
         "__typename": "SubmissionDumpNode"
       }
     ],
     "currentStreak": {
       "count": 0,
-      "startDate": "2026-09-13",
-      "endDate": "2026-09-13"
+      "startDate": "2026-09-20",
+      "endDate": "2026-09-20"
     },
     "longestStreak": {
       "count": 6,
@@ -4233,8 +4236,12 @@
       2025,
       2026
     ],
-    "totalActiveDays": 15,
+    "totalActiveDays": 18,
     "dccBadges": []
   },
-  "lastUpdated": "2026-09-13"
+  "stale": {
+    "github": true,
+    "leetcode": false
+  },
+  "lastUpdated": "2026-09-20"
 }
