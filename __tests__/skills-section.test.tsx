@@ -4,17 +4,42 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 
+const MOTION_PROPS = new Set([
+  "whileHover",
+  "whileTap",
+  "whileFocus",
+  "whileDrag",
+  "whileInView",
+  "viewport",
+  "transition",
+  "initial",
+  "animate",
+  "exit",
+  "variants",
+  "layout",
+  "layoutId",
+]);
+
 // Mock framer-motion
-jest.mock("framer-motion", () => ({
-  motion: {
-    div: ({ children, ...props }: React.ComponentProps<"div">) => (
-      <div {...props}>{children}</div>
-    ),
-    span: ({ children, ...props }: React.ComponentProps<"span">) => (
-      <span {...props}>{children}</span>
-    ),
-  },
-}));
+jest.mock("framer-motion", () => {
+  const stripMotion = (props: Record<string, unknown>) =>
+    Object.fromEntries(
+      Object.entries(props).filter(([k]) => !MOTION_PROPS.has(k))
+    );
+
+  return {
+    motion: {
+      div: ({ children, ...props }: React.ComponentProps<"div">) => (
+        <div {...stripMotion(props as Record<string, unknown>)}>{children}</div>
+      ),
+      span: ({ children, ...props }: React.ComponentProps<"span">) => (
+        <span {...stripMotion(props as Record<string, unknown>)}>
+          {children}
+        </span>
+      ),
+    },
+  };
+});
 
 import SkillsSection from "@/components/SkillsSection";
 

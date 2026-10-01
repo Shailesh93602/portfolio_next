@@ -13,7 +13,7 @@
     {
       "title": "Software Engineer",
       "company": "ContextQA",
-      "start": "Jul 2025",
+      "start": "Aug 2025",
       "end": "Present",
       "bullets": [
         "Own the Node.js/TypeScript backend of the core QA-automation platform, a polyglot system: a test-execution engine orchestrating concurrent browser and mobile runs (Playwright, WebdriverIO/Appium, LambdaTest), live browser-session streaming (noVNC) over WebSockets through a Node control plane, and a debug engine with breakpoints and resume-from-checkpoint.",

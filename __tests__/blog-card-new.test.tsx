@@ -4,17 +4,52 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 
-jest.mock("framer-motion", () => ({
-  motion: {
-    div: ({ children, ...props }: React.ComponentProps<"div">) => (
-      <div {...props}>{children}</div>
-    ),
-  },
-}));
+const MOTION_PROPS = new Set([
+  "whileHover",
+  "whileTap",
+  "whileFocus",
+  "whileDrag",
+  "whileInView",
+  "viewport",
+  "transition",
+  "initial",
+  "animate",
+  "exit",
+  "variants",
+  "layout",
+  "layoutId",
+]);
+
+jest.mock("framer-motion", () => {
+  const stripMotion = (props: Record<string, unknown>) =>
+    Object.fromEntries(
+      Object.entries(props).filter(([k]) => !MOTION_PROPS.has(k))
+    );
+
+  return {
+    motion: {
+      div: ({ children, ...props }: React.ComponentProps<"div">) => (
+        <div {...stripMotion(props as Record<string, unknown>)}>{children}</div>
+      ),
+    },
+  };
+});
 
 jest.mock("next/image", () => ({
   __esModule: true,
-  default: ({ alt, ...props }: { alt: string; src: string }) => (
+  default: ({
+    alt,
+    fill: _fill,
+    unoptimized: _unoptimized,
+    priority: _priority,
+    ...props
+  }: {
+    alt: string;
+    fill?: boolean;
+    unoptimized?: boolean;
+    priority?: boolean;
+    [key: string]: unknown;
+  }) => (
     // eslint-disable-next-line @next/next/no-img-element
     <img alt={alt} {...props} />
   ),

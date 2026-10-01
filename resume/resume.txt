@@ -6,7 +6,7 @@ SUMMARY
 TypeScript/Node full-stack engineer with 2.5+ years shipping production systems end to end: multi-tenant test-execution infrastructure, idempotent webhook pipelines, real-time platforms, and LLM tool-calling agents inside products. Frontend in React/Next.js, audited to WCAG 2.1 AA. Focused on correctness: concurrency control, deterministic testing, and verification that asserts real outcomes.
 
 EXPERIENCE
-Software Engineer, ContextQA (Jul 2025 - Present)
+Software Engineer, ContextQA (Aug 2025 - Present)
 - Own the Node.js/TypeScript backend of the core QA-automation platform, a polyglot system: a test-execution engine orchestrating concurrent browser and mobile runs (Playwright, WebdriverIO/Appium, LambdaTest), live browser-session streaming (noVNC) over WebSockets through a Node control plane, and a debug engine with breakpoints and resume-from-checkpoint.
 - Primary author of the integrations engine (Node/TypeScript): GitHub App, GitLab and Linear OAuth, Slack Block Kit bot, webhook ingestion. Made it multi-tenant: OAuth handshake state moved from per-pod memory to Redis with an atomic Lua read-and-delete, tenant resolution by installation id, token vault ciphertext-only at rest.
 - Node session control plane on GKE: pre-warmed pod pool over Redis, idempotent stop with first-terminal-wins status ordering, request trace ids via AsyncLocalStorage, stable error codes and a diagnostics bundle for on-prem customers, pod eviction protection and memory budgeting.

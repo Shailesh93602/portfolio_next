@@ -11,16 +11,41 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 
-jest.mock("framer-motion", () => ({
-  motion: {
-    header: ({ children, ...props }: React.ComponentProps<"header">) => (
-      <header {...props}>{children}</header>
-    ),
-    div: ({ children, ...props }: React.ComponentProps<"div">) => (
-      <div {...props}>{children}</div>
-    ),
-  },
-}));
+const MOTION_PROPS = new Set([
+  "whileHover",
+  "whileTap",
+  "whileFocus",
+  "whileDrag",
+  "whileInView",
+  "viewport",
+  "transition",
+  "initial",
+  "animate",
+  "exit",
+  "variants",
+  "layout",
+  "layoutId",
+]);
+
+jest.mock("framer-motion", () => {
+  const stripMotion = (props: Record<string, unknown>) =>
+    Object.fromEntries(
+      Object.entries(props).filter(([k]) => !MOTION_PROPS.has(k))
+    );
+
+  return {
+    motion: {
+      header: ({ children, ...props }: React.ComponentProps<"header">) => (
+        <header {...stripMotion(props as Record<string, unknown>)}>
+          {children}
+        </header>
+      ),
+      div: ({ children, ...props }: React.ComponentProps<"div">) => (
+        <div {...stripMotion(props as Record<string, unknown>)}>{children}</div>
+      ),
+    },
+  };
+});
 
 jest.mock("next/link", () => ({
   __esModule: true,
