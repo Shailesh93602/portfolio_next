@@ -39,8 +39,11 @@ jest.mock("next/image", () => ({
   __esModule: true,
   default: ({
     alt,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
     fill: _fill,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
     unoptimized: _unoptimized,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
     priority: _priority,
     ...props
   }: {

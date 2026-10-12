@@ -141,10 +141,16 @@ const rawProjects: Project[] = [
           "Cross-instance battle broadcast via @socket.io/redis-adapter (works across Node instances)",
       },
       {
+        label: "Matchmaking",
+        value: "Dynamic Elo bands",
+        description:
+          "Queue expands ±50 rating points every 3 seconds under Redlock mutex, guaranteeing fair peer pairings with zero race conditions",
+      },
+      {
         label: "Concurrency",
         value: "Redlock",
         description:
-          "Distributed lock on the battle start / submit-answer / complete paths, so horizontally-scaled instances can't double-write them",
+          "Distributed lock on battle queue matching, start, submit-answer, and complete paths so horizontally-scaled instances can't double-write",
       },
       {
         label: "Resilience",
@@ -178,6 +184,11 @@ const rawProjects: Project[] = [
           "Personalized progress tracking through modules and coding tasks.",
       },
       {
+        step: "Instant Matchmaking",
+        description:
+          "Skill-based queue pairing with dynamic search radar and fair Elo band expansion.",
+      },
+      {
         step: "Competitive Practice",
         description:
           "Real-time 1v1 or group coding battles to test skills under pressure.",
@@ -190,6 +201,7 @@ const rawProjects: Project[] = [
     ],
     features: [
       "Dynamic Career Roadmaps: structured learning paths with multi-stage progress tracking and milestone achievements.",
+      "Instant Battle Matchmaking: Automated skill-based queue with expanding Elo bands, live radar HUD, and 3-second match confirmations.",
       "Real-time Battle Zone: Low-latency competitive coding environment with live rankings and peer challenges.",
       "Coding Challenges: Integrated compiler support for multiple languages with automated test suite validation.",
       "Community Forum: Robust discussion platform for peer learning and resource sharing.",
@@ -200,7 +212,7 @@ const rawProjects: Project[] = [
     techStack: [
       "Frontend: Next.js 16 (App Router), React 19, Tailwind CSS, Framer Motion, Redux Toolkit, Zustand",
       "Backend: Node.js, Express.js (TypeScript), Prisma ORM, PostgreSQL",
-      "Real-time: Socket.io + @socket.io/redis-adapter, Redis, Redlock, Bull (email queue + DLQ), Supabase Auth",
+      "Real-time: Socket.io + @socket.io/redis-adapter, Redis, Redlock (mutex on matchmaking & transitions), Bull (email queue + DLQ), Supabase Auth",
       "Developer Experience: Swagger/OpenAPI, Playwright E2E testing",
     ],
     problem:
@@ -208,7 +220,7 @@ const rawProjects: Project[] = [
     solution:
       "A unified Engineering Learning Platform (SaaS) that seamlessly integrates structured curriculum with interactive coding tools and real-time social competition. EduScale provides a 'single source of truth' for the student's entire technical journey.",
     challengesSolved:
-      "The hardest problem was preventing race conditions when two users simultaneously start the same battle. The fix: redlock acquires a distributed lock (fail-fast, retryCount 0) around the battle start, submit-answer and complete handlers, so two instances can't both drive the same transition. Socket.io horizontal scaling uses @socket.io/redis-adapter with two independent ioredis connections — pub and sub have to be separate clients or a long-running write on the pub connection stalls the subscriber. opossum wraps the Judge0 code-execution call, with a transport timeout set at or below the breaker's own deadline (Backend/src/utils/deadlines.ts) so a slow executor fails the submission fast instead of leaving the request hanging. The breaker is still a single shared instance behind an unbounded per-user fan-out — FINDINGS.md §13 writes up why that is a design change rather than a timeout, and it is open.",
+      "The hardest problem was preventing race conditions when two users simultaneously start the same battle or join the matchmaking queue. The fix: redlock acquires a distributed lock (fail-fast, retryCount 0) around the matchmaking pairing, battle start, submit-answer and complete handlers, so two instances can't both claim the same pair or drive the same transition. Socket.io horizontal scaling uses @socket.io/redis-adapter with two independent ioredis connections — pub and sub have to be separate clients or a long-running write on the pub connection stalls the subscriber. opossum wraps the Judge0 code-execution call, with a transport timeout set at or below the breaker's own deadline (Backend/src/utils/deadlines.ts) so a slow executor fails the submission fast instead of leaving the request hanging. The breaker is still a single shared instance behind an unbounded per-user fan-out — FINDINGS.md §13 writes up why that is a design change rather than a timeout, and it is open.",
     showcases: [
       {
         title: "Unified User Dashboard",
@@ -657,16 +669,18 @@ const rawProjects: Project[] = [
           ],
         },
         {
-          name: "Interface",
+          name: "Interface & Integrations",
           items: [
             "Next.js (App Router) web dashboard",
             "WhatsApp text + media in 3 languages (en/hi/gu)",
+            "Native Model Context Protocol (MCP) Server (@khatago/mcp) with stdio JSON-RPC 2.0 tools",
+            "Offline #undo and voiding escape hatch (POST /api/transactions/[id]/void)",
             "Daily reminder cron (Vercel scheduled)",
           ],
         },
       ],
       description:
-        "A reconciliation pipeline dressed up as a WhatsApp bot: events in, idempotency-guarded tool-calls transform them into ledger writes, export back to accountants' formats. The interesting engineering is upstream of the UI — dedup, function-calling determinism, double-entry prevention.",
+        "A reconciliation pipeline dressed up as a WhatsApp bot and MCP server: events in, idempotency-guarded tool-calls transform them into ledger writes, export back to accountants' formats. The interesting engineering is upstream of the UI — dedup, function-calling determinism, double-entry prevention.",
     },
     keyMetrics: [
       {
@@ -680,6 +694,12 @@ const rawProjects: Project[] = [
         value: String(KHATAGO_TOOL_COUNT),
         description:
           "Gemini function-calling surface: transactions, receivables, payments, ledgers, reminders",
+      },
+      {
+        label: "Integration surface",
+        value: "MCP Server",
+        description:
+          "@khatago/mcp provides native Model Context Protocol tools for Cursor, Claude Desktop, and local agents with authenticated tenant scoping",
       },
       {
         label: "Evals",
@@ -702,6 +722,8 @@ const rawProjects: Project[] = [
     ],
     features: [
       "Natural Language WhatsApp Bot: Record sales, purchases, and expenses like you talk.",
+      "Native Model Context Protocol (MCP): Query balance, log expenses, and inspect party ledgers directly from AI agent workspaces.",
+      "Offline Voiding & Reversals: Reversible accounting ledger via '#undo' in WhatsApp or signed audit voiding in the dashboard.",
       "AI Receipt Processing: Send bill photos to WhatsApp - the AI extracts and records all details.",
       "CA & Accountant Portal: Date-range exports in CSV and Tally-ready formats.",
       "Dynamic i18n Engine: Full UI in 3+ languages (English, Hindi, Gujarati).",
@@ -711,7 +733,7 @@ const rawProjects: Project[] = [
     ],
     techStack: [
       "Frontend: Next.js (App Router), React, Tailwind CSS, Recharts, i18next",
-      "Backend: Next.js API routes (Node.js, TypeScript), Prisma ORM, PostgreSQL; a standalone Node worker process",
+      "Backend: Next.js API routes (Node.js, TypeScript), Prisma ORM, PostgreSQL; a standalone Node worker process; Model Context Protocol (@khatago/mcp)",
       "AI & Messaging: Google Gemini AI (function-calling + Vision OCR), WhatsApp Cloud API; agent loop as a resumable state machine, promptproof evals, LangGraph.js as a comparison engine behind a flag, MongoDB adapter for traces (opt-in)",
       "Infrastructure: Supabase (Auth & Real-time), Vercel for the web app, one Docker image running web + worker as two processes, Postgres-backed job queue with a dead-letter queue",
     ],
