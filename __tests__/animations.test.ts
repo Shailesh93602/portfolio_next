@@ -2,7 +2,12 @@
  * Tests for lib/animations.ts — ensures animation variant objects are
  * well-formed so that runtime failures are caught by tests, not production.
  */
-import { fadeIn, slideIn, staggerContainer } from "@/lib/animations";
+import {
+  fadeIn,
+  fadeInOnScroll,
+  slideIn,
+  staggerContainer,
+} from "@/lib/animations";
 
 describe("animations", () => {
   describe("fadeIn", () => {
@@ -28,6 +33,20 @@ describe("animations", () => {
     it("defaults to 0 delay when no argument given", () => {
       const anim = fadeIn();
       expect((anim.visible as any).transition?.delay).toBe(0);
+    });
+  });
+
+  describe("fadeInOnScroll", () => {
+    it("animates once, from hidden to visible, when scrolled into view", () => {
+      const props = fadeInOnScroll(0.3);
+      expect(props.initial).toBe("hidden");
+      expect(props.whileInView).toBe("visible");
+      expect(props.viewport).toEqual({ once: true });
+    });
+
+    it("carries fadeIn's variants with the given delay", () => {
+      expect(fadeInOnScroll(0.3).variants).toEqual(fadeIn(0.3));
+      expect(fadeInOnScroll().variants).toEqual(fadeIn(0));
     });
   });
 

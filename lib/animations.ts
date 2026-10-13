@@ -44,3 +44,14 @@ export const staggerContainer = (staggerChildren: number = 0.1) => ({
     },
   },
 });
+
+/**
+ * The props for a block that fades in once, when it first scrolls into view.
+ * Spread onto a `motion.*` element: `<motion.div {...fadeInOnScroll(0.3)} />`.
+ */
+export const fadeInOnScroll = (delay: number = 0) => ({
+  initial: "hidden",
+  whileInView: "visible",
+  viewport: { once: true },
+  variants: fadeIn(delay),
+});

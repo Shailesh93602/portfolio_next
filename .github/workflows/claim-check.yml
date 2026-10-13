@@ -26,6 +26,7 @@ on:
     paths:
       - "constants/projects.ts"
       - "scripts/check-project-claims.mjs"
+      - "scripts/claims/**"
 
 permissions:
   contents: read
