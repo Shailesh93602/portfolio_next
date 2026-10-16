@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
 };
 
-const lastUpdated = "October 12, 2026";
+const lastUpdated = "October 16, 2026";
 
 const breadcrumbSchema = {
   "@context": "https://schema.org",
@@ -107,8 +107,8 @@ export default function StatusPulsePrivacyPage() {
         <p className={P}>
           StatusPulse stores no issue data anywhere, and nothing leaves your
           Atlassian tenant. The app runs entirely on Atlassian&apos;s own
-          infrastructure using Atlassian Forge and qualifies for
-          Atlassian&apos;s Runs on Atlassian program. There are no external
+          infrastructure using Atlassian Forge and is built to the requirements
+          of Atlassian&apos;s Runs on Atlassian program. There are no external
           databases, telemetry agents, or third-party servers.
         </p>
 
@@ -117,13 +117,16 @@ export default function StatusPulsePrivacyPage() {
           When you execute a report, StatusPulse queries Jira for issues
           matching your specified JQL query, strictly bounded by your personal
           user permissions. For each returned issue, it inspects: key, summary,
-          issue type, current status, creation date, and status transition
-          timestamps.
+          issue type, current status, creation date, assignee display name, and
+          status transition timestamps.
         </p>
         <p className={P}>
           These records are computed in-memory to render duration distributions,
           percentiles, and SLA targets, and are immediately discarded. Nothing
-          is written to permanent storage.
+          is written to permanent storage. The CSV export lists each
+          issue&apos;s key, summary, type, assignee display name and status with
+          the times calculated from that history, on screen for you to copy; it
+          is built in the app&apos;s page and is not sent or saved anywhere.
         </p>
 
         <h2 className={H2}>What StatusPulse Stores</h2>
@@ -173,6 +176,18 @@ export default function StatusPulsePrivacyPage() {
             Forge KVS.
           </Item>
         </ul>
+        <p className={P}>
+          <strong>
+            read:jira-work grants more than StatusPulse uses, and your security
+            reviewer should know that before you install it.
+          </strong>{" "}
+          It is one of Atlassian&apos;s broad classic scopes and reaches a large
+          part of the Jira REST API. StatusPulse calls exactly two endpoints
+          with it, both read-only and both as you rather than as the app:{" "}
+          <Code>POST /rest/api/3/search/jql</Code> to find the issues your query
+          matches, and <Code>GET /rest/api/3/status</Code> to read your
+          site&apos;s status names and categories.
+        </p>
 
         <h2 className={H2}>Retention & Deletion</h2>
         <p className={P}>

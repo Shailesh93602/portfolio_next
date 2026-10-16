@@ -106,11 +106,11 @@ export default function DwellPrivacyPage() {
         <p className={P}>
           Dwell stores no issue data anywhere, and nothing leaves your Atlassian
           tenant. The app runs entirely on Atlassian&apos;s own infrastructure
-          using Atlassian Forge, and qualifies for Atlassian&apos;s Runs on
-          Atlassian programme, which requires that an app use only
-          Atlassian-hosted compute and storage and not transmit data outside
-          Atlassian. There is no server of ours for your data to travel to,
-          because there is no server of ours.
+          using Atlassian Forge, and is built to the requirements of
+          Atlassian&apos;s Runs on Atlassian programme, which requires that an
+          app use only Atlassian-hosted compute and storage and not transmit
+          data outside Atlassian. There is no server of ours for your data to
+          travel to, because there is no server of ours.
         </p>
 
         <h2 className={H2}>What the app reads</h2>
