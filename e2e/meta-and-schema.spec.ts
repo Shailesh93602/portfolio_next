@@ -109,6 +109,21 @@ test.describe("Every route carries a complete head", () => {
   }
 });
 
+test.describe("404 pages name the brand once", () => {
+  // head() requires a 200, and routes.ts lists only pages that exist, so the
+  // brand-once check above never saw a 404. The root default title used to
+  // read "Shailesh Chaudhari | Shailesh Chaudhari's Blog".
+  for (const route of ["/blog/does-not-exist", "/no-such-page"]) {
+    test(`${route} title`, async ({ request }) => {
+      const res = await request.get(route);
+      expect(res.status()).toBe(404);
+      const title = (await res.text()).match(/<title>([^<]*)<\/title>/)?.[1];
+      expect(title, `${route} has no <title>`).toBeTruthy();
+      expect((title!.match(/Shailesh/g) ?? []).length).toBe(1);
+    });
+  }
+});
+
 test.describe("Canonicals are self-referencing and unique", () => {
   test("no two routes share a canonical or a title", async ({ request }) => {
     // Walks every route serially; the 30s default is not enough under load.

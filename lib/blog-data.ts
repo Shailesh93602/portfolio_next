@@ -91,7 +91,7 @@ export const BLOG_SLUGS: string[] = [
   // DRAFTS — uncomment each slug after filling in [FILL IN:] placeholders in content/blog/<slug>.mdx
   // "eduscale-redis-distributed-locks-real-time",
   // "postgres-rbac-eduscale-permissions",
-  // "khatago-webhook-deduplication-receipt-pipeline",
+  // "nextjs-isr-edge-caching-performance",
 ];
 
 // Posts that never had a real cover historically all point at this shared

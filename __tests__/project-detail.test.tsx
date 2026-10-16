@@ -175,3 +175,35 @@ describe("ProjectDetailContent — standard layout", () => {
     expect(screen.queryByRole("link", { name: /View Source/ })).toBeNull();
   });
 });
+
+describe("StandardHero — generated covers", () => {
+  const generated = standard.filter((p) => p.image.startsWith("/api/og"));
+  const photographed = standard.filter((p) => !p.image.startsWith("/api/og"));
+
+  it("has standard projects with generated covers to check", () => {
+    expect(generated.length).toBeGreaterThan(0);
+  });
+
+  it.each(generated.map((p) => [p.id, p] as const))(
+    "%s draws no /api/og image behind its H1 (the cover carries the title as text)",
+    (_id, p) => {
+      const { container } = render(<ProjectDetailContent project={p} />);
+      const ogImages = Array.from(container.querySelectorAll("img")).filter(
+        (img) => (img.getAttribute("src") ?? "").startsWith("/api/og")
+      );
+      expect(ogImages).toHaveLength(0);
+      expect(screen.getByTestId("hero-gradient")).toBeInTheDocument();
+    }
+  );
+
+  it.each(photographed.map((p) => [p.id, p] as const))(
+    "%s still draws its real screenshot as the hero",
+    (_id, p) => {
+      const { container } = render(<ProjectDetailContent project={p} />);
+      const srcs = Array.from(container.querySelectorAll("img")).map((i) =>
+        i.getAttribute("src")
+      );
+      expect(srcs).toContain(p.image);
+    }
+  );
+});

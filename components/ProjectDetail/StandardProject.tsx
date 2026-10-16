@@ -20,15 +20,28 @@ import StandardSidebar from "./StandardSidebar";
 function StandardHero({ project }: { project: Project }) {
   return (
     <section className="relative h-[60vh] min-h-[400px] w-full overflow-hidden">
-      <Image
-        src={project.image}
-        alt={project.title}
-        fill
-        sizes="100vw"
-        className="object-cover brightness-[0.4]"
-        priority
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+      {/* A generated /api/og cover has the title baked in as text; drawn
+          full-bleed it shows a ghost copy of the H1 behind the real one. */}
+      {project.image.startsWith("/api/og") ? (
+        <div
+          data-testid="hero-gradient"
+          className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800"
+        />
+      ) : (
+        <Image
+          src={project.image}
+          alt={project.title}
+          fill
+          sizes="100vw"
+          className="object-cover brightness-[0.4]"
+          priority
+        />
+      )}
+      {/* The fade into the page reads over a photo; over the plain gradient
+          it washes the white H1 and tags out in light mode. */}
+      {!project.image.startsWith("/api/og") && (
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+      )}
 
       <div className="container relative flex h-full flex-col justify-end pb-12">
         <motion.div

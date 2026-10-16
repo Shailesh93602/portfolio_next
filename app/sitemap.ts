@@ -108,6 +108,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.4,
       images: [ogFor("/dwell/privacy")],
     },
+    // StatusPulse (Dwell's published name). Its Marketplace manifest and
+    // docs link here, so these are the pages the listing actually sends to.
+    {
+      url: `${SITE_URL}/statuspulse`,
+      lastModified: modified("/statuspulse"),
+      changeFrequency: "monthly",
+      priority: 0.6,
+      images: [ogFor("/statuspulse")],
+    },
+    ...(
+      [
+        ["/statuspulse/privacy", "yearly"],
+        ["/statuspulse/terms", "yearly"],
+        ["/statuspulse/contact", "yearly"],
+      ] as const
+    ).map(([route, changeFrequency]) => ({
+      url: `${SITE_URL}${route}`,
+      lastModified: modified(route),
+      changeFrequency,
+      priority: 0.4,
+      images: [ogFor(route)],
+    })),
   ];
 
   // Dynamic blog post routes — `images` is a Google Discover ranking signal

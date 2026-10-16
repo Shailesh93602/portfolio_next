@@ -184,11 +184,6 @@ const rawProjects: Project[] = [
           "Personalized progress tracking through modules and coding tasks.",
       },
       {
-        step: "Instant Matchmaking",
-        description:
-          "Skill-based queue pairing with dynamic search radar and fair Elo band expansion.",
-      },
-      {
         step: "Competitive Practice",
         description:
           "Real-time 1v1 or group coding battles to test skills under pressure.",
@@ -201,7 +196,9 @@ const rawProjects: Project[] = [
     ],
     features: [
       "Dynamic Career Roadmaps: structured learning paths with multi-stage progress tracking and milestone achievements.",
-      "Instant Battle Matchmaking: Automated skill-based queue with expanding Elo bands, live radar HUD, and 3-second match confirmations.",
+      // The matchmaking UI (instant-battle) is a Coming Soon page on EduScale
+      // main; only the backend service is shipped. Say exactly that.
+      "Elo-band matchmaking service (backend only): a Redis sorted-set queue whose search band starts at ±100 and widens 20 points per second up to ±600. The instant-battle frontend is not shipped yet.",
       "Real-time Battle Zone: Low-latency competitive coding environment with live rankings and peer challenges.",
       "Coding Challenges: Integrated compiler support for multiple languages with automated test suite validation.",
       "Community Forum: Robust discussion platform for peer learning and resource sharing.",
@@ -619,7 +616,7 @@ const rawProjects: Project[] = [
     // FINDINGS.md §2 — a claim with no way out of it.
     pullQuote:
       "A lock without an expiry is a deadlock waiting for a crash: mutual exclusion and liveness are different properties, and passing tests for the first says nothing about the second.",
-    detailedDescription: `KhataGO is a WhatsApp-first bookkeeping platform for Indian MSMEs. The backend is a reconciliation pipeline: Meta webhooks arrive with at-least-once delivery, and idempotency is enforced in Postgres rather than a cache — a unique constraint on the WhatsApp message id rejects duplicate deliveries, and a conditional UPDATE (PENDING→PROCESSING) atomically claims each message so concurrent redeliveries produce exactly one Gemini run instead of a double ledger write. The webhook persists the message and acknowledges Meta within the request; a containerized polling worker drains the queue — the same Postgres table, claimed through the same atomic UPDATE, retried with exponential backoff and jitter, and dead-lettered after three attempts with an audited admin replay. Gemini 2.0 Flash with function-calling parses both text ('Sold 500 to Ram') and receipt images (OCR → structured JSON with merchant/amount/date/line items) into ${KHATAGO_TOOL_COUNT} tool calls — create_transaction, create_receivable, record_payment_received, get_party_ledger, send_payment_reminder, and others — each mapped to a Prisma write. Results flow back to the user over WhatsApp; a CA portal exports Tally-ready XML vouchers for month-end close. In the repository (merged 2026-09-05, not yet deployed), the tool-calling loop runs as an explicit, resumable state machine: the model's plan for each turn is persisted before any tool runs, and a write tool commits in the same transaction as its step, so a crash resumes from the last durable turn and at-most-once execution is a property of the database rather than of control flow. Bring-your-own Gemini keys get per-key cooldown isolation, so one user's 429 does not park a model for everyone. Each run is traced as one document (Postgres JSONB by default, a MongoDB adapter opt-in); ${KHATAGO_EVAL_COUNT} deterministic evals run in CI through promptproof under both the default loop and a LangGraph.js rendering behind a flag; retention crons bound traces and runs.`,
+    detailedDescription: `KhataGO is a WhatsApp-first bookkeeping platform for Indian MSMEs. The backend is a reconciliation pipeline: Meta webhooks arrive with at-least-once delivery, and idempotency is enforced in Postgres rather than a cache — a unique constraint on the WhatsApp message id rejects duplicate deliveries, and a conditional UPDATE (PENDING→PROCESSING) atomically claims each message so concurrent redeliveries produce exactly one Gemini run instead of a double ledger write. The webhook persists the message and acknowledges Meta within the request; a containerized polling worker drains the queue — the same Postgres table, claimed through the same atomic UPDATE, retried with exponential backoff and jitter, and dead-lettered after three attempts with an audited admin replay. Gemini 2.0 Flash with function-calling parses both text ('Sold 500 to Ram') and receipt images (OCR → structured JSON with merchant/amount/date/line items) into ${KHATAGO_TOOL_COUNT} tool calls — create_transaction, create_receivable, record_payment_received, get_party_ledger, send_payment_reminder, and others — each mapped to a Prisma write. Results flow back to the user over WhatsApp; a CA portal exports Tally-ready XML vouchers for month-end close. Since 2026-09-05 (merged and in the live deploy), the tool-calling loop runs as an explicit, resumable state machine: the model's plan for each turn is persisted before any tool runs, and a write tool commits in the same transaction as its step, so a crash resumes from the last durable turn and at-most-once execution is a property of the database rather than of control flow. Bring-your-own Gemini keys get per-key cooldown isolation, so one user's 429 does not park a model for everyone. Each run is traced as one document (Postgres JSONB by default, a MongoDB adapter opt-in); ${KHATAGO_EVAL_COUNT} deterministic evals run in CI through promptproof under both the default loop and a LangGraph.js rendering behind a flag; retention crons bound traces and runs.`,
     architecture: {
       layers: [
         {
@@ -640,7 +637,7 @@ const rawProjects: Project[] = [
           ],
         },
         {
-          name: "Agent runtime (in the repository)",
+          name: "Agent runtime",
           items: [
             "Tool-calling loop as a resumable state machine: the plan for a turn is persisted before any tool runs",
             "A write tool commits in one transaction with its step — at-most-once as a database property",
@@ -673,14 +670,15 @@ const rawProjects: Project[] = [
           items: [
             "Next.js (App Router) web dashboard",
             "WhatsApp text + media in 3 languages (en/hi/gu)",
-            "Native Model Context Protocol (MCP) Server (@khatago/mcp) with stdio JSON-RPC 2.0 tools",
-            "Offline #undo and voiding escape hatch (POST /api/transactions/[id]/void)",
+            // The MCP server (@khatago/mcp) and the #undo / void endpoint are
+            // local work, not on KhataGO main. They return once SHIP-01 lands
+            // on main and is deployed (todos HON-01).
             "Daily reminder cron (Vercel scheduled)",
           ],
         },
       ],
       description:
-        "A reconciliation pipeline dressed up as a WhatsApp bot and MCP server: events in, idempotency-guarded tool-calls transform them into ledger writes, export back to accountants' formats. The interesting engineering is upstream of the UI — dedup, function-calling determinism, double-entry prevention.",
+        "A reconciliation pipeline dressed up as a WhatsApp bot: events in, idempotency-guarded tool-calls transform them into ledger writes, export back to accountants' formats. The interesting engineering is upstream of the UI — dedup, function-calling determinism, double-entry prevention.",
     },
     keyMetrics: [
       {
@@ -694,12 +692,6 @@ const rawProjects: Project[] = [
         value: String(KHATAGO_TOOL_COUNT),
         description:
           "Gemini function-calling surface: transactions, receivables, payments, ledgers, reminders",
-      },
-      {
-        label: "Integration surface",
-        value: "MCP Server",
-        description:
-          "@khatago/mcp provides native Model Context Protocol tools for Cursor, Claude Desktop, and local agents with authenticated tenant scoping",
       },
       {
         label: "Evals",
@@ -722,8 +714,6 @@ const rawProjects: Project[] = [
     ],
     features: [
       "Natural Language WhatsApp Bot: Record sales, purchases, and expenses like you talk.",
-      "Native Model Context Protocol (MCP): Query balance, log expenses, and inspect party ledgers directly from AI agent workspaces.",
-      "Offline Voiding & Reversals: Reversible accounting ledger via '#undo' in WhatsApp or signed audit voiding in the dashboard.",
       "AI Receipt Processing: Send bill photos to WhatsApp - the AI extracts and records all details.",
       "CA & Accountant Portal: Date-range exports in CSV and Tally-ready formats.",
       "Dynamic i18n Engine: Full UI in 3+ languages (English, Hindi, Gujarati).",
@@ -733,7 +723,7 @@ const rawProjects: Project[] = [
     ],
     techStack: [
       "Frontend: Next.js (App Router), React, Tailwind CSS, Recharts, i18next",
-      "Backend: Next.js API routes (Node.js, TypeScript), Prisma ORM, PostgreSQL; a standalone Node worker process; Model Context Protocol (@khatago/mcp)",
+      "Backend: Next.js API routes (Node.js, TypeScript), Prisma ORM, PostgreSQL; a standalone Node worker process",
       "AI & Messaging: Google Gemini AI (function-calling + Vision OCR), WhatsApp Cloud API; agent loop as a resumable state machine, promptproof evals, LangGraph.js as a comparison engine behind a flag, MongoDB adapter for traces (opt-in)",
       "Infrastructure: Supabase (Auth & Real-time), Vercel for the web app, one Docker image running web + worker as two processes, Postgres-backed job queue with a dead-letter queue",
     ],

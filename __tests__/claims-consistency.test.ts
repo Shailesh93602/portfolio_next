@@ -169,20 +169,40 @@ describe("KhataGO eval count", () => {
     }
   });
 
-  it("nothing claims the 2026-09-05 agent work is live: it is in the repository", () => {
-    // KhataGO's production deploys have failed since 2026-08-30; the state
-    // machine, evals and retention crons are merged, not served. Every
-    // surface that describes them says so.
+  it("the 2026-09-05 agent work is described as deployed, because it is", () => {
+    // 85323bd (state machine), 32a4a78 (evals) and 60ac26e (LangGraph) are
+    // ancestors of the live KhataGO deploy 8d1e008 (/api/version). Saying
+    // "not yet deployed" understated the live site and goes stale silently.
     const kg = byId("khatago");
-    expect(kg.detailedDescription).toMatch(/In the repository/);
+    expect(kg.detailedDescription).not.toMatch(/not yet deployed/);
     const layer = kg.architecture?.layers.find((l) =>
       /Agent runtime/.test(l.name)
     );
-    expect(layer?.name).toMatch(/in the repository/);
+    expect(layer?.name).toBe("Agent runtime");
     for (const file of ["llms.txt", "llms-full.txt"]) {
       const text = readFileSync(join(process.cwd(), "public", file), "utf8");
-      expect(text).toMatch(/[Ii]n the repository[^.]*not yet deployed/);
+      expect(text).not.toMatch(/not yet deployed/);
     }
+  });
+
+  it("does not advertise KhataGO features that are not on its main branch", () => {
+    // The MCP server (mcp-server/) and the #undo / void endpoint exist only as
+    // local work in KhataGO, not on origin/main (todos HON-01 / SHIP-01).
+    const text = JSON.stringify(byId("khatago"));
+    expect(text).not.toMatch(/@khatago\/mcp|Model Context Protocol|MCP/);
+    expect(text).not.toMatch(/#undo|\/void\b|Voiding/);
+  });
+});
+
+describe("EduScale matchmaking claims match what is on EduScale main", () => {
+  it("does not advertise the unshipped matchmaking UI", () => {
+    // Frontend/src/app/instant-battle/page.tsx is a ComingSoon stub on main;
+    // only Backend/src/services/matchmaking is shipped.
+    const text = JSON.stringify(byId("eduscale"));
+    expect(text).not.toMatch(/radar/i);
+    expect(text).not.toMatch(/3-second match confirmations/);
+    expect(text).not.toMatch(/Instant (Battle )?Matchmaking/);
+    expect(text).toMatch(/frontend is not shipped yet/);
   });
 });
 

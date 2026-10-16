@@ -19,9 +19,11 @@ export const metadata: Metadata = {
   // already brands its own title, so a `%s | <siteName>` template appended the
   // brand a SECOND time — e.g. "…Algorithm Mastery | Shailesh Chaudhari's Blog
   // | Shailesh Chaudhari's Blog" (124 chars, truncated to nonsense in Google).
-  // `default` still covers any page that ships without its own title.
+  // `default` still covers any page that ships without its own title — in
+  // practice the 404 page. siteName is "Shailesh Chaudhari's Blog", so pairing
+  // it with the author name put the brand in that title twice.
   // Guarded by e2e/meta-and-schema.spec.ts ("brand appears at most once").
-  title: `${BLOG_AUTHOR.name} | ${META_DEFAULTS.siteName}`,
+  title: `${BLOG_AUTHOR.name} — Software Engineer`,
   description: META_DEFAULTS.description,
   keywords: [
     "Full Stack Developer",

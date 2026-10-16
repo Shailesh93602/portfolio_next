@@ -1,14 +1,18 @@
 {
-  "/": "2026-09-20",
+  "/": "2026-10-12",
   "/blogs": "2026-09-05",
   "/about": "2026-04-14",
   "/contact": "2026-09-03",
-  "/portfolio": "2026-09-20",
+  "/portfolio": "2026-10-12",
   "/services": "2026-09-03",
   "/engineering": "2026-09-03",
   "/statistics": "2026-04-19",
   "/now": "2026-09-05",
   "/dwell": "2026-09-13",
   "/dwell/privacy": "2026-09-20",
-  "__projects__": "2026-09-20"
+  "/statuspulse": "2026-10-12",
+  "/statuspulse/privacy": "2026-10-12",
+  "/statuspulse/terms": "2026-10-12",
+  "/statuspulse/contact": "2026-10-12",
+  "__projects__": "2026-10-12"
 }

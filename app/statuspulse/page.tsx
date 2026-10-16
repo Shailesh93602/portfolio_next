@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SITE_URL } from "@/lib/blog-constants";
 
+// Kept under the 70-char SERP cap that e2e/meta-and-schema.spec.ts enforces.
 const TITLE =
-  "StatusPulse — Time in Status, SLA & Cycle Time for Jira | Shailesh Chaudhari";
+  "StatusPulse — Time in Status & SLA for Jira | Shailesh Chaudhari";
 const DESCRIPTION =
   "Documentation, user guide, and support for StatusPulse — a native Atlassian Jira Cloud app that measures how long work sat in each status in working hours.";
 

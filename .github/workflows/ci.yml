@@ -42,6 +42,15 @@ jobs:
       - name: Format check
         run: npm run format:check
 
+      # Fails only on a CRITICAL runtime advisory, so it can pass today and
+      # still catches the next next/og-RCE-class issue (next 16.3.3 was in the
+      # range of GHSA-vcvr-r3jv-pc5j for weeks with nothing running npm audit).
+      # Highs are reported, not gated: braces/micromatch under tailwindcss have
+      # no fix short of a major, and the others (sharp, undici, source-map-js)
+      # need an `npm audit fix` reviewed on its own — it can re-hoist packages.
+      - name: Dependency audit (critical, runtime deps)
+        run: npm audit --omit=dev --audit-level=critical
+
       - name: Unit tests
         run: npm test -- --ci --coverage
 

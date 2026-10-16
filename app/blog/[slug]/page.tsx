@@ -27,7 +27,9 @@ const getPostData = (slug: string) => {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const slug = (await params)?.slug;
   const post = await getPostData(slug);
-  if (!post) return {};
+  // `{}` fell through to the root default title; give the 404 its own, and
+  // keep the brand to one mention.
+  if (!post) return { title: "Post Not Found | Shailesh Chaudhari" };
 
   // Short brand suffix: post titles here run 45-70 chars on their own, and
   // Google only renders ~60. "| Shailesh Chaudhari" keeps the personal-brand

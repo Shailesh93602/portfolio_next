@@ -6,6 +6,7 @@ import {
   PROJECT_ROUTES,
   REDIRECT_ROUTES,
 } from "./routes";
+import { projects } from "../constants/projects";
 
 /**
  * Asset-integrity gate — the "does every pixel actually load" sweep.
@@ -168,8 +169,14 @@ test.describe("Every image decodes with non-zero dimensions", () => {
       // Image-bearing routes must actually carry imagery — a project page that
       // silently lost its hero would otherwise pass this spec vacuously.
       // /contact, /services, /now and /statistics are text-only by design.
+      // A project whose cover is a generated /api/og card renders a gradient
+      // hero instead (the card's baked-in title ghosted behind the H1), so
+      // it has no <img> by design.
+      const generatedCover = projects.some(
+        (p) => route === `/portfolio/${p.id}` && p.image.startsWith("/api/og")
+      );
       const mustHaveImages =
-        route.startsWith("/portfolio/") ||
+        (route.startsWith("/portfolio/") && !generatedCover) ||
         route.startsWith("/blog/") ||
         ["/", "/about", "/portfolio", "/blogs"].includes(route);
       if (mustHaveImages) {

@@ -47,6 +47,10 @@ const ROUTES = {
   "/now": ["app/now/page.tsx"],
   "/dwell": ["app/dwell/page.tsx"],
   "/dwell/privacy": ["app/dwell/privacy/page.tsx"],
+  "/statuspulse": ["app/statuspulse/page.tsx"],
+  "/statuspulse/privacy": ["app/statuspulse/privacy/page.tsx"],
+  "/statuspulse/terms": ["app/statuspulse/terms/page.tsx"],
+  "/statuspulse/contact": ["app/statuspulse/contact/page.tsx"],
 };
 
 /** Committer date (%cs, YYYY-MM-DD) of the newest commit touching any path. */

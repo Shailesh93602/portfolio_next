@@ -21,6 +21,10 @@ export const STATIC_ROUTES = [
   "/now",
   "/dwell",
   "/dwell/privacy",
+  "/statuspulse",
+  "/statuspulse/privacy",
+  "/statuspulse/terms",
+  "/statuspulse/contact",
   "/statistics",
 ] as const;
 
