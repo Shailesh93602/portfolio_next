@@ -41,7 +41,8 @@ jest.mock("framer-motion", () => {
   };
 });
 
-import SkillsSection from "@/components/SkillsSection";
+import SkillsSection, { SKILLS } from "@/components/SkillsSection";
+import resume from "@/resume/resume.json";
 
 describe("SkillsSection", () => {
   it("renders the Skills heading", () => {
@@ -51,50 +52,35 @@ describe("SkillsSection", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders all skill category headings", () => {
-    render(<SkillsSection />);
-    expect(screen.getByText("Frontend")).toBeInTheDocument();
-    expect(screen.getByText("Backend")).toBeInTheDocument();
-    expect(screen.getByText("Databases")).toBeInTheDocument();
-    expect(screen.getByText("Tools & Others")).toBeInTheDocument();
+  it("states exactly the resume's skills, category by category", () => {
+    expect(
+      SKILLS.map((c) => ({ label: c.category, items: c.items.join(", ") }))
+    ).toEqual(resume.skills);
   });
 
-  it("renders frontend skill names", () => {
-    render(<SkillsSection />);
-    expect(screen.getByText("React.js")).toBeInTheDocument();
-    expect(screen.getByText("Next.js")).toBeInTheDocument();
-    expect(screen.getByText("TypeScript")).toBeInTheDocument();
-    expect(screen.getByText("Tailwind CSS")).toBeInTheDocument();
-  });
-
-  it("renders backend skill names", () => {
-    render(<SkillsSection />);
-    expect(screen.getByText("Node.js")).toBeInTheDocument();
-    expect(screen.getByText("NestJS")).toBeInTheDocument();
-    expect(screen.getByText("Express.js")).toBeInTheDocument();
-  });
-
-  it("renders database skill names", () => {
-    render(<SkillsSection />);
-    expect(screen.getByText("PostgreSQL")).toBeInTheDocument();
-    expect(screen.getByText("MongoDB")).toBeInTheDocument();
-    expect(screen.getByText("Prisma")).toBeInTheDocument();
-  });
-
-  it("renders tools skill names", () => {
-    render(<SkillsSection />);
-    expect(screen.getByText("Docker")).toBeInTheDocument();
-    expect(screen.getByText("Git")).toBeInTheDocument();
-    // "AWS S3", not "AWS": the only AWS work he has done is S3 file workflows
-    // (eSparkBiz), and a bare "AWS" chip claims more than that.
-    expect(screen.getByText("AWS S3")).toBeInTheDocument();
-    expect(screen.queryByText("AWS")).not.toBeInTheDocument();
-  });
-
-  it("renders all 4 skill category cards", () => {
+  it("renders every category and every skill", () => {
     const { container } = render(<SkillsSection />);
-    // 4 categories × one heading each
-    const categoryHeadings = container.querySelectorAll("h4");
-    expect(categoryHeadings.length).toBe(4);
+    expect(
+      Array.from(container.querySelectorAll("h4")).map((h) => h.textContent)
+    ).toEqual(SKILLS.map((c) => c.category));
+    for (const skill of SKILLS.flatMap((c) => c.items)) {
+      expect(screen.getByText(skill)).toBeInTheDocument();
+    }
+  });
+
+  it("claims none of the skills the resume does not", () => {
+    render(<SkillsSection />);
+    for (const extra of [
+      "GraphQL",
+      "MySQL",
+      "Sequelize",
+      "TypeORM",
+      "Firebase",
+      "Stripe",
+      "OAuth",
+      "AWS",
+    ]) {
+      expect(screen.queryByText(extra)).not.toBeInTheDocument();
+    }
   });
 });

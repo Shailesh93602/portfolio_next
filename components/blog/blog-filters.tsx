@@ -1,7 +1,8 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { badgeVariants } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { XIcon } from "@/components/icons";
 
 interface BlogFiltersProps {
@@ -34,27 +35,40 @@ export function BlogFilters({
         />
 
         <div className="flex flex-wrap gap-2">
-          <Badge
-            variant={selectedTag === "" ? "default" : "outline"}
-            className="cursor-pointer transition-colors hover:bg-primary/10"
+          <button
+            type="button"
+            aria-pressed={selectedTag === ""}
+            className={cn(
+              badgeVariants({
+                variant: selectedTag === "" ? "default" : "outline",
+              }),
+              "cursor-pointer transition-colors hover:bg-primary/10"
+            )}
             onClick={() => onTagChange("")}
           >
             All Tags
-          </Badge>
+          </button>
           {tags.map((tag) => (
-            <Badge
+            <button
+              type="button"
               key={tag}
-              variant={selectedTag === tag ? "default" : "outline"}
-              className="cursor-pointer transition-colors hover:bg-primary/10"
+              aria-pressed={selectedTag === tag}
+              className={cn(
+                badgeVariants({
+                  variant: selectedTag === tag ? "default" : "outline",
+                }),
+                "cursor-pointer transition-colors hover:bg-primary/10"
+              )}
               onClick={() => onTagChange(tag)}
             >
               {tag}
-            </Badge>
+            </button>
           ))}
         </div>
 
         {hasActiveFilters && (
           <button
+            type="button"
             onClick={onClearFilters}
             className="mt-3 inline-flex items-center gap-2 rounded-md bg-muted/10 px-3 py-2 text-sm hover:bg-muted/20 md:ml-2 md:mt-0"
           >
@@ -67,14 +81,20 @@ export function BlogFilters({
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <span className="mr-2 text-sm text-muted-foreground">Popular:</span>
         {tags.slice(0, 8).map((tag) => (
-          <Badge
+          <button
+            type="button"
             key={tag}
-            variant={selectedTag === tag ? "default" : "secondary"}
-            className="cursor-pointer text-xs"
+            aria-pressed={selectedTag === tag}
+            className={cn(
+              badgeVariants({
+                variant: selectedTag === tag ? "default" : "secondary",
+              }),
+              "cursor-pointer text-xs"
+            )}
             onClick={() => onTagChange(selectedTag === tag ? "" : tag)}
           >
             {tag}
-          </Badge>
+          </button>
         ))}
       </div>
     </div>

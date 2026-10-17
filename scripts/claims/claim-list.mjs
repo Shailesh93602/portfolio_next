@@ -148,6 +148,38 @@ export const CLAIMS = [
     // Counts the rows in the ledger's summary table.
     sourceCount: /^\| L\d+ /gm,
   },
+  // EduScale matchmaking card: the three constants of matchmakingService.ts.
+  {
+    what: "EduScale matchmaking band start",
+    localPattern: /band starts at ±(\d+) rating points/,
+    repo: "Shailesh93602/DevScale",
+    path: "Backend/src/services/matchmaking/matchmakingService.ts",
+    sourcePattern: /const BASE_BAND = (\d+);/,
+  },
+  {
+    what: "EduScale matchmaking band widening",
+    localPattern: /widens (\d+) points per second, capped/,
+    repo: "Shailesh93602/DevScale",
+    path: "Backend/src/services/matchmaking/matchmakingService.ts",
+    sourcePattern: /const BAND_PER_SECOND = (\d+);/,
+  },
+  {
+    what: "EduScale matchmaking band cap",
+    localPattern: /capped at ±(\d+); pairing/,
+    repo: "Shailesh93602/DevScale",
+    path: "Backend/src/services/matchmaking/matchmakingService.ts",
+    sourcePattern: /const MAX_BAND = (\d+);/,
+  },
+  {
+    what: "BALLAST findings in the checking apparatus",
+    localFile: "claims",
+    localPattern: /BALLAST_CHECKER_FINDINGS = (\d+)/,
+    repo: "Shailesh93602/ballast",
+    path: "docs/LEDGER.md",
+    // Rows whose severity class (third column) names the checking apparatus.
+    sourceCount:
+      /^\| L\d+ +\|[^|]*\| *\S+ (?:checker|harness|reference|corpus)/gm,
+  },
   // The mutation numbers. Added 2026-09-20, after two blog posts were found
   // stating a score of "84.2%" that exists nowhere upstream while the project
   // page stated the real one — the same fact on two surfaces of this site,
@@ -217,7 +249,7 @@ export const CLAIMS = [
     what: "DevTrack dashboard queries issued in parallel",
     localPattern: /value: "(\d+) in parallel"/,
     repo: "Shailesh93602/devtrack",
-    path: "lib/services/dashboard.ts",
+    path: "lib/services/dashboard-data.ts",
     // The destructuring list in front of `Promise.all([` IS the count. Reading
     // the array would mean parsing nested calls; reading the names it binds is
     // the same number and survives reformatting.

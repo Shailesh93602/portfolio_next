@@ -40,12 +40,9 @@ export const BALLAST_MUTANTS_TOTAL = 362;
 export const BALLAST_MUTANTS_KILLED = 352;
 
 /**
- * Of those, the findings whose defect was in the CHECKER — the invariant
- * corpus, the reference oracle or the mutation harness — rather than in the
- * system under test: L1 (invariant trusted the plane's self-report), L3
- * (reference billed unspent credit), L7 (harness reported 100% on a red suite),
- * L9 (mutation operator did not negate). L2 is a spec gap; L4, L5, L6, L8 are
- * implementation defects.
+ * Of those, the rows whose severity class in `docs/LEDGER.md` is checker,
+ * harness, reference or corpus — the checking apparatus, not the system.
+ * Reproduce: `grep -cE '^\| L[0-9]+ +\|[^|]*\| *\S+ (checker|harness|reference|corpus)' docs/LEDGER.md`
  */
 export const BALLAST_CHECKER_FINDINGS = 18;
 

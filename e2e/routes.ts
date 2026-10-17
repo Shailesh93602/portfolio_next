@@ -19,8 +19,6 @@ export const STATIC_ROUTES = [
   "/services",
   "/engineering",
   "/now",
-  "/dwell",
-  "/dwell/privacy",
   "/statuspulse",
   "/statuspulse/privacy",
   "/statuspulse/terms",
@@ -62,6 +60,9 @@ export const REDIRECT_ROUTES: { from: string; to: string }[] = [
   { from: "/projects", to: "/portfolio" },
   { from: "/work", to: "/portfolio" },
   { from: "/resume", to: "/Shailesh_Chaudhari_Resume.pdf" },
+  // Dwell was renamed StatusPulse; old listing links forward.
+  { from: "/dwell", to: "/statuspulse" },
+  { from: "/dwell/privacy", to: "/statuspulse/privacy" },
 ];
 
 export const ALL_ROUTES: string[] = [

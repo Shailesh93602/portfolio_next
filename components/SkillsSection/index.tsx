@@ -4,56 +4,54 @@ import { Card, CardContent } from "@/components/ui/card";
 import { itemVariants } from "@/constants";
 import { Skill } from "@/types";
 
-export default function SkillsSection() {
-  const skills: Skill[] = [
-    {
-      category: "Frontend",
-      items: [
-        { name: "React.js", level: 90 },
-        { name: "Next.js", level: 85 },
-        { name: "TypeScript", level: 85 },
-        { name: "Tailwind CSS", level: 90 },
-        { name: "HTML/CSS", level: 95 },
-        { name: "JavaScript", level: 90 },
-      ],
-    },
-    {
-      category: "Backend",
-      items: [
-        { name: "Node.js", level: 90 },
-        { name: "Express.js", level: 85 },
-        { name: "NestJS", level: 80 },
-        { name: "REST APIs", level: 90 },
-        { name: "GraphQL", level: 75 },
-      ],
-    },
-    {
-      category: "Databases",
-      items: [
-        { name: "MongoDB", level: 90 },
-        { name: "PostgreSQL", level: 85 },
-        { name: "MySQL", level: 85 },
-        { name: "Prisma", level: 80 },
-        { name: "Sequelize", level: 80 },
-        { name: "TypeORM", level: 75 },
-      ],
-    },
-    {
-      category: "Tools & Others",
-      items: [
-        { name: "Git", level: 90 },
-        { name: "Docker", level: 80 },
-        { name: "AWS S3", level: 75 },
-        { name: "CI/CD", level: 80 },
-        { name: "Testing", level: 85 },
-        { name: "Supabase", level: 75 },
-        { name: "OAuth", level: 80 },
-        { name: "Stripe", level: 75 },
-        { name: "Firebase", level: 75 },
-      ],
-    },
-  ];
+// The resume's skill rows (resume/resume.json), copied rather than imported so
+// the resume's contact block stays out of the client bundle; a test holds them equal.
+export const SKILLS: Skill[] = [
+  {
+    category: "Languages",
+    items: ["TypeScript", "JavaScript", "SQL", "C++ (DSA)"],
+  },
+  {
+    category: "Frontend",
+    items: [
+      "React",
+      "Next.js",
+      "Tailwind CSS",
+      "shadcn/ui",
+      "accessibility (WCAG 2.1 AA)",
+    ],
+  },
+  {
+    category: "Backend",
+    items: ["Node.js", "Express", "NestJS", "Socket.io", "Prisma", "REST APIs"],
+  },
+  { category: "Data", items: ["PostgreSQL", "Redis", "MongoDB"] },
+  {
+    category: "Infrastructure",
+    items: [
+      "Docker / Docker Compose",
+      "GitHub Actions (CI/CD)",
+      "GKE (exposure)",
+      "Vercel",
+      "Supabase",
+      "AWS S3",
+    ],
+  },
+  {
+    category: "AI",
+    items: [
+      "LLM function/tool calling (Gemini)",
+      "multi-model fallback",
+      "per-key isolation",
+      "bring-your-own-key encryption",
+      "evals",
+      "MCP tools",
+      "pgvector RAG",
+    ],
+  },
+];
 
+export default function SkillsSection() {
   return (
     <motion.div variants={itemVariants}>
       <h3 className="mb-6 flex items-center text-2xl font-semibold text-foreground">
@@ -61,20 +59,20 @@ export default function SkillsSection() {
         Skills
       </h3>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        {skills.map((skillCategory, index) => (
+        {SKILLS.map((skillCategory, index) => (
           <Card key={index} className="bg-background">
             <CardContent className="p-4">
               <h4 className="mb-4 text-lg font-semibold text-foreground">
                 {skillCategory.category}
               </h4>
               <div className="flex flex-wrap gap-2">
-                {skillCategory.items.map((skill, skillIndex) => (
+                {skillCategory.items.map((skill) => (
                   <motion.span
-                    key={skillIndex}
+                    key={skill}
                     whileHover={{ scale: 1.05 }}
                     className="rounded-full border border-border bg-muted px-3 py-1 text-muted-foreground transition-colors duration-200 hover:bg-primary/10 hover:text-primary"
                   >
-                    {skill.name}
+                    {skill}
                   </motion.span>
                 ))}
               </div>

@@ -303,9 +303,9 @@ export default function EngineeringPage() {
               build.
             </li>
             <li>
-              • <strong className="text-foreground">Performance budgets</strong>{" "}
-              for LCP, CLS and total blocking time fail the build too, rather
-              than being reported and ignored.
+              • <strong className="text-foreground">Performance budgets</strong>
+              : a layout-shift (CLS) regression fails the build; LCP and total
+              blocking time are tracked as warnings, not gates.
             </li>
             <li>
               •{" "}

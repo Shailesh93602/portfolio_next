@@ -15,14 +15,9 @@ export interface Achievement {
   iconName: "trophy" | "code" | "award" | "star";
 }
 
-export interface SkillItem {
-  name: string;
-  level: number;
-}
-
 export interface Skill {
   category: string;
-  items: SkillItem[];
+  items: string[];
 }
 
 export interface Education {

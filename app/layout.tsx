@@ -280,7 +280,7 @@ export default function RootLayout({
                     // engines and AI crawlers. Describing the architecture is
                     // true and needs no benchmark; the latency figure can come
                     // back the day the load test produces one.
-                    "Real-time engineering learning platform with coding battles over WebSockets, horizontally scaled with a Redis pub/sub adapter",
+                    "Real-time engineering learning platform with coding battles over WebSockets, designed for horizontal scaling with a Redis pub/sub adapter",
                   url: "https://eduscale.vercel.app/",
                   codeRepository: "https://github.com/Shailesh93602/devscale",
                   programmingLanguage: ["TypeScript", "JavaScript"],

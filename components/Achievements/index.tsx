@@ -23,12 +23,6 @@ export default function AchievementsSection() {
     }
   };
 
-  const handleClick = (link?: string) => {
-    if (!link) return;
-    // safe client-only action
-    window.open(link, "_blank", "noopener,noreferrer");
-  };
-
   return (
     <motion.div variants={itemVariants}>
       <h3 className="mb-6 flex items-center text-2xl font-semibold text-foreground">
@@ -41,9 +35,8 @@ export default function AchievementsSection() {
           <Card
             key={index}
             className={`bg-background transition-colors duration-300 hover:border-primary/50 ${
-              achievement.link ? "cursor-pointer" : ""
+              achievement.link ? "relative" : ""
             }`}
-            onClick={() => handleClick(achievement.link)}
           >
             <CardContent className="p-4">
               <div className="flex items-start">
@@ -56,9 +49,15 @@ export default function AchievementsSection() {
                     {achievement.description}
                   </p>
                   {achievement.link && (
-                    <p className="mt-1 text-sm text-primary hover:underline">
+                    // after:inset-0 stretches the link over the whole card.
+                    <a
+                      href={achievement.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-1 inline-block text-sm text-primary after:absolute after:inset-0 hover:underline"
+                    >
                       View Profile →
-                    </p>
+                    </a>
                   )}
                 </div>
               </div>

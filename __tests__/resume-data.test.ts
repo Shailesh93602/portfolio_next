@@ -3,11 +3,16 @@
  * noticed). Asserts the resume SOURCE stays current and honest, and that the
  * built PDF artifact is the new pipeline's output, not the 2024 file.
  */
+import { execFileSync } from "child_process";
 import fs from "fs";
 import path from "path";
 import resume from "../resume/resume.json";
 import { PROFILE, PROFILE_META } from "@/lib/profile";
-import { BALLAST_TEST_COUNT } from "@/lib/claims";
+import {
+  BALLAST_MUTANTS_KILLED,
+  BALLAST_MUTANTS_TOTAL,
+  BALLAST_TEST_COUNT,
+} from "@/lib/claims";
 
 describe("resume.json — currency and honesty", () => {
   it("lists ContextQA as the single current employer", () => {
@@ -198,11 +203,23 @@ describe("built resume artifacts", () => {
     expect(head).toBe("%PDF-");
   });
 
-  it("DOCX sibling exists", () => {
-    expect(
-      fs.existsSync(
-        path.join(__dirname, "..", "resume", "Shailesh_Chaudhari_Resume.docx")
-      )
-    ).toBe(true);
+  it("DOCX was rebuilt from the current resume.json", () => {
+    const docx = path.join(
+      __dirname,
+      "..",
+      "resume",
+      "Shailesh_Chaudhari_Resume.docx"
+    );
+    const xml = execFileSync("unzip", ["-p", docx, "word/document.xml"], {
+      encoding: "utf8",
+    });
+    const text = xml.replace(/<[^>]+>/g, "");
+    expect(text).toContain(`${BALLAST_TEST_COUNT} tests`);
+    expect(text).toContain(
+      `${BALLAST_MUTANTS_KILLED} of ${BALLAST_MUTANTS_TOTAL} mutants`
+    );
+    for (const e of resume.experience) {
+      expect(text).toContain(`(${e.start} - ${e.end})`);
+    }
   });
 });

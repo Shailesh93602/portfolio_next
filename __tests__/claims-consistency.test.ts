@@ -39,13 +39,13 @@ describe("BALLAST finding counts", () => {
   it("the BALLAST project page states the constant, as a word", () => {
     const text = byId("ballast").challengesSolved ?? "";
     expect(text).toContain(
-      `found ${numberWord(BALLAST_LEDGER_FINDINGS)} real bugs`
+      `records ${numberWord(BALLAST_LEDGER_FINDINGS)} real findings`
     );
     expect(text).toContain(
-      `${numberWord(BALLAST_CHECKER_FINDINGS)} of them in the checker`
+      `${numberWord(BALLAST_CHECKER_FINDINGS)} of them were in the checking apparatus`
     );
     // No stale literal survives alongside it.
-    expect(text).not.toMatch(/\b(six|eight) real bugs\b/i);
+    expect(text).not.toMatch(/\b(six|eight) real (bugs|findings)\b/i);
   });
 
   it("the /engineering page derives its BALLAST title from the constant", () => {

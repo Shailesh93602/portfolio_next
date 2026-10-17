@@ -81,9 +81,9 @@ export default function StatusPulseTermsPage() {
         <h2 className={H2}>1. Service Description</h2>
         <p className={P}>
           StatusPulse is a native Jira Cloud reporting application that computes
-          status dwell time, cycle times, and SLA breach metrics against
-          customizable working schedules. It runs within the Atlassian Forge
-          execution environment.
+          time in status, cycle times, and SLA breach metrics against your
+          working calendar. It runs within the Atlassian Forge execution
+          environment.
         </p>
 
         <h2 className={H2}>2. Privacy & Data Ownership</h2>

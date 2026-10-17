@@ -34,7 +34,10 @@ export const metadata: Metadata = {
   },
 };
 
-const lastUpdated = "October 12, 2026";
+// Source copy: dwell/docs/user-guide.md and dwell/docs/troubleshooting.md.
+// The dwell repo's `npm run check:urls` fetches this page and fails the
+// listing if it overclaims (the code has four fixed weeks and nine zones).
+const lastUpdated = "October 17, 2026";
 
 const breadcrumbSchema = {
   "@context": "https://schema.org",
@@ -55,6 +58,9 @@ const H3 = "mt-8 text-xl font-semibold";
 const P = "mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg";
 const UL =
   "mt-4 space-y-3 text-base leading-relaxed text-muted-foreground sm:text-lg";
+const OL =
+  "mt-4 list-decimal space-y-3 pl-6 text-base leading-relaxed text-muted-foreground sm:text-lg";
+const STRONG = "font-semibold text-foreground";
 
 function Item({ children }: { children: React.ReactNode }) {
   return (
@@ -70,9 +76,23 @@ function Item({ children }: { children: React.ReactNode }) {
 
 function Code({ children }: { children: React.ReactNode }) {
   return (
-    <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm text-foreground">
+    <code className="break-all rounded bg-muted px-1.5 py-0.5 font-mono text-sm text-foreground">
       {children}
     </code>
+  );
+}
+
+function Setting({
+  name,
+  children,
+}: {
+  name: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Item>
+      <strong className={STRONG}>{name}</strong> — {children}
+    </Item>
   );
 }
 
@@ -91,10 +111,8 @@ export default function StatusPulseDocsPage() {
           StatusPulse
         </h1>
         <p className={P}>
-          A native Jira Cloud app that measures how long work actually sat in
-          each status, counted against your working calendar rather than raw
-          elapsed time. Time in status, SLA breach tracking, and cycle time
-          reports with zero per-project configuration.
+          StatusPulse tells you how long work actually sat in each Jira status,
+          measured against your working calendar rather than raw elapsed time.
         </p>
         <div className="mt-4 flex flex-wrap gap-4 text-sm font-medium">
           <Link
@@ -119,183 +137,278 @@ export default function StatusPulseDocsPage() {
           </Link>
         </div>
 
-        <h2 className={H2}>The Core Idea</h2>
+        <h2 className={H2}>The one idea</h2>
         <p className={P}>
-          Jira records when an issue changed status, but never tells you how
-          long it sat anywhere. Standard reports subtract timestamps, counting
-          nights, weekends, and holidays as working time. A ticket raised on
-          Friday afternoon and picked up on Monday morning did not consume three
-          days of engineering time. StatusPulse counts only real business hours.
+          Jira knows <em>when</em> an issue changed status. It does not tell you{" "}
+          <em>how long</em> it sat anywhere. Most tools answer that by
+          subtracting two timestamps, which counts nights, weekends and public
+          holidays as working time. A ticket raised on Friday afternoon and
+          picked up on Monday morning did not take three days of anybody&apos;s
+          attention.
+        </p>
+        <p className={P}>
+          StatusPulse measures the hours your team was actually working.
         </p>
 
-        <h2 className={H2}>Running Your First Report</h2>
-        <ul className={UL}>
-          <Item>
-            Open{" "}
-            <strong className="font-semibold text-foreground">
-              Apps → StatusPulse
-            </strong>{" "}
-            in Jira.
-          </Item>
-          <Item>
-            Enter any JQL query, such as{" "}
+        <h2 className={H2}>Running your first report</h2>
+        <ol className={OL}>
+          <li>
+            Open <strong className={STRONG}>Apps → StatusPulse</strong> in Jira.
+          </li>
+          <li>
+            Put a JQL query in the box. If you are not sure, start with{" "}
             <Code>project = ENG AND created &gt;= -30d</Code>.
+          </li>
+          <li>
+            Choose <strong className={STRONG}>Working hours</strong> (the
+            default) or <strong className={STRONG}>Calendar time</strong> if
+            your team genuinely runs 24/7.
+          </li>
+          <li>Set your timezone, working week, day start and end.</li>
+          <li>
+            Press <strong className={STRONG}>Run report</strong>.
+          </li>
+        </ol>
+        <p className={P}>You get two tables.</p>
+        <p className={P}>
+          <strong className={STRONG}>Where the time goes</strong> — median and
+          85th percentile working time per status, across every issue in your
+          query. This is the one to look at first: the top row is where your
+          process actually spends its time.
+        </p>
+        <p className={P}>
+          <strong className={STRONG}>By issue</strong> — one row per issue,
+          showing its current status, how long it has been sitting there{" "}
+          <em>since it last arrived</em>, and which status consumed the most of
+          its life. Those are different numbers on an issue that came back from
+          review, and the column means the second one.
+        </p>
+
+        <h2 className={H2}>The settings</h2>
+        <ul className={UL}>
+          <Setting name="Measure">
+            <em>Working hours</em> excludes nights, weekends and holidays.{" "}
+            <em>Calendar time</em> counts every millisecond.
+          </Setting>
+          <Setting name="Timezone">
+            the zone your working day is defined in, chosen from a list of nine
+            common zones (including Asia/Kolkata, UTC, Europe/London and
+            America/New_York). Daylight saving is handled: a spring-forward day
+            really is an hour shorter.
+          </Setting>
+          <Setting name="Working week">
+            Saturday/Sunday, Friday/Saturday, Sunday only, or all seven days.
+          </Setting>
+          <Setting name="Day starts / ends">
+            24-hour time, e.g. <Code>09:00</Code> and <Code>17:00</Code>.
+          </Setting>
+          <Setting name="Holidays">
+            comma-separated dates, e.g.{" "}
+            <Code>2026-01-26, 2026-08-15, 2026-10-02</Code>. Each one is
+            excluded entirely.
+          </Setting>
+          <Setting name="Targets">
+            optional SLA targets, e.g. <Code>In Review: 8h, Blocked: 2d</Code>,
+            checked against working time. With Working hours, <Code>d</Code> is
+            one of your working days and <Code>w</Code> one working week —{" "}
+            <Code>2d</Code> on a 09:00–17:00 day is 16 hours, not 48 — and every{" "}
+            <Code>d</Code> in the report means the same. With Calendar time,{" "}
+            <Code>d</Code> is 24 hours.
+          </Setting>
+        </ul>
+        <p className={P}>
+          <strong className={STRONG}>Save these settings</strong> stores them
+          against your Atlassian account, not the site. Two people on the same
+          Jira can measure against different hours, which matters for
+          distributed teams.{" "}
+          <strong className={STRONG}>Clear my saved settings</strong> deletes
+          yours; the page keeps what is on screen until you reload it.
+        </p>
+
+        <h2 className={H2}>The dashboard gadget</h2>
+        <p className={P}>
+          Add <strong className={STRONG}>StatusPulse — time in status</strong>{" "}
+          to any Jira dashboard. It shows median working time per status for
+          whatever you last saved on the StatusPulse page, using the same
+          calendar.
+        </p>
+        <p className={P}>
+          It has no settings of its own, on purpose. A second place to configure
+          the same thing is a second place for the two to disagree. Change the
+          query on the page and the gadget follows.
+        </p>
+        <p className={P}>
+          <strong className={STRONG}>One consequence, stated plainly:</strong>{" "}
+          settings are saved per Atlassian account, so on a dashboard several
+          people look at, each person&apos;s gadget shows <em>their own</em>{" "}
+          saved query and working calendar. If your team needs one agreed number
+          on a shared dashboard, agree the query and have everyone save the same
+          one — or tell us, and a shared gadget configuration becomes a
+          considered feature rather than a default nobody asked for.
+        </p>
+
+        <h2 className={H2}>Exporting</h2>
+        <p className={P}>
+          Press <strong className={STRONG}>Show CSV</strong> after a report. The
+          export is one row per issue per status, which is the shape a pivot
+          table wants. Hours are decimal, so they add up. A column-per-status
+          layout was deliberately avoided: status names differ between projects,
+          so that sheet goes ragged the moment your JQL spans two of them.
+        </p>
+
+        <h2 className={H2}>Reading the numbers honestly</h2>
+        <ul className={UL}>
+          <Item>
+            <strong className={STRONG}>Median, not average.</strong> Cycle-time
+            distributions have long tails. One ticket stuck across a shutdown
+            drags an average somewhere no team recognises. The 85th percentile
+            column is the number to quote for a realistic worst case.
           </Item>
           <Item>
-            Select{" "}
-            <strong className="font-semibold text-foreground">
-              Working hours
+            <strong className={STRONG}>
+              &ldquo;Partial history&rdquo; badge.
             </strong>{" "}
-            (or Calendar time if your team operates 24/7).
+            Jira caps how much changelog it returns with a search, and it
+            returns the most recent entries — so on a very long-lived issue it
+            is the <em>early</em> life that is missing. StatusPulse measures
+            those issues from the oldest entry Jira actually sent and counts the
+            unknown period against no status at all. Their totals are a lower
+            bound, and the row is flagged rather than hidden.
           </Item>
           <Item>
-            Set your timezone, working schedule, day start and end, and click{" "}
-            <strong className="font-semibold text-foreground">
-              Run report
-            </strong>
-            .
+            <strong className={STRONG}>Re-entry counts.</strong> An issue that
+            entered <em>In Review</em> four times is telling you something the
+            total alone does not.
+          </Item>
+          <Item>
+            <strong className={STRONG}>
+              A renamed status is still one row.
+            </strong>{" "}
+            StatusPulse matches on the status identifiers Jira sends alongside
+            the names, so a status renamed from <em>QA</em> to <em>Testing</em>{" "}
+            appears once, under the name it has today. If StatusPulse cannot
+            read your site&apos;s status list it says so, and in that case a
+            renamed status may appear twice.
           </Item>
         </ul>
 
-        <h2 className={H2}>Configuration & Working Calendar</h2>
+        <h2 className={H2}>Limits</h2>
         <ul className={UL}>
           <Item>
-            <strong className="font-semibold text-foreground">Measure</strong> —
-            Working hours excludes off-hours, weekends, and holidays. Calendar
-            time counts elapsed clock time.
+            A report covers up to <strong className={STRONG}>200 issues</strong>
+            . Narrow the JQL for a complete picture of a larger set; a report
+            that quietly truncates is worse than one that says so.
           </Item>
           <Item>
-            <strong className="font-semibold text-foreground">Timezone</strong>{" "}
-            — Any major timezone, including half-hour offsets like Asia/Kolkata,
-            with daylight saving handled accurately.
-          </Item>
-          <Item>
-            <strong className="font-semibold text-foreground">
-              Working week
-            </strong>{" "}
-            — Mon–Fri, Sun–Thu (Middle East), Sat/Sun only, or customized
-            workdays.
-          </Item>
-          <Item>
-            <strong className="font-semibold text-foreground">
-              Business Hours
-            </strong>{" "}
-            — 24-hour format, such as <Code>09:00</Code> to <Code>17:00</Code>.
-          </Item>
-          <Item>
-            <strong className="font-semibold text-foreground">Holidays</strong>{" "}
-            — Comma-separated ISO dates (<Code>2026-01-26, 2026-08-15</Code>)
-            excluded from duration calculations.
-          </Item>
-          <Item>
-            <strong className="font-semibold text-foreground">
-              SLA Targets
-            </strong>{" "}
-            — Set target durations per status (e.g.{" "}
-            <Code>In Review: 8h, Blocked: 2d</Code>) to highlight breaches in
-            business time.
-          </Item>
-        </ul>
-        <p className={P}>
-          Settings are saved per Atlassian account, allowing team members on the
-          same site to use calendars tailored to their working hours.
-        </p>
-
-        <h2 className={H2}>Cycle Time & Auto-Detection</h2>
-        <p className={P}>
-          Cycle time is calculated from the first transition into an In Progress
-          category to the first Done status. StatusPulse reads Jira&apos;s
-          native workflow categories, eliminating manual status-mapping per
-          project. Unfinished work is excluded rather than counted as zero.
-        </p>
-
-        <h2 className={H2}>Jira Dashboard Gadget</h2>
-        <p className={P}>
-          Add the{" "}
-          <strong className="font-semibold text-foreground">
-            StatusPulse — time in status
-          </strong>{" "}
-          gadget to any Jira dashboard. It displays median working duration per
-          status mirroring your saved report settings without duplicating
-          configuration.
-        </p>
-
-        <h2 className={H2}>Privacy & Architecture</h2>
-        <ul className={UL}>
-          <Item>
-            <strong className="font-semibold text-foreground">
-              100% In-Tenant Forge:
-            </strong>{" "}
-            Runs entirely on Atlassian cloud infrastructure with no external
-            servers.
-          </Item>
-          <Item>
-            <strong className="font-semibold text-foreground">
-              Zero External Data Egress:
-            </strong>{" "}
-            Issue data is processed in-memory and never sent to third parties or
-            logged outside your site.
-          </Item>
-          <Item>
-            <strong className="font-semibold text-foreground">
-              Read-Only Permissions:
-            </strong>{" "}
-            Requests <Code>read:jira-work</Code> and <Code>storage:app</Code>.
-            The app cannot create, edit, or delete any Jira content.
-          </Item>
-        </ul>
-
-        <h2 className={H2} id="support">
-          Customer Support & Inquiries
-        </h2>
-        <p className={P}>
-          Need assistance, have a feature suggestion, or encountered an issue?
-        </p>
-        <ul className={UL}>
-          <Item>
-            <strong className="font-semibold text-foreground">
-              Email Support:
-            </strong>{" "}
-            <a
-              href="mailto:shailesh93602@gmail.com"
-              className="text-primary underline underline-offset-4"
-            >
-              shailesh93602@gmail.com
-            </a>
-          </Item>
-          <Item>
-            <strong className="font-semibold text-foreground">
-              Response SLA:
-            </strong>{" "}
-            We respond to all inquiries within 24 to 48 business hours.
-          </Item>
-          <Item>
-            <strong className="font-semibold text-foreground">
-              Direct Contact Page:
-            </strong>{" "}
+            StatusPulse reads Jira issue data only. Nothing leaves your
+            Atlassian tenant — see the{" "}
             <Link
-              href="/statuspulse/contact"
+              href="/statuspulse/privacy"
               className="text-primary underline underline-offset-4"
             >
-              StatusPulse Support Desk
-            </Link>
+              privacy policy
+            </Link>{" "}
+            for exactly what is read, stored and sent.
+          </Item>
+          <Item>
+            It is not a time-tracking tool. It measures how long work sat in a
+            status, not how long a person spent on it. If you need to know who
+            worked how many hours, you want a worklog app.
           </Item>
         </ul>
 
         <h2 className={H2} id="troubleshooting">
-          Troubleshooting FAQ
+          Troubleshooting
         </h2>
-        <h3 className={H3}>Gadget or page shows a blank placeholder</h3>
+        <h3 className={H3}>
+          A blank page, or a loading placeholder that never finishes
+        </h3>
         <p className={P}>
-          All Forge apps load UI bundles from{" "}
-          <Code>*.cdn.prod.atlassian-dev.net</Code>. If your corporate network
-          or ad blocker blocks this domain, whitelist it in your browser or
-          proxy.
+          Almost always a DNS or network problem on your side, not the app.
+          Every Forge app loads its interface from{" "}
+          <Code>*.cdn.prod.atlassian-dev.net</Code>. If your network cannot
+          resolve or reach that domain, Jira draws the frame and then waits for
+          an app that never loads, with no error message. Confirm it by running{" "}
+          <Code>nslookup probe.cdn.prod.atlassian-dev.net</Code>: if that
+          returns nothing or <Code>NXDOMAIN</Code>, that is your answer.
         </p>
-        <h3 className={H3}>&quot;Jira rejected the search&quot;</h3>
+        <ul className={UL}>
+          <Item>
+            <strong className={STRONG}>Router or ISP DNS.</strong> Point the
+            machine at a public resolver such as <Code>8.8.8.8</Code> and{" "}
+            <Code>1.1.1.1</Code>, then flush the DNS cache.
+          </Item>
+          <Item>
+            <strong className={STRONG}>Corporate firewall or proxy.</strong> Ask
+            IT to allow <Code>*.cdn.prod.atlassian-dev.net</Code>, which
+            Atlassian documents as required for Forge apps.
+          </Item>
+          <Item>
+            <strong className={STRONG}>A browser extension.</strong> Ad blockers
+            sometimes block third-party frames. Pause them for your Jira site
+            and reload.
+          </Item>
+          <Item>
+            <strong className={STRONG}>DNS filtering</strong> such as a Pi-hole,
+            NextDNS or OpenDNS with an aggressive blocklist.
+          </Item>
+        </ul>
+        <h3 className={H3}>&ldquo;Jira rejected the search&rdquo;</h3>
         <p className={P}>
-          Verify that your JQL query is valid and that your user account has
-          read permissions for all referenced projects.
+          The JQL is not valid, or you cannot see the projects it names. Try the
+          same query in Jira&apos;s own issue search first.
+        </p>
+        <h3 className={H3}>&ldquo;Showing the first 200 issues&rdquo;</h3>
+        <p className={P}>
+          Narrow the query by project, date range or issue type. Two accurate
+          reports beat one truncated one.
+        </p>
+        <h3 className={H3}>The numbers look too small or too big</h3>
+        <p className={P}>
+          Check the Measure setting and your holidays list: on Working hours a
+          Friday-evening-to-Monday ticket shows a few hours, not three days.
+          Then check the working day and week: a day of <Code>00:00</Code>–
+          <Code>23:59</Code> counts everything.
+        </p>
+        <h3 className={H3}>The gadget shows different numbers from the page</h3>
+        <p className={P}>
+          For one person it should not: the page&apos;s settings were changed
+          and not saved. Press Save these settings and reload the dashboard. Two
+          people on the same dashboard can see different numbers by design,
+          because each runs their own saved settings.
+        </p>
+        <h3 className={H3}>
+          The StatusPulse icon is missing from the gadget picker
+        </h3>
+        <p className={P}>
+          The icon is served from{" "}
+          <Code>shaileshchaudhari.vercel.app/statuspulse/icon-144.png</Code>. If
+          your network blocks that address the gadget still works — only its
+          picture is missing.
+        </p>
+
+        <h2 className={H2} id="support">
+          Reporting a problem
+        </h2>
+        <p className={P}>
+          Send the JQL, the settings you used, and roughly what you expected. If
+          you can include an issue key where the number looks wrong, that is the
+          fastest possible bug report: the calculation is deterministic, so one
+          example usually reproduces it exactly. Email{" "}
+          <a
+            href="mailto:shailesh93602@gmail.com"
+            className="text-primary underline underline-offset-4"
+          >
+            shailesh93602@gmail.com
+          </a>{" "}
+          or use the{" "}
+          <Link
+            href="/statuspulse/contact"
+            className="text-primary underline underline-offset-4"
+          >
+            StatusPulse support desk
+          </Link>
+          .
         </p>
       </div>
     </>

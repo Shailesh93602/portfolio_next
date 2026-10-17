@@ -82,4 +82,23 @@ describe("BlogFilters", () => {
     await userEvent.click(screen.getByText("All Tags"));
     expect(defaultProps.onTagChange).toHaveBeenCalledWith("");
   });
+
+  it("lets a keyboard user tab to a tag and press Enter to filter", async () => {
+    const user = userEvent.setup();
+    render(<BlogFilters {...defaultProps} />);
+    await user.tab(); // search input
+    await user.tab(); // All Tags
+    await user.tab(); // first tag
+    expect(document.activeElement).toHaveTextContent("Next.js");
+    await user.keyboard("{Enter}");
+    expect(defaultProps.onTagChange).toHaveBeenCalledWith("Next.js");
+  });
+
+  it("marks the selected tag as pressed", () => {
+    render(<BlogFilters {...defaultProps} selectedTag="Redis" />);
+    const pressed = screen
+      .getAllByRole("button", { pressed: true })
+      .map((b) => b.textContent);
+    expect(pressed).toEqual(["Redis", "Redis"]);
+  });
 });

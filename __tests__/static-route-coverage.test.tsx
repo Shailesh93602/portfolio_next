@@ -6,7 +6,6 @@ import routeModified from "@/lib/route-modified.json";
 import { STATIC_ROUTES } from "@/e2e/routes";
 import { SITE_URL } from "@/lib/blog-constants";
 import StatusPulsePrivacy from "@/app/statuspulse/privacy/page";
-import DwellPrivacy from "@/app/dwell/privacy/page";
 
 /**
  * e2e/routes.ts feeds the asset, a11y, meta and mobile-overflow browser specs.
@@ -55,6 +54,8 @@ describe("/statuspulse/privacy on a phone", () => {
 // The Marketplace listing links this page, so it must match dwell/docs/privacy.md:
 // the app reads the assignee (FIELDS in dwell/src/resolvers/jira.js), calls two
 // endpoints under a broad scope, and Runs on Atlassian eligibility is unverified.
+// The content checks the dwell repo's check:urls runs live are in
+// __tests__/statuspulse-listing-pages.test.tsx.
 function sectionText(container: HTMLElement, heading: string): string {
   const h2 = Array.from(container.querySelectorAll("h2")).find(
     (h) => h.textContent === heading
@@ -72,38 +73,34 @@ function sectionText(container: HTMLElement, heading: string): string {
 }
 
 describe("/statuspulse/privacy matches what the app does", () => {
-  it("lists the assignee among the fields read and describes the CSV export", () => {
+  it("lists the assignee among the fields read", () => {
     const { container } = render(<StatusPulsePrivacy />);
-    const reads = sectionText(container, "What StatusPulse Reads");
-    expect(reads).toMatch(/creation date, assignee display name, and\s+status/);
-    expect(reads).toMatch(/CSV export/);
+    const reads = sectionText(container, "What the app reads");
+    expect(reads).toMatch(/creation date, assignee\s+display name/);
     expect(reads).not.toMatch(/same fields/);
   });
 
   it("discloses the breadth of read:jira-work and the two endpoints called", () => {
     const { container } = render(<StatusPulsePrivacy />);
-    const perms = sectionText(container, "Requested Permissions");
+    const perms = sectionText(container, "Permissions the app requests");
     expect(perms).toMatch(/grants more than StatusPulse uses/);
     expect(perms).toContain("POST /rest/api/3/search/jql");
     expect(perms).toContain("GET /rest/api/3/status");
   });
 
-  it("is dated no earlier than the source policy that added the assignee (13 Oct 2026)", () => {
+  it("is dated no earlier than the source policy that added personal-data reporting (17 Oct 2026)", () => {
     const { container } = render(<StatusPulsePrivacy />);
     const m = (container.textContent ?? "").match(
       /Last updated: ([A-Za-z]+ \d+, \d{4})/
     );
     expect(m).not.toBeNull();
     expect(new Date(m![1]).getTime()).toBeGreaterThanOrEqual(
-      new Date("October 13, 2026").getTime()
+      new Date("October 17, 2026").getTime()
     );
   });
 
-  it.each([
-    ["/statuspulse/privacy", StatusPulsePrivacy],
-    ["/dwell/privacy", DwellPrivacy],
-  ])("%s does not claim Runs on Atlassian eligibility", (_route, Page) => {
-    const { container } = render(<Page />);
+  it("does not claim Runs on Atlassian eligibility", () => {
+    const { container } = render(<StatusPulsePrivacy />);
     expect(container.textContent ?? "").not.toMatch(/qualifies for/i);
   });
 });

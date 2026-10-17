@@ -70,4 +70,17 @@ describe("AchievementsSection", () => {
     const cards = container.querySelectorAll('[class*="CardContent"], .p-4');
     expect(cards.length).toBeGreaterThanOrEqual(achievements.length);
   });
+
+  it("exposes each profile as a keyboard-reachable link to its URL", () => {
+    render(<AchievementsSection />);
+    const linked = achievements.filter((a) => a.link);
+    const links = screen.getAllByRole("link", { name: /view profile/i });
+    expect(links.map((l) => l.getAttribute("href"))).toEqual(
+      linked.map((a) => a.link)
+    );
+    for (const l of links) {
+      expect(l).toHaveAttribute("target", "_blank");
+      expect(l).toHaveAttribute("rel", "noopener noreferrer");
+    }
+  });
 });

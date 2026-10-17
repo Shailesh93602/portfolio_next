@@ -4,7 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tooltip } from "@/components/ui/tooltip";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { contributionRange } from "@/lib/contribution-range";
 
 interface ContributionDay {
@@ -30,6 +30,13 @@ export function GitHubContributionHeatmap({
       weeks.push([...currentWeek]);
       currentWeek = [];
     }
+  });
+
+  // A label over the first week of each month, in the same column as the cells.
+  const monthLabels = weeks.map((week, i) => {
+    const month = format(parseISO(week[0].date), "MMM");
+    const prev = i > 0 ? format(parseISO(weeks[i - 1][0].date), "MMM") : "";
+    return month === prev ? "" : month;
   });
 
   // Get color based on contribution level with improved visibility
@@ -107,22 +114,20 @@ export function GitHubContributionHeatmap({
                 <span>More</span>
               </div>
 
-              {/* Display month labels */}
-              <div className="mb-2 flex">
-                <div className="flex w-full justify-between text-xs font-medium text-foreground">
-                  <span>Jan</span>
-                  <span>Feb</span>
-                  <span>Mar</span>
-                  <span>Apr</span>
-                  <span>May</span>
-                  <span>Jun</span>
-                  <span>Jul</span>
-                  <span>Aug</span>
-                  <span>Sep</span>
-                  <span>Oct</span>
-                  <span>Nov</span>
-                  <span>Dec</span>
-                </div>
+              <div
+                className="mb-2 flex gap-1.5 text-xs font-medium text-foreground"
+                aria-hidden
+                data-testid="heatmap-months"
+              >
+                {monthLabels.map((label, i) => (
+                  <span key={i} className="relative h-4 w-3.5 shrink-0">
+                    {label && (
+                      <span className="absolute left-0 whitespace-nowrap">
+                        {label}
+                      </span>
+                    )}
+                  </span>
+                ))}
               </div>
 
               <div className="flex gap-1.5">

@@ -45,8 +45,6 @@ const ROUTES = {
   "/engineering": ["app/engineering/page.tsx"],
   "/statistics": ["app/statistics/page.tsx"],
   "/now": ["app/now/page.tsx"],
-  "/dwell": ["app/dwell/page.tsx"],
-  "/dwell/privacy": ["app/dwell/privacy/page.tsx"],
   "/statuspulse": ["app/statuspulse/page.tsx"],
   "/statuspulse/privacy": ["app/statuspulse/privacy/page.tsx"],
   "/statuspulse/terms": ["app/statuspulse/terms/page.tsx"],
@@ -71,6 +69,25 @@ try {
   committed = JSON.parse(readFileSync(target, "utf8"));
 } catch {
   /* first run */
+}
+
+// A shallow clone's boundary commit looks like it added every file, so git log
+// returns that commit's date instead of nothing. Trust only full history.
+function isShallow() {
+  try {
+    return (
+      execFileSync("git", ["rev-parse", "--is-shallow-repository"], {
+        encoding: "utf8",
+      }).trim() === "true"
+    );
+  } catch {
+    return false;
+  }
+}
+
+if (isShallow()) {
+  console.warn(`[route-dates] shallow clone — keeping ${target} as committed.`);
+  process.exit(0);
 }
 
 const dates = {};

@@ -144,13 +144,13 @@ const rawProjects: Project[] = [
         label: "Matchmaking",
         value: "Dynamic Elo bands",
         description:
-          "Queue expands ±50 rating points every 3 seconds under Redlock mutex, guaranteeing fair peer pairings with zero race conditions",
+          "Search band starts at ±100 rating points and widens 20 points per second, capped at ±600; pairing runs under a Redlock on both players (backend only)",
       },
       {
         label: "Concurrency",
         value: "Redlock",
         description:
-          "Distributed lock on battle queue matching, start, submit-answer, and complete paths so horizontally-scaled instances can't double-write",
+          "Distributed lock on battle queue matching, start, submit-answer, and complete paths so two instances, once scaled out, can't double-write",
       },
       {
         label: "Resilience",
@@ -338,7 +338,7 @@ const rawProjects: Project[] = [
       {
         step: "Intelligent Guidance",
         description:
-          "Receive AI-driven recommendations for next learning steps based on analysis.",
+          "Receive rule-based recommendations for next learning steps based on analysis.",
       },
     ],
     features: [
@@ -347,7 +347,7 @@ const rawProjects: Project[] = [
       "Prescriptive Recommendations: Rule-based engine that suggests specific daily tasks to optimize learning high-yield patterns.",
       "Session Tracking: Integrated timing and activity logging for deep-work focus sessions.",
       "Visual Analytics: High-fidelity charts for weekly progress, difficulty distribution, and activity heatmaps.",
-      "Dynamic Insights: AI-driven observational feedback on streak milestones and activity trends.",
+      "Dynamic Insights: rule-based observational feedback on streak milestones and activity trends.",
     ],
     techStack: [
       "Frontend: Next.js 16, React 19, Tailwind CSS v4, Lucide React, Shadcn UI, Recharts",
@@ -358,7 +358,7 @@ const rawProjects: Project[] = [
     problem:
       "Developers often lack a centralized way to track their growth across disparate areas like DSA, projects, and daily consistency. Manual tracking is fragmented, and raw data doesn't offer actionable paths to improvement.",
     solution:
-      "DevTrack solves this by providing a unified intelligence layer. It doesn't just record data; it analyzes it using a proprietary scoring and recommendation engine to guide developers toward their technical goals.",
+      "DevTrack solves this by providing a unified intelligence layer. It doesn't just record data; it analyzes it using a rule-based scoring and recommendation engine to guide developers toward their technical goals.",
     challengesSolved:
       "The core challenge was building a real-time analytics suite that stays responsive as the number of logged activities grows. The dashboard needs nine independent aggregates, so a modular service layer issues them as one Promise.all fan-out rather than a serial waterfall and does the composite scoring in memory before anything reaches the client. The live activity feed is a Supabase Realtime postgres_changes subscription on the quoted PascalCase DailyLog table — Prisma declares no @@map, so the Supabase channel has to use the model name — filtered to the current user, so multi-tab sync costs nothing in polling.",
     showcases: [
@@ -851,7 +851,7 @@ const rawProjects: Project[] = [
       "Multi-tenant admission control fails in ways that ordinary tests do not reach. A tenant can exceed its cap; every tenant can be under its cap while the shared pool overflows, because caps sum above capacity; a worker can hold a slot forever after dying; and an at-least-once completion channel can apply an effect twice. All four are timing-dependent, so the bug that matters is the one that does not reproduce.",
     solution:
       "Remove the timing. A virtual clock, a seeded PRNG and a total order on equal-time events make the entire execution a pure function of one seed, so any failure replays exactly. On top of that, four independent checks that fail differently — invariants, a reference oracle of a deliberately different shape, mechanical mutation testing, and a self-verifying shrinker. The hardest problems turned out to be definitional rather than technical, so thirty-eight semantic ambiguities were written down and decided before any policy code existed — three of them are still open questions rather than settled ones, and are marked as such.",
-    challengesSolved: `The suite found ${numberWord(BALLAST_LEDGER_FINDINGS)} real bugs, ${numberWord(BALLAST_CHECKER_FINDINGS)} of them in the checker rather than the implementation — which was the most useful thing it taught. One invariant fired on correctly-refused stale releases because the checker was consuming the control plane\'s own account of what it had done; a checker that trusts the thing it is checking is not a checker, so it now records accepted-release facts and judges those. A differential divergence exposed a spec gap rather than a code defect: nothing had ever said whether completion releases the slot. Another came from a definition — the reference used a status map to mean "was claimed", but cancel inserts a status even for a rejected admission, so rejected-then-cancelled runs were billed for credit they never spent. Mutation testing found two pieces of dead code no behavioural test could see, including a double-release branch that was unreachable because the flag guarding it was never set to true. The deeper lesson is written into the design: an ambiguity resolved silently propagates identically into both the implementation and the reference oracle, and the differential test is then structurally blind to it. Two later findings were about the harness rather than the system: the mutation runner judged a mutant killed whenever the suite failed, so with an already-failing suite it reported a flawless 100% while real survivors went unrecorded — the number that should have raised an alarm was the reassuring one, and it now refuses to run against a red baseline. And a retry-limit branch I had written turned out to be unreachable, because contention in the model stopped after the first attempt; a reachability probe over every input shape confirmed it never fired, so the model was made to sustain contention rather than the branch being deleted. The last one was in the mutation harness itself: a negation operator spliced without parentheses turned if (a !== b) into (!a) !== b, so vacuous mutants read as survivors and the score under-read at 87.3% until it was fixed and every remaining survivor argued (95.8%).`,
+    challengesSolved: `The ledger records ${numberWord(BALLAST_LEDGER_FINDINGS)} real findings — the first nine caught by the harness itself, most of the rest by auditing the harness — and ${numberWord(BALLAST_CHECKER_FINDINGS)} of them were in the checking apparatus rather than the implementation, which was the most useful thing it taught. One invariant fired on correctly-refused stale releases because the checker was consuming the control plane\'s own account of what it had done; a checker that trusts the thing it is checking is not a checker, so it now records accepted-release facts and judges those. A differential divergence exposed a spec gap rather than a code defect: nothing had ever said whether completion releases the slot. Another came from a definition — the reference used a status map to mean "was claimed", but cancel inserts a status even for a rejected admission, so rejected-then-cancelled runs were billed for credit they never spent. Mutation testing found two pieces of dead code no behavioural test could see, including a double-release branch that was unreachable because the flag guarding it was never set to true. The deeper lesson is written into the design: an ambiguity resolved silently propagates identically into both the implementation and the reference oracle, and the differential test is then structurally blind to it. Two later findings were about the harness rather than the system: the mutation runner judged a mutant killed whenever the suite failed, so with an already-failing suite it reported a flawless 100% while real survivors went unrecorded — the number that should have raised an alarm was the reassuring one, and it now refuses to run against a red baseline. And a retry-limit branch I had written turned out to be unreachable, because contention in the model stopped after the first attempt; a reachability probe over every input shape confirmed it never fired, so the model was made to sustain contention rather than the branch being deleted. The last one was in the mutation harness itself: a negation operator spliced without parentheses turned if (a !== b) into (!a) !== b, so vacuous mutants read as survivors and the score under-read at 87.3% until it was fixed and every remaining survivor argued (95.8%).`,
   },
   {
     id: "grounded",
