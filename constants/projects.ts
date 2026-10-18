@@ -670,9 +670,7 @@ const rawProjects: Project[] = [
           items: [
             "Next.js (App Router) web dashboard",
             "WhatsApp text + media in 3 languages (en/hi/gu)",
-            // The MCP server (@khatago/mcp) and the #undo / void endpoint are
-            // local work, not on KhataGO main. They return once SHIP-01 lands
-            // on main and is deployed (todos HON-01).
+            // Unshipped features are listed in __tests__/helpers/unshipped-features.ts (HON-01).
             "Daily reminder cron (Vercel scheduled)",
           ],
         },

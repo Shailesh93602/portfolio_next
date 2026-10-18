@@ -184,25 +184,14 @@ describe("KhataGO eval count", () => {
       expect(text).not.toMatch(/not yet deployed/);
     }
   });
-
-  it("does not advertise KhataGO features that are not on its main branch", () => {
-    // The MCP server (mcp-server/) and the #undo / void endpoint exist only as
-    // local work in KhataGO, not on origin/main (todos HON-01 / SHIP-01).
-    const text = JSON.stringify(byId("khatago"));
-    expect(text).not.toMatch(/@khatago\/mcp|Model Context Protocol|MCP/);
-    expect(text).not.toMatch(/#undo|\/void\b|Voiding/);
-  });
 });
 
 describe("EduScale matchmaking claims match what is on EduScale main", () => {
-  it("does not advertise the unshipped matchmaking UI", () => {
-    // Frontend/src/app/instant-battle/page.tsx is a ComingSoon stub on main;
-    // only Backend/src/services/matchmaking is shipped.
-    const text = JSON.stringify(byId("eduscale"));
-    expect(text).not.toMatch(/radar/i);
-    expect(text).not.toMatch(/3-second match confirmations/);
-    expect(text).not.toMatch(/Instant (Battle )?Matchmaking/);
-    expect(text).toMatch(/frontend is not shipped yet/);
+  it("says the matchmaking frontend is not shipped", () => {
+    // What it must NOT say lives in __tests__/helpers/unshipped-features.ts.
+    expect(JSON.stringify(byId("eduscale"))).toMatch(
+      /frontend is not shipped yet/
+    );
   });
 });
 
