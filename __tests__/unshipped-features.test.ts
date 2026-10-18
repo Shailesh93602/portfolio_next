@@ -78,6 +78,23 @@ function gitSucceeds(repoDir: string, args: string[]): boolean {
   }
 }
 
+function servedSha(feature: UnshippedFeature): string | null {
+  try {
+    const body = execFileSync(
+      "curl",
+      ["-fsS", "--max-time", "10", feature.deployed.url],
+      { encoding: "utf8" }
+    );
+    const sha = feature.deployed.shaPath.reduce<unknown>(
+      (node, key) => (node as Record<string, unknown> | undefined)?.[key],
+      JSON.parse(body)
+    );
+    return typeof sha === "string" && /^[0-9a-f]{7,40}$/.test(sha) ? sha : null;
+  } catch {
+    return null;
+  }
+}
+
 const label = (f: UnshippedFeature) => `${f.project}: ${f.feature}`;
 
 describe.each(UNSHIPPED_FEATURES.map((f) => [label(f), f] as const))(
@@ -101,16 +118,19 @@ describe.each(UNSHIPPED_FEATURES.map((f) => [label(f), f] as const))(
     });
 
     const repoDir = join(process.cwd(), "..", feature.repo);
-    const refExists =
-      existsSync(repoDir) &&
-      gitSucceeds(repoDir, ["rev-parse", "--verify", "-q", feature.ref]);
+    const deployedSha = existsSync(repoDir) ? servedSha(feature) : null;
 
     // CI has no sibling checkout; locally this is what retires the entry.
-    (refExists ? it : it.skip)(
-      `is still absent on ${feature.repo} ${feature.ref}`,
+    (deployedSha ? it : it.skip)(
+      `is still absent from the commit ${feature.deployed.url} serves`,
       () => {
-        const present = feature.absentOnMain.filter((path) =>
-          gitSucceeds(repoDir, ["cat-file", "-e", `${feature.ref}:${path}`])
+        const sha = deployedSha as string;
+        // An unfetched commit would make every path look absent.
+        expect(
+          gitSucceeds(repoDir, ["cat-file", "-e", `${sha}^{commit}`])
+        ).toBe(true);
+        const present = feature.absentFromDeployed.filter((path) =>
+          gitSucceeds(repoDir, ["cat-file", "-e", `${sha}:${path}`])
         );
         expect(present).toEqual([]);
       }

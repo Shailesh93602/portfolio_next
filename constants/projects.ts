@@ -196,8 +196,7 @@ const rawProjects: Project[] = [
     ],
     features: [
       "Dynamic Career Roadmaps: structured learning paths with multi-stage progress tracking and milestone achievements.",
-      // The matchmaking UI (instant-battle) is a Coming Soon page on EduScale
-      // main; only the backend service is shipped. Say exactly that.
+      // The instant-battle UI waits on the API deploy: __tests__/helpers/unshipped-features.ts.
       "Elo-band matchmaking service (backend only): a Redis sorted-set queue whose search band starts at ±100 and widens 20 points per second up to ±600. The instant-battle frontend is not shipped yet.",
       "Real-time Battle Zone: Low-latency competitive coding environment with live rankings and peer challenges.",
       "Coding Challenges: Integrated compiler support for multiple languages with automated test suite validation.",
@@ -670,7 +669,8 @@ const rawProjects: Project[] = [
           items: [
             "Next.js (App Router) web dashboard",
             "WhatsApp text + media in 3 languages (en/hi/gu)",
-            // Unshipped features are listed in __tests__/helpers/unshipped-features.ts (HON-01).
+            "Model Context Protocol (MCP) server over stdio JSON-RPC 2.0, run locally against one user's ledger (KHATAGO_USER_ID); write tools take a dry-run flag",
+            "Voiding: '#undo' on WhatsApp voids the latest transaction once per message; the dashboard calls POST /api/transactions/[id]/void, audited",
             "Daily reminder cron (Vercel scheduled)",
           ],
         },
@@ -718,10 +718,12 @@ const rawProjects: Project[] = [
       "Financial Analytics: Real-time charts for sales, purchases, and net profit trends.",
       "Zero-App Footprint: Manage your entire business accounting without ever leaving WhatsApp.",
       "Bring-your-own AI key: add your own Gemini key in Settings, encrypted at rest, removable at any time.",
+      "MCP server: summaries, receivables, a customer's ledger, recording a payment and creating a transaction, callable from Claude Desktop or Cursor.",
+      "Voiding: send '#undo' on WhatsApp or void from the dashboard. A voided row leaves every total and export, and a sale whose receivable already has payments is refused.",
     ],
     techStack: [
       "Frontend: Next.js (App Router), React, Tailwind CSS, Recharts, i18next",
-      "Backend: Next.js API routes (Node.js, TypeScript), Prisma ORM, PostgreSQL; a standalone Node worker process",
+      "Backend: Next.js API routes (Node.js, TypeScript), Prisma ORM, PostgreSQL; a standalone Node worker process; a stdio MCP server",
       "AI & Messaging: Google Gemini AI (function-calling + Vision OCR), WhatsApp Cloud API; agent loop as a resumable state machine, promptproof evals, LangGraph.js as a comparison engine behind a flag, MongoDB adapter for traces (opt-in)",
       "Infrastructure: Supabase (Auth & Real-time), Vercel for the web app, one Docker image running web + worker as two processes, Postgres-backed job queue with a dead-letter queue",
     ],

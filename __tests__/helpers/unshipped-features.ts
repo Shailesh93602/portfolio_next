@@ -1,14 +1,15 @@
-// Local-only features in sibling repos that this site must not advertise (todos HON-01).
-// When one ships to `ref`, the guard fails: delete its entry and restore the claim.
+// Features in sibling repos that this site must not advertise until they are live (todos HON-01).
+// When one is live, the guard fails: delete its entry and restore the claim.
 export interface UnshippedFeature {
   /** Project id in constants/projects.ts; scopes the search to that project. */
   project: string;
   feature: string;
-  /** Sibling checkout next to this repo, and the ref that counts as shipped. */
+  /** Sibling checkout next to this repo. */
   repo: string;
-  ref: string;
-  /** Paths whose absence on `ref` is the evidence the feature is unshipped. */
-  absentOnMain: string[];
+  /** The deploy the feature depends on; its JSON carries the served commit at `shaPath`. */
+  deployed: { url: string; shaPath: string[] };
+  /** Paths whose absence from the deployed commit is the evidence the feature is not live. */
+  absentFromDeployed: string[];
   patterns: RegExp[];
   /** Text this site carried before commit 13df30b; every pattern must match one. */
   formerClaims: string[];
@@ -16,33 +17,15 @@ export interface UnshippedFeature {
 
 export const UNSHIPPED_FEATURES: UnshippedFeature[] = [
   {
-    project: "khatago",
-    feature: "MCP server (@khatago/mcp)",
-    repo: "KhataGO",
-    ref: "origin/main",
-    absentOnMain: ["mcp-server/server.ts"],
-    patterns: [/@khatago\/mcp/i, /Model Context Protocol/i, /\bMCP\b/],
-    formerClaims: [
-      "Native Model Context Protocol (MCP) Server (@khatago/mcp) with stdio JSON-RPC 2.0 tools",
-    ],
-  },
-  {
-    project: "khatago",
-    feature: "Transaction voiding and #undo",
-    repo: "KhataGO",
-    ref: "origin/main",
-    absentOnMain: ["app/api/transactions/[id]/void/route.ts"],
-    patterns: [/#undo/i, /\/void\b/i, /\bvoiding\b/i],
-    formerClaims: [
-      "Offline #undo and voiding escape hatch (POST /api/transactions/[id]/void)",
-    ],
-  },
-  {
     project: "eduscale",
     feature: "Matchmaking frontend (radar HUD, instant battle)",
     repo: "EduScale",
-    ref: "origin2/main",
-    absentOnMain: [
+    // The UI is live on eduscale.vercel.app but needs the API, whose deploy still serves f87d81a.
+    deployed: {
+      url: "https://api-eduscale.vercel.app/api/v1/health",
+      shaPath: ["version", "sha"],
+    },
+    absentFromDeployed: [
       "Frontend/src/hooks/useMatchmaking.ts",
       "Frontend/src/components/Battle/MatchmakingRadar.tsx",
     ],
