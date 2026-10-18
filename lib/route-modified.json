@@ -1,16 +1,18 @@
 {
-  "/": "2026-10-16",
+  "/": "2026-10-18",
   "/blogs": "2026-10-16",
   "/about": "2026-04-14",
   "/contact": "2026-09-03",
-  "/portfolio": "2026-10-16",
+  "/portfolio": "2026-10-18",
   "/services": "2026-09-03",
-  "/engineering": "2026-09-03",
+  "/engineering": "2026-10-17",
   "/statistics": "2026-04-19",
   "/now": "2026-09-05",
-  "/statuspulse": "2026-10-16",
-  "/statuspulse/privacy": "2026-10-16",
-  "/statuspulse/terms": "2026-10-12",
+  "/statuspulse": "2026-10-18",
+  "/statuspulse/privacy": "2026-10-17",
+  "/statuspulse/terms": "2026-10-17",
   "/statuspulse/contact": "2026-10-12",
-  "__projects__": "2026-10-16"
+  "/statuspulse/troubleshooting": "2026-10-18",
+  "/statuspulse/switching": "2026-10-18",
+  "__projects__": "2026-10-18"
 }
