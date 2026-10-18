@@ -49,6 +49,8 @@ const ROUTES = {
   "/statuspulse/privacy": ["app/statuspulse/privacy/page.tsx"],
   "/statuspulse/terms": ["app/statuspulse/terms/page.tsx"],
   "/statuspulse/contact": ["app/statuspulse/contact/page.tsx"],
+  "/statuspulse/troubleshooting": ["app/statuspulse/troubleshooting/page.tsx"],
+  "/statuspulse/switching": ["app/statuspulse/switching/page.tsx"],
 };
 
 /** Committer date (%cs, YYYY-MM-DD) of the newest commit touching any path. */

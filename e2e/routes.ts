@@ -23,6 +23,8 @@ export const STATIC_ROUTES = [
   "/statuspulse/privacy",
   "/statuspulse/terms",
   "/statuspulse/contact",
+  "/statuspulse/troubleshooting",
+  "/statuspulse/switching",
   "/statistics",
 ] as const;
 

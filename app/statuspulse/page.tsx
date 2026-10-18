@@ -34,10 +34,11 @@ export const metadata: Metadata = {
   },
 };
 
-// Source copy: dwell/docs/user-guide.md and dwell/docs/troubleshooting.md.
+// Source copy: dwell/docs/user-guide.md. Troubleshooting and switching have
+// their own pages (dwell/docs/troubleshooting.md, dwell/docs/switching.md).
 // The dwell repo's `npm run check:urls` fetches this page and fails the
 // listing if it overclaims (the code has four fixed weeks and nine zones).
-const lastUpdated = "October 17, 2026";
+const lastUpdated = "October 18, 2026";
 
 const breadcrumbSchema = {
   "@context": "https://schema.org",
@@ -130,6 +131,20 @@ export default function StatusPulseDocsPage() {
           </Link>
           <span className="text-muted-foreground">•</span>
           <Link
+            href="/statuspulse/troubleshooting"
+            className="underline underline-offset-4 hover:text-primary"
+          >
+            Troubleshooting
+          </Link>
+          <span className="text-muted-foreground">•</span>
+          <Link
+            href="/statuspulse/switching"
+            className="underline underline-offset-4 hover:text-primary"
+          >
+            Switching from another app
+          </Link>
+          <span className="text-muted-foreground">•</span>
+          <Link
             href="/statuspulse/contact"
             className="underline underline-offset-4 hover:text-primary"
           >
@@ -179,9 +194,28 @@ export default function StatusPulseDocsPage() {
         <p className={P}>
           <strong className={STRONG}>By issue</strong> — one row per issue,
           showing its current status, how long it has been sitting there{" "}
-          <em>since it last arrived</em>, and which status consumed the most of
-          its life. Those are different numbers on an issue that came back from
-          review, and the column means the second one.
+          <em>since it last arrived</em>, the total of <em>every visit</em> to
+          that status, and which status consumed the most of its life. The first
+          two are different numbers on an issue that came back from review.
+        </p>
+
+        <h3 className={H3}>Starting from a preset</h3>
+        <p className={P}>
+          <strong className={STRONG}>Start from a preset</strong> above the form
+          fills in the query and how time is counted, for people coming from
+          another time-in-status app. There is nothing to import: every number
+          comes from your Jira issue history. A preset never changes your
+          timezone, working week, day or holidays. Press{" "}
+          <strong className={STRONG}>Run report</strong>, then{" "}
+          <strong className={STRONG}>Save these settings</strong> if you want to
+          keep it. See the{" "}
+          <Link
+            href="/statuspulse/switching"
+            className="text-primary underline underline-offset-4"
+          >
+            switching guide
+          </Link>{" "}
+          for how each preset lines up with the app you used before.
         </p>
 
         <h2 className={H2}>The settings</h2>
@@ -234,8 +268,10 @@ export default function StatusPulseDocsPage() {
         </p>
         <p className={P}>
           It has no settings of its own, on purpose. A second place to configure
-          the same thing is a second place for the two to disagree. Change the
-          query on the page and the gadget follows.
+          the same thing is a second place for the two to disagree, and the
+          first time your dashboard and your report disagreed you would be right
+          to stop trusting both. Change the query on the page and the gadget
+          follows.
         </p>
         <p className={P}>
           <strong className={STRONG}>One consequence, stated plainly:</strong>{" "}
@@ -310,81 +346,30 @@ export default function StatusPulseDocsPage() {
             </Link>{" "}
             for exactly what is read, stored and sent.
           </Item>
-          <Item>
-            It is not a time-tracking tool. It measures how long work sat in a
-            status, not how long a person spent on it. If you need to know who
-            worked how many hours, you want a worklog app.
-          </Item>
         </ul>
+
+        <h2 className={H2}>What StatusPulse does not do</h2>
+        <p className={P}>
+          It is not a time-tracking tool. It measures how long work sat in a
+          status, not how long a person spent on it. If you need to know who
+          worked how many hours, you want a worklog app, and we would rather
+          tell you that than sell you the wrong thing.
+        </p>
 
         <h2 className={H2} id="troubleshooting">
           Troubleshooting
         </h2>
-        <h3 className={H3}>
-          A blank page, or a loading placeholder that never finishes
-        </h3>
         <p className={P}>
-          Almost always a DNS or network problem on your side, not the app.
-          Every Forge app loads its interface from{" "}
-          <Code>*.cdn.prod.atlassian-dev.net</Code>. If your network cannot
-          resolve or reach that domain, Jira draws the frame and then waits for
-          an app that never loads, with no error message. Confirm it by running{" "}
-          <Code>nslookup probe.cdn.prod.atlassian-dev.net</Code>: if that
-          returns nothing or <Code>NXDOMAIN</Code>, that is your answer.
-        </p>
-        <ul className={UL}>
-          <Item>
-            <strong className={STRONG}>Router or ISP DNS.</strong> Point the
-            machine at a public resolver such as <Code>8.8.8.8</Code> and{" "}
-            <Code>1.1.1.1</Code>, then flush the DNS cache.
-          </Item>
-          <Item>
-            <strong className={STRONG}>Corporate firewall or proxy.</strong> Ask
-            IT to allow <Code>*.cdn.prod.atlassian-dev.net</Code>, which
-            Atlassian documents as required for Forge apps.
-          </Item>
-          <Item>
-            <strong className={STRONG}>A browser extension.</strong> Ad blockers
-            sometimes block third-party frames. Pause them for your Jira site
-            and reload.
-          </Item>
-          <Item>
-            <strong className={STRONG}>DNS filtering</strong> such as a Pi-hole,
-            NextDNS or OpenDNS with an aggressive blocklist.
-          </Item>
-        </ul>
-        <h3 className={H3}>&ldquo;Jira rejected the search&rdquo;</h3>
-        <p className={P}>
-          The JQL is not valid, or you cannot see the projects it names. Try the
-          same query in Jira&apos;s own issue search first.
-        </p>
-        <h3 className={H3}>&ldquo;Showing the first 200 issues&rdquo;</h3>
-        <p className={P}>
-          Narrow the query by project, date range or issue type. Two accurate
-          reports beat one truncated one.
-        </p>
-        <h3 className={H3}>The numbers look too small or too big</h3>
-        <p className={P}>
-          Check the Measure setting and your holidays list: on Working hours a
-          Friday-evening-to-Monday ticket shows a few hours, not three days.
-          Then check the working day and week: a day of <Code>00:00</Code>–
-          <Code>23:59</Code> counts everything.
-        </p>
-        <h3 className={H3}>The gadget shows different numbers from the page</h3>
-        <p className={P}>
-          For one person it should not: the page&apos;s settings were changed
-          and not saved. Press Save these settings and reload the dashboard. Two
-          people on the same dashboard can see different numbers by design,
-          because each runs their own saved settings.
-        </p>
-        <h3 className={H3}>
-          The StatusPulse icon is missing from the gadget picker
-        </h3>
-        <p className={P}>
-          The icon is served from{" "}
-          <Code>shaileshchaudhari.vercel.app/statuspulse/icon-144.png</Code>. If
-          your network blocks that address the gadget still works — only its
-          picture is missing.
+          A blank page, &ldquo;Jira rejected the search&rdquo;, the 200-issue
+          cap, partial history, renamed statuses, and a gadget that disagrees
+          with the page are all covered in the{" "}
+          <Link
+            href="/statuspulse/troubleshooting"
+            className="text-primary underline underline-offset-4"
+          >
+            troubleshooting guide
+          </Link>
+          .
         </p>
 
         <h2 className={H2} id="support">

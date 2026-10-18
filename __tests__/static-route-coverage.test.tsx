@@ -19,6 +19,8 @@ describe("every static route is covered", () => {
       "/statuspulse/privacy",
       "/statuspulse/terms",
       "/statuspulse/contact",
+      "/statuspulse/troubleshooting",
+      "/statuspulse/switching",
     ]) {
       expect(STATIC_ROUTES).toContain(r);
     }

@@ -103,6 +103,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     ...(
       [
+        ["/statuspulse/troubleshooting", "monthly"],
+        ["/statuspulse/switching", "monthly"],
         ["/statuspulse/privacy", "yearly"],
         ["/statuspulse/terms", "yearly"],
         ["/statuspulse/contact", "yearly"],
