@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   title: "Blog — Shailesh Chaudhari",
   // A fifth hand-typed copy of the years figure, and the one that had drifted
   // furthest: "2+" against 2.5 everywhere else. Rendered from PROFILE now.
-  description: `Technical writing from ${PROFILE_META.yearsFloor} of shipping full-stack products. Topics: Next.js, NestJS, authentication, Stripe, DSA, and lessons from real production work.`,
+  description: `Technical writing from ${PROFILE_META.yearsFloor} of shipping production software: webhook idempotency, concurrency, RAG guardrails and tests that prove real outcomes.`,
   alternates: {
     canonical: `${SITE_URL}/blogs`,
   },

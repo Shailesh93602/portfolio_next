@@ -8,6 +8,7 @@ import Navbar from "@/components/navbar/index";
 import { Providers } from "./providers";
 import { COMPANY_LINKS, SOCIAL_LINKS } from "@/lib/constants";
 import Script from "next/script";
+import Link from "next/link";
 import { SITE_URL, BLOG_AUTHOR, META_DEFAULTS } from "@/lib/blog-constants";
 import { personSchema, websiteSchema } from "@/lib/structured-data";
 
@@ -191,6 +192,14 @@ export default function RootLayout({
                       >
                         Vercel
                       </a>
+                      {". "}
+                      {/* The only crawlable link to /now; without it the page is an orphan. */}
+                      <Link
+                        href="/now"
+                        className="font-medium underline underline-offset-4 hover:text-primary"
+                      >
+                        What I&apos;m doing now
+                      </Link>
                       {"."}
                     </p>
                   </div>

@@ -8,6 +8,7 @@ import { getPostBySlug, getRelatedPosts, blogPosts } from "@/lib/blog-data";
 import { makeScrollRegionsFocusable } from "@/lib/blog-html";
 import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 import { ReadingProgressBar } from "@/components/ReadingProgressBar";
+import { personRef } from "@/lib/structured-data";
 
 const getPostData = (slug: string) => {
   const post = getPostBySlug(slug);
@@ -35,7 +36,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // Google only renders ~60. "| Shailesh Chaudhari" keeps the personal-brand
   // signal without pushing the whole tag past the point of truncation.
   const title = `${post.title} | Shailesh Chaudhari`;
-  const description = `${post.description} Written by Shailesh Chaudhari, Full-Stack Developer and Software Engineer.`;
+  // The post's own summary. A fixed byline suffix pushed every description
+  // past 300 characters, so Google never showed it.
+  const description = post.description;
 
   return {
     title,
@@ -47,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       "Full Stack Developer",
       "Software Engineer",
     ],
-    authors: [{ name: "Shailesh Chaudhari" }],
+    authors: [{ name: "Shailesh Chaudhari", url: `${SITE_URL}/about` }],
     openGraph: {
       title,
       description,
@@ -115,12 +118,12 @@ export default async function Page({ params }: Props) {
     mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}/blog/${slug}` },
     headline: post.title,
     description: post.description,
-    author: { "@id": `${SITE_URL}/#person` },
+    author: personRef,
     datePublished: post.date,
     dateModified: post.lastModified || post.date,
     image: `${SITE_URL}${post.image}`,
     keywords: [...post.tags, "Shailesh Chaudhari", "Full Stack Development"],
-    publisher: { "@id": `${SITE_URL}/#person` },
+    publisher: personRef,
     inLanguage: "en-US",
     wordCount,
     timeRequired: `PT${readMin}M`,

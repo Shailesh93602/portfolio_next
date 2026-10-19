@@ -2,6 +2,7 @@ export { metadata } from "./metadata";
 import BlogsContent from "./BlogsContent";
 import { SITE_URL, BLOG_AUTHOR } from "@/lib/blog-constants";
 import { publishedPosts, getAllTags } from "@/lib/blog-data";
+import { personRef } from "@/lib/structured-data";
 
 const blogListSchema = {
   "@context": "https://schema.org",
@@ -10,8 +11,8 @@ const blogListSchema = {
   url: `${SITE_URL}/blogs`,
   name: `${BLOG_AUTHOR.name}'s Blog`,
   description:
-    "Technical articles on web development, full-stack engineering, and software career by Shailesh Chaudhari.",
-  author: { "@id": `${SITE_URL}/#person` },
+    "Engineering write-ups by Shailesh Chaudhari on webhook idempotency, concurrency, RAG guardrails and tests that prove real outcomes.",
+  author: personRef,
   breadcrumb: {
     "@type": "BreadcrumbList",
     itemListElement: [
@@ -30,7 +31,7 @@ const blogListSchema = {
     description: p.description,
     url: `${SITE_URL}/blog/${p.slug}`,
     datePublished: p.date,
-    author: { "@id": `${SITE_URL}/#person` },
+    author: personRef,
     keywords: p.tags.join(", "),
   })),
 };

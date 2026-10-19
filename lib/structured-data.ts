@@ -1,6 +1,7 @@
 import { SITE_URL, BLOG_AUTHOR, META_DEFAULTS } from "./blog-constants";
 import { COMPANY_LINKS } from "./constants";
 import { PROFILE, PROFILE_META } from "./profile";
+import routeModified from "./route-modified.json";
 
 // Site-wide Person and WebSite entities, held by __tests__/seo-identity.test.ts.
 // No `seeks`/`estimatedSalary` (job-search signal) and no SearchAction (retired).
@@ -20,7 +21,8 @@ export const personSchema = {
     height: 614,
   },
   email: PROFILE.contact.email,
-  nationality: "Indian",
+  // schema.org nationality expects a Country, not Text.
+  nationality: { "@type": "Country", name: "India" },
   homeLocation: {
     "@type": "Place",
     // Where he's based day-to-day (Ahmedabad). His hometown
@@ -158,6 +160,16 @@ export const personSchema = {
   ],
 } as const;
 
+// Author/publisher reference for articles. Google recommends author.name and
+// author.url on an Article; a bare @id leaves both to cross-block resolution.
+// The url is /about because that page carries the ProfilePage markup.
+export const personRef = {
+  "@type": "Person",
+  "@id": `${SITE_URL}/#person`,
+  name: BLOG_AUTHOR.name,
+  url: `${SITE_URL}/about`,
+} as const;
+
 // Google reads WebSite `name` on the home page as the site name.
 export const websiteSchema = {
   "@context": "https://schema.org",
@@ -177,6 +189,8 @@ export const profilePageSchema = {
   "@id": `${SITE_URL}/about`,
   url: `${SITE_URL}/about`,
   name: `About ${BLOG_AUTHOR.name}`,
+  // Recommended by Google's ProfilePage docs; the same date the sitemap uses.
+  dateModified: (routeModified as Record<string, string | null>)["/about"],
   breadcrumb: {
     "@type": "BreadcrumbList",
     itemListElement: [

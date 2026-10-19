@@ -381,3 +381,65 @@ test.describe("A search for the owner's name finds a page about him", () => {
     expect(profile?.mainEntity?.name).toBe(NAME);
   });
 });
+
+// Google's documented structured-data requirements, on the built pages:
+// BreadcrumbList needs at least two ListItems; Article author should carry
+// name and url; ProfilePage recommends dateModified. Found missing by the
+// 2026-10-19 crawl of the live site.
+test.describe("Structured data meets Google's documented requirements", () => {
+  type Node = Record<string, unknown>;
+  const nodesOf = (html: string): Node[] =>
+    [
+      ...html.matchAll(
+        /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g
+      ),
+    ].flatMap((m) => {
+      const parsed = JSON.parse(m[1]);
+      return parsed["@graph"] ?? [parsed];
+    });
+  const breadcrumbsOf = (nodes: Node[]): Node[] =>
+    nodes.flatMap((n) => [
+      ...(n["@type"] === "BreadcrumbList" ? [n] : []),
+      ...(n.breadcrumb ? [n.breadcrumb as Node] : []),
+    ]);
+
+  test("every BreadcrumbList has at least two items", async ({ request }) => {
+    const short: string[] = [];
+    for (const route of [...STATIC_ROUTES, ...PROJECT_ROUTES, ...BLOG_ROUTES]) {
+      const { html } = await head(request, route);
+      for (const b of breadcrumbsOf(nodesOf(html)))
+        if ((b.itemListElement as unknown[]).length < 2) short.push(route);
+    }
+    expect(short, "single-item breadcrumbs").toEqual([]);
+  });
+
+  test("every BlogPosting names its author with a url", async ({ request }) => {
+    const bad: string[] = [];
+    for (const route of ["/blogs", ...BLOG_ROUTES]) {
+      const { html } = await head(request, route);
+      const posts = nodesOf(html).flatMap((n) =>
+        n["@type"] === "BlogPosting"
+          ? [n]
+          : ((n.blogPost as Node[] | undefined) ?? [])
+      );
+      for (const p of posts) {
+        const a = p.author as { name?: string; url?: string } | undefined;
+        if (!a?.name || !a?.url) bad.push(`${route}: ${p.headline}`);
+      }
+    }
+    expect(bad, "BlogPosting without author.name/url").toEqual([]);
+  });
+
+  test("/about ProfilePage carries dateModified", async ({ request }) => {
+    const { html } = await head(request, "/about");
+    const profile = nodesOf(html).find((n) => n["@type"] === "ProfilePage");
+    expect(String(profile?.dateModified)).toMatch(/^\d{4}-\d{2}-\d{2}/);
+  });
+
+  test("/now is reachable by a crawlable link (not an orphan)", async ({
+    request,
+  }) => {
+    const { html } = await head(request, "/");
+    expect(html).toMatch(/<a[^>]+href="\/now"/);
+  });
+});

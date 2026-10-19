@@ -7,10 +7,15 @@ import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 import { homeFaq } from "@/lib/faq-data";
 import { PROFILE } from "@/lib/profile";
 import {
+  personRef,
   personSchema,
   profilePageSchema,
   websiteSchema,
 } from "@/lib/structured-data";
+import { generateMetadata as postMetadata } from "@/app/blog/[slug]/page";
+import { metadata as blogsMetadata } from "@/app/blogs/metadata";
+import { publishedPosts } from "@/lib/blog-data";
+import routeModified from "@/lib/route-modified.json";
 
 // What a search for the owner's name is decided on. None of it breaks a page
 // when it goes missing; e2e/meta-and-schema.spec.ts checks the built site.
@@ -79,6 +84,46 @@ describe("/about ProfilePage", () => {
     const main = profilePageSchema.mainEntity;
     expect(main.name).toBe(NAME);
     expect(main["@id"]).toBe(personSchema["@id"]);
+  });
+
+  it("carries dateModified (Google-recommended), the same date the sitemap uses", () => {
+    expect(profilePageSchema.dateModified).toBe(routeModified["/about"]);
+    expect(profilePageSchema.dateModified).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+});
+
+describe("schema.org types Google and validators check", () => {
+  it("nationality is a Country, not Text", () => {
+    expect(personSchema.nationality).toEqual({
+      "@type": "Country",
+      name: "India",
+    });
+  });
+
+  it("the article author reference carries name and url (Google's author.name/author.url)", () => {
+    expect(personRef["@id"]).toBe(personSchema["@id"]);
+    expect(personRef["@type"]).toBe("Person");
+    expect(personRef.name).toBe(NAME);
+    // The page with the ProfilePage markup, as Google's author guidance asks.
+    expect(personRef.url).toBe(profilePageSchema.url);
+  });
+});
+
+describe("blog descriptions", () => {
+  it("a post's meta description is its own summary, with no boilerplate suffix", async () => {
+    for (const post of publishedPosts) {
+      const m = await postMetadata({
+        params: Promise.resolve({ slug: post.slug }),
+      });
+      expect(m.description).toBe(post.description);
+    }
+  });
+
+  it("/blogs does not advertise topics only the archived (noindexed) posts cover", () => {
+    const d = String(blogsMetadata.description);
+    for (const stale of ["Stripe", "DSA", "NestJS", "authentication"])
+      expect(d).not.toContain(stale);
+    expect(d.length).toBeLessThanOrEqual(160);
   });
 });
 
