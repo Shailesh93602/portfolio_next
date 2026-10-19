@@ -29,7 +29,9 @@ test.describe("SEO — structured data and meta tags", () => {
     expect(person.sameAs.length).toBeGreaterThan(3);
   });
 
-  test("layout has WebSite schema with SearchAction", async ({ page }) => {
+  // The SearchAction is gone on purpose: Google retired the sitelinks search
+  // box on 2024-11-21, and the template used ?search= where /blogs reads ?q=.
+  test("layout has WebSite schema named after the person", async ({ page }) => {
     await page.goto("/");
     const schemas = await page.evaluate(() =>
       Array.from(
@@ -38,8 +40,8 @@ test.describe("SEO — structured data and meta tags", () => {
     );
     const website = schemas.find((s) => s["@type"] === "WebSite");
     expect(website).toBeDefined();
-    expect(website.potentialAction).toBeDefined();
-    expect(website.potentialAction["@type"]).toBe("SearchAction");
+    expect(website.name).toBe("Shailesh Chaudhari");
+    expect(website.potentialAction).toBeUndefined();
   });
 
   test("portfolio page has CollectionPage + SoftwareApplication schemas", async ({

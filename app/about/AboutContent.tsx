@@ -57,7 +57,7 @@ export default function AboutContent() {
           >
             <div className="mb-8 space-y-4">
               <h1 className="text-5xl font-bold">
-                About <span className="text-primary">Me</span>
+                About <span className="text-primary">{PROFILE.name.full}</span>
               </h1>
               {/* <h2 className="text-3xl font-semibold text-primary">
                 Fullstack Developer

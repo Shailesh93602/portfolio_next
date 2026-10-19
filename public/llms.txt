@@ -2,6 +2,8 @@
 
 > Software Engineer (~2.5 years), TypeScript/Node, backend-strongest, applied AI. Current role: Node.js backend of ContextQA's core QA-automation platform (test-execution engine, live browser-session streaming, integrations engine, session control plane on GKE).
 
+Also written Shailesh Chaudhary or Shaileshbhai Chaudhari; the handle shailesh93602 is his on GitHub and HackerRank.
+
 Shailesh Chaudhari is a Software Engineer based in Ahmedabad, Gujarat, India (originally from Patan, Gujarat). BE in Information Technology from Government Engineering College, Bhavnagar (2024, CGPA 7.99). 640+ problems solved on GeeksforGeeks.
 
 Professional timeline:
@@ -51,3 +53,8 @@ TypeScript · JavaScript · SQL · C++ (DSA) · React · Next.js · Tailwind CSS
 - GitHub: https://github.com/shailesh93602
 - LinkedIn: https://www.linkedin.com/in/shaileshbhaichaudhari/
 - Resume: https://shaileshchaudhari.vercel.app/Shailesh_Chaudhari_Resume.pdf
+
+## Optional
+
+- [Full profile](https://shaileshchaudhari.vercel.app/llms-full.txt): The long version of this file — every project, the full work history, skills and achievements
+- [Resume](https://shaileshchaudhari.vercel.app/Shailesh_Chaudhari_Resume.pdf): One-page résumé (PDF)

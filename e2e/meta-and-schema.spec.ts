@@ -324,3 +324,60 @@ test.describe("Sitemap and robots agree with what is actually servable", () => {
     }
   });
 });
+
+/**
+ * The name query, on the built site.
+ *
+ * __tests__/seo-identity.test.ts holds the source objects; this holds what
+ * `next start` actually serves, because a unit test of an object proves
+ * nothing about whether the layout still renders it.
+ */
+test.describe("A search for the owner's name finds a page about him", () => {
+  const NAME = "Shailesh Chaudhari";
+  const VARIANTS = ["Shailesh Chaudhary", "Shaileshbhai Chaudhari"];
+  const ldBlocks = (html: string) =>
+    [
+      ...html.matchAll(
+        /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g
+      ),
+    ].map((m) => JSON.parse(m[1]));
+
+  test("home: title, H1, canonical and Person entity carry the name", async ({
+    request,
+  }) => {
+    const m = await head(request, "/");
+    expect(m.title).toContain(NAME);
+    expect(m.description!.startsWith(NAME)).toBe(true);
+    expect(m.canonical).toBe(`https://${SITE_HOST}`);
+    const h1 = m.html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1] ?? "";
+    expect(h1.replace(/<[^>]+>/g, "")).toContain(NAME);
+
+    const person = ldBlocks(m.html).find((b) => b["@type"] === "Person");
+    expect(person?.name).toBe(NAME);
+    // Scripts stripped: the JSON-LD itself contains every variant, so
+    // searching the raw HTML would pass on the claim it is meant to check.
+    const visible = m.html.replace(/<script[\s\S]*?<\/script>/g, "");
+    for (const v of VARIANTS) {
+      expect(person.alternateName).toContain(v);
+      // Structured data must match the rendered page: each spelling the
+      // markup claims is also visible text (the "Who is" FAQ answer).
+      expect(visible, `"${v}" is in the markup but not on the page`).toContain(
+        v
+      );
+    }
+    expect(person.seeks, "Person.seeks announces a job search").toBeUndefined();
+
+    const site = ldBlocks(m.html).find((b) => b["@type"] === "WebSite");
+    expect(site?.name).toBe(NAME);
+  });
+
+  test("about: H1 names him and ProfilePage.mainEntity has a name", async ({
+    request,
+  }) => {
+    const m = await head(request, "/about");
+    const h1 = m.html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1] ?? "";
+    expect(h1.replace(/<[^>]+>/g, "")).toContain(NAME);
+    const profile = ldBlocks(m.html).find((b) => b["@type"] === "ProfilePage");
+    expect(profile?.mainEntity?.name).toBe(NAME);
+  });
+});

@@ -62,6 +62,7 @@ const SITE_PAGES = new Set([
   "Engineering",
   "FAQ",
   "Uses",
+  "Full profile",
 ]);
 
 /**

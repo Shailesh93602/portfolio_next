@@ -9,7 +9,7 @@ import { Providers } from "./providers";
 import { COMPANY_LINKS, SOCIAL_LINKS } from "@/lib/constants";
 import Script from "next/script";
 import { SITE_URL, BLOG_AUTHOR, META_DEFAULTS } from "@/lib/blog-constants";
-import { PROFILE, PROFILE_META } from "@/lib/profile";
+import { personSchema, websiteSchema } from "@/lib/structured-data";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   // brand a SECOND time — e.g. "…Algorithm Mastery | Shailesh Chaudhari's Blog
   // | Shailesh Chaudhari's Blog" (124 chars, truncated to nonsense in Google).
   // `default` still covers any page that ships without its own title — in
-  // practice the 404 page. siteName is "Shailesh Chaudhari's Blog", so pairing
+  // practice the 404 page. siteName used to be "Shailesh Chaudhari's Blog", so pairing
   // it with the author name put the brand in that title twice.
   // Guarded by e2e/meta-and-schema.spec.ts ("brand appears at most once").
   title: `${BLOG_AUTHOR.name} — Software Engineer`,
@@ -44,15 +44,16 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: SITE_URL,
-    title: `${BLOG_AUTHOR.name} | ${META_DEFAULTS.siteName}`,
+    // siteName is now the bare name, so "<name> | <siteName>" would repeat it.
+    title: `${BLOG_AUTHOR.name} — Software Engineer`,
     description: META_DEFAULTS.description,
     siteName: META_DEFAULTS.siteName,
     images: [
       {
         url: BLOG_AUTHOR.avatar,
-        width: 1200,
-        height: 630,
-        alt: `${BLOG_AUTHOR.name} Portfolio`,
+        width: 615,
+        height: 614,
+        alt: BLOG_AUTHOR.name,
       },
     ],
   },
@@ -60,7 +61,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: META_DEFAULTS.twitterHandle,
     creator: META_DEFAULTS.twitterHandle,
-    title: `${BLOG_AUTHOR.name} | ${META_DEFAULTS.siteName}`,
+    title: `${BLOG_AUTHOR.name} — Software Engineer`,
     description: META_DEFAULTS.description,
     images: [BLOG_AUTHOR.avatar],
   },
@@ -137,193 +138,14 @@ export default function RootLayout({
             </Script>
           </>
         )}
-        {/* Person schema — rich entity for Google Knowledge Graph, Bing, and LLM crawlers */}
+        {/* Person + WebSite entities: lib/structured-data.ts */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Person",
-              "@id": `${SITE_URL}/#person`,
-              name: BLOG_AUTHOR.name,
-              alternateName: ["Shaileshbhai Chaudhari", PROFILE.name.preferred],
-              jobTitle: PROFILE.role.title,
-              url: SITE_URL,
-              image: {
-                "@type": "ImageObject",
-                url: `${SITE_URL}${BLOG_AUTHOR.avatar}`,
-                width: 400,
-                height: 400,
-              },
-              email: PROFILE.contact.email,
-              nationality: "Indian",
-              homeLocation: {
-                "@type": "Place",
-                // Where he's based day-to-day (Ahmedabad). His hometown
-                // (Patan) is separately expressed on the About page copy.
-                address: {
-                  "@type": "PostalAddress",
-                  addressLocality: PROFILE.location.currentCity,
-                  addressRegion: PROFILE.location.state,
-                  addressCountry: PROFILE.location.country,
-                },
-                name: PROFILE.location.displayShort,
-              },
-              sameAs: [
-                BLOG_AUTHOR.social.github,
-                BLOG_AUTHOR.social.linkedin,
-                BLOG_AUTHOR.social.twitter,
-                "https://www.geeksforgeeks.org/user/thenameisshaileshbhai/",
-                "https://www.hackerrank.com/profile/shailesh93602",
-                "https://leetcode.com/u/Shaileshbhai/",
-              ],
-              description: PROFILE.bio.medium,
-              knowsAbout: [
-                "JavaScript",
-                "TypeScript",
-                "React",
-                "Next.js",
-                "Node.js",
-                "Express.js",
-                "NestJS",
-                "PostgreSQL",
-                "MongoDB",
-                "Redis",
-                "Redlock distributed locking",
-                "Socket.io",
-                "@socket.io/redis-adapter",
-                "Bull queues",
-                "Circuit breakers (opossum)",
-                "Prometheus monitoring",
-                "Prisma ORM",
-                "Tailwind CSS",
-                "Chrome Extensions",
-                "WebSockets",
-                "Webhook idempotency",
-                "Stripe payment integration",
-                "Razorpay payment integration",
-                "HMAC signature verification",
-                "Vector embeddings",
-                "pgvector",
-                "Gemini AI function-calling",
-                "Supabase Realtime",
-                "Playwright",
-                "WebdriverIO",
-                "LambdaTest",
-                "Web Development",
-                "Software Engineering",
-                "Distributed Systems",
-                "REST APIs",
-                "Full Stack Development",
-              ],
-              alumniOf: {
-                "@type": "CollegeOrUniversity",
-                name: PROFILE.education.institution,
-                url: "https://gecbhavnagar.ac.in",
-              },
-              seeks: {
-                "@type": "Demand",
-                name: "Backend and full-stack engineering",
-                description:
-                  "Backend and full-stack engineering, with particular interest in distributed systems, payment infrastructure, real-time platforms, and AI-pipeline backends.",
-              },
-              hasCredential: [
-                {
-                  "@type": "EducationalOccupationalCredential",
-                  credentialCategory: "degree",
-                  educationalLevel: "Bachelor of Engineering",
-                  about: "Information Technology",
-                  recognizedBy: {
-                    "@type": "CollegeOrUniversity",
-                    name: PROFILE.education.institution,
-                  },
-                },
-              ],
-              worksFor: {
-                "@type": "Organization",
-                name: "ContextQA",
-                // Was a literal here AND in constants/index.ts, and the two
-                // disagreed: "https://contextqa.com" vs
-                // "https://www.contextqa.com/". A URL in structured data that
-                // does not match the one the page links to is exactly the kind
-                // of mismatch a validator flags and a human never notices.
-                url: COMPANY_LINKS.CONTEXTQA,
-              },
-              hasOccupation: {
-                "@type": "Occupation",
-                name: "Software Engineer",
-                occupationLocation: {
-                  "@type": "Country",
-                  name: "India",
-                },
-                estimatedSalary: [],
-                skills:
-                  "Next.js, React, TypeScript, Node.js, PostgreSQL, Chrome Extensions",
-              },
-              award: [
-                PROFILE_META.gfgLine,
-                PROFILE.achievements.hackerrank,
-                "Finalist — New India Vibrant Hackathon 2023",
-              ],
-              workExample: [
-                {
-                  "@type": "SoftwareSourceCode",
-                  name: "EduScale",
-                  description:
-                    // The "<200ms sync latency" that used to be here was never
-                    // measured. EduScale's own loadtest/README.md exists, in its
-                    // words, "to replace unverified claims in the portfolio" and
-                    // warns that "fake '<200ms' claims get caught" — and its
-                    // results table still reads _tbd_.
-                    //
-                    // A number in schema.org data is a claim made to search
-                    // engines and AI crawlers. Describing the architecture is
-                    // true and needs no benchmark; the latency figure can come
-                    // back the day the load test produces one.
-                    "Real-time engineering learning platform with coding battles over WebSockets, designed for horizontal scaling with a Redis pub/sub adapter",
-                  url: "https://eduscale.vercel.app/",
-                  codeRepository: "https://github.com/Shailesh93602/devscale",
-                  programmingLanguage: ["TypeScript", "JavaScript"],
-                  runtimePlatform: "Next.js",
-                },
-                {
-                  "@type": "SoftwareSourceCode",
-                  name: "KhataGO",
-                  description:
-                    "WhatsApp-first AI accounting platform using Gemini AI for OCR and natural language processing",
-                  url: "https://khatago.vercel.app/",
-                  // No `codeRepository`: the repo is private, and advertising a
-                  // URL that 404s to search engines and AI crawlers is worse
-                  // than omitting the field. Restore it when the repo is public.
-                  programmingLanguage: ["TypeScript"],
-                  runtimePlatform: "Next.js",
-                },
-              ],
-            }),
-          }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
         />
-        {/* WebSite schema — enables Sitelinks Searchbox in Google results */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "@id": `${SITE_URL}/#website`,
-              url: SITE_URL,
-              name: `${BLOG_AUTHOR.name} — Portfolio`,
-              description: META_DEFAULTS.description,
-              author: { "@id": `${SITE_URL}/#person` },
-              potentialAction: {
-                "@type": "SearchAction",
-                target: {
-                  "@type": "EntryPoint",
-                  urlTemplate: `${SITE_URL}/blogs?search={search_term_string}`,
-                },
-                "query-input": "required name=search_term_string",
-              },
-            }),
-          }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
       </head>
       <body className={inter.className}>

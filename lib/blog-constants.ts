@@ -39,7 +39,8 @@ export const BLOG_CATEGORIES = [
 ];
 
 export const META_DEFAULTS = {
-  siteName: "Shailesh Chaudhari's Blog",
+  // Site name for og:site_name and WebSite JSON-LD; the two used to disagree.
+  siteName: PROFILE.name.full,
   description:
     "Articles and tutorials about web development, software engineering, and tech career by Shailesh Chaudhari",
   locale: "en-US",

@@ -45,6 +45,8 @@ export const PROFILE = {
     full: "Shailesh Chaudhari",
     preferred: "Shailesh",
     handle: "shailesh93602",
+    // Spellings people search for; feeds alternateName, the home FAQ, llms.txt.
+    variants: ["Shailesh Chaudhary", "Shaileshbhai Chaudhari"],
   },
 
   role: {

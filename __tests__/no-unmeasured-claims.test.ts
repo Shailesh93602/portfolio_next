@@ -97,9 +97,9 @@ describe("no unmeasured performance claims", () => {
   it("states no timing figure in the site's structured data", () => {
     // Structured data is a claim made directly TO machines, which is the worst
     // place to put a number nobody measured.
-    const layout = stripComments(
-      readFileSync(join(process.cwd(), "app", "layout.tsx"), "utf8")
-    );
-    expect(layout).not.toMatch(TIMING_CLAIM);
+    for (const f of ["app/layout.tsx", "lib/structured-data.ts"]) {
+      const src = stripComments(readFileSync(join(process.cwd(), f), "utf8"));
+      expect(src).not.toMatch(TIMING_CLAIM);
+    }
   });
 });

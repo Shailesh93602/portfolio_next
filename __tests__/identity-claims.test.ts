@@ -460,9 +460,13 @@ describe("the education institution", () => {
 
   it("the education card and the Person JSON-LD both come from PROFILE", () => {
     expect(education[0].institution).toBe(institution);
-    const layout = readFileSync(join(ROOT, "app", "layout.tsx"), "utf8");
-    expect(layout).toContain("PROFILE.education.institution");
-    expect(stripComments(layout)).not.toContain(institution);
+    // The Person JSON-LD moved from app/layout.tsx to lib/structured-data.ts.
+    const schema = readFileSync(
+      join(ROOT, "lib", "structured-data.ts"),
+      "utf8"
+    );
+    expect(schema).toContain("PROFILE.education.institution");
+    expect(stripComments(schema)).not.toContain(institution);
   });
 
   it("every surface spells it identically", () => {

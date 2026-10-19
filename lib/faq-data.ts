@@ -6,7 +6,7 @@ export interface FaqItem {
   answer: string;
 }
 
-const whoIsAnswer = `${PROFILE.name.full} is a ${PROFILE.role.title} based in ${PROFILE.location.displayShort}, originally from ${PROFILE.location.hometown}. At ${PROFILE.role.company} he works on the ${PROFILE.role.focus}. During his first 2-3 months at ${PROFILE.role.company} he shipped two Chrome extensions (Vibe Testing, AxeTos). Previously ${PROFILE.previousRole.tenure} shipping full-stack client projects. Side projects explore distributed systems (Redlock, Socket.io Redis adapter, Prometheus), AI pipelines (Gemini function-calling, OCR), and webhook idempotency patterns.`;
+const whoIsAnswer = `${PROFILE.name.full} (also written ${PROFILE.name.variants.join(" or ")}) is a ${PROFILE.role.title} based in ${PROFILE.location.displayShort}, originally from ${PROFILE.location.hometown}. At ${PROFILE.role.company} he works on the ${PROFILE.role.focus}. During his first 2-3 months at ${PROFILE.role.company} he shipped two Chrome extensions (Vibe Testing, AxeTos). Previously ${PROFILE.previousRole.tenure} shipping full-stack client projects. Side projects explore distributed systems (Redlock, Socket.io Redis adapter, Prometheus), AI pipelines (Gemini function-calling, OCR), and webhook idempotency patterns.`;
 
 export const homeFaq: FaqItem[] = [
   {

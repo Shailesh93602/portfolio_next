@@ -73,7 +73,11 @@ describe("claims the code review found unbacked", () => {
   });
 
   it("no surface says EduScale is horizontally scaled (it is designed for it)", () => {
-    for (const f of ["app/layout.tsx", "constants/projects.ts"]) {
+    for (const f of [
+      "app/layout.tsx",
+      "lib/structured-data.ts",
+      "constants/projects.ts",
+    ]) {
       expect(read(f)).not.toMatch(/horizontally[- ]scaled/i);
     }
   });

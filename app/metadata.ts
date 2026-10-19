@@ -1,4 +1,4 @@
-import { PROFILE_META } from "@/lib/profile";
+import { PROFILE, PROFILE_META } from "@/lib/profile";
 import type { Metadata } from "next";
 import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 
@@ -6,6 +6,8 @@ import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 // The old /Images/shailesh.webp is a 615×614 portrait photo — valid as an
 // avatar but produced pillar-boxed previews on Twitter/LinkedIn because the
 // declared meta dimensions (1200×630) didn't match the actual pixels.
+export const HOME_DESCRIPTION = `${PROFILE.name.full} is a ${PROFILE.role.title.toLowerCase()} at ${PROFILE.role.company} in ${PROFILE.location.currentCity}, India, building Node.js and TypeScript backends. Projects, write-ups and résumé.`;
+
 const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(
   "Shailesh Chaudhari"
 )}&type=page&description=${encodeURIComponent(
@@ -17,8 +19,8 @@ export const metadata: Metadata = {
   // unused while the same string sat here as a literal. A name and a job title
   // that appear in two places drift the day one of them changes.
   title: PROFILE_META.titleTag,
-  description:
-    "Software Engineer at ContextQA working on the backend of the core QA-automation product (test execution, VNC, Playwright/WebdriverIO/LambdaTest). Side projects: distributed systems (Redlock, Socket.io Redis adapter), AI pipelines (Gemini function-calling, OCR), webhook idempotency patterns.",
+  // Leads with the name and fits in ~160 chars (seo-identity.test.ts).
+  description: HOME_DESCRIPTION,
   metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: `${SITE_URL}/`,
