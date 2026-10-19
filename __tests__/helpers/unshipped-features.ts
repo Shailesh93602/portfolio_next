@@ -15,27 +15,6 @@ export interface UnshippedFeature {
   formerClaims: string[];
 }
 
-export const UNSHIPPED_FEATURES: UnshippedFeature[] = [
-  {
-    project: "eduscale",
-    feature: "Matchmaking frontend (radar HUD, instant battle)",
-    repo: "EduScale",
-    // The UI is live on eduscale.vercel.app but needs the API, whose deploy still serves f87d81a.
-    deployed: {
-      url: "https://api-eduscale.vercel.app/api/v1/health",
-      shaPath: ["version", "sha"],
-    },
-    absentFromDeployed: [
-      "Frontend/src/hooks/useMatchmaking.ts",
-      "Frontend/src/components/Battle/MatchmakingRadar.tsx",
-    ],
-    patterns: [
-      /radar/i,
-      /3-second match confirmations/i,
-      /Instant (Battle )?Matchmaking/i,
-    ],
-    formerClaims: [
-      "Instant Battle Matchmaking: Automated skill-based queue with expanding Elo bands, live radar HUD, and 3-second match confirmations.",
-    ],
-  },
-];
+// EduScale matchmaking left this list 2026-10-19: its files are in the live API (f339236). The claim
+// stays off the site until the feature is verified working live (Vercel functions hold no socket).
+export const UNSHIPPED_FEATURES: UnshippedFeature[] = [];

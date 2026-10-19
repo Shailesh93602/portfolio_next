@@ -97,43 +97,51 @@ function servedSha(feature: UnshippedFeature): string | null {
 
 const label = (f: UnshippedFeature) => `${f.project}: ${f.feature}`;
 
-describe.each(UNSHIPPED_FEATURES.map((f) => [label(f), f] as const))(
-  "unshipped %s",
-  (_name, feature) => {
-    it("each pattern matches the claim that was removed", () => {
-      for (const pattern of feature.patterns) {
-        expect(feature.formerClaims.some((c) => pattern.test(c))).toBe(true);
-      }
-    });
+// Jest refuses an empty table, so an empty ledger runs one placeholder that registers no tests.
+const ledger: [string, UnshippedFeature | undefined][] =
+  UNSHIPPED_FEATURES.length
+    ? UNSHIPPED_FEATURES.map((f) => [label(f), f])
+    : [["(none withheld)", undefined]];
 
-    it("no surface describing the project advertises it", () => {
-      const surfaces = surfacesFor(feature.project);
-      expect(surfaces.length).toBeGreaterThan(1);
-      const hits = surfaces.flatMap((s) =>
-        feature.patterns
-          .filter((p) => p.test(s.text))
-          .map((p) => `${s.name} matches ${p}`)
-      );
-      expect(hits).toEqual([]);
-    });
+it("the unshipped ledger is a list (empty once every feature is live)", () => {
+  expect(Array.isArray(UNSHIPPED_FEATURES)).toBe(true);
+});
 
-    const repoDir = join(process.cwd(), "..", feature.repo);
-    const deployedSha = existsSync(repoDir) ? servedSha(feature) : null;
+describe.each(ledger)("unshipped %s", (_name, feature) => {
+  if (!feature) return;
+  it("each pattern matches the claim that was removed", () => {
+    for (const pattern of feature.patterns) {
+      expect(feature.formerClaims.some((c) => pattern.test(c))).toBe(true);
+    }
+  });
 
-    // CI has no sibling checkout; locally this is what retires the entry.
-    (deployedSha ? it : it.skip)(
-      `is still absent from the commit ${feature.deployed.url} serves`,
-      () => {
-        const sha = deployedSha as string;
-        // An unfetched commit would make every path look absent.
-        expect(
-          gitSucceeds(repoDir, ["cat-file", "-e", `${sha}^{commit}`])
-        ).toBe(true);
-        const present = feature.absentFromDeployed.filter((path) =>
-          gitSucceeds(repoDir, ["cat-file", "-e", `${sha}:${path}`])
-        );
-        expect(present).toEqual([]);
-      }
+  it("no surface describing the project advertises it", () => {
+    const surfaces = surfacesFor(feature.project);
+    expect(surfaces.length).toBeGreaterThan(1);
+    const hits = surfaces.flatMap((s) =>
+      feature.patterns
+        .filter((p) => p.test(s.text))
+        .map((p) => `${s.name} matches ${p}`)
     );
-  }
-);
+    expect(hits).toEqual([]);
+  });
+
+  const repoDir = join(process.cwd(), "..", feature.repo);
+  const deployedSha = existsSync(repoDir) ? servedSha(feature) : null;
+
+  // CI has no sibling checkout; locally this is what retires the entry.
+  (deployedSha ? it : it.skip)(
+    `is still absent from the commit ${feature.deployed.url} serves`,
+    () => {
+      const sha = deployedSha as string;
+      // An unfetched commit would make every path look absent.
+      expect(gitSucceeds(repoDir, ["cat-file", "-e", `${sha}^{commit}`])).toBe(
+        true
+      );
+      const present = feature.absentFromDeployed.filter((path) =>
+        gitSucceeds(repoDir, ["cat-file", "-e", `${sha}:${path}`])
+      );
+      expect(present).toEqual([]);
+    }
+  );
+});
