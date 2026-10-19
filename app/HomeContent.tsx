@@ -50,8 +50,8 @@ export default function HomeContent({ featuredPosts }: Props) {
           {/* Hero column intentionally NOT wrapped in motion.* — the LCP <p>
               lives here. Wrapping in framer-motion delays paint by ~2.6s
               while the bundle hydrates and the opacity:0 → 1 transition
-              runs. CSS-only fade keeps Lighthouse perf above 90. */}
-          <div className="space-y-6 motion-safe:animate-[fade-in-up_0.5s_ease-out] lg:w-1/2">
+              runs. The CSS entrance is transform-only (see globals.css). */}
+          <div className="space-y-6 motion-safe:animate-[rise-in_0.5s_ease-out] lg:w-1/2">
             <div className="space-y-2">
               <Badge variant="outline" className="text-sm font-medium">
                 Backend & full-stack engineering
@@ -162,7 +162,7 @@ export default function HomeContent({ featuredPosts }: Props) {
             </div>
           </div>
 
-          <div className="flex justify-center motion-safe:animate-[fade-in-scale_0.5s_ease-out] lg:w-1/2 lg:justify-end">
+          <div className="flex justify-center motion-safe:animate-[settle-in_0.5s_ease-out] lg:w-1/2 lg:justify-end">
             <div className="relative h-72 w-72 overflow-hidden rounded-full lg:h-[500px] lg:w-[500px]">
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/20 to-purple-600/20 blur-3xl" />
               <Image

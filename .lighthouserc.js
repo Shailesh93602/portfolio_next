@@ -25,19 +25,31 @@
 //
 // To add a new URL: add it to URLS. To relax a budget: change the
 // maxNumericValue in the assertions block.
+//
+// LHCI_FORM_FACTOR=mobile runs the mobile pass on / and /about (the SEO
+// plan's LCP pages); the workflow runs both form factors as a matrix.
 
-const URLS = [
-  "http://localhost:3000/",
-  "http://localhost:3000/about",
-  "http://localhost:3000/portfolio",
-  "http://localhost:3000/blogs",
-];
+const MOBILE = process.env.LHCI_FORM_FACTOR === "mobile";
+const BASE = process.env.LHCI_BASE_URL || "http://localhost:3000";
+const URLS = (
+  MOBILE ? ["/", "/about"] : ["/", "/about", "/portfolio", "/blogs"]
+).map((p) => BASE + p);
 
 const categoryAssertions = {
   "categories:performance": ["warn", { minScore: 0.85 }],
-  "categories:accessibility": ["error", { minScore: 0.9 }],
+  "categories:accessibility": ["error", { minScore: 0.95 }],
   "categories:best-practices": ["error", { minScore: 0.9 }],
-  "categories:seo": ["error", { minScore: 0.9 }],
+  "categories:seo": ["error", { minScore: 1 }],
+};
+
+// Report-only: stable locally (best of 3: / 2.4-3.4 s, /about 3.1 s vs
+// 3.6-4.0 s before the fix) but not yet measured on a CI runner. Make it
+// "error" once a few main runs on ubuntu-latest sit under the budget.
+const mobileLcpBudget = {
+  "largest-contentful-paint": [
+    "warn",
+    { maxNumericValue: 3500, aggregationMethod: "optimistic" },
+  ],
 };
 
 const webVitalsBudgets = {
@@ -56,11 +68,10 @@ module.exports = {
       // Explicit URLs (the running :3000 server) — keeps lhci from
       // auto-detecting ./public as a staticDistDir.
       url: URLS,
-      numberOfRuns: 1,
-      settings: {
-        preset: "desktop",
-        throttlingMethod: "simulate",
-      },
+      numberOfRuns: MOBILE ? 3 : 1,
+      settings: MOBILE
+        ? { throttlingMethod: "simulate" }
+        : { preset: "desktop", throttlingMethod: "simulate" },
     },
     assert: {
       // No `lighthouse:no-pwa` preset: it asserts hundreds of granular audits
@@ -70,6 +81,7 @@ module.exports = {
       assertions: {
         ...categoryAssertions,
         ...webVitalsBudgets,
+        ...(MOBILE ? mobileLcpBudget : {}),
       },
     },
     upload: {

@@ -26,8 +26,9 @@ const containerVariants = {
 export default function AboutContent() {
   return (
     <div className="container mx-auto px-4 py-24">
+      {/* initial={false}: the LCP block server-renders visible, not opacity:0. */}
       <motion.div
-        initial="hidden"
+        initial={false}
         animate="visible"
         variants={containerVariants}
         className="flex flex-col items-center gap-16 lg:flex-row lg:items-start"
