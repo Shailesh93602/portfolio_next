@@ -29,6 +29,18 @@ export interface Project {
   id: string;
   title: string;
   description: string;
+  /**
+   * The meta description (search snippet, og:description, twitter:description),
+   * at most META_DESCRIPTION_MAX characters. Set it when `description` is
+   * longer: the card text is shared with the UI, and past ~155 characters
+   * Google cuts the snippet wherever it likes. Falls back to `description`.
+   */
+  seoDescription?: string;
+  /**
+   * Published posts about this project, by slug, with the post's title. Shown
+   * as "Write-ups" on the project page; each post links back here.
+   */
+  writeUps?: { slug: string; title: string }[];
   image: string;
   tags: string[];
   github?: string;
@@ -65,6 +77,13 @@ export interface Project {
   userFlow?: { step: string; description: string }[];
   incidents?: Incident[];
 }
+
+/** Google shows roughly this many characters of a meta description. */
+export const META_DESCRIPTION_MAX = 155;
+
+/** The meta description a project page publishes. */
+export const metaDescription = (project: Project): string =>
+  project.seoDescription ?? project.description;
 
 const rawProjects: Project[] = [
   {
@@ -393,6 +412,8 @@ const rawProjects: Project[] = [
     title: "Vibe Testing (ContextQA)",
     description:
       "AI-powered web testing Chrome extension built at ContextQA (shipped during my first 2-3 months on the team) — real-time UI testing with AI-generated bug scenarios, screenshot capture, and chat-based fix workflows.",
+    seoDescription:
+      "AI-powered web testing Chrome extension built at ContextQA in my first months there: AI-generated bug scenarios, screenshots and chat-based fixes.",
     image: "/Images/vibe_testing/full_report.png",
     tags: [
       "Next.js",
@@ -459,6 +480,8 @@ const rawProjects: Project[] = [
     title: "AxeTos (ContextQA)",
     description:
       "WCAG A/AA/AAA accessibility testing Chrome extension built at ContextQA (shipped during my first 2-3 months on the team) — automated auditing with precise DOM locators, violation categorization, and persistent script-injection fixes.",
+    seoDescription:
+      "WCAG A/AA/AAA accessibility testing Chrome extension built at ContextQA in my first months there: automated audits with precise DOM locators.",
     image: "/Images/portfolio1.png",
     tags: [
       "Node.js",
@@ -514,6 +537,8 @@ const rawProjects: Project[] = [
     id: "codesensei-search",
     title: "CodeSenseiSearch",
     description: `Semantic code-search monorepo: an AST-aware chunker, BullMQ workers that embed each chunk with Gemini into a pgvector column, and a hybrid vector + full-text search API behind a NestJS ${CODESENSEI_NEST_MAJOR} backend, with a Next.js ${CODESENSEI_NEXT_MAJOR} search UI wired to it. Runs locally on Docker Compose; there is no hosted instance, so the repository is the artifact.`,
+    seoDescription:
+      "Semantic code search: an AST-aware chunker, BullMQ workers embedding chunks into pgvector, and a hybrid vector + full-text search API in NestJS.",
     image: "/Images/portfolio1.png",
     tags: [
       "NestJS",
@@ -592,7 +617,9 @@ const rawProjects: Project[] = [
     id: "khatago",
     title: "KhataGO",
     description:
-      "WhatsApp-first accounting platform. Webhook → Gemini function-calling → idempotent ledger write. Handles transactions, receivables, and reconciliation entirely through WhatsApp chat + receipt photos.",
+      "WhatsApp-first bookkeeping for Indian small businesses. A text or receipt photo becomes a ledger entry through Gemini function-calling, with webhook deduplication enforced in Postgres. Tracks transactions, receivables and payments received; exports to Tally.",
+    seoDescription:
+      "WhatsApp-first bookkeeping for Indian small businesses: a text or receipt photo becomes a ledger entry, with webhook deduplication enforced in Postgres.",
     image: "/Images/khatago/landing.png",
     isShowcase: true,
     tags: [
@@ -615,7 +642,7 @@ const rawProjects: Project[] = [
     // FINDINGS.md §2 — a claim with no way out of it.
     pullQuote:
       "A lock without an expiry is a deadlock waiting for a crash: mutual exclusion and liveness are different properties, and passing tests for the first says nothing about the second.",
-    detailedDescription: `KhataGO is a WhatsApp-first bookkeeping platform for Indian MSMEs. The backend is a reconciliation pipeline: Meta webhooks arrive with at-least-once delivery, and idempotency is enforced in Postgres rather than a cache — a unique constraint on the WhatsApp message id rejects duplicate deliveries, and a conditional UPDATE (PENDING→PROCESSING) atomically claims each message so concurrent redeliveries produce exactly one Gemini run instead of a double ledger write. The webhook persists the message and acknowledges Meta within the request; a containerized polling worker drains the queue — the same Postgres table, claimed through the same atomic UPDATE, retried with exponential backoff and jitter, and dead-lettered after three attempts with an audited admin replay. Gemini 2.0 Flash with function-calling parses both text ('Sold 500 to Ram') and receipt images (OCR → structured JSON with merchant/amount/date/line items) into ${KHATAGO_TOOL_COUNT} tool calls — create_transaction, create_receivable, record_payment_received, get_party_ledger, send_payment_reminder, and others — each mapped to a Prisma write. Results flow back to the user over WhatsApp; a CA portal exports Tally-ready XML vouchers for month-end close. Since 2026-09-05 (merged and in the live deploy), the tool-calling loop runs as an explicit, resumable state machine: the model's plan for each turn is persisted before any tool runs, and a write tool commits in the same transaction as its step, so a crash resumes from the last durable turn and at-most-once execution is a property of the database rather than of control flow. Bring-your-own Gemini keys get per-key cooldown isolation, so one user's 429 does not park a model for everyone. Each run is traced as one document (Postgres JSONB by default, a MongoDB adapter opt-in); ${KHATAGO_EVAL_COUNT} deterministic evals run in CI through promptproof under both the default loop and a LangGraph.js rendering behind a flag; retention crons bound traces and runs.`,
+    detailedDescription: `KhataGO is a WhatsApp-first bookkeeping platform for Indian MSMEs. The backend is an idempotent ledger-write pipeline: Meta webhooks arrive with at-least-once delivery, and idempotency is enforced in Postgres rather than a cache — a unique constraint on the WhatsApp message id rejects duplicate deliveries, and a conditional UPDATE (PENDING→PROCESSING) atomically claims each message so concurrent redeliveries produce exactly one Gemini run instead of a double ledger write. The webhook persists the message and acknowledges Meta within the request; a containerized polling worker drains the queue — the same Postgres table, claimed through the same atomic UPDATE, retried with exponential backoff and jitter, and dead-lettered after three attempts with an audited admin replay. Gemini 2.0 Flash with function-calling parses both text ('Sold 500 to Ram') and receipt images (OCR → structured JSON with merchant/amount/date/line items) into ${KHATAGO_TOOL_COUNT} tool calls — create_transaction, create_receivable, record_payment_received, get_party_ledger, send_payment_reminder, and others — each mapped to a Prisma write. Results flow back to the user over WhatsApp; a CA portal exports Tally-ready XML vouchers for month-end close. Since 2026-09-05 (merged and in the live deploy), the tool-calling loop runs as an explicit, resumable state machine: the model's plan for each turn is persisted before any tool runs, and a write tool commits in the same transaction as its step, so a crash resumes from the last durable turn and at-most-once execution is a property of the database rather than of control flow. Bring-your-own Gemini keys get per-key cooldown isolation, so one user's 429 does not park a model for everyone. Each run is traced as one document (Postgres JSONB by default, a MongoDB adapter opt-in); ${KHATAGO_EVAL_COUNT} deterministic evals run in CI through promptproof under both the default loop and a LangGraph.js rendering behind a flag; retention crons bound traces and runs.`,
     architecture: {
       layers: [
         {
@@ -627,7 +654,7 @@ const rawProjects: Project[] = [
           ],
         },
         {
-          name: "AI / Reconciliation",
+          name: "AI / Tool calls",
           items: [
             `Gemini 2.0 Flash with function-calling (${KHATAGO_TOOL_COUNT} tools)`,
             "Receipt-image pipeline: download → Vision → structured JSON",
@@ -676,14 +703,14 @@ const rawProjects: Project[] = [
         },
       ],
       description:
-        "A reconciliation pipeline dressed up as a WhatsApp bot: events in, idempotency-guarded tool-calls transform them into ledger writes, export back to accountants' formats. The interesting engineering is upstream of the UI — dedup, function-calling determinism, double-entry prevention.",
+        "An idempotent ledger-write pipeline dressed up as a WhatsApp bot: events in, idempotency-guarded tool-calls transform them into ledger writes, export back to accountants' formats. The interesting engineering is upstream of the UI — dedup, function-calling determinism, double-entry prevention.",
     },
     keyMetrics: [
       {
         label: "Duplicate webhooks",
-        value: "0 double-writes",
+        value: "8 → 1",
         description:
-          "Unique waMessageId + an atomic PENDING→PROCESSING claim drop Meta's redeliveries before any LLM call",
+          "Eight simultaneous deliveries of one message store one row, in the integration test against real Postgres",
       },
       {
         label: "Tool calls",
@@ -786,6 +813,8 @@ const rawProjects: Project[] = [
     title: "BALLAST",
     description:
       "A deterministic simulation of a multi-tenant session control plane: per-tenant parallel caps, a rolling credit window, and leases over a substrate that lies. The whole execution is a pure function of one integer seed, so any failure replays byte-identically. Correctness comes from invariants, a reference oracle, mechanical mutation testing, and a shrinker that verifies its own output.",
+    seoDescription:
+      "A deterministic simulation of a multi-tenant session control plane. Every run is a pure function of one seed, so any failure replays byte-identically.",
     image: "/Images/portfolio1.png",
     tags: [
       "TypeScript",
@@ -858,6 +887,15 @@ const rawProjects: Project[] = [
     title: "Grounded — Production RAG Starter",
     description:
       "A RAG starter that answers only from your sources, cites them, and says “I don't know” instead of hallucinating. Idempotent ingestion (content-hash dedup), retries with backoff, and an eval harness that catches regressions in CI. Runs fully offline — no API key or database required.",
+    seoDescription:
+      "A RAG starter that answers only from your sources, cites them, and says “I don't know” instead of hallucinating. Runs offline, with evals in CI.",
+    writeUps: [
+      {
+        slug: "production-rag-that-says-i-dont-know",
+        title:
+          'Production RAG That Says "I Don\'t Know" Instead of Hallucinating',
+      },
+    ],
     image: "/Images/portfolio1.png",
     tags: [
       "TypeScript",
@@ -934,6 +972,14 @@ const rawProjects: Project[] = [
     title: "idempotency-kit",
     description:
       "Zero-dependency toolkit that makes write endpoints retry-safe and abuse-resistant: an at-most-once idempotency wrapper (the Stripe Idempotency-Key pattern) plus a sliding-window rate limiter, both over a pluggable async store. Deterministic and fully offline-testable.",
+    seoDescription:
+      "Zero-dependency toolkit for retry-safe write endpoints: a Stripe-style Idempotency-Key wrapper and a sliding-window rate limiter over a pluggable store.",
+    writeUps: [
+      {
+        slug: "idempotency-keys-retry-safe-payment-apis",
+        title: "Idempotency Keys: Making Money-Moving Endpoints Safe to Retry",
+      },
+    ],
     image: "/Images/portfolio1.png",
     tags: [
       "TypeScript",
@@ -1001,6 +1047,8 @@ const rawProjects: Project[] = [
     title: "promptproof",
     description:
       "Zero-dependency LLM eval + regression-diff kit. Define eval cases, grade outputs, save a baseline, and fail CI on any pass→fail. Graders for exact / includes / regex / JSON-shape / token-overlap, plus bring-your-own. Runs offline — no API key needed to test the harness.",
+    seoDescription:
+      "Zero-dependency LLM eval and regression-diff kit: grade outputs, save a baseline, and fail CI on any pass→fail. Runs offline, no API key needed.",
     image: "/Images/portfolio1.png",
     tags: [
       "TypeScript",

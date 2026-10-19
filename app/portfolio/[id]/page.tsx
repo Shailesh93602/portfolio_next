@@ -1,4 +1,4 @@
-import { projects } from "@/constants/projects";
+import { metaDescription, projects } from "@/constants/projects";
 import ProjectDetailContent from "./ProjectDetailContent";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
@@ -28,8 +28,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // twitter:title of every project page, i.e. the spelling a recruiter sees
   // in Google and in a shared link preview.
   const title = `${project.title} | Shailesh Chaudhari`;
-  const description = project.description;
-  const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(project.title)}&type=project&description=${encodeURIComponent(description.slice(0, 120))}`;
+  const description = metaDescription(project);
+  // The OG card keeps the card text it has always rendered.
+  const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(project.title)}&type=project&description=${encodeURIComponent(project.description.slice(0, 120))}`;
 
   return {
     title,

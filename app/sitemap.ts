@@ -22,12 +22,15 @@ const modified = (route: string): Date => {
   return d ? new Date(`${d}T00:00:00Z`) : new Date("2026-01-01T00:00:00Z");
 };
 
+/** A displayed image as a sitemap annotation; generated OG cards are left out. */
+const pageImage = (path?: string): string[] | undefined =>
+  path && !path.startsWith("/api/og") ? [`${SITE_URL}${path}`] : undefined;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Static routes — image annotation lifts these into Google Discover
-  // and Image search. The OG image is a per-page render so it's distinct
-  // for each route.
-  const ogFor = (path: string) =>
-    `${SITE_URL}/api/og?title=${encodeURIComponent("Shailesh Chaudhari")}&type=page&description=${encodeURIComponent(path)}`;
+  // Image annotations name only images the page itself displays: the
+  // portrait on / and /about, and a project's real screenshot. A generated
+  // /api/og card is shown in link previews, never on the page, so listing it
+  // here described images the crawler would not find on the page.
   const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: `${SITE_URL}/`,
@@ -41,7 +44,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: modified("/blogs"),
       changeFrequency: "weekly",
       priority: 0.9,
-      images: [ogFor("/blogs")],
     },
     {
       url: `${SITE_URL}/about`,
@@ -55,42 +57,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: modified("/contact"),
       changeFrequency: "yearly",
       priority: 0.6,
-      images: [ogFor("/contact")],
     },
     {
       url: `${SITE_URL}/portfolio`,
       lastModified: modified("/portfolio"),
       changeFrequency: "weekly",
       priority: 0.95,
-      images: [ogFor("/portfolio")],
     },
     {
       url: `${SITE_URL}/services`,
       lastModified: modified("/services"),
       changeFrequency: "monthly",
       priority: 0.9,
-      images: [ogFor("/services")],
     },
     {
       url: `${SITE_URL}/engineering`,
       lastModified: modified("/engineering"),
       changeFrequency: "monthly",
       priority: 0.9,
-      images: [ogFor("/engineering")],
     },
     {
       url: `${SITE_URL}/statistics`,
       lastModified: modified("/statistics"),
       changeFrequency: "weekly",
       priority: 0.7,
-      images: [ogFor("/statistics")],
     },
     {
       url: `${SITE_URL}/now`,
       lastModified: modified("/now"),
       changeFrequency: "monthly",
       priority: 0.7,
-      images: [ogFor("/now")],
     },
     // StatusPulse Jira app docs. Its Marketplace manifest and docs link here;
     // the old /dwell URLs permanently redirect to these, so they are not listed.
@@ -99,7 +95,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: modified("/statuspulse"),
       changeFrequency: "monthly",
       priority: 0.6,
-      images: [ogFor("/statuspulse")],
     },
     ...(
       [
@@ -114,7 +109,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: modified(route),
       changeFrequency,
       priority: 0.4,
-      images: [ogFor(route)],
     })),
   ];
 
@@ -133,7 +127,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         : new Date(post.date),
       changeFrequency: "monthly",
       priority: post.featured ? 0.8 : 0.6,
-      images: post.image ? [`${SITE_URL}${post.image}`] : undefined,
+      images: pageImage(post.image),
     })
   );
 
@@ -146,7 +140,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: modified("__projects__"),
       changeFrequency: "monthly",
       priority: project.isShowcase ? 0.8 : 0.6,
-      images: project.image ? [`${SITE_URL}${project.image}`] : undefined,
+      images: pageImage(project.image),
     })
   );
 

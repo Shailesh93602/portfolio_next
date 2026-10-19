@@ -61,8 +61,9 @@ TODOS.md
 test-results/
 .vercel
 
-# Claude Code internal state — not portable between machines
-.claude/
+# Claude Code internal state — not portable between machines; repo-local skills are tracked
+.claude/*
+!.claude/skills/
 
 # Playwright-generated artifacts — regenerate locally via screenshots.spec.ts
 public/Images/screenshots/

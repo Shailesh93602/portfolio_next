@@ -57,6 +57,25 @@ export default function StandardSidebar({ project }: { project: Project }) {
           )}
         </div>
 
+        {project.writeUps && project.writeUps.length > 0 && (
+          <>
+            <hr className="my-8 border-border" />
+            <h3 className="mb-4 text-lg font-bold">Write-ups</h3>
+            <ul className="space-y-2">
+              {project.writeUps.map((post) => (
+                <li key={post.slug}>
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="text-primary underline-offset-4 hover:underline"
+                  >
+                    {post.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+
         <hr className="my-8 border-border" />
 
         <h3 className="mb-4 text-lg font-bold">Tech Stack</h3>
