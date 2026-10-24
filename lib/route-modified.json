@@ -1,9 +1,9 @@
 {
-  "/": "2026-10-19",
+  "/": "2026-10-24",
   "/blogs": "2026-10-19",
   "/about": "2026-10-19",
   "/contact": "2026-09-03",
-  "/portfolio": "2026-10-19",
+  "/portfolio": "2026-10-24",
   "/services": "2026-09-03",
   "/engineering": "2026-10-17",
   "/statistics": "2026-04-19",
@@ -14,5 +14,5 @@
   "/statuspulse/contact": "2026-10-12",
   "/statuspulse/troubleshooting": "2026-10-18",
   "/statuspulse/switching": "2026-10-18",
-  "__projects__": "2026-10-19"
+  "__projects__": "2026-10-24"
 }
