@@ -89,7 +89,6 @@ export const BLOG_SLUGS: string[] = [
   "production-rag-that-says-i-dont-know",
   "idempotency-keys-retry-safe-payment-apis",
   // DRAFTS — uncomment each slug after filling in [FILL IN:] placeholders in content/blog/<slug>.mdx
-  // "eduscale-redis-distributed-locks-real-time",
   // "postgres-rbac-eduscale-permissions",
   // "nextjs-isr-edge-caching-performance",
 ];
