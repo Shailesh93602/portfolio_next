@@ -1,0 +1,76 @@
+---
+title: "prisma generate does not run migrations"
+description: "prisma generate builds the client, not the database. How two Vercel apps shipped code against missing tables, and the build step that fixed it."
+image: "/Images/portfolio1.png"
+date: "2026-10-19"
+readTime: "8 min read"
+featured: false
+llmsTopic: "prisma generate vs prisma migrate deploy on Vercel"
+tags:
+  - "Prisma"
+  - "PostgreSQL"
+  - "Vercel"
+  - "CI/CD"
+  - "Database"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "prisma migrate deploy vercel"
+  - "prisma migrations not applied in production"
+  - "prisma generate vs migrate deploy"
+  - "prisma P3009 failed migration"
+---
+
+<p><code>prisma generate</code> rebuilds the Prisma client from <code>schema.prisma</code>. It never connects to a database. If your Vercel build runs <code>prisma generate</code> and nothing else, your production schema only changes when a human remembers to run <code>prisma migrate deploy</code> by hand, and the first time they forget, the code deploys against tables it expects and the database does not have. The fix is to run <code>prisma migrate deploy</code> in the build, on production deploys only, and to check the <code>_prisma_migrations</code> table before you automate it.</p>
+<p>I shipped this bug twice, in two apps, and the second app taught me the part the first one didn&#39;t.</p>
+<h2>What broke</h2>
+<p>KhataGO is a Next.js app. EduScale&#39;s backend is an Express service. Both run on Vercel with Prisma over Postgres, and both had <code>&quot;postinstall&quot;: &quot;prisma generate&quot;</code> in <code>package.json</code>. KhataGO&#39;s build was <code>prisma generate &amp;&amp; next build</code>. EduScale&#39;s backend build was <code>tsc &amp;&amp; tsc-alias</code>.</p>
+<p>Everything in that list is a compile step. The Prisma CLI reads <code>schema.prisma</code> and writes TypeScript types and a query engine into <code>node_modules</code>. The code that comes out of the build knows about every column in the schema. The database has no idea any of this happened.</p>
+<p>So a pull request that added a column to the schema, with a migration file beside it, would build green, deploy, and then fail on the first query that touched the new column. In KhataGO that looked like a column error at runtime (<code>KhataGO/FINDINGS.md</code>, section 3). In EduScale it was quieter and worse.</p>
+<h2>How I found it</h2>
+<p>On EduScale I ran a read-only <code>prisma migrate status</code> against production, which only reads the <code>_prisma_migrations</code> table. It listed four migrations the database had never applied:</p>
+<pre><code>20260622000000_add_ai_code_review_fields
+20260622010000_add_content_embedding
+20260622020000_add_user_rating
+20260823120000_unique_ai_review_per_submission
+</code></pre>
+<p>Every one of them backed code that was already merged and deployed. Nobody had noticed because the AI features those migrations serve were switched off: <code>GEMINI_API_KEY</code> was unset in production, so the code paths that would have read <code>ContentEmbedding</code> never ran. The missing key was hiding the missing schema.</p>
+<p>That is not as comforting as it sounds. The rating and matchmaking endpoints need no LLM at all, and the <code>UserRating</code> table did not exist in production. Those endpoints failed every time they were called. And setting the API key would not have turned the AI features on. It would have turned them on against a database with no <code>ContentEmbedding</code> table (<code>EduScale/FINDINGS.md</code>, section 7).</p>
+<h2>Check the migration table before you automate anything</h2>
+<p>On KhataGO, before I made every production deploy run migrations, I looked at what production&#39;s <code>_prisma_migrations</code> table actually held. It had two applied migrations that do not exist in the repository. Someone had run DDL against production by a route the repo does not record.</p>
+<p>That matters because <code>migrate deploy</code> compares the table to the migrations directory. If it had refused to run against that drift, my fix would have broken every deploy, which is worse than the problem it was fixing. So I reproduced the drift on a throwaway database and ran the command there:</p>
+<pre><code>drift only                        -&gt;  No pending migrations to apply.  EXIT=0
+drift + one pending migration     -&gt;  applied successfully, columns present
+</code></pre>
+<p>Only then did it go into the build (<code>KhataGO/FINDINGS.md</code>, section 3). &quot;This command is safe&quot; is a hypothesis until you run it against the shape your production database actually has.</p>
+<p>One aside. If you do this on a repo where <code>.env</code> points at production, exporting <code>DATABASE_URL</code> in your shell is not enough to redirect the Prisma CLI. Both schemas declare <code>directUrl = env(&quot;DIRECT_URL&quot;)</code>, migrations use it, and the only place <code>DIRECT_URL</code> is set is <code>.env</code>, which EduScale&#39;s <code>prisma.config.ts</code> loads explicitly. I wrote that one up separately in <a href="/blog/the-test-suite-that-wrote-to-production">the test suite that wrote to production</a>. <code>docs/MIGRATIONS.md</code> has the full recipe: work from a directory with no <code>.env</code>, copy the schema and migrations there, pass <code>--schema</code>, then read the <code>Datasource &quot;db&quot;</code> line the CLI prints before anything else.</p>
+<h2>The fix</h2>
+<p>Both repos now have <code>scripts/vercel-build.sh</code> as their build command. The EduScale one, in full apart from its comment block:</p>
+<pre><code class="language-bash">set -euo pipefail
+
+if [ &quot;${VERCEL_ENV:-}&quot; = &quot;production&quot; ]; then
+  echo &quot;▶ production deploy — applying migrations&quot;
+  npx prisma migrate deploy
+else
+  echo &quot;▶ ${VERCEL_ENV:-local} build — skipping migrations (production only)&quot;
+fi
+
+npx tsc
+npx tsc-alias --resolve-full-paths
+</code></pre>
+<p>KhataGO&#39;s is the same shape with <code>prisma generate</code> and <code>next build</code> at the bottom.</p>
+<p>Two decisions in there are deliberate.</p>
+<p><strong>Production only.</strong> On Vercel, a variable added with the default settings applies to Preview as well as Production, so a preview build can see the production <code>DATABASE_URL</code>. Migrating unconditionally would let a feature branch that may never merge change production&#39;s schema. <code>migrate deploy</code> is additive and never resets, so the damage would be small, but small is not a reason to hand that decision to a branch. Previews build against whatever schema production already has, which is what a preview should be testing.</p>
+<p><strong>A failed migration fails the build.</strong> That is the point of <code>set -e</code>. A deploy that cannot migrate must not go live and start serving errors from tables it does not have. The site keeps serving the last good build instead.</p>
+<p>EduScale&#39;s CI runs the same <code>prisma migrate deploy</code> against a throwaway Postgres service container before the backend tests (<code>.github/workflows/ci.yml</code>, <code>backend-test</code>). That proves the chain applies to an empty database. It cannot prove anything about a database that already holds objects, and that gap is the second half of this story.</p>
+<h2>The part I got wrong</h2>
+<p>Failing the build on a bad migration is the right design. It is also the whole blast radius. Anything that makes <code>migrate deploy</code> refuse to run stops every deploy, including the ones that have nothing to do with the bad migration.</p>
+<p>Six weeks after the KhataGO fix, a migration added six indexes with plain <code>CREATE INDEX</code>. Three of them already existed in production, almost certainly created by those two unaccounted-for migrations. Postgres raised <code>42P07 relation ... already exists</code> on the first statement, rolled the whole migration back, and Prisma wrote the failure into <code>_prisma_migrations</code>. From then on every production build died at <code>migrate deploy</code> with <code>P3009</code> before compiling anything. The site kept serving the last good deploy, so nothing looked broken from outside. Production did not deploy for a week (<code>KhataGO/FINDINGS.md</code>, section 10).</p>
+<p>The migration had been tested against a local database. That database was built by replaying the repo&#39;s own migrations, so it did not have the three indexes. It passed every check I ran, because the local database and production disagreed about exactly the thing the migration asserted.</p>
+<p>The rule I took from it: a migration&#39;s job is to make the database match the schema afterwards, not to assert what the database did not have beforehand. <code>CREATE INDEX IF NOT EXISTS</code> says the first. A bare <code>CREATE INDEX</code> quietly says the second, inside a transaction that takes every other statement down with it.</p>
+<p>EduScale now enforces this in <code>Backend/src/tests/migrations/migrationIdempotency.test.ts</code>. The test parses every migration file and fails any new one that creates an index, table, extension or column without <code>IF NOT EXISTS</code>, or a type or constraint without a <code>duplicate_object</code> handler or a matching <code>DROP ... IF EXISTS</code> earlier in the file. Migrations production has already applied are pinned by sha256 and counted in a ratchet map that can only go down, because editing an applied file is its own way to stop every deploy (<code>P3006</code>). When I measured on 2026-09-06, production&#39;s table held exactly the fifteen migrations then in the repo, all checksums matched, and a replay onto an empty Postgres 17 produced the same object set as production. That is a fact with a date on it, not a property of the code, which is why the test exists.</p>
+<h2>What to do in your own repo</h2>
+<p>Run <code>npx prisma migrate status</code> against production, read-only, and read the datasource line it prints. If it lists pending migrations your code already depends on, you have this bug.</p>
+<p>Query <code>_prisma_migrations</code> directly and compare it to your migrations directory. Extra rows mean DDL reaches your database by routes the repo does not record. Test how <code>migrate deploy</code> behaves against that drift on a scratch database before it goes in the build.</p>
+<p>Put <code>prisma migrate deploy</code> in the build, gated on <code>VERCEL_ENV=production</code>, and let a failure fail the build.</p>
+<p>Write every object creation in a form that tolerates the object already existing. <code>IF NOT EXISTS</code> where Postgres offers it, a <code>DO ... EXCEPTION WHEN duplicate_object</code> block where it does not. Never edit a migration production has applied.</p>
+<p>And when a deploy does wedge, <code>migrate status</code> will not tell you. Reproduced on EduScale&#39;s own chain, it listed only the migration queued behind the failed one as pending. It never named the failed one and never used the word &quot;failed&quot;. The reliable check is <code>SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL</code>. Recovery is <code>migrate resolve --rolled-back &lt;name&gt;</code> after fixing the SQL, then <code>migrate deploy</code>. <code>docs/MIGRATIONS.md</code> in the EduScale repo walks through it.</p>

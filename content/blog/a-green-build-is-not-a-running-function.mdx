@@ -1,0 +1,95 @@
+---
+title: "A green build is not a running function"
+description: "sanitize-html 2.17.7 pulls in ESM-only htmlparser2 12. Tests passed, Vercel returned FUNCTION_INVOCATION_FAILED. The npm override and the test for it."
+image: "/Images/portfolio1.png"
+date: "2026-10-19"
+readTime: "7 min read"
+featured: false
+llmsTopic: "A green build is not a running function (sanitize-html and ERR_REQUIRE_ESM)"
+tags:
+  - "Node.js"
+  - "Vercel"
+  - "Debugging"
+  - "CI/CD"
+  - "Testing"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "sanitize-html htmlparser2 ERR_REQUIRE_ESM"
+  - "FUNCTION_INVOCATION_FAILED vercel require esm"
+  - "npm audit fix broke jest cannot use import statement outside a module"
+  - "sanitize-html 2.17.7 ERR_REQUIRE_ESM"
+---
+
+<p>If <code>sanitize-html</code> 2.17.6 or later makes your Node function fail with <code>ERR_REQUIRE_ESM</code> (or Vercel just says <code>FUNCTION_INVOCATION_FAILED</code> on every request), the cause is that <code>sanitize-html</code> is CommonJS and <code>require()</code>s <code>htmlparser2</code>, and from 2.17.6 it depends on <code>htmlparser2</code> 12, which ships ESM only. The quickest fix that keeps the security patches is an npm override pinning <code>htmlparser2</code> under <code>sanitize-html</code> back to <code>^10.1.0</code>, which is still CommonJS. Then add a test that loads the package with <code>--no-experimental-require-module</code>, so the next bump cannot ship the same crash.</p>
+<p>That is the whole answer. The rest is how I got there on <a href="/portfolio/eduscale">EduScale</a>, because the order in which things went wrong is the useful part.</p>
+<h2>The error text</h2>
+<p>Two different errors, same cause.</p>
+<p>In Jest, the first time I bumped the package:</p>
+<pre><code>SyntaxError: Cannot use import statement outside a module
+</code></pre>
+<p>In production, after I had &quot;fixed&quot; that and deployed:</p>
+<pre><code>500 FUNCTION_INVOCATION_FAILED
+</code></pre>
+<p>And when I finally loaded the deployed bundle locally with <code>require(esm)</code> switched off:</p>
+<pre><code>Error [ERR_REQUIRE_ESM]: require() of ES Module .../htmlparser2/...
+    at .../node_modules/sanitize-html/index.js:1
+</code></pre>
+<p>(Abridged. The part that matters is the second line: the <code>require()</code> is inside sanitize-html, not in my code.)</p>
+<h2>What broke</h2>
+<p>EduScale&#39;s backend sanitizes forum posts and articles through one small file, <code>Backend/src/utils/sanitize.ts</code>, which wraps <code>sanitize-html</code> with an allow-list. The package had been pinned at 2.17.5. Two advisories landed against it (GHSA-g8qq-57p8-ggw5, GHSA-jxwj-j7wr-gfrw), fixed in 2.17.6 and 2.17.7, so I bumped it (commit <code>1ffd0197</code>).</p>
+<p>Every Jest suite that imported the sanitizer went red with &quot;Cannot use import statement outside a module&quot;. The reason is in the package itself. <code>node_modules/sanitize-html/index.js</code> starts with</p>
+<pre><code class="language-js">const htmlparser = require(&#39;htmlparser2&#39;);
+</code></pre>
+<p>and 2.17.7&#39;s <code>package.json</code> says <code>&quot;htmlparser2&quot;: &quot;^12.0.0&quot;</code>. htmlparser2 11 and up, together with <code>domhandler</code>, <code>domutils</code>, <code>dom-serializer</code>, <code>domelementtype</code> and <code>entities</code>, are ESM only. Jest&#39;s CommonJS loader cannot <code>require()</code> an ES module, so it choked.</p>
+<p>I did the thing that makes the tests pass. <code>jest.config.cjs</code> got a transform that compiled exactly those six packages to CommonJS for tests, with a <code>transformIgnorePatterns</code> entry that also covered the nested copies under <code>node_modules/sanitize-html/node_modules</code>. The app itself is <code>&quot;type&quot;: &quot;module&quot;</code>, and on Node 20.19+ and 22.12+ <code>require(esm)</code> is on by default, so I reasoned the real runtime would never hit the error. Locally that held. The gate on the next commit was green: lint, type-check, 599 Jest tests, build. I even pinned <code>engines.node</code> to <code>^20.19.0 || ^22.12.0 || ^24.0.0</code> (commit <code>d69882ce</code>) because those are the versions where <code>require(esm)</code> works without a flag.</p>
+<p>Then every request to the deployed API returned 500.</p>
+<h2>Why local passed and production did not</h2>
+<p>The lockfile diff from the bump is worth reading, because it explains where the ESM copy lived. The top-level <code>node_modules/htmlparser2</code> stayed at 10.1.0, but marked <code>&quot;dev&quot;: true</code>: it was only there for a dev tool. The 12.x tree was installed nested, under <code>node_modules/sanitize-html/node_modules/</code>. So a production install got sanitize-html plus its own private ESM htmlparser2, and nothing else in the tree cared.</p>
+<p>Vercel builds the EduScale backend into one function. <code>vercel.json</code> rewrites <code>/(.*)</code> to <code>api/index.ts</code>, and that file ends with</p>
+<pre><code class="language-ts">import app from &#39;../dist/main.js&#39;;
+
+export default app;
+</code></pre>
+<p>So the entire Express app, every route and every import, loads when the function loads. If anything in that import graph throws, there is no route that can answer. Health check, anonymous reads, everything is the same 500.</p>
+<p>I could not read the runtime logs from where I was working, so I reproduced it instead. <code>vercel build</code> locally produces the same <code>api/index.func</code> the platform runs. The last healthy deploy (<code>ac7e7af</code>) and the broken one differed only in the sanitize-html subtree and one unrelated checkout change. Loading the broken function with <code>node --no-experimental-require-module</code> failed at <code>sanitize-html/index.js:1</code> with <code>ERR_REQUIRE_ESM</code>; loading <code>ac7e7af</code>&#39;s function the same way worked. I want to be precise about the evidence: that the Vercel runtime had <code>require(esm)</code> unavailable is inferred from that reproduction, not observed in its logs. It is the only difference that explains the symptom, and the fix built on it made the symptom go away.</p>
+<p>The uncomfortable part is that my local gate had tested the wrong thing twice. The Jest transform made the tests pass by changing what the tests loaded. The build passed because bundling an ESM file is not the same as <code>require()</code>-ing it at runtime. Both were green. Neither exercised the artifact that production actually executes. I have written before that <a href="/blog/a-passing-test-only-proves-the-test-passes">a passing test only proves the test passes</a>; this was the same lesson one layer down, at the module loader.</p>
+<h2>The fix</h2>
+<p>Commit <code>f339236</code>, four files.</p>
+<p><code>Backend/package.json</code> gets an override so sanitize-html resolves the CommonJS parser:</p>
+<pre><code class="language-json">&quot;overrides&quot;: {
+  &quot;sanitize-html&quot;: {
+    &quot;htmlparser2&quot;: &quot;^10.1.0&quot;
+  }
+}
+</code></pre>
+<p>The 2.17.7 code, with both advisory fixes, stays. Only its parser moves back one major. I checked the one behaviour difference I could find: htmlparser2 10 does not decode entities inside <code>&lt;textarea&gt;</code>, so textarea content comes out double-encoded. EduScale&#39;s allow-lists in <code>sanitize.ts</code> do not include <code>textarea</code>, so for us it is not reachable. If yours do, test that case before taking this override.</p>
+<p>The <code>engines.node</code> pin went back to <code>&quot;&gt;=20&quot;</code>; it existed only for <code>require(esm)</code>, and Vercel picks <code>nodejs24.x</code> for either range. <code>jest.config.cjs</code> lost the ESM transform entirely, because with a CommonJS parser there is nothing to transpile.</p>
+<p>And the regression test. It does not import the sanitizer into Jest, since that would again test Jest&#39;s loader rather than Node&#39;s. It spawns a child Node process with <code>require(esm)</code> disabled and asks it to load the real package from disk:</p>
+<pre><code class="language-ts">describe(&#39;sanitize-html loads without require(esm)&#39;, () =&gt; {
+  it(&#39;requires cleanly with --no-experimental-require-module&#39;, () =&gt; {
+    const run = spawnSync(
+      process.execPath,
+      [
+        &#39;--no-experimental-require-module&#39;,
+        &#39;-e&#39;,
+        &quot;process.stdout.write(require(&#39;sanitize-html&#39;)(&#39;&lt;b&gt;x&lt;/b&gt;&lt;script&gt;1&lt;/script&gt;&#39;))&quot;,
+      ],
+      { cwd: path.resolve(__dirname, &#39;../../..&#39;), encoding: &#39;utf8&#39; }
+    );
+    expect(run.stderr).not.toMatch(/ERR_REQUIRE_ESM/);
+    expect(run.status).toBe(0);
+    expect(run.stdout).toBe(&#39;&lt;b&gt;x&lt;/b&gt;&#39;);
+  });
+});
+</code></pre>
+<p>On the htmlparser2 12 tree, without the override, this test fails with <code>ERR_REQUIRE_ESM</code>. With the override it prints <code>&lt;b&gt;x&lt;/b&gt;</code> and exits 0. That is the property it guards. The advisory tests in the same file (<code>Backend/src/tests/utils/sanitize.test.ts</code>) still run the two proof-of-concept payloads with the advisories&#39; own options, and swapping 2.17.5&#39;s code back in still fails both, so the override did not quietly reopen the holes it was meant to keep closed.</p>
+<p>The last check was the one I had skipped the first time. I served the <code>vercel build</code> output locally on Node 24 against a local Postgres and Redis, and hit real routes: <code>/api/v1/health</code> answered 200 with postgres, redis and queue ok, the anonymous interview-questions and challenges endpoints answered 200, a forum post went in with the script, <code>onclick</code>, <code>onerror</code> and <code>javascript:</code> parts stripped, and checkout with an unknown price id answered 400. Those are local checks of the built function, not production numbers, but they are checks of the artifact that ships.</p>
+<h2>What to do if you are looking at this error</h2>
+<ol>
+<li>Find the <code>require()</code>. For sanitize-html it is line 1 of <code>index.js</code>. For another package, grep its entry file for <code>require(</code> of anything that now ships <code>&quot;type&quot;: &quot;module&quot;</code>.</li>
+<li>Read the lockfile diff for added and removed paths, not just version bumps. A nested <code>node_modules/&lt;pkg&gt;/node_modules/&lt;dep&gt;</code> entry is where the ESM copy hides, and a patch release can introduce it.</li>
+<li>If the dependency has a CommonJS major that is still maintained, pin it with <code>overrides</code> (npm), <code>resolutions</code> (yarn) or <code>pnpm.overrides</code>, scoped to the parent package. Check the changelog between the two majors for a behaviour change that touches your inputs.</li>
+<li>Add a test that loads the package in a child process with <code>--no-experimental-require-module</code>. Do not import it into Jest and call it covered; Jest has its own loader.</li>
+<li>After deploying, curl a real route. Deploy status &quot;Ready&quot; means the build and upload finished. It does not mean the function can load.</li>
+</ol>
+<p>The title is the lesson. A green build told me the bundler could read the files. Only a request told me the function could run.</p>

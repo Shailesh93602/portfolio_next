@@ -1,0 +1,128 @@
+---
+title: "The test suite that wrote to production"
+description: "npm test wrote to a production database through a checked-in .env. The two-check guard that stops it, the hole it had, and the Prisma CLI trap."
+image: "/Images/portfolio1.png"
+date: "2026-10-19"
+readTime: "8 min read"
+featured: false
+llmsTopic: "Guarding a test suite against a production database"
+tags:
+  - "Testing"
+  - "Prisma"
+  - "PostgreSQL"
+  - "Software Quality"
+  - "Engineering Practice"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "prevent tests running against production database"
+  - "prisma DATABASE_URL env override .env"
+  - "prisma tests production database"
+  - "prisma migrate deploy connected to wrong database"
+---
+
+<p>If your tests can reach a production database, one check is not enough. Refuse to start unless <code>DATABASE_URL</code> names a local host and a throwaway database (a name ending in <code>_test</code> or <code>_e2e</code>), and then, after the client connects, run <code>SELECT current_database()</code> and refuse again if the answer is not a throwaway. The second check exists because the string you validated and the database the tool opened can differ, and with Prisma they did. And never allow-list the name <code>postgres</code>: on Supabase, that is what production is called.</p>
+<h2>What broke</h2>
+<p>EduScale&#39;s <code>battle.test.ts</code> creates two users and a topic, runs the battle repository against them, and deletes everything in <code>afterAll</code>. The repo has a checked-in <code>Backend/.env</code>, and its <code>DATABASE_URL</code> points at the live Supabase pooler. The schema reads <code>url = env(&quot;DATABASE_URL&quot;)</code>. The test never set the variable. So <code>npm test</code> on a laptop was creating and deleting rows in production.</p>
+<p>Nothing was harmed. Jest runs <code>afterAll</code> even when a test fails, and a read-only sweep for leftover <code>test-supabase-*</code> users and <code>Test Topic *</code> rows found none. But look at why it was fine. The teardown was careful. Nothing was stopping the connection. A process killed between create and delete ends in production, silently. A <code>deleteMany</code> whose <code>where</code> clause gets widened in a refactor ends there too.</p>
+<h2>How it was found</h2>
+<p>Not by a tool, and later than it should have been. I had run the suite several times that day before I stopped and asked one question of the test: where does this code get its database from, and is that the thing it thinks it is? The answer was three hops long. The datasource is <code>env(&quot;DATABASE_URL&quot;)</code>. The test does not set it. The only file that does is <code>.env</code>, and <code>.env</code> is production.</p>
+<h2>The guard</h2>
+<p>The fix is <code>src/tests/helpers/assertTestDatabase.ts</code>, two functions. The first validates the string before anything connects:</p>
+<pre><code class="language-ts">const LOCAL_HOSTS = new Set([&#39;localhost&#39;, &#39;127.0.0.1&#39;, &#39;::1&#39;, &#39;[::1]&#39;]);
+
+function isThrowawayName(name: string): boolean {
+  return name.endsWith(&#39;_test&#39;) || name.endsWith(&#39;_e2e&#39;);
+}
+
+export function assertTestDatabaseUrl(url: string | undefined): void {
+  // ...parse, refuse unset or unparseable...
+  if (!LOCAL_HOSTS.has(parsed.hostname)) {
+    throw new Error(
+      [
+        &#39;REFUSING TO RUN: these tests create and delete rows.&#39;,
+        `DATABASE_URL host is &quot;${parsed.hostname}&quot;, which is not local.`,
+        &#39;Backend/.env points at PRODUCTION Supabase — never run this against it.&#39;,
+        &#39;Start a local Postgres and export DATABASE_URL before running.&#39;,
+      ].join(&#39;\n&#39;)
+    );
+  }
+
+  const database = parsed.pathname.replace(/^\//, &#39;&#39;);
+  if (!isThrowawayName(database)) {
+    throw new Error(
+      `REFUSING TO RUN: database &quot;${database}&quot; is not an obvious throwaway ` +
+        &#39;(expected a *_test / *_e2e name, or the CI container default).&#39;
+    );
+  }
+}
+</code></pre>
+<p>It runs at import time in <code>battle.test.ts</code>, before Jest registers a single test, so a wrong URL fails the file rather than one case:</p>
+<pre><code class="language-ts">assertTestDatabaseUrl(process.env.DATABASE_URL);
+</code></pre>
+<p>The second function runs inside <code>beforeAll</code>, after <code>prisma.$connect()</code>, and asks the open connection what it actually opened:</p>
+<pre><code class="language-ts">export async function assertConnectedToTestDatabase(
+  prisma: PrismaClient
+): Promise&lt;void&gt; {
+  const [row] = await prisma.$queryRaw&lt;
+    { db: string }[]
+  &gt;`SELECT current_database() AS db`;
+
+  if (!isThrowawayName(row.db)) {
+    throw new Error(
+      [
+        `REFUSING TO RUN: connected to database &quot;${row.db}&quot;, which is not a throwaway.`,
+        &#39;The client resolved a different database than the URL that was validated.&#39;,
+        &#39;Production Supabase is named &quot;postgres&quot; — if that is what you see, stop.&#39;,
+      ].join(&#39;\n&#39;)
+    );
+  }
+}
+</code></pre>
+<p>There is no override flag on either. The seeder that fills a local database with battles (<code>src/scripts/battle-seeder.ts</code>) calls both as well, because a seeder pointed at production is the same bug with a friendlier name.</p>
+<h2>The hole I put in it</h2>
+<p>Writing the first version, I allow-listed the database name <code>postgres</code>. It is the default name for a Postgres service container in CI, and I wanted the job to pass without extra config.</p>
+<p>Production Supabase&#39;s database is also named <code>postgres</code>.</p>
+<p>So the name check would have waved production straight through, and the only thing left between the suite and the live database was the host check. That is the redundancy I had just argued was necessary, doing the whole job by itself. An allow-list whose most permissive entry matches the thing you are guarding against is not an allow-list.</p>
+<p>The fix was to stop accepting a default at all. The CI container is configured with its own name, and the workflow says why:</p>
+<pre><code class="language-yaml"># NOT the default `postgres`: production Supabase&#39;s database is also
+# named that, so the test-database guard refuses it on purpose.
+POSTGRES_DB: eduscale_test
+</code></pre>
+<p>And the hole has a test now, so it cannot quietly come back:</p>
+<pre><code class="language-ts">it(&#39;refuses the name `postgres`, even on localhost&#39;, () =&gt; {
+  expect(() =&gt;
+    assertTestDatabaseUrl(
+      &#39;postgresql://postgres:postgres@localhost:5432/postgres&#39;
+    )
+  ).toThrow(/not an obvious throwaway/);
+});
+</code></pre>
+<p>The same file pins the exact production URL shape as a refusal, and a remote host with a throwaway name (<code>10.0.0.5:5432/eduscale_test</code>) as a refusal too. That last one is the near-miss a name-only check would accept.</p>
+<h2>Then the guard cried wolf</h2>
+<p>The first connection-level check also required <code>inet_server_addr()</code> to be a loopback address. It passed on my machine and failed in CI:</p>
+<pre><code>REFUSING TO RUN: connected to non-local host 172.18.0.2/32
+</code></pre>
+<p>A Docker service container is reached at <code>localhost</code> from the runner, but from inside it reports its own private address. Containers, pgbouncer, proxies and SSH tunnels all legitimately answer with a non-loopback address, so the server address is a bad signal at the connection layer. Failing closed is the right direction to be wrong in, but a guard that cries wolf gets deleted, and then you have nothing.</p>
+<p>So the two layers now check different things. The URL check owns the host. The connection check owns the database name, which is the one fact a string cannot know. A name ending in <code>_test</code> cannot be production, because production is <code>postgres</code>.</p>
+<h2>Why the second check exists: the Prisma CLI</h2>
+<p>This is the part people search for, so here is exactly what happened in the sibling repo, KhataGO, on 2026-08-23.</p>
+<p>I ran a migration against what I believed was a local database:</p>
+<pre><code class="language-sh">DATABASE_URL=&quot;postgresql://localhost:5432/khatago_ballast&quot; npx prisma migrate deploy
+</code></pre>
+<p>The CLI printed <code>Environment variables loaded from .env</code> and connected to production Supabase. It applied nothing, because production was already at every migration and <code>migrate deploy</code> never resets or drops. Safe by luck, not by construction.</p>
+<p>My note in the repo at the time said the repo&#39;s <code>.env</code> wins over the shell. I now think that wording is wrong, and the real cause is more useful. Prisma&#39;s docs say that when a variable is defined in two places, dotenv&#39;s rules decide, and by default dotenv keeps a variable the shell already set. So <code>DATABASE_URL</code> was probably mine. The variable I had not set was <code>DIRECT_URL</code>. KhataGO&#39;s schema declares both (EduScale&#39;s does too):</p>
+<pre><code class="language-prisma">datasource db {
+  provider  = &quot;postgresql&quot;
+  url       = env(&quot;DATABASE_URL&quot;)
+  directUrl = env(&quot;DIRECT_URL&quot;)
+}
+</code></pre>
+<p>When a schema declares a direct URL, migrations use it, and the only place <code>DIRECT_URL</code> was defined was <code>.env</code>. So the tool most likely read the one variable I had not overridden and went where that pointed, while printing a line that sounded like it had read my command.</p>
+<p>The lesson is the same whichever explanation is right. A pre-flight check on a string is defeated by any tool that can substitute configuration underneath it. Validate the string, then ask the connection what it is. For the CLI specifically: run <code>npx prisma migrate status</code> first and read the datasource line it prints, export <code>DIRECT_URL</code> alongside <code>DATABASE_URL</code>, or run from a directory with no <code>.env</code> in it.</p>
+<h2>What to do in your own repo</h2>
+<p>Keep the checked-in <code>.env</code> away from production credentials if you can. I have not managed that yet in either repo, which is exactly why the guard exists; the honest state is that the guard is what stands between <code>npm test</code> and the live database.</p>
+<p>Add a URL check that runs at import time and refuses anything that is not a local host with a throwaway suffix. No override flag.</p>
+<p>Add a connection check that runs after <code>$connect()</code> and asserts <code>current_database()</code>, not the server address.</p>
+<p>Give the CI database a real name. Never accept a default, because a default is what production will be called too.</p>
+<p>Put a test on the refusal cases, including the one you nearly allowed. A guard with no test is a guard you will loosen the next time it is inconvenient.</p>
+<p>And after you fix it, ask what else in the repo reads a connection string the same way. The seeder did. A guard around one test file and nothing else is a passing test that proves only that the test passes.</p>

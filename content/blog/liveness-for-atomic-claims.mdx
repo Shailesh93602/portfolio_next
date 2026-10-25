@@ -1,0 +1,101 @@
+---
+title: "Job stuck in PROCESSING? Liveness for atomic Postgres claims"
+description: "A job stuck in PROCESSING means the claim has no way back out. How KhataGO ages claims, bounds wait times and releases on every path, including a throw."
+image: "/Images/portfolio1.png"
+date: "2026-10-19"
+readTime: "8 min read"
+featured: false
+llmsTopic: "Liveness for atomic Postgres claims (jobs stuck in PROCESSING)"
+tags:
+  - "Concurrency"
+  - "PostgreSQL"
+  - "Distributed Systems"
+  - "Reliability"
+  - "Debugging"
+  - "Backend"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "job stuck in processing status"
+  - "stale lock recovery"
+  - "mutual exclusion vs liveness"
+---
+
+<p><strong>Short answer:</strong> A job gets stuck in <code>PROCESSING</code> when the claim that moved it there has no way back out. An atomic <code>UPDATE … WHERE status = &#39;PENDING&#39;</code> guarantees only one worker wins; it says nothing about what happens when that worker dies. The fix is to record <em>when</em> the claim was taken, let any worker take over a claim older than a known window, bound the number of takeovers, and make sure every path out of the work, including a throw, releases the claim.</p>
+<p>I got each of those wrong once in KhataGO, a WhatsApp bookkeeping app I built. This is what each mistake looked like and what the code does now.</p>
+<h2>The claim that was correct</h2>
+<p>Every inbound WhatsApp message becomes a row in a Postgres table. Meta delivers at least once, so the row has <code>waMessageId String? @unique</code> (<code>prisma/schema.prisma</code>). A second delivery hits the constraint and gets acknowledged without a second row. The integration test fires eight concurrent deliveries of the same message id and asserts that one row is written and every caller gets a 202 (<code>tests/integration/whatsapp-webhook.integration.test.ts</code>).</p>
+<p>Then something has to run the AI step on that row, and only one process may do it. The first version was this:</p>
+<pre><code class="language-ts">updateMany({
+  where: { aiStatus: &quot;PENDING&quot; },
+  data: { aiStatus: &quot;PROCESSING&quot; },
+});
+</code></pre>
+<p>A conditional update. Two concurrent callers both match the <code>WHERE</code>, Postgres serialises them on the row lock, re-evaluates the predicate against the updated row, and the loser updates zero rows. The same test file races ten of these and asserts exactly one wins. It was correct.</p>
+<h2>What it could not do</h2>
+<p>There was no path from <code>PROCESSING</code> to anything except a finished run. The work ran inside Next&#39;s <code>after()</code>, which shares the webhook invocation&#39;s budget and dies with it. A five-turn tool-calling loop can outlive that budget. When it did, the row stayed <code>PROCESSING</code> forever, and nothing in the system could tell an abandoned claim from one still legitimately running.</p>
+<p>A separate bug made it worse. A transient model error wrote <code>FAILED</code> on the first failure, so a message lost to a five-second outage was lost for good. Same shape: the state machine had an entrance and no exit.</p>
+<p>Mutual exclusion and liveness are different properties. The test I had proved the first. Nothing proved the second, because nothing in a unit test dies halfway through an <code>await</code>.</p>
+<h2>Fix one: a claim that ages</h2>
+<p>Two columns on the row now (<code>prisma/schema.prisma</code>):</p>
+<pre><code class="language-prisma">aiClaimedAt DateTime?   // when the current PROCESSING claim was taken
+aiAttempts  Int @default(0)  // incremented on every claim, including reclaims
+</code></pre>
+<p>And the rule for &quot;may I take this row&quot; lives in one place, <code>lib/whatsappClaim.ts</code>, as the Prisma <code>where</code> the claim and the sweeper both use:</p>
+<pre><code class="language-ts">export const AI_CLAIM_STALE_MS = 10 * 60 * 1000;
+export const AI_MAX_ATTEMPTS = 3;
+
+export function reclaimableWhere(now: Date) {
+  const staleBefore = new Date(now.getTime() - AI_CLAIM_STALE_MS);
+  return {
+    status: PROCESSABLE_MESSAGE_STATUS,
+    aiAttempts: { lt: AI_MAX_ATTEMPTS },
+    OR: [
+      { aiStatus: &quot;PENDING&quot; },
+      { aiStatus: &quot;PROCESSING&quot;, aiClaimedAt: { lt: staleBefore } },
+    ],
+  };
+}
+</code></pre>
+<p>The claim itself (<code>lib/whatsapp.ts</code>) wins two ways in a single update: the row is <code>PENDING</code>, or it is <code>PROCESSING</code> and the claim is older than ten minutes.</p>
+<pre><code class="language-ts">const claim = await prisma.whatsappMessage.updateMany({
+  where: { id: message.id, ...reclaimableWhere(claimedAt) },
+  data: {
+    aiStatus: &quot;PROCESSING&quot;,
+    aiClaimedAt: claimedAt,
+    aiAttempts: { increment: 1 },
+  },
+});
+if (claim.count === 0) return false;
+</code></pre>
+<p>Both predicates stay inside the mutation. A read-then-update would let two reclaimers through; one conditional <code>UPDATE</code> lets the row lock decide.</p>
+<p>Ten minutes is a judgement, and the unit tests pin the reasoning rather than the number: the window must exceed a generous worst-case run, and must be at most fifteen minutes so a crash is not a lasting outage (<code>tests/lib/whatsapp-claim.test.ts</code>). Too short duplicates a paid model call and attempts the ledger writes again. Too long leaves a person waiting on a reply that will not come.</p>
+<p>The attempt counter increments on claim, not on failure. A failure that never reports itself, because the process died, still spent an attempt. Below three, a failed run returns the row to <code>PENDING</code> and a sweeper picks it up. At three, it dead-letters as <code>FAILED</code> and lands on an admin page with a replay button.</p>
+<h2>Fix two: silence is not an error</h2>
+<p>The claim window closed the door for a worker that dies. It did not close the door for a dependency that goes quiet.</p>
+<p>Every recovery path I had was entered by an error arriving: a 429 cascades to the next model, a thrown error becomes a <code>FAILED</code> outcome, three of those dead-letter. The SDK I used built its fetch with no <code>AbortSignal</code> unless you passed a timeout, and I passed none. A model that accepts the connection and never answers leaves <code>await fetch(...)</code> pending indefinitely. I measured that against a local server that accepts and never replies.</p>
+<p>Follow one message through it. A worker claims it, attempts 1, calls the model, and the model goes quiet. The process gets killed before the call returns. Nothing writes a terminal state, because the code that writes one is on the other side of the <code>await</code>. Ten minutes later another worker takes it, attempts 2. Then 3. Now <code>aiAttempts: { lt: 3 }</code> excludes it from the sweeper, and <code>aiStatus</code> is still <code>PROCESSING</code>, never <code>FAILED</code>. The admin page lists <code>where: { aiStatus: &quot;FAILED&quot; }</code> (<code>app/admin/page.tsx</code>), the replay endpoint resets <code>where: { id, aiStatus: &quot;FAILED&quot; }</code> (<code>app/api/admin/dead-letters/route.ts</code>), and the sweeper cron reports <code>count({ aiStatus: &quot;FAILED&quot; })</code>. The row is in none of them. The dashboard says zero dead letters and the message is gone.</p>
+<p>The counter that exists to stop a deterministic failure from burning paid calls is what turned slowness into permanence. It counts claims, and a slow dependency produces claims without outcomes.</p>
+<p>The fix is a deadline on every wait, and the deadlines are derived from the claim window rather than chosen. <code>lib/deadlines.ts</code> holds a 240 s run budget and a 60 s per-call timeout. The test asserts the relationship, not the numbers (<code>tests/lib/deadlines.test.ts</code>):</p>
+<pre><code class="language-ts">expect(WORST_CASE_CLAIM_HOLD_MS).toBeLessThan(AI_CLAIM_STALE_MS);
+expect(WORST_CASE_CLAIM_HOLD_MS).toBe(AGENT_RUN_BUDGET_MS + GEMINI_CALL_TIMEOUT_MS);
+</code></pre>
+<p>The sum, not the maximum, because the budget is checked between calls, so a call that starts one millisecond before the budget expires still gets its full per-call timeout. Change the claim window and the test fails instead of the timeouts quietly going wrong.</p>
+<h2>Fix three: the release was on the happy path</h2>
+<p>The shape of the processing function was: claim, do the work, write the terminal state. The last write is the only thing that clears <code>aiClaimedAt</code>. There was no <code>try</code> around the middle, so any throw between the two skipped the release and left the row exactly as above: <code>PROCESSING</code>, claim live, attempt spent.</p>
+<p>The most likely thrower was not the model. Users can add their own Gemini key, the server uses its own only if one is configured, and the first thing the AI step does is resolve a key. With neither, it throws <code>NoApiKeyError</code>. So a user who had not finished setup texted the product and lost the message permanently, after three claims that could never have succeeded. The error class carries a message written for the user, telling them to add a key in Settings. It reached nobody, because the send came after the update that never ran.</p>
+<p>Now the work runs inside a function that never throws (<code>lib/whatsappWork.ts</code>):</p>
+<pre><code class="language-ts">export async function runMessageWork(message, userId): Promise&lt;MessageWork&gt; {
+  try {
+    return { aiResult: await answerMessage(message, userId), terminal: false };
+  } catch (error) {
+    return failedWork(error, message.id);
+  }
+}
+</code></pre>
+<p>A throw is treated as the <code>FAILED</code> outcome it is: retryable below the limit, dead-lettered at it, <code>aiClaimedAt</code> cleared either way. <code>NoApiKeyError</code> is marked terminal so it dead-letters on the first attempt instead of the third, and its message is delivered. Two more attempts cannot change whether a key exists.</p>
+<h2>What to do with your own stuck jobs</h2>
+<p>If you have rows wedged in a processing state, it is almost always one of these.</p>
+<p>Find the statement that acquires and the statement that releases, and read what is between them. If the answer is &quot;an <code>await</code> on anything at all&quot; and the two are not joined by a <code>finally</code> or a transaction, the release is conditional on the happy path.</p>
+<p>Record when the claim was taken. A boolean state cannot be aged. A timestamp can, and the takeover rule belongs inside the same conditional <code>UPDATE</code> that takes the claim, so two reclaimers serialise on the row.</p>
+<p>Then ask which failure makes no noise. A dependency that throws is handled by whatever handles errors. One that goes silent is handled by nothing until every wait has a deadline, and the deadlines have to add up to less than the claim window or a healthy run gets taken over while it is still alive.</p>
+<p>The bugs behind this post are §2, §11 and §18 of KhataGO&#39;s <code>FINDINGS.md</code>. The queue that sits on top of the claim, a polling worker with no broker, is its own post: <a href="/blog/postgres-as-the-job-queue">Postgres as a job queue</a>.</p>

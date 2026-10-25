@@ -1,0 +1,96 @@
+---
+title: "Formatting rupees in JavaScript: lakhs and paise"
+description: "One Intl.NumberFormat for ₹, why toLocaleString() with no locale shows each viewer a different number, and how a CGST/SGST split gained a paisa."
+image: "/Images/portfolio1.png"
+date: "2026-10-19"
+readTime: "8 min read"
+featured: false
+llmsTopic: "Formatting rupees in JavaScript (lakh grouping, GST paisa rounding)"
+tags:
+  - "JavaScript"
+  - "TypeScript"
+  - "Internationalization"
+  - "Testing"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "format indian rupees javascript"
+  - "Intl.NumberFormat en-IN lakh"
+  - "toLocaleString en-IN two decimals"
+  - "cgst sgst rounding paise"
+---
+
+<p>To format Indian rupees in JavaScript, build one <code>Intl.NumberFormat(&quot;en-IN&quot;, { style: &quot;currency&quot;, currency: &quot;INR&quot;, minimumFractionDigits: 2, maximumFractionDigits: 2 })</code>, construct it once, and send every amount through it. That gives you <code>₹12,34,567.00</code> with lakh grouping and exactly two decimals, on every machine. Never call <code>toLocaleString()</code> with no locale for money: the grouping then comes from the viewer&#39;s browser, not from your app.</p>
+<pre><code class="language-ts">const INR = new Intl.NumberFormat(&quot;en-IN&quot;, {
+  style: &quot;currency&quot;,
+  currency: &quot;INR&quot;,
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+export function formatInr(amount: number | string): string {
+  const value = typeof amount === &quot;string&quot; ? parseFloat(amount) : amount;
+  return INR.format(Number.isFinite(value) ? value : 0);
+}
+</code></pre>
+<p>That is the whole of <code>lib/money.ts</code> in <a href="/portfolio/khatago">KhataGO</a>, minus the comment block. The comment block is longer than the code, because the code is the easy part. Here is why it exists.</p>
+<h2>What broke</h2>
+<p>KhataGO is a bookkeeping app for Indian shop owners. It prints money in about thirty places in the code, across the dashboard, the receivables table, the analytics charts, monthly reports, invoices and the WhatsApp replies the agent sends. <code>lib/utils.ts</code> had exported a <code>formatCurrency</code> helper from early on. One page called it.</p>
+<p>Everywhere else, amounts were rendered by hand. Two real lines from the old source:</p>
+<pre><code class="language-tsx">₹{receivable.balance.toLocaleString(&quot;en-IN&quot;)}   // app/receivables
+₹{data.totalSales.toLocaleString()}              // components/AnalyticsCharts
+</code></pre>
+<p>Both look like formatting. Neither is a contract.</p>
+<p><code>toLocaleString</code> has no opinion about fraction digits. It prints whatever precision the number happens to carry. So a balance of <code>1234.5</code> rendered as <code>₹1,234.5</code> in the receivables table, and the invoice built from the same row said <code>₹1,234.50</code>. A round <code>5000</code> rendered as <code>₹5,000</code> with no decimals at all, one row above a <code>₹1,234.5</code>. A column where the number of decimals changes per row is a column nobody can scan.</p>
+<p>Then the GST-inclusive figures. Extracting 18% tax out of a total leaves you with numbers like <code>45.005</code>. <code>toLocaleString(&quot;en-IN&quot;)</code> printed <code>₹45.005</code>. Three decimal places, in a currency that has two.</p>
+<p>The second line above is the worse one, and it is worse in a way that is easy to miss in review. There is no locale argument. That means the grouping comes from the browser the page is being read in. An Indian shop owner on a US-English browser saw <code>₹1,234,567</code> on the analytics page and <code>₹12,34,567</code> on every other page in the app, for the same number. Nothing threw. Nothing logged. On my machine, with my locale, it was fine. It was only wrong on other people&#39;s machines.</p>
+<p>On top of that, three more files each declared their own <code>new Intl.NumberFormat(&quot;en-IN&quot;, …)</code>: the dashboard, the monthly report, the transactions table. They agreed with each other by coincidence. Four formatters that agree today are four formatters that can be changed one at a time.</p>
+<h2>Why nobody reported it</h2>
+<p>Nothing was wrong enough to report. Every page looked fine on its own. The useful question for code like this is: what would have to be true for this to be wrong, and is anything checking that? For <code>toLocaleString()</code> the answer is &quot;the reader is not in India&quot;, and no test checked that.</p>
+<h2>The fix</h2>
+<p>One module, one function, one contract: <code>₹</code>, lakh grouping, exactly two decimals, and <code>₹0.00</code> rather than <code>₹NaN</code> when a Prisma <code>Decimal</code> arrives as an unparseable string across a JSON boundary. Every display site and every outbound WhatsApp message goes through it. <code>formatCurrency</code> (lib/utils) and <code>formatMoney</code> (lib/metrics) still exist, but as aliases, so no caller had to change.</p>
+<p>The unit tests pin the contract:</p>
+<pre><code class="language-ts">expect(formatInr(1234.5)).toBe(&quot;₹1,234.50&quot;);
+expect(formatInr(5000)).toBe(&quot;₹5,000.00&quot;);
+expect(formatInr(45.005)).toBe(&quot;₹45.01&quot;);
+expect(formatInr(100000)).toBe(&quot;₹1,00,000.00&quot;);
+expect(formatInr(&quot;not a number&quot;)).toBe(&quot;₹0.00&quot;);
+</code></pre>
+<p>With <code>style: &quot;currency&quot;</code> and <code>INR</code>, <code>Intl</code> already defaults to two fraction digits, so <code>5000</code> becomes <code>₹5,000.00</code> and <code>45.005</code> becomes <code>₹45.01</code> even without the two options. I set both anyway, so the contract is written in the code and not left to a currency table. The locale string <code>&quot;en-IN&quot;</code> is what gives you lakhs instead of thousands, and naming it is what stops the browser from choosing.</p>
+<h2>The test that keeps it fixed</h2>
+<p>Those assertions are not the important test. They passed before the fix too. The old <code>formatCurrency</code> was already correct; the problem was that nobody used it. A test that pins a helper&#39;s output proves the helper is right and says nothing about whether anyone calls it.</p>
+<p>So the test that matters reads the source. It walks <code>app/</code>, <code>components/</code> and <code>lib/</code>, and fails on a <code>₹</code> sitting within a short span of a <code>toLocaleString</code>:</p>
+<pre><code class="language-ts">for (const m of src.matchAll(/₹[^\n]{0,80}?toLocaleString/g)) {
+  offenders.push(`${rel}:${line}`);
+}
+expect(offenders).toEqual([]);
+</code></pre>
+<p>That is the shape every one of the divergent sites had. A new one will fail CI rather than quietly diverge. There is also a guard that the scan found more than fifty files, because a source scan that stops finding files starts passing for the wrong reason.</p>
+<p>I wrote more about this class of test in <a href="/blog/a-passing-test-only-proves-the-test-passes">A passing test only proves the test passes</a>. Centralising something is only done when nothing can still go around it, and only a check on the source can tell you that.</p>
+<h2>The GST split that gained a paisa</h2>
+<p>Formatting was the second money bug in this codebase. The first was in the invoice, and it is the one people search for.</p>
+<p>An intra-state invoice in India shows GST as two lines, CGST and SGST, each half the tax. The old invoice page did the obvious thing:</p>
+<pre><code class="language-ts">cgst = totalGst / 2;
+sgst = totalGst / 2;
+</code></pre>
+<p>and then rendered each through a two-decimal formatter. Take a tax of <code>₹45.01</code>. Half is <code>22.505</code>. The formatter rounds that to <code>₹22.51</code>, on both lines. CGST <code>₹22.51</code> + SGST <code>₹22.51</code> = <code>₹45.02</code>. One paisa more tax than the invoice&#39;s own total, printed on the same page. An accountant entering that invoice into Tally or a GST return would find its tax lines don&#39;t add up to its own tax total.</p>
+<p>The fix is to round one leg and derive the other as the remainder, so the two always reconstruct the total:</p>
+<pre><code class="language-ts">export function splitGst(gstAmount: number, isInterState: boolean): TaxSplit {
+  const total = toPaise(gstAmount);
+  if (total &lt;= 0) return { cgst: 0, sgst: 0, igst: 0 };
+  if (isInterState) return { cgst: 0, sgst: 0, igst: total };
+
+  const cgst = toPaise(total / 2);
+  // Remainder, not a second independent rounding — guarantees cgst+sgst==total.
+  const sgst = toPaise(total - cgst);
+  return { cgst, sgst, igst: 0 };
+}
+</code></pre>
+<p><code>toPaise</code> is <code>Math.round((value + Number.EPSILON) * 100) / 100</code>. The epsilon nudge is there because <code>1.005</code> is stored as <code>1.00499…</code> and would otherwise round down. The test for <code>splitGst</code> sweeps every paisa value from <code>0.01</code> to <code>50.00</code> and asserts <code>cgst + sgst</code> equals the input for each one. For <code>45.01</code> specifically it asserts CGST <code>22.51</code> and SGST <code>22.50</code>.</p>
+<p>The same pull request fixed a second GST error I would not have found without an integration test that parsed a real invoice: <code>POST /api/transactions</code> computed the tax with the tax-exclusive formula (<code>amount × rate / 100</code>) while storing the amount as tax-inclusive. A <code>₹2,100</code> sale at 5% printed taxable value <code>₹1,995</code> and tax <code>₹105</code>, and 1,995 × 5% is 99.75, not 105. Now every write path goes through <code>calculateGst</code>, which extracts the tax out of an inclusive amount, and the invoice page states in a comment that <code>amount</code> is always the inclusive total.</p>
+<h2>What to do in your own code</h2>
+<p>Make one formatter and construct it once at module scope. <code>Intl.NumberFormat</code> costs more to build than to call, and a formatter inside a render function is a formatter you will copy.</p>
+<p>Set both <code>minimumFractionDigits</code> and <code>maximumFractionDigits</code>. The currency style defaults to two for INR, but a plain number formatter does not: <code>new Intl.NumberFormat(&quot;en-IN&quot;, { maximumFractionDigits: 2 })</code> prints <code>5000</code> as <code>5,000</code>. Writing both down means nobody has to know which default applies.</p>
+<p>Name the locale. If you ever see <code>toLocaleString()</code> next to a currency symbol, that number is different per reader.</p>
+<p>Split money by rounding one side and subtracting. Never round two halves independently. This applies to any split, not only GST: commissions, tips, partial refunds.</p>
+<p>Keep the pre-tax and post-tax convention in one place and state it. Two write paths that disagree about whether <code>amount</code> includes tax produce invoices that contradict themselves, and no unit test on either path will notice.</p>
+<p>Then write the test that grep-scans your source for the shape of the defect. The helper being correct is not the property you care about. The property is that nothing goes around it.</p>

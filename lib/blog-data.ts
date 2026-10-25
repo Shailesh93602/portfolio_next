@@ -65,6 +65,20 @@ export const BLOG_AUTHOR = {
 
 // Slugs in publication order — add new slugs here when adding posts.
 export const BLOG_SLUGS: string[] = [
+  // STAGED 2026-10 — awaiting owner approval. Publish = uncomment the line, then add its
+  // frontmatter `llmsTopic` to public/llms-full.txt "Blog Topics Covered".
+  // __tests__/staged-posts.test.tsx checks both, and that linked posts publish together.
+  // "redlock-guarded-the-wrong-side", // P1
+  // "razorpay-webhook-keyed-on-the-event", // P2
+  // "postgres-as-the-job-queue", // P3
+  // "liveness-for-atomic-claims", // P4
+  // "at-most-once-llm-tool-calls", // P5 — NEEDS OWNER CLEARANCE before publishing
+  // "the-test-suite-that-wrote-to-production", // P6
+  // "prisma-generate-does-not-run-migrations", // P7
+  // "a-green-build-is-not-a-running-function", // P8
+  // "an-opossum-timeout-is-not-a-request-timeout", // P9
+  // "rupee-lakh-formatting-and-gst-paisa-rounding", // P10
+  // END STAGED 2026-10
   "a-passing-test-only-proves-the-test-passes",
   "khatago-webhook-deduplication-receipt-pipeline",
   "mutation-score-was-100-percent-because-tests-were-broken",
@@ -105,7 +119,7 @@ function generatedCover(title: string, description: string): string {
   return `/api/og?${params.toString()}`;
 }
 
-function loadPost(slug: string): BlogPost | null {
+export function loadPost(slug: string): BlogPost | null {
   try {
     const filePath = join(process.cwd(), "content", "blog", `${slug}.mdx`);
     const raw = readFileSync(filePath, "utf8");

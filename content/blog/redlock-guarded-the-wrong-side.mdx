@@ -1,0 +1,104 @@
+---
+title: "Redlock race condition: the lock guarded the wrong side"
+description: "Redlock was held and EduScale could still start a battle twice and apply Elo twice. A conditional updateMany fixed it. The bug and the tests."
+image: "/Images/portfolio1.png"
+date: "2026-10-19"
+readTime: "8 min read"
+featured: false
+llmsTopic: "Redlock race conditions (a lock is not a compare-and-set)"
+tags:
+  - "Distributed Systems"
+  - "Concurrency"
+  - "Redis"
+  - "PostgreSQL"
+  - "Prisma"
+  - "Node.js"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "redlock race condition"
+  - "distributed lock vs compare and set"
+  - "redlock lock expired while holding"
+  - "prisma updateMany conditional update state machine"
+---
+
+<p><strong>Short answer.</strong> A Redlock race condition can survive a lock that is held correctly. A distributed lock answers &quot;am I the only one in here right now?&quot; It does not answer &quot;is the thing I read a moment ago still true?&quot; In EduScale&#39;s battle engine, Redlock was held correctly and the state transition it wrapped still ran twice, because the decision to transition was made before the lock was taken and the write inside it had no condition. The fix that holds is a compare-and-set in Postgres (<code>updateMany</code> with the expected status in the <code>where</code>). The lock stays, but only to reduce contention.</p>
+<h2>What the code claimed</h2>
+<p>EduScale is a side project of mine: a learning platform with timed multiplayer quiz battles over Socket.io, Postgres through Prisma, and Redis for the socket adapter and a Redlock. The portfolio page for it said the lock sits around the start, submit-answer and complete handlers &quot;so two instances can&#39;t both drive the same transition.&quot;</p>
+<p>The lock existed. <code>withBattleLock</code> in <code>Backend/src/repositories/battle/lock.ts</code> is keyed per battle, turns a lost race into a 409, and releases in a <code>finally</code>. Nobody had read the state machine under it, and the sentence above was false for the first transition it names.</p>
+<h2>Read, decide, then lock</h2>
+<p>This is <code>startBattle</code> before commit <code>996ffad0</code>, abbreviated. The file was <code>battleRepository.ts</code> at the time; it has since been split into <code>repositories/battle/*</code>.</p>
+<pre><code class="language-ts">const battle = await prisma.battle.findUnique({ where: { id: battleId }, include: { /* … */ } });
+if (!battle) throw createAppError(&#39;Battle not found&#39;, 404);
+if (battle.user_id !== userId)
+  throw createAppError(&#39;Only the creator can start this battle&#39;, 403);
+if (battle.status !== &#39;LOBBY&#39;)
+  throw createAppError(&#39;Battle must be in LOBBY state to start&#39;, 400);
+// … ready count, question count …
+
+return this.withBattleLock(battleId, 10_000, async () =&gt; {
+  return prisma.battle.update({
+    where: { id: battleId },
+    data: { status: &#39;IN_PROGRESS&#39; },
+  });
+});
+</code></pre>
+<p>Read, decide, then lock. Two callers both read <code>LOBBY</code>, both pass every guard, then queue for the lock one after the other and both run the update. The lock didn&#39;t prevent the double start. It made it orderly.</p>
+<p>It was worse than a duplicated <code>battle:started</code> event. <code>update({ where: { id } })</code> has no condition on status at all. A start request that read <code>LOBBY</code> and then stalled could land after the battle had finished and flip a <code>COMPLETED</code> battle back to <code>IN_PROGRESS</code>, stranding its final leaderboard.</p>
+<h2>The fix: decide inside, and make the write conditional</h2>
+<p>Two changes, and the second one is the one that actually holds. The current <code>startBattle</code> in <code>lifecycle.ts</code>:</p>
+<pre><code class="language-ts">return withBattleLock(battleId, BATTLE_START_LOCK_TTL_MS, async () =&gt; {
+  const battle = await prisma.battle.findUnique({ /* … */ });
+  // … the same guards, now under the lock …
+
+  const claimed = await prisma.battle.updateMany({
+    where: { id: battleId, status: &#39;LOBBY&#39; },
+    data: { status: &#39;IN_PROGRESS&#39; },
+  });
+  if (claimed.count === 0) {
+    throw createAppError(&#39;This battle has already been started.&#39;, 409);
+  }
+  // …
+});
+</code></pre>
+<p><code>updateMany</code> with <code>status: &#39;LOBBY&#39;</code> in the <code>where</code> is a compare-and-set. Postgres evaluates the condition and the write as one statement, so exactly one caller gets <code>count: 1</code> whatever the lock does. If the lock lapses, or a second instance gets in anyway, the second write still matches zero rows. That is the property a lock on its own can never give you, because the lock lives in a different system from the data it is meant to protect.</p>
+<p><code>battleLockSemantics.test.ts</code> pins this. It records the order of operations and asserts the battle read happens after <code>lock:acquire</code>, asserts <code>prisma.battle.update</code> is never called for the transition, and asserts a <code>count: 0</code> result becomes a 409. It runs against a mocked Prisma client, so it proves the code asks for a conditional write in the right order. The guarantee that only one conditional write wins comes from Postgres, not from the test.</p>
+<h2>Serializing is not deduplicating</h2>
+<p><code>completeBattle</code> had the other half of the same mistake. It took the lock and then wrote <code>COMPLETED</code>, a fresh <code>ended_at</code> and the whole final leaderboard unconditionally. Nothing checked whether it had already run.</p>
+<p>That matters because of what the caller does next. <code>battleSocket.endBattle</code> calls <code>completeBattle</code> and then <code>battleRatingService.applyBattleResult</code>, which reads each player&#39;s current rating, computes new Elo values and writes:</p>
+<pre><code class="language-ts">update: {
+  rating: u.newRating,
+  games_played: { increment: 1 },
+  wins: { increment: won ? 1 : 0 },
+  losses: { increment: won ? 0 : 1 },
+  // …
+}
+</code></pre>
+<p>A second completion isn&#39;t a harmless repeat. It applies a second Elo delta on top of the first and adds a game nobody played to every record.</p>
+<p>And the second completion is the ordinary case. Two paths reach <code>endBattle</code>: the answer-submitted handler and the question-expiry timer. Both await <code>checkAllParticipantsDone</code>, a database round trip, and the answer handler only clears the timer after that await resolves, so the timer can fire inside the window. In a two-player battle where both players answer the last question at about the same moment, both submissions see &quot;everyone is done&quot; and both call <code>endBattle</code>. On two server instances the callers aren&#39;t even in the same process.</p>
+<p>The fix is the same shape as <code>startBattle</code>. <code>completeBattle</code> in <code>gameplay.ts</code> returns early with <code>alreadyCompleted: true</code> if the battle is already <code>COMPLETED</code>, and the transition itself is <code>updateMany({ where: { id, status: { not: &#39;COMPLETED&#39; } } })</code>. <code>endBattle</code> applies ratings and broadcasts <code>battle:completed</code> only when <code>alreadyCompleted</code> is false.</p>
+<p><code>battleEndIdempotency.test.ts</code> drives two <code>endBattle</code> calls under <code>Promise.all</code>, with a mocked <code>completeBattle</code> that lets the first caller win the compare-and-set, and asserts <code>applyBattleResult</code> runs once and <code>battle:completed</code> is emitted once. That proves <code>endBattle</code> only applies ratings for the caller that won. Before the fix I reproduced the bug the same way: two concurrent completions, two rating updates.</p>
+<h2>A lock that can expire under its holder</h2>
+<p>The TTLs were wrong too. <code>submitAnswer</code> held a 15,000 ms lock around a Prisma interactive transaction whose own <code>timeout</code> was also 15,000 ms. Prisma counts <code>maxWait</code> (time spent waiting for a pool connection) separately from <code>timeout</code>, so the guarded callback was allowed to run for about 17 s under a 15 s lock. And <code>redlock.acquire()</code> never extends a lock. The <code>automaticExtensionThreshold: 500</code> in <code>cacheService.ts</code> is read only by <code>redlock.using()</code>, and nothing in the codebase calls <code>redlock.using</code>. Redlock also subtracts drift (<code>driftFactor: 0.01</code>), so the 15,000 ms lock really expired at about 14,848 ms.</p>
+<p>The budgets now live in <code>utils/deadlines.ts</code>:</p>
+<pre><code class="language-ts">export const BATTLE_TX_MAX_WAIT_MS = 2_000;
+export const BATTLE_TX_TIMEOUT_MS = 15_000;
+/** Must exceed BATTLE_TX_MAX_WAIT_MS + BATTLE_TX_TIMEOUT_MS. */
+export const BATTLE_SUBMIT_LOCK_TTL_MS = 20_000;
+</code></pre>
+<p>The test asserts the inequality (<code>maxWait + timeout &lt; ttl</code>) rather than the numbers, and separately asserts that these are the values that actually reach <code>redlock.acquire</code> and <code>prisma.$transaction</code>. A constant nothing reads is not a guard.</p>
+<h2>The error blamed a rival that didn&#39;t exist</h2>
+<p>One more thing fell out of reading the lock helper. Redlock 5 raises <code>ExecutionError</code> both when the resource is held and when it can&#39;t reach Redis at all, and <code>withBattleLock</code> answered 409 &quot;Another action on this battle is already in progress&quot; to both. In September 2026 the backend&#39;s health endpoint was reporting <code>redis: error</code> because the instance in <code>REDIS_URL</code> no longer existed, so every start and every answer submission was rejected with an error that named a rival and invited a retry that could never succeed.</p>
+<p>The two cases are distinguishable in the error object. <code>ExecutionStats.votesAgainst</code> holds a <code>ResourceLockedError</code> for a lost race and a connection error for an outage. <code>isPureContention</code> in <code>lock.ts</code> now returns true only when every vote against is a <code>ResourceLockedError</code>. Anything else, including shapes it doesn&#39;t recognise, is a 503 that says the dependency is unavailable.</p>
+<h2>When you still want the lock</h2>
+<p>If the database enforces the invariant, why keep Redlock at all? Contention. <code>submitAnswer</code> recalculates ranks for every participant inside one transaction. The per-battle lock, with <code>retryCount: 10</code>, queues concurrent submissions for the same battle so they run one after another instead of failing against each other in Postgres. It is an optimisation on top of a correct write, not what makes the write correct.</p>
+<p>The rule I took away: a lock answers &quot;am I alone?&quot;, never &quot;is this still true?&quot; Keep the read and the decision inside the same boundary as the write, then make the write itself conditional, so the database enforces the invariant and the lock only reduces contention.</p>
+<h2>Checklist</h2>
+<p>Questions I now ask about any critical section:</p>
+<ul>
+<li>What does the code decide just before entering the lock? If a guard runs outside it, the guard is advisory.</li>
+<li>Is the write conditional on the state the guard checked? <code>update({ where: { id } })</code> is not. <code>updateMany({ where: { id, status } })</code> is.</li>
+<li>If the same call runs twice, does the second run change anything? Serialization is not idempotence.</li>
+<li>Can the lock expire before the guarded work ends? Write the budgets down and assert the inequality in a test.</li>
+<li>Does the &quot;lock unavailable&quot; error distinguish contention from the lock store being down?</li>
+</ul>
+<p>The <a href="/blog/idempotency-keys-retry-safe-payment-apis">idempotency-keys post</a> covers the same idea from the API side, in the section &quot;Where the atomicity actually lives&quot;: push the one operation that must be atomic down to the layer that can guarantee it. The rest of this audit is in <a href="/portfolio/eduscale">EduScale</a>&#39;s <code>FINDINGS.md</code> §15, and the running list of defects from my own projects is on <a href="/engineering">/engineering</a>.</p>

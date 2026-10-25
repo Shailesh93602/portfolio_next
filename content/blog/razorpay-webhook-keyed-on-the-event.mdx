@@ -1,0 +1,109 @@
+---
+title: "Razorpay webhook idempotency: key the event, not the payment"
+description: "Razorpay sends several events per payment. Dedupe on x-razorpay-event-id, not the payment id, or payment.captured is dropped as a duplicate."
+image: "/Images/portfolio1.png"
+date: "2026-10-19"
+readTime: "8 min read"
+featured: false
+llmsTopic: "Razorpay webhook idempotency (key the event, not the payment)"
+tags:
+  - "Idempotency"
+  - "Webhooks"
+  - "Payments"
+  - "PostgreSQL"
+  - "Prisma"
+  - "Backend"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "razorpay webhook idempotency"
+  - "razorpay duplicate webhook"
+  - "x-razorpay-event-id"
+  - "payment.captured order.paid both received"
+---
+
+<p><strong>Short answer.</strong> Dedupe a Razorpay webhook on the <code>x-razorpay-event-id</code> header, not on the <code>pay_…</code> or <code>order_…</code> id in the body. Razorpay sends several different events about one payment (<code>payment.authorized</code>, <code>payment.captured</code>, <code>order.paid</code>), so a key built from the entity id makes them collide and the second one through gets dropped as a duplicate. And take the idempotency claim inside the same transaction as the handler, or a transient failure turns into a permanent one on retry.</p>
+<p>That is the whole fix. The rest of this post is how I got it wrong in KhataGO, how the bug hid, and what to check in your own route.</p>
+<h2>What Razorpay sends for one purchase</h2>
+<p>KhataGO is a bookkeeping app with a paid tier billed through Razorpay. When someone upgrades, Razorpay creates an order, the customer pays, and Razorpay starts posting webhooks. If your webhook is subscribed to these three, one card payment on one order gets you:</p>
+<ul>
+<li><code>payment.authorized</code>, carrying <code>payload.payment.entity</code> with id <code>pay_ABC</code></li>
+<li><code>payment.captured</code>, carrying <code>payload.payment.entity</code> with the same <code>pay_ABC</code></li>
+<li><code>order.paid</code>, carrying <strong>both</strong> <code>payload.order.entity</code> and <code>payload.payment.entity</code></li>
+</ul>
+<p>Three deliveries, three distinct events, one payment id across all of them. A non-2xx response, or no answer within 5 seconds, gets retried with exponential backoff for 24 hours (<a href="https://razorpay.com/docs/webhooks/best-practices/">Razorpay&#39;s best practices</a>), and the same page warns the events may not arrive in order. So any receiver has to be idempotent. Mine was, in the sense that it had a unique column and a try-insert. It just deduplicated the wrong thing.</p>
+<h2>The key that looked right</h2>
+<p>The route stored a key in <code>BillingEvent.razorpayEventId</code>, which is <code>@unique</code> in <code>prisma/schema.prisma</code> and backed by <code>BillingEvent_razorpayEventId_key</code> in the migration. Insert, catch the unique violation (Prisma code <code>P2002</code>), answer <code>200 {&quot;duplicate&quot;: true}</code> and skip the handler. The same shape I use for WhatsApp webhooks in the <a href="/blog/khatago-webhook-deduplication-receipt-pipeline">receipt pipeline</a>, where it works.</p>
+<p>The key came from this function (the pre-fix <code>lib/razorpay.ts</code>, from git):</p>
+<pre><code class="language-ts">// Razorpay doesn&#39;t ship a top-level event.id — derive from entity.
+export function extractEventId(payload: unknown): string {
+  ...
+  if (paymentEntity?.id) return `payment:${paymentEntity.id}`;
+  if (orderEntity?.id) return `order:${orderEntity.id}`;
+  ...
+  return &quot;unknown&quot;;
+}
+</code></pre>
+<p>The function is called <code>extractEventId</code>. It returns an entity id. Every one of the three events above reduces to <code>payment:pay_ABC</code>. Even <code>order.paid</code> does, because the payment entity is read before the order entity.</p>
+<h2>The three-step failure</h2>
+<ol>
+<li><code>payment.authorized</code> arrives first. The insert wins the unique index. <code>dispatch</code> ignores it, correctly, because authorization is not a handled type.</li>
+<li><code>payment.captured</code> arrives. The insert raises <code>P2002</code>. The route reads that as &quot;seen this already&quot;, answers 200 with <code>duplicate: true</code>, and never calls the handler.</li>
+<li>The customer has been charged ₹299 (the Pro plan amount in <code>RAZORPAY_PLANS</code>) and is still on the FREE plan. There is a <code>BillingEvent</code> row saying the webhook was handled. Nothing logs an error. Nothing returns a 5xx.</li>
+</ol>
+<p>The tell was in the same file. <code>dispatch</code> explicitly handles <code>payment.captured</code> <strong>and</strong> <code>order.paid</code>. Two branches, written on purpose, and the key made it impossible for both to ever run for one payment. When a route handles two event types and its dedup key cannot tell them apart, the code disagrees with itself in writing.</p>
+<p>Two smaller things fell out of the same line. The route&#39;s header comment called the <code>BillingEvent</code> table an audit trail, but with an entity key the table can hold at most one row per payment, so the trail was lossy by design. And every payload the parser could not read keyed on the literal string <code>&quot;unknown&quot;</code>, so the first unrecognised delivery blocked every later one, across all customers, forever.</p>
+<p>I found this reading the route during an audit, not from a complaint. I am glad of that, because the failure produces no signal a dashboard would show.</p>
+<h2>The comment was wrong too</h2>
+<p>The route&#39;s header said it outright: &quot;Razorpay doesn&#39;t ship a top-level event.id like Stripe does.&quot; That sentence is what made an entity key feel like the best available option. It is also false. Razorpay sends a per-event identifier; it is in the <code>x-razorpay-event-id</code> header, not the body, and <a href="https://razorpay.com/docs/webhooks/validate-test/">Razorpay&#39;s webhook docs</a> name it as the way to spot duplicate deliveries. I looked in the JSON, did not find it, and wrote the comment that stopped anyone looking again.</p>
+<h2>Claim before work, outside the transaction</h2>
+<p>There was a second defect on the same path. The old route did this:</p>
+<pre><code class="language-ts">await prisma.billingEvent.create({ data: { razorpayEventId, ... } });
+// ...catch P2002 -&gt; 200 duplicate...
+await dispatch({ eventType, payload, userId, planKey });
+</code></pre>
+<p>The claim committed first. Then the handler ran on its own. If <code>dispatch</code> threw (a missing <code>BillingAccount</code> row, a dropped connection, a statement timeout), the route returned 500, Razorpay retried, and the retry hit <code>P2002</code> on the row the failed attempt had already committed. It was answered <code>200 duplicate</code> with the handler skipped. One transient error and the upgrade is gone for good, with no dead letter and a row asserting success.</p>
+<p>KhataGO&#39;s agent loop already held the right invariant and said so in a comment: the tool&#39;s write and the step&#39;s DONE go in one transaction. The billing path, which is the one that takes money, did the opposite. If you want the general version of this, the <a href="/blog/idempotency-keys-retry-safe-payment-apis">idempotency keys post</a> covers where the one atomic step has to live.</p>
+<h2>The fix</h2>
+<p>Two changes. First, the key names the event (<code>lib/razorpay.ts</code>, current):</p>
+<pre><code class="language-ts">export function webhookEventKey(headers: Headers, payload: unknown) {
+  const headerId = headers.get(&quot;x-razorpay-event-id&quot;)?.trim();
+  if (headerId) return { key: `event:${headerId}`, source: &quot;header&quot; };
+
+  const eventType = typeof body.event === &quot;string&quot; &amp;&amp; body.event ? body.event : &quot;unknown&quot;;
+  const entity = extractEntityKey(payload);
+  if (entity) return { key: `${eventType}:${entity}`, source: &quot;derived&quot; };
+
+  const createdAt = /* body.created_at as a string, else &quot;unknown&quot; */;
+  return { key: `${eventType}:unknown:${createdAt}`, source: &quot;derived&quot; };
+}
+</code></pre>
+<p>The header wins when present. The fallback is <code>&lt;event type&gt;:&lt;entity key&gt;</code>, which separates <code>payment.authorized:payment:pay_ABC</code> from <code>payment.captured:payment:pay_ABC</code>. When even the entity is unreadable, the key includes <code>created_at</code>, which is stable across Razorpay&#39;s retries of one event but differs between events, so two unparseable payloads no longer cancel each other. The old function was renamed <code>extractEntityKey</code> so the name says what it returns.</p>
+<p>Second, the insert and the handler share a transaction (<code>app/api/razorpay/webhook/route.ts</code>):</p>
+<pre><code class="language-ts">await prisma.$transaction(async tx =&gt; {
+  await tx.billingEvent.create({ data: { razorpayEventId, eventType, rawPayload, billingAccountId } });
+  await dispatch(tx, { eventType, payload, userId, planKey });
+});
+</code></pre>
+<p>A handler failure rolls the claim back, so Razorpay&#39;s retry genuinely reprocesses. <code>P2002</code> is now reachable only after an earlier delivery&#39;s handler committed, which is the only time &quot;duplicate&quot; is the truth.</p>
+<p>One consequence of the fix: <code>payment.captured</code> and <code>order.paid</code> both reach <code>dispatch</code> for a single payment now. That is fine because the write is an upsert that assigns <code>plan</code>, <code>status</code> and the period dates. An assignment applied twice is the same as once. If your handler increments something, it is not fine, and you need the handler itself to be idempotent per entity on top of the per-event key.</p>
+<h2>The tests that pin it</h2>
+<p>The webhook had no tests before this. It has eleven now, in <code>tests/lib/razorpayWebhook.test.ts</code>. The ones that matter:</p>
+<ul>
+<li><code>webhookEventKey</code> returns different keys for <code>payment.authorized</code> and <code>payment.captured</code> on the same <code>pay_1</code>, while <code>extractEntityKey</code> returns the same entity for both. That pair is the bug, stated as an assertion.</li>
+<li><code>order.paid</code> and <code>payment.captured</code> sharing one payment get different keys.</li>
+<li>Two unrecognised payloads with different <code>created_at</code> get different keys.</li>
+<li>The route test posts <code>payment.authorized</code> then <code>payment.captured</code> with real HMAC signatures. The upsert is called once, with <code>plan: &quot;PRO&quot;</code>, and the two <code>BillingEvent</code> inserts carry two distinct keys.</li>
+<li>The rollback test stages the insert inside a fake transaction, makes the upsert reject with &quot;connection reset&quot;, and asserts that nothing was committed. A second post then succeeds and commits exactly one row.</li>
+<li>A genuine redelivery with <code>x-razorpay-event-id: evt_1</code> and a <code>P2002</code> from the insert returns 200 with <code>duplicate: true</code> and never calls the upsert.</li>
+</ul>
+<p>These run against mocked Prisma, so they prove the route&#39;s logic, not the database. The unique index itself is in the migration.</p>
+<h2>What to check in your own route</h2>
+<ul>
+<li>Print the key your dedup uses for <code>payment.authorized</code>, <code>payment.captured</code> and <code>order.paid</code> on one test payment. If any two match, you have this bug.</li>
+<li>Read <code>x-razorpay-event-id</code> from the headers. Keep a derived fallback for replays and fixtures, and build it from the event type as well as the entity.</li>
+<li>Grep for a constant fallback key. <code>&quot;unknown&quot;</code> as a unique value is a global lock with capacity one.</li>
+<li>Put the claim insert and the handler in one transaction. A claim committed before the work converts every retryable failure into a silent permanent one.</li>
+<li>If a route handles two event types, write the test that sends both for the same entity and asserts both ran.</li>
+<li>Give the money path tests before any other path. The repo had 84 test files when I found this, and none of them touched Razorpay.</li>
+</ul>
+<p>The project is <a href="/portfolio/khatago">KhataGO</a>. The finding is number 14 in its FINDINGS file, and the Razorpay section of its CLAUDE.md now says, in red, not to move <code>dispatch</code> back outside the transaction.</p>

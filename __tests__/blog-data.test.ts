@@ -17,6 +17,7 @@ import {
   getAllTags,
   getPostsByTag,
 } from "@/lib/blog-data";
+import { stagedSlugs } from "./helpers/staged-posts";
 
 const BLOG_DIR = join(process.cwd(), "content", "blog");
 
@@ -102,6 +103,7 @@ describe("BLOG_SLUGS", () => {
 
     const finishedButUnpublished = onDisk
       .filter((slug) => !BLOG_SLUGS.includes(slug))
+      .filter((slug) => !stagedSlugs().includes(slug)) // finished, awaiting approval
       .filter((slug) => {
         const body = readFileSync(join(BLOG_DIR, `${slug}.mdx`), "utf8");
         return !body.includes("TODO");

@@ -1,0 +1,107 @@
+---
+title: "An opossum timeout is not a request timeout"
+description: "opossum frees the caller at its deadline but cannot cancel the request underneath. How three breakers in EduScale bounded nothing, and the fix."
+image: "/Images/portfolio1.png"
+date: "2026-10-19"
+readTime: "9 min read"
+featured: false
+llmsTopic: "opossum timeouts vs request timeouts (AbortSignal budgets)"
+tags:
+  - "Node.js"
+  - "Reliability"
+  - "Distributed Systems"
+  - "Circuit Breaker"
+  - "Backend"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "opossum timeout abort request"
+  - "circuit breaker does not cancel request node"
+  - "AbortSignal circuit breaker"
+  - "opossum timeout vs axios timeout"
+---
+
+<p><strong>Short answer:</strong> opossum&#39;s <code>timeout</code> option rejects the breaker&#39;s promise when the deadline passes. It does not cancel the function it wrapped, because it has no handle on it: no <code>AbortSignal</code> is passed through, and the promise keeps running until the underlying socket closes on its own. So a circuit breaker bounds how long your caller waits, not how long the request lives. If you want the request to stop, the transport (axios <code>timeout</code>, the SDK&#39;s own timeout, an <code>AbortSignal</code>) has to stop it, and that transport timeout needs to be at or below the breaker&#39;s.</p>
+<p>I learned this from a codebase that already had three circuit breakers and looked, from the outside, like it took slow dependencies seriously. It did not.</p>
+<h2>Three breakers, zero bounded requests</h2>
+<p><a href="/portfolio/eduscale">EduScale</a> runs user code through Judge0, calls Gemini for the tutor and code-review features, and uploads to Cloudinary. Each had an opossum breaker in front of it. Every Redis read ended in <code>catch { return null }</code>. The email queue had retry with backoff.</p>
+<p>All of that is machinery for a dependency that <strong>fails</strong>. A rejection arrives, the breaker counts it, the catch block runs.</p>
+<p>None of it does anything for a dependency that is merely <strong>slow</strong>. A socket that is open and quiet produces no rejection, so there is no news for any of that machinery to react to. The audit entry in <code>FINDINGS.md</code> §13 ended up with a line I keep coming back to: a <code>catch</code> cannot catch a hang.</p>
+<h2>What the breaker actually did</h2>
+<p>Here is the Judge0 breaker before the fix, in <code>Backend/src/utils/codeExecutor.ts</code>:</p>
+<pre><code class="language-ts">const judge0Breaker = new CircuitBreaker(_executeCodeRaw, {
+  timeout: 15000,
+  errorThresholdPercentage: 50,
+  resetTimeout: 30000,
+  volumeThreshold: 3,
+  name: &#39;judge0&#39;,
+});
+</code></pre>
+<p><code>_executeCodeRaw</code> did an <code>axios.post</code> to submit the code, then polled <code>axios.get</code> up to ten times with a one-second gap. Neither axios call had a <code>timeout</code>. Opossum&#39;s <code>timeout: 15000</code> was the only deadline in that path.</p>
+<p>Picture Judge0 taking 60 seconds to answer. At 15 s, opossum rejects. The caller gets its error, the breaker records a failure. And the <code>axios.post</code> is still sitting there with its socket open, waiting for the 60-second reply, because nothing told it to stop. Opossum cannot: it wrapped a function that returns a promise, and has no reference to the socket inside.</p>
+<p>So the breaker bounded caller latency, not socket consumption. Under concurrency, that difference is where the damage is.</p>
+<h2>Why the fan-out made it worse</h2>
+<p>The code that calls <code>executeCode</code> runs one submission per test case, all at once. In <code>Backend/src/repositories/challengeRepository.ts</code>:</p>
+<pre><code class="language-ts">const results = await Promise.all(
+  test_cases.map(async (test_case) =&gt; {
+    const result = await executeCode({ code: program, language: data.language, input: test_case.input, ... });
+    ...
+  })
+);
+</code></pre>
+<p><code>controllers/codeController.ts</code> does the same over the public test cases. The array length comes from the database. There is no concurrency cap.</p>
+<p>Now put the two facts together. <code>judge0Breaker</code> is a module-level singleton shared by every user, with <code>volumeThreshold: 3</code>. Say one user submits one challenge with ten test cases while Judge0 is slow. Ten breaker calls fire at once. All ten hit the 15 s timeout: ten failures out of ten, past the volume threshold at 100% failure, so the breaker opens. For everybody. <code>executeCode</code> would return a 503 to every user for the next 30 seconds, and the ten sockets nothing is waiting for would stay open underneath. I worked this out from the config, not from an outage, but nothing in the code stops it.</p>
+<p>The part that stung: the same repo already had the right answer one directory over. <code>services/ai/llmService.ts</code> keys its Gemini breaker per API-key fingerprint, with a comment explaining that a shared breaker would let one user&#39;s bad key disable the feature for everyone. The reasoning never got carried across to Judge0.</p>
+<h2>The fix: a rule, not a number</h2>
+<p>The fix went in as PR #45 (commit <code>183e12df</code>). The important part is not the timeouts but the rule they follow, at the top of <code>Backend/src/utils/deadlines.ts</code>:</p>
+<blockquote>
+<p>Every call gets a transport-level timeout, and where the call sits inside a breaker, that timeout is <strong>at or below</strong> the breaker&#39;s, so the transport gives up first and the breaker never counts a request it has abandoned as still running.</p>
+</blockquote>
+<p>Every budget now lives in that one file:</p>
+<pre><code class="language-ts">/** Judge0&#39;s breaker deadline. The transport timeouts below must stay under it. */
+export const JUDGE0_BREAKER_TIMEOUT_MS = 15_000;
+/** One Judge0 submission POST. */
+export const JUDGE0_SUBMIT_TIMEOUT_MS = 8_000;
+/** One Judge0 poll GET. */
+export const JUDGE0_POLL_TIMEOUT_MS = 5_000;
+
+export const LLM_BREAKER_TIMEOUT_MS = 20_000;
+export const LLM_CALL_TIMEOUT_MS = 15_000;
+</code></pre>
+<p>And the axios calls carry them: <code>timeout: JUDGE0_SUBMIT_TIMEOUT_MS</code> on the submit, <code>timeout: JUDGE0_POLL_TIMEOUT_MS</code> on each poll. Axios aborts the socket on timeout, so now the request actually dies before the breaker gives up on it.</p>
+<p>Gemini is the same shape with a different mechanism. <code>@google/generative-ai</code> attaches no <code>AbortSignal</code> to its fetch unless you pass a <code>timeout</code> in the SDK&#39;s <code>RequestOptions</code>, so <code>llmConfig.ts</code> passes <code>{ timeout: LLM_CALL_TIMEOUT_MS }</code> as the second argument to <code>getGenerativeModel</code>. The embedding call in <code>embeddingProvider.ts</code> gets the same treatment, and it is the only Gemini path with <strong>no breaker in front of it at all</strong>, so that timeout is the only bound it has ever had.</p>
+<h3>Assert the inequality, not the number</h3>
+<p>What keeps this from rotting is in <code>Backend/src/tests/services/slowDependency.test.ts</code>:</p>
+<pre><code class="language-ts">it(&#39;Judge0 submit aborts before the breaker abandons it&#39;, () =&gt; {
+  expect(JUDGE0_SUBMIT_TIMEOUT_MS).toBeLessThan(JUDGE0_BREAKER_TIMEOUT_MS);
+});
+
+it(&#39;a Gemini generate aborts before its per-key breaker abandons it&#39;, () =&gt; {
+  expect(LLM_CALL_TIMEOUT_MS).toBeLessThan(LLM_BREAKER_TIMEOUT_MS);
+});
+</code></pre>
+<p>It asserts the relationship, not the values. Lower a breaker timeout to 5 s in a hurry and the test fails, instead of silently leaving the transport timeout above it. Same move as in the <a href="/blog/redlock-guarded-the-wrong-side">Redlock post</a>: write the budgets down in one place and test the inequality between them.</p>
+<h3>When the SDK gives you nothing</h3>
+<p><code>supabase-js</code> exposes no timeout and passes no signal to its fetch. That call sits in <code>verifySupabaseToken</code>, in front of every authenticated route and the socket handshake, and it is reached precisely when the JWKS path has already been slow. For that one there is a <code>withDeadline</code> helper in <code>deadlines.ts</code>, a <code>Promise.race</code> against a timer. Its comment is honest about what it is:</p>
+<pre><code class="language-ts"> * 🔴 `Promise.race` does NOT cancel the work — the same limitation opossum has,
+ * and the reason this file exists. Use it only where the SDK offers no
+ * cancellation of its own.
+</code></pre>
+<p>It bounds the caller, same as opossum. It is the best available for that SDK, and the preference order is written next to it: real cancellation first, a race only when there is nothing better.</p>
+<h2>The Redis half, briefly</h2>
+<p>The cache client was built with <code>maxRetriesPerRequest: null</code> (required by Redlock) and no <code>commandTimeout</code>. Against a Redis that completes the handshake and then goes quiet, a <code>GET</code> neither resolves nor rejects, so every fail-open <code>catch</code> on that client was unreachable in the one case it existed for.</p>
+<p>The test drives this with a fake TCP server that answers <code>INFO</code> and <code>COMMAND</code> and then says nothing. Without <code>commandTimeout</code>, the <code>get</code> has not settled after 1.5 s. With <code>commandTimeout: 300</code>, it rejects with &quot;timed out&quot; and a <code>getCache</code>-shaped function returns <code>null</code> as its catch block intended. The fix is one constructor option in <code>cacheService.ts</code>. The Socket.io pub/sub clients and Bull&#39;s connections are built separately and left alone; <code>subscribe</code> and blocking reads are supposed to wait.</p>
+<h2>What is still open, and why</h2>
+<p>Timeouts were the part that could be fixed without changing behaviour for correct requests. Two things are still open. The first is written up in <code>docs/SLOW-DEPENDENCIES.md</code> rather than half-done. The second I noticed while writing this post:</p>
+<ul>
+<li><strong>The shared Judge0 breaker behind an unbounded <code>Promise.all</code>.</strong> Both call sites still fan out over the full test-case array with no cap, and the breaker is still one singleton for every user. The transport timeouts stop sockets piling up, but one user&#39;s ten slow calls can still trip the shared breaker. The fix is the per-key treatment <code>llmService</code> already has, plus a bound on the fan-out. That changes failure semantics for every user, so it gets its own change and a test for &quot;one user&#39;s failures do not open another user&#39;s breaker.&quot;</li>
+<li><strong>The poll loop can outlive the breaker.</strong> Each poll is bounded at 5 s, but ten polls with a 1 s gap can run for up to about a minute (10 × (5 s + 1 s)), and the breaker lets go at 15 s. Each socket is now bounded. The loop as a whole is not, and opossum still cannot cancel it.</li>
+</ul>
+<h2>What to do in your own code</h2>
+<ol>
+<li>Open every opossum breaker and look at the function it wraps. If the HTTP or SDK call inside has no timeout of its own, the breaker bounds nothing but your caller&#39;s patience.</li>
+<li>Give the call a transport timeout that cancels: axios <code>timeout</code>, the SDK&#39;s request options, an <code>AbortSignal</code>. <code>Promise.race</code> is a last resort; label it as one.</li>
+<li>Keep the transport timeout at or below the breaker&#39;s, and assert that inequality in a test.</li>
+<li>Check whether the breaker is shared across users and what sits in front of it. An unbounded <code>Promise.all</code> before a shared breaker with a low <code>volumeThreshold</code> turns one slow user into an outage for all.</li>
+<li>Test with a dependency that never answers, not one that throws. Injecting an error exercises a path that already worked.</li>
+</ol>
+<p>The question I now ask of every breaker, retry and fallback: what delivers the news, and what happens if nothing ever does? The rest of the audit is in <a href="/portfolio/eduscale">EduScale</a>&#39;s <code>FINDINGS.md</code>, and the running list of defects from my own projects is on <a href="/engineering">/engineering</a>.</p>

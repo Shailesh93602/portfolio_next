@@ -1,0 +1,117 @@
+---
+title: "Postgres as a job queue: claim, timeout and DLQ, no Redis"
+description: "A job queue on one Postgres table: a conditional UPDATE claim, a 10-minute visibility timeout, attempts counted on claim and an audited dead-letter replay."
+image: "/Images/portfolio1.png"
+date: "2026-10-19"
+readTime: "8 min read"
+featured: false
+llmsTopic: "Postgres as a job queue (claim, visibility timeout, dead-letter replay)"
+tags:
+  - "PostgreSQL"
+  - "Job Queue"
+  - "Distributed Systems"
+  - "Reliability"
+  - "Node.js"
+  - "Backend"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "postgres as a job queue node.js"
+  - "postgres queue without redis"
+  - "visibility timeout postgres"
+  - "dead letter queue postgres"
+---
+
+<p>You can run a job queue on one Postgres table with no Redis and no broker. The claim is a single conditional <code>UPDATE</code> whose <code>WHERE</code> accepts a row that is <code>PENDING</code>, or <code>PROCESSING</code> with a claim timestamp older than a window; that window is your visibility timeout, an attempts column incremented on every claim is your retry policy, and <code>attempts &gt;= N</code> is your dead-letter queue. What you pay for this is polling, and you bound that with exponential backoff and jitter.</p>
+<p>The rest is how I got there in KhataGO and what I got wrong on the way.</p>
+<h2>There is one; it speaks SQL</h2>
+<p>KhataGO takes WhatsApp messages from small business owners and turns them into ledger entries. Meta delivers webhooks at least once and redelivers on slow responses, so the webhook does the minimum: verify the signature and insert the row, then answer <code>202</code> (<code>app/api/whatsapp/route.ts</code>). The row has a unique <code>waMessageId</code>, so a duplicate delivery hits the constraint and never becomes a second job. I wrote about that choice in <a href="/blog/khatago-webhook-deduplication-receipt-pipeline">Why we didn&#39;t use Redis for webhook deduplication</a>.</p>
+<p>Once dedup lives in the table, the table is already most of a queue. The mapping, straight from <code>docs/WORKER.md</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Queue concept</th>
+<th>KhataGO equivalent</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>enqueue</td>
+<td>webhook inserts the row, acks 202</td>
+</tr>
+<tr>
+<td>visibility timeout</td>
+<td><code>aiClaimedAt</code> + <code>AI_CLAIM_STALE_MS</code> (10 min)</td>
+</tr>
+<tr>
+<td>receive / claim</td>
+<td>conditional <code>updateMany</code>; the loser updates 0 rows</td>
+</tr>
+<tr>
+<td>retry policy</td>
+<td><code>aiAttempts</code> incremented on claim, not on failure</td>
+</tr>
+<tr>
+<td>dead-letter queue</td>
+<td><code>aiAttempts &gt;= AI_MAX_ATTEMPTS</code> (3) and <code>aiStatus = FAILED</code></td>
+</tr>
+<tr>
+<td>replay</td>
+<td>admin resets attempts and status, audited</td>
+</tr>
+</tbody></table>
+<p>Adding Redis or SQS here would copy this state into a second system that can disagree with the first. When someone asks &quot;why not a real queue?&quot;, the honest answer is that there is one and it speaks SQL.</p>
+<h2>Why <code>after()</code> on serverless is not durability</h2>
+<p>The first version ran the model call inside Next&#39;s <code>after()</code>, right after the <code>202</code>. The ack shape is right, but <code>after()</code> shares the invocation&#39;s budget and dies with it, and a five-turn tool-calling loop can outlive a serverless function. When it did, the row stayed <code>PROCESSING</code> and nothing could tell an abandoned claim from a running one (<code>FINDINGS.md</code> §2).</p>
+<p>Recovery was a daily cron plus a small sweep on the next webhook: it healed when traffic arrived. The fix was a separate process, <code>worker/</code>, polling the same table. It adds capacity through the same claim rather than replacing the <code>after()</code> path, so either alone is enough and both together can&#39;t duplicate work.</p>
+<h2>The claim</h2>
+<p>Two ways to win, both inside one mutation (<code>lib/whatsapp.ts</code>):</p>
+<pre><code class="language-ts">const claim = await prisma.whatsappMessage.updateMany({
+  where: { id: message.id, ...reclaimableWhere(claimedAt) },
+  data: {
+    aiStatus: AiProcessingStatus.PROCESSING,
+    aiClaimedAt: claimedAt,
+    aiAttempts: { increment: 1 },
+  },
+});
+if (claim.count === 0) return false;
+</code></pre>
+<p><code>reclaimableWhere</code> is the rule, and it lives in its own file so the sweeper and the claim can&#39;t drift apart (<code>lib/whatsappClaim.ts</code>):</p>
+<pre><code class="language-ts">return {
+  status: PROCESSABLE_MESSAGE_STATUS,
+  aiAttempts: { lt: AI_MAX_ATTEMPTS },
+  OR: [
+    { aiStatus: &quot;PENDING&quot; },
+    { aiStatus: &quot;PROCESSING&quot;, aiClaimedAt: { lt: staleBefore } },
+  ],
+};
+</code></pre>
+<p>Note what is not here: <code>SELECT ... FOR UPDATE SKIP LOCKED</code>. Two concurrent claimants both match the <code>WHERE</code>, Postgres serialises them on the row lock and re-evaluates the predicate against the updated row, so the loser sees a fresh <code>aiClaimedAt</code> and updates zero rows. A read-then-update would let both through. Two integration tests run this against a real Postgres in CI (<code>tests/integration/whatsapp-webhook.integration.test.ts</code>). One fires 10 concurrent conditional <code>updateMany</code> calls at one <code>PENDING</code> row and asserts exactly one returns <code>count: 1</code>. It uses the plain <code>PENDING</code> claim, not the stale-takeover branch, so it shows the row lock picking one winner; it does not race two reclaimers. The other fires 8 concurrent deliveries of the same <code>waMessageId</code> at the webhook and asserts one row is written and all eight get a <code>202</code>.</p>
+<p>Stale takeover is conservative: a <code>PROCESSING</code> row with a null <code>aiClaimedAt</code> is not reclaimable, because duplicating a live run costs a paid model call. <code>tests/lib/whatsapp-claim.test.ts</code> pins the edges, including that a fresh <code>PROCESSING</code> row is left alone and that exhausted attempts stop a claim whatever the state.</p>
+<h3>Why attempts count on claim, not on failure</h3>
+<p>A crash never reports a failure. If the counter moved only when a handler said &quot;I failed&quot;, a message that crashed its worker every time would be retried forever. Counting on claim means the crash still spends an attempt. The cost of that choice is in §18 below.</p>
+<h3>The window has to be derived, not picked</h3>
+<p>Ten minutes is the visibility timeout. Everything that runs under a claim has to finish inside it, including the slow case where a model accepts the connection and goes quiet (§11). So the budgets in <code>lib/deadlines.ts</code> are outputs of the window, and the test asserts the inequality rather than the numbers:</p>
+<pre><code>AGENT_RUN_BUDGET_MS + GEMINI_CALL_TIMEOUT_MS &lt; AI_CLAIM_STALE_MS
+              240 s +                  60 s &lt; 600 s
+</code></pre>
+<p>The sum, not the max, because a call that starts one millisecond before the run budget expires still gets its own full timeout. Change the window and <code>tests/lib/deadlines.test.ts</code> fails.</p>
+<h2>Dead letters and audited replay</h2>
+<p>At three attempts the row is written <code>aiStatus: FAILED</code> and shows up in the admin list. Replay is one endpoint, and the reset is conditional on the row still being dead (<code>app/api/admin/dead-letters/route.ts</code>):</p>
+<pre><code class="language-ts">const result = await tx.whatsappMessage.updateMany({
+  where: { id, aiStatus: &quot;FAILED&quot; },
+  data: { aiStatus: &quot;PENDING&quot;, aiAttempts: 0, aiClaimedAt: null, aiError: null },
+});
+if (result.count === 0) throw new NothingToReplay();
+</code></pre>
+<p>Same discipline as the claim: the check is inside the mutation, so replaying twice is a no-op and a message that completed meanwhile can&#39;t be yanked back to rerun its side effects. The reset and its audit row commit in one transaction; the throw rolls both back, so the log never records a replay that didn&#39;t happen (<code>tests/lib/deadLetterReplay.test.ts</code> asserts the 409 and the missing audit row).</p>
+<h2>Polling, honestly</h2>
+<p>The worker loop (<code>worker/loop.ts</code>) sleeps 250 ms after a sweep that found work, doubles while idle up to 30 s, and jitters ±20%. The jitter is not decoration: two replicas started together and backing off deterministically poll in lockstep forever. The loop survives a sweep that throws, since a brief DB blip is operational rather than a bug. It also wakes from a long sleep on SIGTERM, because the container was once killed with exit 137 after logging &quot;shutdown requested&quot; and napping through Docker&#39;s ten-second grace. All of it is unit-tested with an injected <code>sleep</code>, random source and <code>sweep</code> (<code>worker/loop.test.ts</code>).</p>
+<p>The trade-off is real: an idle worker still queries every 30 s and a busy one every 250 ms. At KhataGO&#39;s scale that&#39;s nothing. With hundreds of consumers, or a need for sub-100 ms pickup, the polling itself becomes the load.</p>
+<h2>What I got wrong</h2>
+<p>The longer version of these three mistakes is in <a href="/blog/liveness-for-atomic-claims">the post on liveness for atomic claims</a>. Short version:</p>
+<p>The original claim was <code>updateMany({ where: { aiStatus: &quot;PENDING&quot; }, data: { aiStatus: &quot;PROCESSING&quot; } })</code>. Correct mutual exclusion, no way back out. A lock without an expiry is a deadlock waiting for a crash (§2).</p>
+<p>Later, the sweeper&#39;s &quot;what do I hand out&quot; and the processor&#39;s &quot;what will I act on&quot; disagreed. A message from an unregistered number was refused in the processor&#39;s opening lines, before the claim that would have spent an attempt, so the sweeper selected it again every sweep. Three such rows filled the webhook sweep permanently, and because the processor returned <code>void</code>, every refusal counted as progress. The backoff never engaged and the worker sat at 250 ms logging <code>processed: 5</code> (§17). The fix: message status joined <code>reclaimableWhere</code>, the refusal writes a terminal <code>SKIPPED</code>, and the processor returns a boolean the sweep counts.</p>
+<p>Then §18: the claim was taken by the first statement and released by the last, with no <code>try</code> between them. Any throw skipped the release, the attempt stayed spent, and three throws made the row unreclaimable while still <code>PROCESSING</code>: invisible to the dead-letter list, refused by replay. The most common thrower wasn&#39;t the model; it was a user who hadn&#39;t added their API key yet. Now the work runs inside a catch, a throw becomes a <code>FAILED</code> outcome with <code>aiClaimedAt</code> cleared either way, and a missing key dead-letters on the first attempt with the message the user was owed (<code>tests/lib/whatsapp-async.test.ts</code>).</p>
+<h2>When I&#39;d switch to a broker</h2>
+<p>When several services need the same events, or one message must fan out to independent consumers. When throughput makes polling the dominant load on the database. Neither applies to a table one product reads to answer one person&#39;s message.</p>
+<h2>What to do</h2>
+<p>Put the claim predicate in one function and use it for both the candidate query and the claim itself. Keep every condition inside the <code>UPDATE</code>, never in a read before it. Store the claim time and count; derive every timeout from the claim window with a test that asserts the inequality. Wrap the work between claim and release in a catch so the release runs on every path. Make the processor return whether it did anything, and have the backoff read that. Make replay conditional on the row still being dead, and write its audit row in the same transaction. Then write the test that fires N concurrent claims at one row and asserts one winner. If that passes against your real database, you have a queue.</p>

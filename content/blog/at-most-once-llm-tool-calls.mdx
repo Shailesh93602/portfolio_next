@@ -1,0 +1,122 @@
+---
+title: "Idempotent LLM function calling: each tool call at most once"
+description: "Give each planned LLM tool call its own row and run the tool in the transaction that marks it done, so a crashed Gemini run resumes without writing twice."
+image: "/Images/portfolio1.png"
+date: "2026-10-19"
+readTime: "9 min read"
+featured: false
+llmsTopic: "Idempotent LLM tool calls (each tool call at most once)"
+tags:
+  - "LLM"
+  - "AI Engineering"
+  - "Idempotency"
+  - "PostgreSQL"
+  - "Reliability"
+  - "Backend"
+seoKeywords:
+  - "Shailesh Chaudhari"
+  - "llm function calling idempotent"
+  - "gemini function calling duplicate side effects"
+  - "resume agent after crash"
+---
+
+<p><strong>Short answer.</strong> Give every tool call the model plans a row of its own, keyed by its position in the plan, and run the tool inside the same database transaction that marks that row done. A process that crashes mid-run then resumes from the rows instead of re-asking the model, and a tool that already committed is reused rather than re-run. The one tool whose effect lives outside the database (sending a message) can&#39;t join that transaction, so the loop records that it started and never retries it on its own.</p>
+<p>The rest of this post is how I got there in <a href="/portfolio/khatago">KhataGO</a>, a WhatsApp bookkeeping app where the &quot;tool&quot; is a ledger write and a duplicate means a shopkeeper&#39;s books are wrong.</p>
+<h2>What broke</h2>
+<p>A user sends &quot;sold 500 to Ram, cash&quot;. The message goes to Gemini with ten function-calling tools. The model asks for <code>create_transaction</code>, the tool writes a row, the result goes back, the model replies. Up to five such turns per message.</p>
+<p>Inbound messages are already exactly-once at the message level: one row per message with a unique <code>waMessageId</code> (the <a href="/blog/khatago-webhook-deduplication-receipt-pipeline">webhook post</a> covers that layer). A worker claims a message with a conditional <code>UPDATE</code>, and a claim older than ten minutes (<code>AI_CLAIM_STALE_MS</code>, <code>lib/whatsappClaim.ts</code>) can be taken over by another worker.</p>
+<p>The loop that ran inside that claim was a <code>while</code> in <code>agent.ts</code>. Five turns of model decisions and ledger writes, all in a stack frame. If the process died between turn one and turn two, the stack frame was gone but the <code>create_transaction</code> from turn one had already committed. Ten minutes later the claim went stale, another worker picked the message up and ran the whole thing again from turn zero. Same message, same model, usually the same plan: a second sale to Ram.</p>
+<p>The comment I left on the schema (<code>prisma/schema.prisma</code>, above <code>model AgentRun</code>) says it in one line:</p>
+<pre><code class="language-prisma">/// The dedup on `waMessageId` makes the message exactly-once; nothing made
+/// the tools inside it exactly-once.
+</code></pre>
+<h2>Two true statements, one bad sum</h2>
+<p>&quot;A stale claim is re-run&quot; and &quot;a tool call writes the ledger&quot; were both true, and together they said the ledger could be written twice. The fix landed on 2026-09-05 as one pull request (<code>85323bd</code>). The migration adds two tables and drops nothing.</p>
+<h2>Why not re-ask the model on resume?</h2>
+<p>My first instinct was to persist only tool <em>results</em> and let a resumed run ask the model again. That doesn&#39;t work, because a model isn&#39;t deterministic. Ask it again for a turn whose tools half-ran and it might order the calls differently, and a stored result keyed by position would go to the wrong call. So the unit of durability is the model&#39;s <em>decision</em> for a turn. Two tables:</p>
+<ul>
+<li><code>AgentRun</code>, one row per message: the state, how many turns have been planned, the final reply.</li>
+<li><code>AgentStep</code>, one row per planned tool call: tool name, args, a hash of the args, the result, and a status.</li>
+</ul>
+<p>The step&#39;s unique key is the idempotency key:</p>
+<pre><code class="language-prisma">model AgentStep {
+  runId    String
+  turn     Int
+  seq      Int      /// Position within the turn&#39;s plan.
+  tool     String
+  argsHash String
+  args     Json
+  result   Json?
+  status   String   @default(&quot;PLANNED&quot;)  /// PLANNED → (STARTED) → DONE
+  @@unique([runId, turn, seq])
+}
+</code></pre>
+<p>I keyed on position, not on tool name, on purpose. &quot;Sold 500 to Ram and bought 200 from Shyam&quot; is one turn with two <code>create_transaction</code> calls, and a name-keyed row would collapse them into one. The name and the args hash are stored so a resume can check it&#39;s replaying the call it thinks it is (<code>lib/ai/loop.test.ts</code>, &quot;position, not name, is identity&quot;).</p>
+<p>Persisting the plan is one write: <code>planTurn</code> inserts the steps, bumps the turn counter and moves <code>PLANNING → TOOL_CALL</code> in a single transaction. A crash will eventually land in any gap you leave between those.</p>
+<h2>Where does the at-most-once guarantee actually live?</h2>
+<p>In one method. The tool runs with the <em>transaction client</em>, and the step&#39;s move to <code>DONE</code> is a conditional update in the same transaction. This is <code>PrismaRunStore.completeStep</code> in <code>lib/ai/runStore.ts</code>, trimmed:</p>
+<pre><code class="language-ts">async completeStep&lt;T&gt;(step: StepRecord, work: (db: ToolDb) =&gt; Promise&lt;T&gt;) {
+  if (step.status === &quot;DONE&quot;) {
+    return { result: step.result as T, executed: false };
+  }
+  try {
+    return await this.prisma.$transaction(async tx =&gt; {
+      const result = await work(tx);
+      const r = await tx.agentStep.updateMany({
+        where: { id: step.id, status: { in: [&quot;PLANNED&quot;, &quot;STARTED&quot;] } },
+        data: { status: &quot;DONE&quot;, result: toJson(result), finishedAt: new Date() },
+      });
+      if (r.count === 0) throw new StepAlreadyCompleted();
+      return { result, executed: true };
+    });
+  } catch (error) {
+    if (error instanceof StepAlreadyCompleted) {
+      const fresh = await this.prisma.agentStep.findUniqueOrThrow({ where: { id: step.id } });
+      return { result: fresh.result as T, executed: false };
+    }
+    throw error;
+  }
+}
+</code></pre>
+<p>Read the race through it. Two processes hold the same <code>PLANNED</code> step. Both run the tool, both write a ledger row inside their own transaction. The first one&#39;s <code>updateMany</code> matches one row and commits. The second one&#39;s matches zero rows, throws, and Prisma rolls back its transaction, taking its ledger row with it. Then it reads the winner&#39;s stored result and hands <em>that</em> back, so the model sees one answer whichever process is talking to it.</p>
+<p>That turns &quot;a write tool is never re-executed&quot; from a property of control flow, which a crash can interrupt anywhere, into a property of the database, which it can&#39;t. The ten-minute staleness window stopped being load-bearing for correctness; it only governs cost now.</p>
+<p>The integration test drives this against a real Postgres (<code>tests/integration/agent-run.integration.test.ts</code>): 8 concurrent executors of one planned <code>create_transaction</code> step, with the real tool on the transaction client. All 8 run the tool (there&#39;s no lock in front of the transaction), one <code>executed: true</code> comes back, exactly one transaction row exists, and all 8 callers get the same <code>transactionId</code>.</p>
+<h2>What does a resume do?</h2>
+<p>It reads the rows, not the state label. <code>resumeEntryState</code> in <code>lib/ai/runState.ts</code> is the whole decision:</p>
+<pre><code class="language-ts">export function resumeEntryState(state, facts) {
+  if (TERMINAL_STATES.has(state)) return null;
+  if (facts.hasReply) return &quot;REPLY&quot;;
+  if (facts.hasUnfinishedSteps) return &quot;TOOL_CALL&quot;;
+  return &quot;PLANNING&quot;;
+}
+</code></pre>
+<p>A stored reply means the model finished; send it, no model call. Unfinished steps mean execute (or reuse) them, then ask the model. Otherwise ask the model. The conversation is rebuilt from the persisted turns&#39; <code>functionCall</code> and <code>functionResponse</code> parts, so the model only sees results it hasn&#39;t seen yet, and the five-turn cap counts <em>persisted</em> turns, so a resume at turn three gets two more, not five (<code>lib/ai/loop.cap.test.ts</code>).</p>
+<p>Each crash scenario in <code>lib/ai/loop.resume.test.ts</code> runs twice: a <strong>hard</strong> crash, where the store is restored to the instant of death so nothing written on the way down survives, and a <strong>soft</strong> one, where the catch block managed to persist <code>FAILED</code>. Both must resume identically. The case I care most about is &quot;crash BEFORE the result is persisted (inside the tool) → resume writes exactly once&quot;: the tool throws mid-write on attempt one, attempt two completes, and the execution log reads <code>[&quot;create_transaction&quot;, &quot;create_transaction&quot;]</code> while the ledger holds one row. Executed twice, wrote once. That&#39;s the honest shape of at-most-once over a crash.</p>
+<h2>What about a tool that doesn&#39;t write to the database?</h2>
+<p><code>send_payment_reminder</code> sends a WhatsApp message. A network call can&#39;t join a Postgres transaction, so none of the above applies to it. Every tool is classed in <code>lib/ai/toolEffects.ts</code>:</p>
+<pre><code class="language-ts">export const TOOL_EFFECTS = {
+  create_transaction: &quot;write&quot;,
+  send_payment_reminder: &quot;external&quot;,
+  get_recent_transactions: &quot;read&quot;,
+  // ... the other seven
+} as const satisfies Record&lt;string, ToolEffect&gt;;
+</code></pre>
+<p>For an <code>external</code> tool, <code>executeStep</code> in <code>lib/ai/steps.ts</code> flips the step <code>PLANNED → STARTED</code> <em>before</em> the send. A resume that finds a <code>STARTED</code> external step does not re-send, because it can&#39;t know whether the first attempt left the building. It records this as the step&#39;s result and the model relays it:</p>
+<blockquote>
+<p>This action was interrupted before its outcome was recorded. It was not retried automatically — please check before asking again.</p>
+</blockquote>
+<p>(<code>INTERRUPTED_EXTERNAL_RESULT</code>, <code>lib/ai/loop.ts</code>.) Not re-sending costs one reminder the user can repeat. Re-sending could message a customer twice. I&#39;d rather eat the first.</p>
+<p>A test walks every declared tool and fails if one is missing from the table, because a new write tool that defaulted to &quot;read&quot; would be re-executed on every resume.</p>
+<h2>Wouldn&#39;t a framework&#39;s checkpointing do this?</h2>
+<p>I built the same state machine in LangGraph.js behind a flag (<code>lib/ai/graph.langgraph.ts</code>) to find out, and it passes the same crash-and-resume tests. But a checkpoint saves graph state; it can&#39;t join the transaction in which <code>create_transaction</code> writes the ledger. In both engines the at-most-once property comes from <code>completeStep</code> and nothing else, so the hand-rolled loop stayed the default.</p>
+<h2>What I&#39;d tell you to do</h2>
+<ol>
+<li><strong>Persist the plan, not just the results.</strong> Key each call by <code>(run, turn, position)</code>.</li>
+<li><strong>Tool write and step <code>DONE</code> in one transaction, with a conditional update.</strong> Zero rows matched means someone else won; roll back and return their result.</li>
+<li><strong>Classify every tool as read, write or external, and make the table a test.</strong></li>
+<li><strong>Record STARTED before an external call and never auto-retry a STARTED step.</strong> Tell the model what happened in plain words.</li>
+<li><strong>Resume from rows, not a state label</strong>, and count the turn cap against persisted turns.</li>
+<li><strong>Never prune a non-terminal run.</strong> My retention cron deletes <code>DONE</code> runs after 90 days and leaves <code>FAILED</code> and <code>DEAD_LETTERED</code> alone; their steps are what makes a later resume exactly-once.</li>
+</ol>
+<h2>What I&#39;d do differently</h2>
+<p>Log less, sooner. The agent&#39;s trace store held sizes and counts only from the start, no message bodies and no tool arguments, while ten lines above the loop every tool still began with <code>console.log(&quot;Executing create_transaction&quot;, args)</code> (<code>FINDINGS.md</code> §9). The property I&#39;d designed into the trace store was missing from the log I&#39;d inherited. If you build a loop like this, list every sink a tool argument can reach before you say it never leaves.</p>

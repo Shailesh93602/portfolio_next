@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { BLOG_SLUGS } from "@/lib/blog-data";
 import { allMatches } from "./helpers/regex";
+import { stagedSlugs } from "./helpers/staged-posts";
 
 /**
  * Blog bodies must be HTML, because that is what the renderer assumes.
@@ -26,6 +27,7 @@ import { allMatches } from "./helpers/regex";
  */
 
 const BLOG_DIR = path.join(process.cwd(), "content", "blog");
+const SLUGS = [...BLOG_SLUGS, ...stagedSlugs()];
 
 function body(slug: string): string {
   const raw = fs.readFileSync(path.join(BLOG_DIR, `${slug}.mdx`), "utf8");
@@ -55,7 +57,7 @@ describe("blog bodies are HTML, not markdown", () => {
     expect(BLOG_SLUGS.length).toBeGreaterThan(5);
   });
 
-  it.each(BLOG_SLUGS)("%s renders as HTML", (slug) => {
+  it.each(SLUGS)("%s renders as HTML", (slug) => {
     // Positive: it must actually contain block-level HTML.
     expect(body(slug)).toMatch(/<(p|h2|h3|ul|ol|div|section|pre|blockquote)\b/);
 
@@ -89,7 +91,7 @@ describe("blog bodies are HTML, not markdown", () => {
    */
   it("no post contains a JSX expression, which nothing here evaluates", () => {
     const offenders: string[] = [];
-    for (const slug of BLOG_SLUGS) {
+    for (const slug of SLUGS) {
       // prose(), not body(): `import { Repository } from …` inside a <pre> is
       // ordinary sample code, and the first version of this assertion flagged
       // 30 of them across the tutorial posts. Same lesson as prose() itself.
@@ -120,7 +122,7 @@ describe("blog bodies are HTML, not markdown", () => {
    */
   it("no code block has been reflowed by a formatter", () => {
     const offenders: string[] = [];
-    for (const slug of BLOG_SLUGS) {
+    for (const slug of SLUGS) {
       for (const m of allMatches(/<pre\b[^>]*>(\s*)<code/g, body(slug))) {
         if (m[1].includes("\n")) {
           offenders.push(
@@ -136,7 +138,7 @@ describe("blog bodies are HTML, not markdown", () => {
   it("no post contains a bare markdown bold run outside a code block", () => {
     // `**` inside <pre> is legitimate (it can be sample code), so strip those
     // first rather than exempting whole files.
-    const offenders = BLOG_SLUGS.filter((slug) =>
+    const offenders = SLUGS.filter((slug) =>
       /\*\*\w[^*]*\*\*/.test(prose(slug))
     );
     expect(offenders).toEqual([]);
