@@ -90,7 +90,7 @@ const rawProjects: Project[] = [
     id: "eduscale",
     title: "EduScale",
     description:
-      "An engineering learning platform with personalized roadmaps, real-time coding battles across multiple Node.js instances, and placement preparation.",
+      "An engineering learning platform with personalized roadmaps, placement preparation, and real-time coding battles built to scale across Node.js instances.",
     image: "/Images/eduscale_landing_dark.png",
     isShowcase: true,
     tags: [
@@ -115,7 +115,7 @@ const rawProjects: Project[] = [
     pullQuote:
       "The tell was already in the code: the finder ordered results by date, and ordering only matters if more than one row can exist — the code anticipated duplicates and coped with them instead of preventing them.",
     detailedDescription:
-      "An EdTech platform built around a distributed real-time engine. The backend uses @socket.io/redis-adapter for horizontal Socket.io scaling across multiple Node.js instances, redlock for distributed locking on the battle start / submit-answer / complete paths, opossum as a circuit breaker around the remote code-execution service (Judge0), prom-client exposing a Prometheus /metrics endpoint, and Bull queues for email delivery with a dead-letter queue. Frontend is Next.js 16 App Router with Redux Toolkit. The AI layer (code review, tutor, pgvector-backed recommendations) runs on each user's OWN provider key rather than a shared one — encrypted at rest with AES-256-GCM, with the model-fallback cooldowns and the circuit breaker partitioned per key so one tenant's exhausted quota or bad credential cannot degrade another's.",
+      "An EdTech platform built around a distributed real-time engine. The backend uses @socket.io/redis-adapter so Socket.io can scale across Node.js instances, redlock for distributed locking on the battle start / submit-answer / complete paths, opossum as a circuit breaker around the remote code-execution service (Judge0), prom-client exposing a Prometheus /metrics endpoint, and Bull queues for email delivery with a dead-letter queue. Frontend is Next.js 16 App Router with Redux Toolkit. The AI layer (code review, tutor, pgvector-backed recommendations) runs on each user's OWN provider key rather than a shared one — encrypted at rest with AES-256-GCM, with the model-fallback cooldowns and the circuit breaker partitioned per key so one tenant's exhausted quota or bad credential cannot degrade another's. Status: the hosted site runs on Vercel serverless, which holds no socket, so live battles and matchmaking do not run there yet — they are proven end to end locally and wait on a long-lived realtime host.",
     architecture: {
       layers: [
         {
@@ -145,7 +145,7 @@ const rawProjects: Project[] = [
             "Redis (adapter + Redlock + cache + rate limiting)",
             "Bull queue + dead-letter queue for email delivery",
             "Supabase Auth",
-            "Vercel / AWS",
+            "Vercel (frontend + REST API); realtime host not live yet",
           ],
         },
       ],
@@ -157,7 +157,7 @@ const rawProjects: Project[] = [
         label: "Real-time",
         value: "Redis adapter",
         description:
-          "Cross-instance battle broadcast via @socket.io/redis-adapter (works across Node instances)",
+          "Cross-instance battle broadcast via @socket.io/redis-adapter, built for more than one Node instance (not hosted yet)",
       },
       {
         label: "Matchmaking",
@@ -210,14 +210,14 @@ const rawProjects: Project[] = [
       {
         step: "Interview Ready",
         description:
-          "Mock assessments and AI-driven feedback for placement preparation.",
+          "Quizzes, interview questions and AI code-review feedback for placement preparation.",
       },
     ],
     features: [
       "Dynamic Career Roadmaps: structured learning paths with multi-stage progress tracking and milestone achievements.",
       // The instant-battle UI waits on the API deploy: __tests__/helpers/unshipped-features.ts.
-      "Elo-band matchmaking service (backend only): a Redis sorted-set queue whose search band starts at ±100 and widens 20 points per second up to ±600. The instant-battle frontend is not shipped yet.",
-      "Real-time Battle Zone: Low-latency competitive coding environment with live rankings and peer challenges.",
+      "Elo-band matchmaking service (backend only): a Redis sorted-set queue whose search band starts at ±100 and widens 20 points per second up to ±600. Not live on the hosted site yet: it needs the realtime host.",
+      "Real-time Battle Zone: competitive coding battles over Socket.io with live rankings and peer challenges, proven end to end locally; not live on the hosted site until the realtime host is deployed.",
       "Coding Challenges: Integrated compiler support for multiple languages with automated test suite validation.",
       "Community Forum: Robust discussion platform for peer learning and resource sharing.",
       "Placement Ready: Curated specialized tracks for interview preparation and technical skill assessments.",
@@ -261,7 +261,7 @@ const rawProjects: Project[] = [
       {
         title: "Real-time Battle Zone",
         description:
-          "A competitive arena powered by WebSockets, allowing real-time multiplayer coding showdowns with live leaderboards.",
+          "A competitive arena built on WebSockets for real-time multiplayer coding showdowns with live leaderboards (runs locally; the hosted realtime server is not live yet).",
         imageDark: "/Images/eduscale/battle_dark.png",
         imageLight: "/Images/eduscale/battle_light.png",
       },
@@ -741,7 +741,7 @@ const rawProjects: Project[] = [
       "Natural Language WhatsApp Bot: Record sales, purchases, and expenses like you talk.",
       "AI Receipt Processing: Send bill photos to WhatsApp - the AI extracts and records all details.",
       "CA & Accountant Portal: Date-range exports in CSV and Tally-ready formats.",
-      "Dynamic i18n Engine: Full UI in 3+ languages (English, Hindi, Gujarati).",
+      "Dynamic i18n Engine: Full UI in 3 languages (English, Hindi, Gujarati).",
       "Financial Analytics: Real-time charts for sales, purchases, and net profit trends.",
       "Zero-App Footprint: Manage your entire business accounting without ever leaving WhatsApp.",
       "Bring-your-own AI key: add your own Gemini key in Settings, encrypted at rest, removable at any time.",
@@ -752,19 +752,19 @@ const rawProjects: Project[] = [
       "Frontend: Next.js (App Router), React, Tailwind CSS, Recharts, i18next",
       "Backend: Next.js API routes (Node.js, TypeScript), Prisma ORM, PostgreSQL; a standalone Node worker process; a stdio MCP server",
       "AI & Messaging: Google Gemini AI (function-calling + Vision OCR), WhatsApp Cloud API; agent loop as a resumable state machine, promptproof evals, LangGraph.js as a comparison engine behind a flag, MongoDB adapter for traces (opt-in)",
-      "Infrastructure: Supabase (Auth & Real-time), Vercel for the web app, one Docker image running web + worker as two processes, Postgres-backed job queue with a dead-letter queue",
+      "Infrastructure: Supabase-hosted PostgreSQL, Vercel for the web app, one Docker image running web + worker as two processes, Postgres-backed job queue with a dead-letter queue",
     ],
     problem:
       "Small business owners in India struggle with complex accounting software. They often rely on manual notebooks (Khatas), which lead to data loss, calculation errors, and delays in GST compliance.",
     solution:
       "A 'zero-learning-curve' platform that works where the user already is: WhatsApp. By combining the simplicity of chat with the power of AI, KhataGO makes business accounting as easy as sending a message.",
     challengesSolved:
-      "Meta's WhatsApp Cloud API delivers at least once, so the same message arrives twice — and an LLM call is expensive enough that deduplicating after it is too late. Idempotency lives in Postgres instead of a cache: the message id is a unique column, so a duplicate insert fails at the DB, and processing starts with a conditional UPDATE that flips aiStatus PENDING→PROCESSING only if it is still PENDING. If that update changes zero rows, another delivery already claimed the message and this one exits — concurrent redeliveries yield exactly one Gemini run and one ledger write, with no cache to fall out of sync with the audit row. The webhook persists the message and acknowledges Meta immediately; a containerized polling worker drains the queue — the Postgres table itself, claimed with the same atomic conditional UPDATE, retried with exponential backoff and jitter, and dead-lettered after three attempts with an audited admin replay — so a burst never times out the handler and a crash mid-run is picked up within seconds rather than at the next cron. The Gemini OCR pipeline downloads the WhatsApp image, sends it to Gemini Vision, and maps the extracted JSON (merchant, amount, date, line items) to a ledger transaction. Tally XML export is the fiddly part: the voucher schema needs specific date formatting, ledger name lookups, and GST field structure — wrong XML silently fails to import, so it is covered by 19 unit tests.",
+      "Meta's WhatsApp Cloud API delivers at least once, so the same message arrives twice — and an LLM call is expensive enough that deduplicating after it is too late. Idempotency lives in Postgres instead of a cache: the message id is a unique column, so a duplicate insert fails at the DB, and processing starts with a conditional UPDATE that flips aiStatus PENDING→PROCESSING only if it is still PENDING. If that update changes zero rows, another delivery already claimed the message and this one exits — concurrent redeliveries yield exactly one Gemini run and one ledger write, with no cache to fall out of sync with the audit row. The webhook persists the message and acknowledges Meta immediately; a containerized polling worker drains the queue — the Postgres table itself, claimed with the same atomic conditional UPDATE, retried with exponential backoff and jitter, and dead-lettered after three attempts with an audited admin replay — so a burst never times out the handler and a crash mid-run is picked up within seconds rather than at the next cron. The Gemini OCR pipeline downloads the WhatsApp image, sends it to Gemini Vision, and maps the extracted JSON (merchant, amount, date, line items) to a ledger transaction. Tally XML export is the fiddly part: the voucher schema needs specific date formatting, ledger name lookups, and GST field structure — wrong XML silently fails to import, so it has its own unit-test suite.",
     userFlow: [
       {
         step: "Onboarding",
         description:
-          "Business owners register via the web portal and connect their WhatsApp Business API.",
+          "Business owners sign up on the web portal with their mobile number and a one-time code, then message the KhataGO WhatsApp number.",
       },
       {
         step: "Master Data Setup",
@@ -779,7 +779,7 @@ const rawProjects: Project[] = [
       {
         step: "AI Processing OCR",
         description:
-          "The AI agent processes receipts via OCR and creates draft transactions automatically.",
+          "The AI agent reads receipts via OCR and records the transactions automatically.",
       },
       {
         step: "Reporting & Export",

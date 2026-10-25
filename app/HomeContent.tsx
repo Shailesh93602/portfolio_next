@@ -214,7 +214,7 @@ export default function HomeContent({ featuredPosts }: Props) {
               tag: "eduscale",
               title: "Real-time coding platform",
               proof:
-                "Side project with 1v1 coding battles. Uses Redlock over Redis to prevent duplicate battle starts, @socket.io/redis-adapter for horizontal scaling, opossum circuit breaker, and prom-client /metrics.",
+                "Side project with 1v1 coding battles, proven end to end locally (the hosted realtime server is not live yet). Uses Redlock over Redis to prevent duplicate battle starts, @socket.io/redis-adapter for horizontal scaling, opossum circuit breaker, and prom-client /metrics.",
               href: "/portfolio/eduscale",
               cta: "See how EduScale works",
             },

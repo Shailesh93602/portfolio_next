@@ -187,10 +187,10 @@ describe("KhataGO eval count", () => {
 });
 
 describe("EduScale matchmaking claims match what is on EduScale main", () => {
-  it("says the matchmaking frontend is not shipped", () => {
-    // What it must NOT say lives in __tests__/helpers/unshipped-features.ts.
+  it("says matchmaking is not live on the hosted site", () => {
+    // The frontend is on main; production has no socket server (/socket.io 404).
     expect(JSON.stringify(byId("eduscale"))).toMatch(
-      /frontend is not shipped yet/
+      /Not live on the hosted site yet: it needs the realtime host/
     );
   });
 });

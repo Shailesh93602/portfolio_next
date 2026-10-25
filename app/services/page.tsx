@@ -30,7 +30,7 @@ const areas: {
     icon: Radio,
     title: "Real-time systems",
     blurb:
-      "Socket.io with the Redis adapter across multiple instances, distributed locks for the operations that must happen once, presence and live updates.",
+      "Socket.io with the Redis adapter, built to run across instances, distributed locks for the operations that must happen once, presence and live updates.",
   },
   {
     icon: Sparkles,
