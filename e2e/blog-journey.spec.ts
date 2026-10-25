@@ -18,7 +18,10 @@ test.describe("Blog journey", () => {
   test("listing → post → body renders as HTML, not escaped source", async ({
     page,
   }) => {
-    await page.goto("/blogs", { waitUntil: "networkidle" });
+    // Search for it: the listing shows 12 per page, so a fixed sample can fall off page 1.
+    await page.goto(`/blogs?q=${encodeURIComponent(samplePost.title)}`, {
+      waitUntil: "networkidle",
+    });
 
     const link = page.locator(`a[href="/blog/${samplePost.slug}"]`).first();
     await expect(link, "sample post not linked from the listing").toBeVisible();
@@ -59,7 +62,10 @@ test.describe("Blog journey", () => {
     // the test room — a serial loop inside the 30s default timed out on a
     // machine that was running another Playwright suite at the same time.
     test.setTimeout(90_000);
-    await page.goto("/blogs", { waitUntil: "networkidle" });
+    // Search for it: the listing shows 12 per page, so a fixed sample can fall off page 1.
+    await page.goto(`/blogs?q=${encodeURIComponent(samplePost.title)}`, {
+      waitUntil: "networkidle",
+    });
     const hrefs = await page.$$eval('a[href^="/blog/"]', (as) => [
       ...new Set(
         as.map((a) => (a as HTMLAnchorElement).getAttribute("href") ?? "")
