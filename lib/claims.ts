@@ -48,7 +48,7 @@ export const BALLAST_CHECKER_FINDINGS = 18;
 
 /**
  * Gemini function-calling tools declared in `lib/ai/tools.ts` in
- * Shailesh93602/KhataGO. Reproduce: `grep -cE '^\s*name: "' lib/ai/tools.ts`
+ * Shailesh93602/KhataGO. Reproduce: `grep -cE '^\s*name: "' lib/ai/toolDeclarations.ts`
  */
 export const KHATAGO_TOOL_COUNT = 10;
 

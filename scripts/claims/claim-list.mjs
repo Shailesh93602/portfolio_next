@@ -10,14 +10,16 @@
  * Bounded by the NEXT method declaration rather than by a character count, so
  * the check keeps meaning what it means when the method grows or is
  * reformatted. Class methods here are indented two spaces, which is what marks
- * the boundary.
+ * the boundary; a module-level function ends at the next top-level
+ * declaration (EduScale moved startBattle out of the class in 2026-10, and a
+ * class-only boundary then read every later function as part of its body).
  */
 export function withinMethod(text, methodSignature, needle) {
   const start = text.indexOf(methodSignature);
   if (start === -1) return false;
   const after = text.slice(start + methodSignature.length);
   const nextMethod = after.search(
-    /\n {2}(?:public |private |protected |static )*(?:async )?[A-Za-z_$][\w$]*\s*[(=]/
+    /\n {2}(?:public |private |protected |static )*(?:async )?[A-Za-z_$][\w$]*\s*[(=]|\n(?:export\s+)?(?:default\s+)?(?:async\s+)?(?:function|const|let|class)\s/
   );
   const body = nextMethod === -1 ? after : after.slice(0, nextMethod);
   return body.includes(needle);
@@ -65,7 +67,9 @@ export const CLAIMS = [
     localFile: "home",
     localPattern: /(Redlock) over Redis to prevent duplicate battle starts/,
     repo: "Shailesh93602/DevScale",
-    path: "Backend/src/repositories/battleRepository.ts",
+    // startBattle left the BattleRepository class for battle/lifecycle.ts in
+    // EduScale d4b5380d; battleRepository.ts now only delegates to it.
+    path: "Backend/src/repositories/battle/lifecycle.ts",
     // Not merely "the file mentions a lock" — startBattle must still TAKE one.
     // Removing the lock from that one method is the change this claim is
     // about, and a file-wide search for "withBattleLock" would sail past it,
@@ -77,7 +81,7 @@ export const CLAIMS = [
     // characters. A magic number there does not encode the claim, it encodes
     // today's formatting, and it fails the moment someone adds a comment.
     sourceCheck: (text) =>
-      withinMethod(text, "async startBattle", "withBattleLock"),
+      withinMethod(text, "async function startBattle", "withBattleLock"),
   },
   {
     what: "home page: socket.io Redis adapter",
@@ -205,7 +209,9 @@ export const CLAIMS = [
     localFile: "claims",
     localPattern: /KHATAGO_TOOL_COUNT = (\d+)/,
     repo: "Shailesh93602/KhataGO",
-    path: "lib/ai/tools.ts",
+    // The declarations left lib/ai/tools.ts (which now only dispatches, and
+    // holds zero `name:` lines) for toolDeclarations.ts.
+    path: "lib/ai/toolDeclarations.ts",
     // One `name: "..."` per declared function tool.
     sourceCount: /^\s*name: "/gm,
     // Private today (see the claim above); checks itself once public.

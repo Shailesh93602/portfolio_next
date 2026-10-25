@@ -284,4 +284,23 @@ describe("the claim list", () => {
     expect(withinMethod(src, "async startBattle", "withOtherLock")).toBe(false);
     expect(withinMethod(src, "async missing", "withBattleLock")).toBe(false);
   });
+
+  it("withinMethod ends a module-level function at the next top-level declaration", () => {
+    const src = [
+      "export async function startBattle(id) {",
+      "  const battleId = await resolve(id);",
+      "  return update(battleId);",
+      "}",
+      "",
+      "export async function joinBattle(id) {",
+      "  return withBattleLock(id, () => 1);",
+      "}",
+    ].join("\n");
+    expect(
+      withinMethod(src, "async function startBattle", "withBattleLock")
+    ).toBe(false);
+    expect(
+      withinMethod(src, "async function joinBattle", "withBattleLock")
+    ).toBe(true);
+  });
 });
