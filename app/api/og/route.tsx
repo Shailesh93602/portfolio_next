@@ -146,6 +146,10 @@ export async function GET(request: NextRequest) {
     {
       width: 1200,
       height: 630,
+      // A share card, not a page: keep it out of the index. Social scrapers
+      // ignore X-Robots-Tag, and robots.txt still allows the fetch, which is
+      // what lets Google read this header at all.
+      headers: { "X-Robots-Tag": "noindex" },
     }
   );
 }
