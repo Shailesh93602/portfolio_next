@@ -27,10 +27,10 @@ const pageTransition = {
 
 const ITEMS_PER_PAGE = 12;
 
-import type { BlogPost } from "@/lib/blog-data";
+import type { PostSummary } from "@/lib/blog-data";
 
 interface Props {
-  posts: BlogPost[];
+  posts: PostSummary[];
   allTags: string[];
 }
 

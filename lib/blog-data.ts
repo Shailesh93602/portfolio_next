@@ -172,6 +172,21 @@ export const getRelatedPosts = (slug: string, limit = 3): BlogPost[] => {
     .slice(0, limit);
 };
 
+/** A post without its body: what a listing hands to a client component. */
+export type PostSummary = Omit<BlogPost, "content">;
+
+/**
+ * A client component's props are serialised into the page's RSC payload, so
+ * passing whole posts to a listing shipped every body inside `/` and `/blogs`.
+ * Crawlers read the code samples in those bodies as links relative to the
+ * listing (`/charge`, `/validation.pipe`) and recorded them as 404s.
+ */
+export const withoutBody = (post: BlogPost): PostSummary => {
+  const summary: Partial<BlogPost> = { ...post };
+  delete summary.content;
+  return summary as PostSummary;
+};
+
 export const getFeaturedPosts = (): BlogPost[] =>
   publishedPosts.filter((p) => p.featured);
 

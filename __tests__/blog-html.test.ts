@@ -1,6 +1,10 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { makeScrollRegionsFocusable } from "@/lib/blog-html";
+import {
+  escapeCodePathLiterals,
+  makeScrollRegionsFocusable,
+  renderPostHtml,
+} from "@/lib/blog-html";
 import { blogPosts } from "@/lib/blog-data";
 
 describe("makeScrollRegionsFocusable", () => {
@@ -52,8 +56,63 @@ describe("makeScrollRegionsFocusable", () => {
       join(process.cwd(), "app", "blog", "[slug]", "page.tsx"),
       "utf8"
     );
-    expect(src).toMatch(
-      /__html:\s*makeScrollRegionsFocusable\(post\.content\)/
+    expect(src).toMatch(/__html:\s*renderPostHtml\(post\.content\)/);
+  });
+
+  // The client BlogLayout's props land in the RSC payload. Handing it the
+  // whole post shipped the raw body a second time, outside this transform.
+  it("is the only copy of the body the page ships", () => {
+    const src = readFileSync(
+      join(process.cwd(), "app", "blog", "[slug]", "page.tsx"),
+      "utf8"
     );
+    expect(src).not.toMatch(/<BlogLayout\s+post=\{post\}/);
+    // One read for the word count, one for the render.
+    expect(src.match(/post\.content/g)).toHaveLength(2);
+  });
+});
+
+describe("escapeCodePathLiterals", () => {
+  it("breaks quoted paths inside code so they are no longer path strings", () => {
+    const html =
+      "<pre><code>import { ValidationPipe } from './validation.pipe';\n" +
+      'res.redirect("/login?error=invalid_request");\n' +
+      "import x from `../users/user.entity`;</code></pre>";
+    const out = escapeCodePathLiterals(html);
+    expect(out).toContain("'.&#x2F;validation.pipe'");
+    expect(out).toContain('"&#x2F;login?error=invalid_request"');
+    expect(out).toContain("`..&#x2F;users/user.entity`");
+    expect(out).not.toMatch(/['"`]\.{0,2}\//);
+  });
+
+  it("handles entity-encoded quotes and inline <code>", () => {
+    expect(escapeCodePathLiterals("<code>&quot;/health&quot;</code>")).toBe(
+      "<code>&quot;&#x2F;health&quot;</code>"
+    );
+    expect(escapeCodePathLiterals("<code>&#39;./a&#39;</code>")).toBe(
+      "<code>&#39;.&#x2F;a&#39;</code>"
+    );
+  });
+
+  it("leaves prose links, comments and division alone", () => {
+    const html =
+      '<p><a href="/about">about</a> "/not-code"</p>' +
+      "<pre><code>// comment\nconst r = a / b; fetch('//cdn.example')</code></pre>";
+    expect(escapeCodePathLiterals(html)).toBe(html);
+  });
+
+  it("no shipped post body keeps a quoted path inside a code sample", () => {
+    const offenders = blogPosts.flatMap((post) =>
+      Array.from(
+        renderPostHtml(post.content).matchAll(
+          /<(pre|code)\b[^>]*>[\s\S]*?<\/\1>/gi
+        )
+      )
+        .filter((m) =>
+          /(['"`]|&quot;|&#0?39;|&#x27;|&apos;)\.{0,2}\/(?!\/)/i.test(m[0])
+        )
+        .map(() => post.slug)
+    );
+    expect(offenders).toEqual([]);
   });
 });

@@ -16,6 +16,7 @@ import {
   getFeaturedPosts,
   getAllTags,
   getPostsByTag,
+  withoutBody,
 } from "@/lib/blog-data";
 import { stagedSlugs } from "./helpers/staged-posts";
 
@@ -279,5 +280,32 @@ describe("getPostsByTag", () => {
 
   it("returns an empty array for a nonexistent tag", () => {
     expect(getPostsByTag("__no_such_tag__")).toHaveLength(0);
+  });
+});
+
+/**
+ * Listings hand posts to client components, whose props are serialised into
+ * the page. With the body included, `/` and `/blogs` shipped every post's code
+ * samples, and Google crawled their path strings as 404s on this site.
+ */
+describe("withoutBody", () => {
+  it("drops the body and keeps every other field", () => {
+    const post = publishedPosts[0];
+    const summary = withoutBody(post);
+    expect(summary).not.toHaveProperty("content");
+    expect(summary).toEqual(
+      Object.fromEntries(Object.entries(post).filter(([k]) => k !== "content"))
+    );
+    expect(post.content.length).toBeGreaterThan(0);
+  });
+
+  it.each([
+    [
+      "app/page.tsx",
+      /featuredPosts=\{getFeaturedPosts\(\)\.map\(withoutBody\)\}/,
+    ],
+    ["app/blogs/page.tsx", /posts=\{posts\.map\(withoutBody\)\}/],
+  ])("%s passes summaries, not whole posts", (file, pattern) => {
+    expect(readFileSync(join(process.cwd(), file), "utf8")).toMatch(pattern);
   });
 });

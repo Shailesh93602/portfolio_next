@@ -290,7 +290,7 @@ sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder`}
               rows.&rdquo;
             </em>{" "}
             Cycle time will be missing too. It is a permissions or availability
-            problem on the <Code>/rest/api/3/status</Code> endpoint.
+            problem on the <Code>GET /rest/api/3/status</Code> endpoint.
           </Item>
           <Item>
             <strong className={STRONG}>

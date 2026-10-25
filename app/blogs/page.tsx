@@ -1,7 +1,7 @@
 export { metadata } from "./metadata";
 import BlogsContent from "./BlogsContent";
 import { SITE_URL, BLOG_AUTHOR } from "@/lib/blog-constants";
-import { publishedPosts, getAllTags } from "@/lib/blog-data";
+import { publishedPosts, getAllTags, withoutBody } from "@/lib/blog-data";
 import { personRef } from "@/lib/structured-data";
 
 const blogListSchema = {
@@ -65,7 +65,7 @@ export default function BlogPage() {
           ))}
         </ul>
       </nav>
-      <BlogsContent posts={posts} allTags={allTags} />
+      <BlogsContent posts={posts.map(withoutBody)} allTags={allTags} />
     </>
   );
 }

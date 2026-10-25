@@ -23,3 +23,32 @@ export function makeScrollRegionsFocusable(html: string): string {
       /\btabindex\s*=/i.test(attrs) ? match : `<${tag}${attrs} tabindex="0">`
   );
 }
+
+/**
+ * Path literals inside code samples are not links, but crawlers treat them as
+ * links. Search Console reported `/validation.pipe`, `/users/user.entity`,
+ * `/dto/create-user.dto`, `/transform.interceptor`, `/health` and
+ * `/login?error=invalid_request` as 404s: each is a string from a code sample
+ * (`import { ValidationPipe } from './validation.pipe'`,
+ * `res.redirect('/login?error=invalid_request')`). The post HTML also ships
+ * inside the page's inline RSC payload as a JavaScript string, and Googlebot
+ * pulls URL-shaped strings out of script.
+ *
+ * So inside `<pre>` and `<code>`, the slash that starts a quoted path
+ * (`'/x`, `"./x`, `` `../x ``) is written as `&#x2F;`. The browser shows and
+ * copies a plain `/`; the HTML and the payload no longer hold a path string.
+ */
+const CODE_BLOCK = /<(pre|code)\b[^>]*>[\s\S]*?<\/\1>/gi;
+const QUOTED_PATH_START =
+  /(['"`]|&quot;|&#0?39;|&#x27;|&apos;)(\.{1,2})?\/(?!\/)/gi;
+
+export function escapeCodePathLiterals(html: string): string {
+  return html.replace(CODE_BLOCK, (block) =>
+    block.replace(QUOTED_PATH_START, "$1$2&#x2F;")
+  );
+}
+
+/** Everything a post body needs before it is injected. */
+export function renderPostHtml(html: string): string {
+  return makeScrollRegionsFocusable(escapeCodePathLiterals(html));
+}

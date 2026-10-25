@@ -55,7 +55,7 @@ app/                    # Next.js App Router pages
 
   api/
     contact/route.ts    # POST — Zod validation + Resend email + in-memory rate limit (5/hr per IP) + graceful 503+mailto fallback when RESEND_API_KEY missing
-    og/route.tsx        # Dynamic OG image (@vercel/og) for project detail pages
+    og/route.tsx        # Dynamic OG image (@vercel/og) for project detail pages; sends X-Robots-Tag: noindex (a share card, not a page; still allowed in robots.txt so the header is read)
     statistics/route.ts # GitHub + LeetCode stats with 10s upstream timeout + snapshot fallback
     version/route.ts    # GET — { sha, shortSha, ref, deployedAt, env } for THIS deployment; baked from VERCEL_GIT_COMMIT_SHA at build (next.config `env`), force-dynamic, no-store, noindex. Read by scripts/check-deploy-freshness.mjs. lib/version.ts resolves it.
 
@@ -104,7 +104,7 @@ lib/
   claims.ts                   # Numbers stated about OTHER repos (BALLAST ledger findings, KhataGO tool count, KhataGO eval count) — defined once, imported by every page, verified daily by check-project-claims.mjs
   phone.ts                    # Contact-form phone validation/normalisation (accepts +91 / spaces / dashes)
   blog-constants.ts           # BLOG_AUTHOR, SITE_URL (for layout schema)
-  blog-html.ts                # makeScrollRegionsFocusable — adds tabindex="0" to <pre>/<table> in post HTML at render (they scroll on a phone; axe scrollable-region-focusable kept the a11y job red 2026-08-30 → 09-05)
+  blog-html.ts                # makeScrollRegionsFocusable — adds tabindex="0" to <pre>/<table> in post HTML at render (they scroll on a phone; axe scrollable-region-focusable kept the a11y job red 2026-08-30 → 09-05); escapeCodePathLiterals — writes the slash of a quoted path inside <pre>/<code> as &#x2F; (Googlebot crawled code-sample strings like './validation.pipe' as 404s); renderPostHtml = both, the only thing the post page injects
   animations.ts               # Shared framer-motion variants (fadeIn, staggerContainer)
   utils.ts                    # cn() utility
 
@@ -165,8 +165,9 @@ public/
   - `blog-journey.spec.ts` — listing → post → MDX rendered as HTML → RSS well-formedness → per-post OG image → BlogPosting JSON-LD.
   - `contact-form.spec.ts` — real validation copy, server-side Zod validation, and the 503 + `fallback:"mailto"` path (the default behaviour with no `RESEND_API_KEY`).
   - `statistics-fallback.spec.ts` — snapshot renders in the SSR HTML and survives an upstream 504 / a 12s hang.
+  - `internal-links.spec.ts` — **crawler's-eye internal-link gate (CI)**: every route + feed/sitemap/robots/llms files; every href/src AND every quoted path literal in the page (inline RSC payload included), resolved against the page, must not 404/410. Origin: Search Console 404s for `/validation.pipe`, `/health`, `/login?error=…` — code-sample strings from post bodies that `/`, `/blogs` and `BlogLayout` serialised into the RSC payload. Rule: **never pass a whole post to a client component** — listings use `withoutBody` (lib/blog-data.ts). Also asserts `/portfolio/holdfast` is 404 and out of the sitemap.
   - `meta-and-schema.spec.ts` — per-route title/description/canonical/og:type, **brand appears at most once in `<title>`**, unique canonicals + titles, valid JSON-LD, sitemap ↔ robots ↔ servable-routes consistency.
-- `e2e/` tests require a running server. **CI runs three of them** (`.github/workflows/ci.yml`): the `a11y` job runs `a11y.spec.ts` on both viewports against `next dev` (~7 min); the `e2e` job builds, then runs `recruiter-journey.spec.ts` + `meta-and-schema.spec.ts` on chromium against `next start` (Playwright starts it via `PLAYWRIGHT_WEB_SERVER_COMMAND`). Everything else is local-only — run it before a PR that touches what it covers.
+- `e2e/` tests require a running server. **CI runs four of them** (`.github/workflows/ci.yml`): the `a11y` job runs `a11y.spec.ts` on both viewports against `next dev` (~7 min); the `e2e` job builds, then runs `recruiter-journey.spec.ts` + `meta-and-schema.spec.ts` + `internal-links.spec.ts` on chromium against `next start` (Playwright starts it via `PLAYWRIGHT_WEB_SERVER_COMMAND`). Everything else is local-only — run it before a PR that touches what it covers.
 - **Pin the port.** Port 3000 is often taken by another app on this machine, which silently points the whole suite at the wrong site. Run the gates against a production build:
   ```bash
   npm run build && npx next start -p 3230

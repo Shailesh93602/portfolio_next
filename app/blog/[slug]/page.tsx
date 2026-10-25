@@ -5,7 +5,7 @@ import { ArrowLeftIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getPostBySlug, getRelatedPosts, blogPosts } from "@/lib/blog-data";
-import { makeScrollRegionsFocusable } from "@/lib/blog-html";
+import { renderPostHtml } from "@/lib/blog-html";
 import { SITE_URL, META_DEFAULTS } from "@/lib/blog-constants";
 import { ReadingProgressBar } from "@/components/ReadingProgressBar";
 import { personRef } from "@/lib/structured-data";
@@ -191,11 +191,25 @@ export default async function Page({ params }: Props) {
           )}
         </div>
 
-        <BlogLayout post={post}>
+        {/* BlogLayout is a client component: every prop is serialised into
+            the page's RSC payload. Passing `post` whole shipped the raw body
+            a second time, unescaped, and its code-sample paths were crawled
+            as 404s. Give it only the fields it renders. */}
+        <BlogLayout
+          post={{
+            title: post.title,
+            description: post.description,
+            date: post.date,
+            readTime: post.readTime,
+            tags: post.tags,
+            author: post.author,
+            relatedPosts: post.relatedPosts,
+          }}
+        >
           <div
             className="prose prose-lg max-w-none dark:prose-invert"
             dangerouslySetInnerHTML={{
-              __html: makeScrollRegionsFocusable(post.content),
+              __html: renderPostHtml(post.content),
             }}
           />
         </BlogLayout>

@@ -147,7 +147,7 @@ jobs:
         run: npm run build
 
       - name: Run the journey and SEO specs against the production build
-        run: npx playwright test e2e/recruiter-journey.spec.ts e2e/meta-and-schema.spec.ts --project=chromium
+        run: npx playwright test e2e/recruiter-journey.spec.ts e2e/meta-and-schema.spec.ts e2e/internal-links.spec.ts --project=chromium
         env:
           PLAYWRIGHT_WEB_SERVER_COMMAND: npx next start -p 3000
 
