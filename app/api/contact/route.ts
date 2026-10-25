@@ -6,15 +6,30 @@ import { CONTACT_INFO } from "@/lib/constants";
 
 export const runtime = "nodejs";
 
+// Name and subject end up in mail headers (the subject line, the body's
+// header block). A line break there is never legitimate input.
+const singleLine = /^[^\r\n]*$/;
+
 const contactSchema = z.object({
-  fullName: z.string().min(1, "Name is required").max(120),
+  fullName: z
+    .string()
+    .min(1, "Name is required")
+    .max(120)
+    .regex(singleLine, "Name must be one line"),
   email: z.string().email("Enter a valid email"),
   phoneNumber: z.string().max(40).optional().or(z.literal("")),
-  subject: z.string().min(1, "Subject is required").max(200),
+  subject: z
+    .string()
+    .min(1, "Subject is required")
+    .max(200)
+    .regex(singleLine, "Subject must be one line"),
   message: z
     .string()
     .min(10, "Message must be at least 10 characters")
     .max(5000),
+  // Honeypot: a field people never see (ContactContent renders it off-screen,
+  // aria-hidden, out of the tab order). Bots that fill every input fill it.
+  website: z.string().max(200).optional(),
 });
 
 // Simple in-memory rate limit: 5 submissions per IP per hour.
@@ -27,6 +42,13 @@ const WINDOW_MS = 60 * 60 * 1000;
 
 function checkRateLimit(ip: string): { ok: boolean; remaining: number } {
   const now = Date.now();
+  // Drop expired buckets so a warm instance does not keep one entry per IP
+  // it has ever seen.
+  if (buckets.size > 1000) {
+    buckets.forEach((b, key) => {
+      if (b.resetAt < now) buckets.delete(key);
+    });
+  }
   const bucket = buckets.get(ip);
   if (!bucket || bucket.resetAt < now) {
     buckets.set(ip, { count: 1, resetAt: now + WINDOW_MS });
@@ -76,6 +98,16 @@ export async function POST(request: Request) {
   }
 
   const data = parsed.data;
+
+  // A filled honeypot gets the same answer a real send would, so the sender
+  // learns nothing; nothing is sent.
+  if (data.website) {
+    return NextResponse.json(
+      { ok: true, remainingToday: rate.remaining },
+      { status: 200 }
+    );
+  }
+
   const apiKey = process.env.RESEND_API_KEY;
 
   // Graceful fallback: if Resend isn't configured yet, tell the client to

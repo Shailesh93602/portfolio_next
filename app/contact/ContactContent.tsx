@@ -37,6 +37,8 @@ type FormData = {
   phoneNumber?: string;
   subject: string;
   message: string;
+  /** Honeypot. Off-screen and out of the tab order; see app/api/contact. */
+  website?: string;
 };
 
 interface InputFieldProps {
@@ -99,6 +101,7 @@ export const ContactContent: React.FC = () => {
       phoneNumber: "",
       subject: "",
       message: "",
+      website: "",
     },
   });
 
@@ -364,6 +367,19 @@ export const ContactContent: React.FC = () => {
                   {errors.message.message}
                 </p>
               )}
+            </div>
+            <div
+              aria-hidden="true"
+              className="absolute -left-[9999px] h-px w-px overflow-hidden"
+            >
+              <label htmlFor="website">Website</label>
+              <input
+                id="website"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                {...register("website")}
+              />
             </div>
             <div className="flex justify-center">
               <Button

@@ -6,13 +6,13 @@
  */
 import { POST } from "@/app/api/contact/route";
 
+const mockSend = jest
+  .fn()
+  .mockResolvedValue({ data: { id: "msg_123" }, error: null });
+
 jest.mock("resend", () => ({
   Resend: jest.fn().mockImplementation(() => ({
-    emails: {
-      send: jest
-        .fn()
-        .mockResolvedValue({ data: { id: "msg_123" }, error: null }),
-    },
+    emails: { send: (...args: unknown[]) => mockSend(...args) },
   })),
 }));
 
@@ -78,6 +78,44 @@ describe("POST /api/contact", () => {
       expect(res.status).toBe(200);
       const json = await res.json();
       expect(json.ok).toBe(true);
+    } finally {
+      delete process.env.RESEND_API_KEY;
+    }
+  });
+
+  it("refuses a line break in the subject or name (mail header injection)", async () => {
+    process.env.RESEND_API_KEY = "re_test_key";
+    mockSend.mockClear();
+    try {
+      for (const [field, value, ip] of [
+        ["subject", "Hi\r\nBcc: victim@example.com", "6.6.6.1"],
+        ["fullName", "Eve\nBcc: victim@example.com", "6.6.6.2"],
+      ]) {
+        const req = makeRequest(
+          { ...validBody, [field]: value },
+          { "x-forwarded-for": ip }
+        );
+        const res = await POST(req);
+        expect([field, res.status]).toEqual([field, 400]);
+      }
+      expect(mockSend).not.toHaveBeenCalled();
+    } finally {
+      delete process.env.RESEND_API_KEY;
+    }
+  });
+
+  it("answers a filled honeypot like a send, and sends nothing", async () => {
+    process.env.RESEND_API_KEY = "re_test_key";
+    mockSend.mockClear();
+    try {
+      const req = makeRequest(
+        { ...validBody, website: "http://spam.example" },
+        { "x-forwarded-for": "7.7.7.7" }
+      );
+      const res = await POST(req);
+      expect(res.status).toBe(200);
+      expect((await res.json()).ok).toBe(true);
+      expect(mockSend).not.toHaveBeenCalled();
     } finally {
       delete process.env.RESEND_API_KEY;
     }

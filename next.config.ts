@@ -48,6 +48,28 @@ const baseConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
+  // No script-src: GA, the theme bootstrap and JSON-LD are inline and there are no nonces.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value:
+              "frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'",
+          },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
+        ],
+      },
+    ];
+  },
   // Guessable URLs that used to 404. Each is a URL a recruiter types by hand
   // or an old link elsewhere still points at. `/blog` → `/blogs` and
   // `/hire(-me)` → `/services` are page-level permanentRedirect()s beside
