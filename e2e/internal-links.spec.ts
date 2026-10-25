@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { ALL_ROUTES } from "./routes";
+import { SITE_URL } from "../lib/blog-constants";
 
 /**
  * Every internal path a crawler can pull out of what we serve must resolve.
@@ -14,6 +15,13 @@ import { ALL_ROUTES } from "./routes";
  * like a crawler would, must not answer 404 or 410.
  *
  * Runs over the documents (pages, feed, llms files), not the JS chunks.
+ *
+ * An absolute URL is ours only when it names the canonical origin
+ * (SITE_URL); it is then checked as a path on the server under test. Any
+ * other origin is skipped, localhost included: the Supabase post's sample
+ * `'http://localhost:3000/auth/callback'` is a reader's dev server, not this
+ * site, and matching it against the test server's own origin made the check
+ * pass on a pinned port and fail on CI's :3000.
  */
 const DOCUMENTS = [
   ...ALL_ROUTES,
@@ -24,6 +32,7 @@ const DOCUMENTS = [
   "/llms-full.txt",
 ];
 
+const SITE = new URL(SITE_URL);
 const ATTR = /\b(?:href|src|action|poster)\s*=\s*["']([^"'#]+)["']/gi;
 // A quote (optionally backslash-escaped, as inside a JS string), an optional
 // ./ or ../, a slash, then a path that starts with a word character (React's
@@ -35,26 +44,28 @@ const QUOTED_PATH =
 // `[text](/path)` or absolute URLs. A path in backticks is prose about some
 // other service's route (`/metrics`), not a link on this site.
 const MD_LINK = /\]\((\/[^)\s]*)\)/g;
-const ABSOLUTE = /https?:\/\/[^\s<>"')\]]+/g;
+// Stops at a backslash: inside the RSC payload a URL ends at an escaped
+// quote (`\"`), and a trailing `\` would resolve as an extra `/`.
+const ABSOLUTE = /https?:\/\/[^\s<>"'`)\]\\]+/g;
 
 function candidates(body: string, page: URL, text: boolean): Set<string> {
   const out = new Set<string>();
-  const add = (raw: string) => {
+  const add = (raw: string, base: URL) => {
     try {
-      const u = new URL(raw.replace(/&amp;/g, "&"), page);
-      if (u.origin !== page.origin) return;
+      const u = new URL(raw.replace(/&amp;/g, "&"), base);
+      if (u.origin !== base.origin) return;
       out.add(u.pathname + u.search);
     } catch {
       /* not a URL */
     }
   };
-  for (const m of body.matchAll(ABSOLUTE)) add(m[0]);
+  for (const m of body.matchAll(ABSOLUTE)) add(m[0], SITE);
   if (text) {
-    for (const m of body.matchAll(MD_LINK)) add(m[1]);
+    for (const m of body.matchAll(MD_LINK)) add(m[1], page);
     return out;
   }
-  for (const m of body.matchAll(ATTR)) add(m[1]);
-  for (const m of body.matchAll(QUOTED_PATH)) add(m[1]);
+  for (const m of body.matchAll(ATTR)) add(m[1], page);
+  for (const m of body.matchAll(QUOTED_PATH)) add(m[1], page);
   return out;
 }
 
