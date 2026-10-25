@@ -4025,14 +4025,14 @@
         "submissions": 162
       }
     ],
-    "totalQuestions": 4086,
+    "totalQuestions": 4095,
     "easySolved": 184,
-    "totalEasy": 972,
+    "totalEasy": 974,
     "mediumSolved": 348,
-    "totalMedium": 2130,
+    "totalMedium": 2135,
     "hardSolved": 85,
-    "totalHard": 984,
-    "ranking": 135663,
+    "totalHard": 986,
+    "ranking": 136265,
     "contributionPoint": 710,
     "reputation": 1,
     "submissionCalendar": {
@@ -4221,8 +4221,8 @@
     ],
     "currentStreak": {
       "count": 0,
-      "startDate": "2026-10-18",
-      "endDate": "2026-10-18"
+      "startDate": "2026-10-25",
+      "endDate": "2026-10-25"
     },
     "longestStreak": {
       "count": 6,
@@ -4243,5 +4243,5 @@
     "github": true,
     "leetcode": false
   },
-  "lastUpdated": "2026-10-18"
+  "lastUpdated": "2026-10-25"
 }
