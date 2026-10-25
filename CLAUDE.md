@@ -90,7 +90,7 @@ constants/
   index.ts              # ExperienceSection / EducationSection data + itemVariants + shared animation config
 
 content/
-  blog/                 # 26 MDX files: 17 archived, 6 published, 3 drafts (not in BLOG_SLUGS, 404 live) — YAML frontmatter + **HTML** body. Not MDX: there is no MDX compiler, and `content/blog/` is in `.prettierignore` because Prettier parses .mdx as JSX and inserts `{" "}` tokens that ship as literal text. Add new posts here, then add slug to BLOG_SLUGS in blog-data.ts.
+  blog/                 # 35 MDX files: 17 archived, 6 published, 2 TODO drafts, 10 STAGED 2026-10 (commented in BLOG_SLUGS awaiting owner approval; __tests__/staged-posts.test.tsx renders them as if published) — none of the unlisted ones are served (404 live) — YAML frontmatter + **HTML** body. Not MDX: there is no MDX compiler, and `content/blog/` is in `.prettierignore` because Prettier parses .mdx as JSX and inserts `{" "}` tokens that ship as literal text. Add new posts here, then add slug to BLOG_SLUGS in blog-data.ts.
 
 data/
   statistics-snapshot.json    # Last-known-good GitHub + LeetCode numbers — served by /statistics when live APIs time out (in .prettierignore)
